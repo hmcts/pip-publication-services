@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 
 /**
  * Global exception handler, that captures exceptions thrown by the controllers, and encapsulates
- * the logic to handle them and return a standardised response to the user
+ * the logic to handle them and return a standardised response to the user.
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
      * Template exception handler, that handles a custom PublicationNotFoundException,
-     * and returns a 404 in the standard format
+     * and returns a 404 in the standard format.
      * @param ex The exception that has been thrown.
      * @param request The request made to the endpoint.
      * @return The error response, modelled using the ExceptionResponse object.
@@ -26,10 +26,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PublicationNotFoundException.class)
     ResponseEntity<ExceptionResponse> handlePublicationNotFound(PublicationNotFoundException ex, WebRequest request) {
 
-        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
-            .message(ex.getMessage())
-            .timestamp(LocalDateTime.now())
-            .build();
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setMessage(ex.getMessage());
+        exceptionResponse.setTimestamp(LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }

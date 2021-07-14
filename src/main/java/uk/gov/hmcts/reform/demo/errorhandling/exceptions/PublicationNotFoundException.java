@@ -5,6 +5,8 @@ package uk.gov.hmcts.reform.demo.errorhandling.exceptions;
  */
 public class PublicationNotFoundException extends RuntimeException {
 
+    private static final long serialVersionUID = -2261417166948666798L;
+
     /**
      * Constructor for the Exception.
      * @param message The message to return to the end user
