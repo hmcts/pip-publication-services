@@ -24,4 +24,13 @@ public class GetWelcomeTest {
 
         assertThat(response.getResponse().getContentAsString()).startsWith("Welcome");
     }
+
+    @DisplayName("Should welcome upon root request with 404 response code")
+    @Test
+    public void publicationEndpoint() throws Exception {
+        MvcResult response = mockMvc.perform(get("/publication")).andExpect(status().isNotFound()).andReturn();
+
+        assertThat(response.getResponse().getContentAsString()).contains("Publication");
+    }
+
 }
