@@ -1,14 +1,15 @@
 version: '2.1'
 
 services:
-  spring-boot-template:
+  pip-publication-services:
     build:
       context: .
       args:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: hmctspublic.azurecr.io/spring-boot/template
+        - APP
+    image: hmctspublic.azurecr.io/pip-publication-services
     environment:
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
