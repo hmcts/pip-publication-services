@@ -92,6 +92,9 @@ checkstyle {
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
+checkstyleMain.exclude("**/org/openapitools/**")
+checkstyleMain.exclude('**/uk/gov/hmcts/reform/demo/openapi/*.java')
+
 pmd {
   toolVersion = "6.18.0"
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
@@ -99,6 +102,12 @@ pmd {
   // https://github.com/pmd/pmd/issues/876
   ruleSets = []
   ruleSetFiles = files("config/pmd/ruleset.xml")
+  pmdMain {
+    excludes = [
+      '**/org/openapitools/**',
+      '**/uk/gov/hmcts/reform/demo/openapi/*.java'
+    ]
+  }
 }
 
 jacocoTestReport {
@@ -154,7 +163,7 @@ def versions = [
   junitPlatform   : '1.7.2',
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
-  springfoxSwagger: '3.0.0'
+  springfoxSwagger: '2.9.0'
 ]
 
 ext.libraries = [
@@ -172,12 +181,14 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
 
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.9.RELEASE'
+
 
   compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
@@ -196,6 +207,14 @@ dependencies {
   smokeTestImplementation sourceSets.main.runtimeClasspath
 }
 
+sourceSets {
+  main {
+    java {
+      srcDir("$buildDir/generated-sources")
+    }
+  }
+}
+
 mainClassName = 'uk.gov.hmcts.reform.demo.Application'
 
 bootJar {
@@ -212,8 +231,23 @@ wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
-compileJava.dependsOn tasks.openApiValidate
+compileJava.dependsOn tasks.openApiGenerate
+tasks.openApiGenerate.dependsOn tasks.openApiValidate
 
 openApiValidate {
   inputSpec = "$rootDir/src/main/resources/OpenApiSpec.yml".toString()
+}
+
+openApiGenerate {
+  inputSpec = "$rootDir/src/main/resources/OpenApiSpec.yml".toString()
+  generatorName = 'spring'
+  apiPackage = 'uk.gov.hmcts.reform.demo.openapi'
+  invokerPackage = 'uk.gov.hmcts.reform.demo.openapi'
+  outputDir = "$buildDir/generated-sources"
+  configOptions = [
+    interfaceOnly: "true",
+    openApiNullable: "false",
+    skipDefaultInterface: "true"
+  ]
+
 }

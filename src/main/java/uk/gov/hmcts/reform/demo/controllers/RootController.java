@@ -4,6 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.demo.errorhandling.exceptions.PublicationNotFoundException;
+import uk.gov.hmcts.reform.demo.openapi.DefaultApi;
+import uk.gov.hmcts.reform.demo.openapi.PublicationApi;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -11,7 +13,7 @@ import static org.springframework.http.ResponseEntity.ok;
  * Default endpoints per application.
  */
 @RestController
-public class RootController {
+public class RootController implements DefaultApi, PublicationApi {
 
     /**
      * Root GET endpoint.
@@ -23,7 +25,8 @@ public class RootController {
      * @return Welcome message from the service.
      */
     @GetMapping("/")
-    public ResponseEntity<String> welcome() {
+    @Override
+    public ResponseEntity<String> rootGet() {
         return ok("Welcome to spring-boot-template");
     }
 
@@ -33,7 +36,8 @@ public class RootController {
      * @return A ResponseEntity
      */
     @GetMapping("/publication")
-    public ResponseEntity<String> getPublications() {
+    @Override
+    public ResponseEntity<String> publicationGet() {
         throw new PublicationNotFoundException("Publication has not been found");
     }
 }
