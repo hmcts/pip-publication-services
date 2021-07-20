@@ -14,5 +14,40 @@
     ]]></notes>
     <cve>CVE-2020-10663</cve>
     <cve>CVE-2020-7712</cve>
-   </suppress>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: commons-io-2.6.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/commons\-io/commons\-io@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_io</cpe>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-core-5.3.6.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
+    <cve>CVE-2021-22118</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-security-crypto-5.4.6.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
+    <cve>CVE-2018-1258</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: tomcat-embed-core-9.0.46.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@9.0.46</packageUrl>
+    <cve>CVE-2021-33037</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: tomcat-embed-websocket-9.0.46.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@9.0.46</packageUrl>
+    <cve>CVE-2021-33037</cve>
+  </suppress>
 </suppressions>
