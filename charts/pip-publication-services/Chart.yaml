@@ -8,5 +8,5 @@ maintainers:
   - name: HMCTS PIP Team
 dependencies:
   - name: java
-    version: 3.5.1
-    repository: '@hmctspublic'
+    version: 3.6.0
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo'
