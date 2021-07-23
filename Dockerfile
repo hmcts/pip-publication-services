@@ -8,5 +8,5 @@ ARG APP
 COPY lib/AI-Agent.xml /opt/app/
 COPY build/libs/$APP /opt/app/
 
-EXPOSE 4550
+EXPOSE 8081
 CMD [ "pip-publication-services.jar" ]
