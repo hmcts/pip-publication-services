@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.demo.controllers;
 
+import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +12,7 @@ import static org.springframework.http.ResponseEntity.ok;
  * Default endpoints per application.
  */
 @RestController
+@Api(tags = "Publication Services root API")
 public class RootController {
 
     /**
