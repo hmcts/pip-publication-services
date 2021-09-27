@@ -6,12 +6,9 @@ def type = "java"
 def product = "pip"
 def component = "publication-services"
 
-def apiTestSecrets = [ 'plumsi-${env}' :
-  [
-    secret('test-client-key-store', 'TEST_CLIENT_KEY_STORE'),
-    secret('test-client-key-store-password', 'TEST_CLIENT_KEY_STORE_PASSWORD'),
-    secret('test-client-subscription-key', 'TEST_CLIENT_SUBSCRIPTION_KEY')
-  ]
+def apiTestSecrets = [ 'pip-shared-kv-${env}' : [
+  secret("gov-uk-notify-api-testing-key", "NOTIFY_API_TESTING_KEY")
+]
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {

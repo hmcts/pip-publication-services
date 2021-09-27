@@ -1,0 +1,7 @@
+notify:
+  api:
+    key: pipkeyfortesting-d43606f7-ccc7-486c-8847-f5bdf21c938d-7033ceaf-4fdf-4c72-84a8-d916762ddbeb
+  links:
+    subscription-page-link: https://pip-frontend.staging.platform.hmcts.net/otp-login-testing
+    start-page-link: https://pip-frontend.staging.platform.hmcts.net
+    gov-guidance-page-link: https://www.gov.uk
