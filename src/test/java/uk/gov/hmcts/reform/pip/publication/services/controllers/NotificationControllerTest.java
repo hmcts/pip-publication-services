@@ -41,7 +41,7 @@ public class NotificationControllerTest {
     private WebApplicationContext webApplicationContext;
 
     @BeforeEach
-    public void setUp() {
+    public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
         JSONObject validRequestBody = new JSONObject(VALID_WELCOME_REQUEST_BODY);

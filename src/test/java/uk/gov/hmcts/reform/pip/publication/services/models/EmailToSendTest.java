@@ -18,7 +18,7 @@ public class EmailToSendTest {
     private static final String REFERENCE_ID = "refID";
 
     @BeforeEach
-    public void setUp() {
+    public void setup() {
         PERSONALISATION.put("test", "testValue");
         emailToSend = new EmailToSend(EMAIL, TEMPLATE, PERSONALISATION, REFERENCE_ID);
     }

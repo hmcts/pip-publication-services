@@ -35,7 +35,7 @@ public class IntegrationTest {
     private WebApplicationContext webApplicationContext;
 
     @BeforeEach
-    public void setUp() {
+    public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 

@@ -66,6 +66,7 @@
   <rule ref="category/java/errorprone.xml">
     <exclude name="BeanMembersShouldSerialize"/>
     <exclude name="DataflowAnomalyAnalysis"/>
+    <exclude name="JUnitSpelling"/>
   </rule>
   <rule ref="category/java/multithreading.xml"/>
   <rule ref="category/java/performance.xml"/>

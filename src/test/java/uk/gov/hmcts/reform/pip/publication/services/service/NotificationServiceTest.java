@@ -35,7 +35,7 @@ public class NotificationServiceTest {
     private EmailService emailService;
 
     @BeforeEach
-    public void setUp() {
+    public void setup() {
 
         when(emailService.buildEmail(VALID_EMAIL, Templates.EXISTING_USER_WELCOME_EMAIL.template))
             .thenReturn(EmailResponseHelper.stubSendEmailResponseWithReferenceID("successRefId"));

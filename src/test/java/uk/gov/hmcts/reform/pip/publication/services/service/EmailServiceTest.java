@@ -34,7 +34,7 @@ public class EmailServiceTest {
     private SendEmailResponse sendEmailResponse;
 
     @BeforeEach
-    public void setUp() throws NotificationClientException {
+    public void setup() throws NotificationClientException {
         sendEmailResponse = mock(SendEmailResponse.class);
 
         when(emailClient.sendEmail(eq(TEMPLATE), eq(EMAIL), anyMap(), anyString()))
