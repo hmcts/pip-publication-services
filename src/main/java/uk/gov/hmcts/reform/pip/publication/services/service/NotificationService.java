@@ -36,7 +36,7 @@ public class NotificationService {
 
         return emailService.buildEmail(email, isExisting
             ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
-            Templates.NEW_USER_WELCOME_EMAIL.template).getReference().toString();
+            Templates.NEW_USER_WELCOME_EMAIL.template).getReference().orElse(null);
     }
 
     private void validateRequiredBody(JSONObject body, String... keys) {

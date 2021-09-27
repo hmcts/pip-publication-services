@@ -27,6 +27,7 @@ public class NotificationServiceTest {
         "{isExisting: 'true'}");
     private static final JSONObject INVALID_BODY_NO_BOOL_KEY = new JSONObject(
         "{email: 'test@email.com'}");
+    public static final String SUCCESS_REF_ID = "successRefId";
 
     @Autowired
     private NotificationService notificationService;
@@ -38,21 +39,21 @@ public class NotificationServiceTest {
     public void setup() {
 
         when(emailService.buildEmail(VALID_EMAIL, Templates.EXISTING_USER_WELCOME_EMAIL.template))
-            .thenReturn(EmailResponseHelper.stubSendEmailResponseWithReferenceID("successRefId"));
+            .thenReturn(EmailResponseHelper.stubSendEmailResponseWithReferenceID(SUCCESS_REF_ID));
         when(emailService.buildEmail(VALID_EMAIL, Templates.NEW_USER_WELCOME_EMAIL.template))
-            .thenReturn(EmailResponseHelper.stubSendEmailResponseWithReferenceID("successRefId"));
+            .thenReturn(EmailResponseHelper.stubSendEmailResponseWithReferenceID(SUCCESS_REF_ID));
     }
 
     @Test
     public void testValidPayloadReturnsSuccessExisting() {
-        assertEquals("Optional[successRefId]", notificationService.handleWelcomeEmailRequest(VALID_BODY_EXISTING),
+        assertEquals(SUCCESS_REF_ID, notificationService.handleWelcomeEmailRequest(VALID_BODY_EXISTING),
                      "Existing user with valid JSON should return successful referenceId"
         );
     }
 
     @Test
     public void testValidPayloadReturnsSuccessNew() {
-        assertEquals("Optional[successRefId]", notificationService.handleWelcomeEmailRequest(VALID_BODY_NEW),
+        assertEquals(SUCCESS_REF_ID, notificationService.handleWelcomeEmailRequest(VALID_BODY_NEW),
                      "Existing user with valid JSON should return successful referenceId"
         );
     }

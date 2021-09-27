@@ -27,14 +27,6 @@ public class CustomExceptionTest {
     }
 
     @Test
-    public void testCreationOfTemplateNotFoundException() {
-        TemplateNotFoundException templateNotFoundException
-            = new TemplateNotFoundException();
-        assertEquals("No template was found", templateNotFoundException.getMessage(),
-                     EXPECTED_MESSAGE);
-    }
-
-    @Test
     public void testCreationOfNotifyException() {
         NotifyException notifyException
             = new NotifyException(TEST_MESSAGE);
