@@ -50,7 +50,6 @@
     <packageUrl regex="true">^pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@9.0.46</packageUrl>
     <cve>CVE-2021-33037</cve>
   </suppress>
-
   <suppress>
     <notes><![CDATA[
    file name: jakarta.el-3.0.3.jar
