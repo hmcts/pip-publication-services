@@ -1,8 +1,9 @@
 java:
-  applicationPort: 8081
-  image: 'hmctspublic.azurecr.io/rpe/pip-publication-services:latest'
-  ingressHost: rpe-spring-boot-template-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: pip
+  ingressHost: pip-publication-services.{{ .Values.global.environment }}.platform.hmcts.net
+  applicationPort: 8081
+  image: 'sdshmctspublic.azurecr.io/pip/publication-services:latest'
+
 #  Uncomment once the vault containing the app insights key has been set up
 #  keyVaults:
 #    rpe:
