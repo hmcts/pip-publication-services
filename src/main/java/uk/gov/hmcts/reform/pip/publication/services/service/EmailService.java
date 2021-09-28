@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
+import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.service.notify.NotificationClientException;
@@ -22,14 +22,8 @@ public class EmailService {
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
 
-    @Value("${notify.links.subscription-page-link}")
-    private String subscriptionPageLink;
-
-    @Value("${notify.links.start-page-link}")
-    private String startPageLink;
-
-    @Value("${notify.links.gov-guidance-page-link}")
-    private String govGuidancePageLink;
+    @Autowired
+    NotifyConfigProperties notifyConfigProperties;
 
     @Autowired
     EmailClient emailClient;
@@ -42,16 +36,16 @@ public class EmailService {
                                          emailToSend.getPersonalisation(), emailToSend.getReferenceId());
         } catch (NotificationClientException e) {
             log.warn("Failed to send email. Reference ID: {}. Reason:", emailToSend.getReferenceId(), e);
-            throw (NotifyException)new NotifyException(e.getMessage()).initCause(e);
+            throw new NotifyException(e.getMessage());
         }
     }
 
     protected Map<String, String> buildWelcomePersonalisation() {
         Map<String, String> personalisation = new ConcurrentHashMap<>();
 
-        personalisation.put(SUBSCRIPTION_PAGE_LINK, subscriptionPageLink);
-        personalisation.put(START_PAGE_LINK, startPageLink);
-        personalisation.put(GOV_GUIDANCE_PAGE_LINK, govGuidancePageLink);
+        personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
+        personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
+        personalisation.put(GOV_GUIDANCE_PAGE_LINK, notifyConfigProperties.getLinks().getGovGuidancePageLink());
 
         return personalisation;
     }

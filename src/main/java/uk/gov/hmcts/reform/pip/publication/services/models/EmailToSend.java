@@ -4,8 +4,11 @@ import lombok.Value;
 
 import java.util.Map;
 
+/**
+ * Class template for an Email that meets the requirements GovNotify needs.
+ */
 @Value
-public final class EmailToSend {
+public class EmailToSend {
     String emailAddress;
     String template;
     Map<String, String> personalisation;

@@ -30,7 +30,7 @@ public class NotificationService {
         try {
             isExisting = body.getBoolean(IS_EXISTING_KEY);
         } catch (JSONException e) {
-            throw (BadPayloadException) new BadPayloadException(e.getMessage()).initCause(e);
+            throw new BadPayloadException(e.getMessage());
         }
         String email = body.get(EMAIL_KEY).toString();
 

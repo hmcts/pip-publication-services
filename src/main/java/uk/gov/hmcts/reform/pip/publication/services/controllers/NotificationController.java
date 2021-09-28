@@ -33,18 +33,19 @@ public class NotificationController {
      */
     @ApiResponses({
         @ApiResponse(code = 200, message = "Welcome email successfully sent with referenceId abc123-123-432-4456"),
-        @ApiResponse(code = 400, message = "BadPayloadException error message")
+        @ApiResponse(code = 400, message = "BadPayloadException error message"),
+        @ApiResponse(code = 400, message = "NotifyException error message")
     })
     @ApiOperation(value = "Send welcome email to new or existing subscribed users",
         notes = "Use the bool isExisting as 'false' to send new user emails or 'true' to send existing user emails ")
     @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',\n isExisting: 'true'\n}")
     @PostMapping("/welcome-email")
-    public ResponseEntity sendWelcomeEmail(@RequestBody String body) {
+    public ResponseEntity<String> sendWelcomeEmail(@RequestBody String body) {
         JSONObject request;
         try {
             request = new JSONObject(body);
         } catch (JSONException e) {
-            throw (BadPayloadException) new BadPayloadException("Invalid JSON body: " + e.getMessage()).initCause(e);
+            throw new BadPayloadException("Invalid JSON body: " + e.getMessage());
         }
         return ResponseEntity.ok(String.format(
             "Welcome email successfully sent with referenceId %s",
