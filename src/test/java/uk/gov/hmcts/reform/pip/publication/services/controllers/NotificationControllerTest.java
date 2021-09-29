@@ -1,22 +1,20 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.BadPayloadException;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -27,9 +25,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class NotificationControllerTest {
 
-    private static final String VALID_WELCOME_REQUEST_BODY = "{email: 'test@email.com', isExisting: 'true'}";
-    private static final String INVALID_WELCOME_REQUEST_BODY = "{email: 'test@email.com', isExisting: 'test'}";
-    private static final String INVALID_JSON_BODY = "{email: 'test@email.com', incorrect: }";
+    private static final String VALID_EMAIL = "test@email.com";
+    private static final boolean TRUE_BOOL = true;
+
+    private static final String VALID_WELCOME_REQUEST_BODY =
+        "{\"email\": \"test@email.com\", \"isExisting\": \"true\"}";
+    private static final String INVALID_WELCOME_REQUEST_BODY =
+        "{\"email\": \"test@email.com\", \"isExisting\": \"test\"}";
+    private static final String INVALID_REQUEST_BODY = "{\"email\": \"test@email.com\", \"isExisting\"}";
 
     @MockBean
     private NotificationService notificationService;
@@ -44,34 +47,33 @@ public class NotificationControllerTest {
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
-        JSONObject validRequestBody = new JSONObject(VALID_WELCOME_REQUEST_BODY);
-        JSONObject invalidRequestBody = new JSONObject(INVALID_WELCOME_REQUEST_BODY);
+        WelcomeEmail validRequestBodyTrue = new WelcomeEmail(VALID_EMAIL, TRUE_BOOL);
 
-
-        when(notificationService.handleWelcomeEmailRequest(argThat((JSONObject body) -> body.toString().equals(
-            validRequestBody.toString())))).thenReturn("successId");
-
-        Mockito.doThrow(BadPayloadException.class).when(notificationService)
-            .handleWelcomeEmailRequest(argThat((JSONObject body) -> body.toString()
-                .equals(invalidRequestBody.toString())));
+        when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn("successId");
     }
 
     @Test
     public void testValidBodyShouldReturnOkResponse() throws Exception {
-        mockMvc.perform(post("/notify/welcome-email").content(VALID_WELCOME_REQUEST_BODY))
+        mockMvc.perform(post("/notify/welcome-email")
+                            .content(VALID_WELCOME_REQUEST_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string("Welcome email successfully sent with referenceId successId"));
     }
 
     @Test
-    public void testInvalidJsonShouldReturnBadRequestResponse() throws Exception {
-        mockMvc.perform(post("/notify/welcome-email").content(INVALID_JSON_BODY))
+    public void testInvalidRequestShouldReturnBadRequestResponse() throws Exception {
+        mockMvc.perform(post("/notify/welcome-email")
+                            .content(INVALID_REQUEST_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void testInvalidBodyShouldReturnBadRequestResponse() throws Exception {
-        mockMvc.perform(post("/notify/welcome-email").content(INVALID_WELCOME_REQUEST_BODY))
+    public void testInvalidTypeShouldReturnBadRequestResponse() throws Exception {
+        mockMvc.perform(post("/notify/welcome-email")
+                            .content(INVALID_WELCOME_REQUEST_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
 }

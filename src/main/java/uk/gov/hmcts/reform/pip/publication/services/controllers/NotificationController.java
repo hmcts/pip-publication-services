@@ -5,15 +5,13 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.BadPayloadException;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
 @RestController
@@ -40,16 +38,10 @@ public class NotificationController {
         notes = "Use the bool isExisting as 'false' to send new user emails or 'true' to send existing user emails ")
     @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',\n isExisting: 'true'\n}")
     @PostMapping("/welcome-email")
-    public ResponseEntity<String> sendWelcomeEmail(@RequestBody String body) {
-        JSONObject request;
-        try {
-            request = new JSONObject(body);
-        } catch (JSONException e) {
-            throw new BadPayloadException("Invalid JSON body: " + e.getMessage());
-        }
+    public ResponseEntity<String> sendWelcomeEmail(@RequestBody WelcomeEmail body) {
         return ResponseEntity.ok(String.format(
             "Welcome email successfully sent with referenceId %s",
-            notificationService.handleWelcomeEmailRequest(request)
+            notificationService.handleWelcomeEmailRequest(body)
         ));
     }
 }

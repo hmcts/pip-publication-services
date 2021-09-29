@@ -9,7 +9,7 @@ services:
         - https_proxy
         - no_proxy
         - APP
-    image: hmctspublic.azurecr.io/pip-publication-services
+    image: sdshmctspublic.azurecr.io/pip/publication-services
     environment:
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
