@@ -10,5 +10,5 @@ java:
         resourceGroup: pip-sharedservices-{{ .Values.global.environment }}-rg
         usePodIdentity: true
         secrets:
-          - gov-uk-notify-api-testing-key  
+          - gov_uk_notify_api_testing_key
   environment:
