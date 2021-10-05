@@ -4,7 +4,7 @@ java:
   applicationPort: 8081
   image: 'sdshmctspublic.azurecr.io/pip/publication-services:latest'
   keyVaults:
-    - name: hmi-shared-kv-{{ .Values.global.environment }}
+    "hmi-shared-kv-{{ .Values.global.environment }}": 
       excludeEnvironmentSuffix: false
       resourceGroup: pip-sharedservices-{{ .Values.global.environment }}-rg
       usePodIdentity: true
@@ -16,3 +16,4 @@ java:
 #        secretKeyRef:
 #          name: pip-shared-kv-dev
 #          key: gov-uk-notify-api-testing-key
+
