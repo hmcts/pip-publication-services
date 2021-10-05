@@ -4,10 +4,11 @@ java:
   applicationPort: 8081
   image: 'sdshmctspublic.azurecr.io/pip/publication-services:latest'
 
-#  Uncomment once the vault containing the app insights key has been set up
-#  keyVaults:
-#    rpe:
-#      secrets:
-#        - name: AppInsightsInstrumentationKey
-#          alias: azure.application-insights.instrumentation-key
+  keyVaults:
+      pip-shared-kv-{{ .Values.global.environment }}:
+        excludeEnvironmentSuffix: false
+        resourceGroup: pip-sharedservices-{{ .Values.global.environment }}-rg
+        usePodIdentity: true
+        secrets:
+          - gov_uk_notify_api_testing_key
   environment:
