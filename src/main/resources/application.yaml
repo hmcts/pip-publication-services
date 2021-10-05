@@ -45,7 +45,7 @@ azure:
 
 notify:
   api:
-    key: ${NOTIFY_API_TESTING_KEY:testingApiKey}
+    key: ${gov-uk-notify-api-testing-key:testingApiKey}
   links:
     subscription-page-link: ${NOTIFY_LINK_SUBSCRIPTION_PAGE:https://pip-frontend.staging.platform.hmcts.net/otp-login-testing}
     start-page-link: ${NOTIFY_LINK_START_PAGE:https://pip-frontend.staging.platform.hmcts.net}
