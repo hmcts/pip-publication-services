@@ -14,5 +14,5 @@ java:
     - name: API_KEY
       valueFrom:
         secretKeyRef:
-          name: pip-shared-kv-{{ .Values.global.environment }}
+          name: 0
           key: gov-uk-notify-api-testing-key
