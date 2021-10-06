@@ -11,8 +11,8 @@ java:
       secrets:
         - gov-uk-notify-api-testing-key
   environment:
-#    - name: API_KEY
-#      valueFrom:
-#        secretKeyRef:
-#          name: pip-shared-kv
-#          key: gov-uk-notify-api-testing-key
+    - name: API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: pip-shared-kv
+          key: gov-uk-notify-api-testing-key
