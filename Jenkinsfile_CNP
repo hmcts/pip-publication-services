@@ -6,10 +6,7 @@ def type = "java"
 def product = "pip"
 def component = "publication-services"
 
-def apiTestSecrets = [ 'pip-shared-kv-${env}' : [
-  secret("gov-uk-notify-api-testing-key", "NOTIFY_API_TESTING_KEY")
-]
-]
+
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
   [ $class: 'AzureKeyVaultSecret',
@@ -26,7 +23,5 @@ withPipeline(type, product, component) {
   enableAksStagingDeployment()
   disableLegacyDeployment()
   enableApiGatewayTest()
-  onNonPR() {
-    loadVaultSecrets(apiTestSecrets)
-  }
+
 }
