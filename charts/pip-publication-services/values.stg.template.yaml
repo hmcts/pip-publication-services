@@ -2,3 +2,10 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  keyVaults:
+    pip-shared-kv-stg:
+      excludeEnvironmentSuffix: false
+      resourceGroup: pip-sharedservices-stg-rg
+      usePodIdentity: true
+      secrets:
+        - gov-uk-notify-api-testing-key
