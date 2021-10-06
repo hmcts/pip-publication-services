@@ -4,7 +4,7 @@ java:
   applicationPort: 8081
   image: 'sdshmctspublic.azurecr.io/pip/publication-services:latest'
   keyVaults:
-    - name: pip-shared-kv
+    pip-shared-kv:
       excludeEnvironmentSuffix: false
       resourceGroup: pip-sharedservices-{{ .Values.global.environment }}-rg
       usePodIdentity: true
