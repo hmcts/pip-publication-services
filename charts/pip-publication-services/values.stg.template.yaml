@@ -2,3 +2,16 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  keyVaults:
+    pip-shared-kv-stg: 
+      excludeEnvironmentSuffix: false
+      resourceGroup: pip-sharedservices-stg-rg
+      usePodIdentity: true
+      secrets:
+        - gov-uk-notify-api-testing-key
+  environment:
+    - name: API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: pip-shared-kv-stg
+          key: gov-uk-notify-api-testing-key
