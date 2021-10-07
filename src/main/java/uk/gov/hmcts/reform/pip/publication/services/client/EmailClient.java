@@ -18,7 +18,8 @@ public class EmailClient extends NotificationClient {
      * @param apiKey API key used to connect to GovNotify taken from application.yaml
      */
     @Autowired
-    public EmailClient(@Value("${notify.api.key}") String apiKey,@Value("${NOTIFY_API_TESTING_KEY}") String kvKey,@Value("${notify.links.subscription-page-link}") String link,@Value("${NOTIFY_LINK_SUBSCRIPTION_PAGE}") String envLink) {
+    public EmailClient(@Value("${notify.api.key}") String apiKey,@Value("${NOTIFY_API_TESTING_KEY}") String kvKey,
+    @Value("${notify.links.subscription-page-link}") String link,@Value("${NOTIFY_LINK_SUBSCRIPTION_PAGE}") String envLink) {
         super(apiKey);
         log.warn("CHRIS CHECK HERE FOR THE PRINTED KEY SECRET: " + apiKey + " kvkey: " + kvKey + " link: " + link + " envLink: " + envLink);
     }
