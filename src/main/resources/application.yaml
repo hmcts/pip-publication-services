@@ -14,7 +14,7 @@ management:
 #If you use a database then uncomment below lines and update db properties accordingly
 spring:
   config:
-    import: "optional:configtree:/mnt/secrets/pip-shared-kv/"
+    import: "optional:configtree:/mnt/secrets/"
   application:
     name: Spring Boot Template
 #  datasource:
@@ -44,7 +44,7 @@ azure:
 
 notify:
   api:
-    key: ${NOTIFY_API_TESTING_KEY:testingApiKey}
+    key: ${pip-shared-kv.NOTIFY_API_TESTING_KEY:testingApiKey}
   links:
     subscription-page-link: ${NOTIFY_LINK_SUBSCRIPTION_PAGE:https://pip-frontend.staging.platform.hmcts.net/otp-login-testing}
     start-page-link: ${NOTIFY_LINK_START_PAGE:https://pip-frontend.staging.platform.hmcts.net}
