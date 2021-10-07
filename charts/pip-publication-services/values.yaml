@@ -12,3 +12,4 @@ java:
         - name: gov-uk-notify-api-testing-key
           alias: NOTIFY_API_TESTING_KEY
   environment:
+    NOTIFY_LINK_SUBSCRIPTION_PAGE: "testers"
