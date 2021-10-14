@@ -14,7 +14,7 @@ management:
 #If you use a database then uncomment below lines and update db properties accordingly
 spring:
   config:
-    import: "optional:configtree:/mnt/secrets/"
+    import: "optional:configtree:/mnt/secrets/pip-shared-kv/"
   application:
     name: Spring Boot Template
 #  datasource:
@@ -38,7 +38,15 @@ spring:
 #          lob:
 #            # silence the 'wall-of-text' - unnecessary exception throw about blob types
 #            non_contextual_creation: true
-
 azure:
   application-insights:
     instrumentation-key: ${rpe.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
+
+notify:
+  api:
+    key: ${NOTIFY_API_KEY:testingApiKey}
+  links:
+    subscription-page-link: ${NOTIFY_LINK_SUBSCRIPTION_PAGE:https://pip-frontend.staging.platform.hmcts.net/otp-login-testing}
+    start-page-link: ${NOTIFY_LINK_START_PAGE:https://pip-frontend.staging.platform.hmcts.net}
+    gov-guidance-page-link: ${NOTIFY_LINK_GOV_GUIDANCE:https://www.gov.uk}
+

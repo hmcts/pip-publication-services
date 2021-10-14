@@ -4,23 +4,20 @@
 
 ## Purpose
 
-The purpose of this template is to speed up the creation of new Spring applications within HMCTS
-and help keep the same standards across multiple teams. If you need to create a new app, you can
-simply use this one as a starting point and build on top of it.
+The purpose of this service is to support the dissemination of information to various consumers. It handles the
+communication towards Gov Notify.
 
 ## What's inside
 
-The template is a working application with a minimal setup. It contains:
- * application skeleton
- * setup script to prepare project
+It contains:
  * common plugins and libraries
- * docker setup
+ * docker
  * swagger configuration for api documentation ([see how to publish your api documentation to shared repository](https://github.com/hmcts/reform-api-docs#publish-swagger-docs))
  * code quality tools already set up
- * integration with Travis CI
  * Hystrix circuit breaker enabled
  * MIT license and contribution information
  * Helm chart using chart-java.
+ * Jenkins deployment
 
 The application exposes health endpoint (http://localhost:8081/health) and metrics endpoint
 (http://localhost:8081/metrics).
@@ -87,10 +84,6 @@ The template contains the following plugins:
     ```bash
       ./gradlew dependencyUpdates -Drevision=release
     ```
-
-## Setup
-
-Located in `./bin/init.sh`. Simply run and follow the explanation how to execute it.
 
 ## Notes
 
@@ -203,4 +196,28 @@ Here are some other functionalities it provides:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+
+
+## API
+
+Publication services exposes restful api's to complete its tasks, these are:
+  * `/notify/welcome-email` - POST request. This api takes in a body with the format
+
+    ```
+    {
+      email: "[EMAIL TO SEND WELCOME EMAIL TO]",
+      isExisting: [BOOLEAN]
+    }
+    ```
+
+
+
+
+### Responses
+  * `/notify/welcome-email` Successful call returns a 200 response status with the body:
+    ```
+    {
+      Welcome email successfully sent with referenceId [ReferenceID of the email sent]
+    }
+    ```
 
