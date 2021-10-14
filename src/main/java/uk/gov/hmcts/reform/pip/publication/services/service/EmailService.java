@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Slf4j
+@SuppressWarnings("PMD.PreserveStackTrace")
 public class EmailService {
 
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";

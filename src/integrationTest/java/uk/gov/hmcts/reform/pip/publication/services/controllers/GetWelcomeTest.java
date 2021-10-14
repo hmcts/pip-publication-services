@@ -12,14 +12,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-public class GetWelcomeTest {
+class GetWelcomeTest {
 
     @Autowired
     private transient MockMvc mockMvc;
 
     @DisplayName("Should welcome upon root request with 200 response code")
     @Test
-    public void welcomeRootEndpoint() throws Exception {
+    void welcomeRootEndpoint() throws Exception {
         MvcResult response = mockMvc.perform(get("/")).andExpect(status().isOk()).andReturn();
 
         assertThat(response.getResponse().getContentAsString()).startsWith("Welcome");
@@ -27,7 +27,7 @@ public class GetWelcomeTest {
 
     @DisplayName("Should welcome upon root request with 404 response code")
     @Test
-    public void publicationEndpoint() throws Exception {
+    void publicationEndpoint() throws Exception {
         MvcResult response = mockMvc.perform(get("/publication")).andExpect(status().isNotFound()).andReturn();
 
         assertThat(response.getResponse().getContentAsString()).contains("Publication");

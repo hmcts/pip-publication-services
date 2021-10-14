@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class NotificationServiceTest {
+class NotificationServiceTest {
 
     private static final String VALID_EMAIL = "test@email.com";
 
@@ -21,7 +21,7 @@ public class NotificationServiceTest {
         "test@email.com", true);
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
         "test@email.com", false);
-    public static final String SUCCESS_REF_ID = "successRefId";
+    static final String SUCCESS_REF_ID = "successRefId";
 
     @Autowired
     private NotificationService notificationService;
@@ -30,7 +30,7 @@ public class NotificationServiceTest {
     private EmailService emailService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
 
         when(emailService.buildEmail(VALID_EMAIL, Templates.EXISTING_USER_WELCOME_EMAIL.template))
             .thenReturn(EmailResponseHelper.stubSendEmailResponseWithReferenceID(SUCCESS_REF_ID));
@@ -39,14 +39,14 @@ public class NotificationServiceTest {
     }
 
     @Test
-    public void testValidPayloadReturnsSuccessExisting() {
+    void testValidPayloadReturnsSuccessExisting() {
         assertEquals(SUCCESS_REF_ID, notificationService.handleWelcomeEmailRequest(VALID_BODY_EXISTING),
                      "Existing user with valid JSON should return successful referenceId"
         );
     }
 
     @Test
-    public void testValidPayloadReturnsSuccessNew() {
+    void testValidPayloadReturnsSuccessNew() {
         assertEquals(SUCCESS_REF_ID, notificationService.handleWelcomeEmailRequest(VALID_BODY_NEW),
                      "Existing user with valid JSON should return successful referenceId"
         );

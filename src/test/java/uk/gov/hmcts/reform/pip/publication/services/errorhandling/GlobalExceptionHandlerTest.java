@@ -10,12 +10,12 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Pub
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class GlobalExceptionHandlerTest {
+class GlobalExceptionHandlerTest {
 
-    public static final String TEST_MESSAGE = "This is a test message";
+    static final String TEST_MESSAGE = "This is a test message";
 
     @Test
-    public void testHandleSubscriptionNotFound() {
+    void testHandleSubscriptionNotFound() {
         GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
         PublicationNotFoundException subscriptionNotFoundException
@@ -31,7 +31,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleBadPayload() {
+    void testHandleBadPayload() {
         GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
         BadPayloadException badPayloadException
@@ -47,7 +47,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleNotifyException() {
+    void testHandleNotifyException() {
         GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
         NotifyException notifyException = new NotifyException(TEST_MESSAGE);

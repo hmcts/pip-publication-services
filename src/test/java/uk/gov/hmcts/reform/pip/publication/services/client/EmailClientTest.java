@@ -1,26 +1,26 @@
 package uk.gov.hmcts.reform.pip.publication.services.client;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application.yaml")
-public class EmailClientTest {
+class EmailClientTest {
 
-    public static final String API_KEY = "7033ceaf-4fdf-4c72-84a8-d916762ddbeb";
+    private static final String API_KEY = "7033ceaf-4fdf-4c72-84a8-d916762ddbeb";
 
     @Autowired
     private EmailClient emailClient;
 
     @Test
-    public void testClientHasCorrectApiKey() {
-        assertEquals("Keys should match", API_KEY, emailClient.getApiKey());
+    void testClientHasCorrectApiKey() {
+        assertEquals(API_KEY, emailClient.getApiKey(), "Keys should match");
     }
 }

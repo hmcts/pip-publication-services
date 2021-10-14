@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class EmailServiceTest {
+class EmailServiceTest {
 
     private static final String EMAIL = "test@email.com";
     private static final String TEMPLATE = "template";
@@ -34,7 +34,7 @@ public class EmailServiceTest {
     private SendEmailResponse sendEmailResponse;
 
     @BeforeEach
-    public void setup() throws NotificationClientException {
+    void setup() throws NotificationClientException {
         sendEmailResponse = mock(SendEmailResponse.class);
 
         when(emailClient.sendEmail(eq(TEMPLATE), eq(EMAIL), anyMap(), anyString()))
@@ -45,12 +45,12 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void testBuildEmailReturnsSuccess() {
+    void testBuildEmailReturnsSuccess() {
         assertEquals(sendEmailResponse, emailService.buildEmail(EMAIL, TEMPLATE), "Should return a SendEmailResponse");
     }
 
     @Test
-    public void testFailedEmailReturnsNotifyException() {
+    void testFailedEmailReturnsNotifyException() {
         assertThrows(NotifyException.class, () -> {
             emailService.buildEmail(INVALID_EMAIL, TEMPLATE);
         });

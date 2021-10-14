@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EmailToSendTest {
+class EmailToSendTest {
 
     private EmailToSend emailToSend;
 
@@ -18,13 +18,13 @@ public class EmailToSendTest {
     private static final String REFERENCE_ID = "refID";
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         PERSONALISATION.put("test", "testValue");
         emailToSend = new EmailToSend(EMAIL, TEMPLATE, PERSONALISATION, REFERENCE_ID);
     }
 
     @Test
-    public void testEmailToSendBuildsCorrectly() {
+    void testEmailToSendBuildsCorrectly() {
         assertEquals(EMAIL, emailToSend.getEmailAddress(),"Email addresses should match");
         assertEquals(TEMPLATE, emailToSend.getTemplate(), "Template should match");
         assertEquals(PERSONALISATION, emailToSend.getPersonalisation(), "personalisation should match");

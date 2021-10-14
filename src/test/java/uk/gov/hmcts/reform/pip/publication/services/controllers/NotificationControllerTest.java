@@ -2,13 +2,13 @@ package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -20,10 +20,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class NotificationControllerTest {
+class NotificationControllerTest {
 
     private static final String VALID_EMAIL = "test@email.com";
     private static final boolean TRUE_BOOL = true;
@@ -44,7 +45,7 @@ public class NotificationControllerTest {
     private WebApplicationContext webApplicationContext;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
         WelcomeEmail validRequestBodyTrue = new WelcomeEmail(VALID_EMAIL, TRUE_BOOL);
@@ -53,7 +54,7 @@ public class NotificationControllerTest {
     }
 
     @Test
-    public void testValidBodyShouldReturnOkResponse() throws Exception {
+    void testValidBodyShouldReturnOkResponse() throws Exception {
         mockMvc.perform(post("/notify/welcome-email")
                             .content(VALID_WELCOME_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -62,7 +63,7 @@ public class NotificationControllerTest {
     }
 
     @Test
-    public void testInvalidRequestShouldReturnBadRequestResponse() throws Exception {
+    void testInvalidRequestShouldReturnBadRequestResponse() throws Exception {
         mockMvc.perform(post("/notify/welcome-email")
                             .content(INVALID_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -70,7 +71,7 @@ public class NotificationControllerTest {
     }
 
     @Test
-    public void testInvalidTypeShouldReturnBadRequestResponse() throws Exception {
+    void testInvalidTypeShouldReturnBadRequestResponse() throws Exception {
         mockMvc.perform(post("/notify/welcome-email")
                             .content(INVALID_WELCOME_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
