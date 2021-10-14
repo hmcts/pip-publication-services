@@ -44,7 +44,7 @@ azure:
 
 notify:
   api:
-    key: ${NOTIFY_API_TESTING_KEY:pippublicationserviceskeylimited-d43606f7-ccc7-486c-8847-f5bdf21c938d-c67ab691-c828-4635-9387-a0b3beb180d8}
+    key: ${NOTIFY_API_TESTING_KEY:testingApiKey}
   links:
     subscription-page-link: ${NOTIFY_LINK_SUBSCRIPTION_PAGE:https://pip-frontend.staging.platform.hmcts.net/otp-login-testing}
     start-page-link: ${NOTIFY_LINK_START_PAGE:https://pip-frontend.staging.platform.hmcts.net}
