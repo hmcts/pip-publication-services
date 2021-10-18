@@ -14,13 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestPropertySource(locations = "classpath:application.yaml")
 class EmailClientTest {
 
-    private static final String API_KEY = "7033ceaf-4fdf-4c72-84a8-d916762ddbeb";
+    private static final String MOCK_API_KEY = "testKeyFoundInKeyVault";
 
     @Autowired
     private EmailClient emailClient;
 
     @Test
     void testClientHasCorrectApiKey() {
-        assertEquals(API_KEY, emailClient.getApiKey(), "Keys should match");
+        assertEquals(MOCK_API_KEY, emailClient.getApiKey(), "Keys should match");
     }
 }
