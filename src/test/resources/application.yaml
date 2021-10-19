@@ -1,6 +1,6 @@
 notify:
   api:
-    key: ${NOTIFY_API_TESTING_KEY:mockTestKeyFoundInKeyVault}
+    key: ${NOTIFY_API_TESTING_KEY:testKeyFoundInNotifyKeys}
   links:
     subscription-page-link: https://pip-frontend.staging.platform.hmcts.net/otp-login-testing
     start-page-link: https://pip-frontend.staging.platform.hmcts.net
