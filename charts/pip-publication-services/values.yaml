@@ -9,6 +9,6 @@ java:
       resourceGroup: pip-sharedservices-{{ .Values.global.environment }}-rg
       usePodIdentity: true
       secrets:
-        - name: gov-uk-notify-api-testing-key
+        - name: gov-uk-notify-api-key
           alias: NOTIFY_API_KEY
   environment:
