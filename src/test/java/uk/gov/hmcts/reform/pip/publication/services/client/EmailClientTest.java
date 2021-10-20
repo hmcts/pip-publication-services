@@ -23,7 +23,7 @@ class EmailClientTest {
 
     @Test
     void testClientHasCorrectApiKey() {
-        log.warn("API KEY: " + mockApiKey)
+        log.warn("API KEY: " + mockApiKey);
         assertTrue(mockApiKey.contains(emailClient.getApiKey()), "Keys should match");
     }
 }
