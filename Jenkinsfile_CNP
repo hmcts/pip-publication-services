@@ -6,24 +6,27 @@ def type = "java"
 def product = "pip"
 def component = "publication-services"
 
-def apiTestSecrets = [ 'pip-shared-kv-${env}' :
-  [
+def apiSecrets = [ 'pip-shared-kv-${env}' : [
     secret('gov-uk-notify-api-testing-key', 'NOTIFY_API_TESTING_KEY')
   ]
 ]
 
-static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
-  [ $class: 'AzureKeyVaultSecret',
-    secretType: 'Secret',
-    name: secretName,
-    version: '',
-    envVariable: envVar
+static Map<String, Object> secret(String secretName, String envVariable) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   envVariable: envVariable
   ]
 }
 
 withPipeline(type, product, component) {
 
-  loadVaultSecrets(apiTestSecrets)
+  onPR {
+        loadVaultSecrets(apiSecrets)
+    }
+    onMaster {
+        loadVaultSecrets(apiSecrets)
+    }
   enableSlackNotifications('#pip-build-notices')
   enableAksStagingDeployment()
   disableLegacyDeployment()
