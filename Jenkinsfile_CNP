@@ -21,12 +21,7 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 
 withPipeline(type, product, component) {
 
-  onPR {
-        loadVaultSecrets(apiSecrets)
-    }
-    onMaster {
-        loadVaultSecrets(apiSecrets)
-    }
+  loadVaultSecrets(apiSecrets)
   enableSlackNotifications('#pip-build-notices')
   enableAksStagingDeployment()
   disableLegacyDeployment()
