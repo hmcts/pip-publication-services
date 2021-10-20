@@ -8,12 +8,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application.yaml")
 class EmailClientTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailClientTest.class);
 
     @Value("${notify.api.key}")
     private String mockApiKey;
@@ -23,7 +27,7 @@ class EmailClientTest {
 
     @Test
     void testClientHasCorrectApiKey() {
-        log.warn("API KEY: " + mockApiKey);
+        LOGGER.warn("API KEY: " + mockApiKey);
         assertTrue(mockApiKey.contains(emailClient.getApiKey()), "Keys should match");
     }
 }
