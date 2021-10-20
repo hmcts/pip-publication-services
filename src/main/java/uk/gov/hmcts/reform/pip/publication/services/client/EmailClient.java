@@ -20,6 +20,5 @@ public class EmailClient extends NotificationClient {
     @Autowired
     public EmailClient(@Value("${notify.api.key}") String apiKey) {
         super(apiKey);
-        log.warn("API KEY: " + apiKey);
     }
 }

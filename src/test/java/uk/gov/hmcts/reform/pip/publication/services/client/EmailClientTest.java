@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.pip.publication.services.client;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application.yaml")
 class EmailClientTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmailClientTest.class);
 
     @Value("${notify.api.key}")
     private String mockApiKey;
@@ -26,7 +23,6 @@ class EmailClientTest {
 
     @Test
     void testClientHasCorrectApiKey() {
-        LOGGER.warn("API KEY: " + mockApiKey);
         assertTrue(mockApiKey.contains(emailClient.getApiKey()), "Keys should match");
     }
 }

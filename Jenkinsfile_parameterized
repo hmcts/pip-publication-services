@@ -7,7 +7,7 @@ def product = "pip"
 def component = "publication-services"
 
 def apiSecrets = [ 'pip-shared-kv-${env}' : [
-    secret('gov-uk-notify-api-testing-key43', 'NOTIFY_API_KEY')
+    secret('gov-uk-notify-api-testing-key', 'NOTIFY_API_KEY')
   ]
 ]
 
