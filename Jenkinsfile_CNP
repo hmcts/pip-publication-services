@@ -23,11 +23,11 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline(type, product, component) {
 
+  onPR {
+    loadVaultSecrets(apiTestSecrets)
+  }
   enableSlackNotifications('#pip-build-notices')
   enableAksStagingDeployment()
   disableLegacyDeployment()
   enableApiGatewayTest()
-  onPR {
-    loadVaultSecrets(apiTestSecrets)
-  }
 }
