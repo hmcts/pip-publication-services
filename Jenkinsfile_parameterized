@@ -22,5 +22,5 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 withPipeline(type, product, component) {
     
   loadVaultSecrets(apiSecrets)
-  //enableSlackNotifications('#pip-build-notices') TODO: enable
+  enableSlackNotifications('#pip-build-notices')
 }
