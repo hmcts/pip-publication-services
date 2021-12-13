@@ -57,25 +57,4 @@
     <packageUrl regex="true">^pkg:maven/org.glassfish/jakarta.el@3.0.3</packageUrl>
     <cve>CVE-2021-28170</cve>
   </suppress>
-  <suppress>
-    <notes><![CDATA[
-   file name: tomcat-embed-core-9.0.53.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@9.0.53</packageUrl>
-    <cve>CVE-2021-42340</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-   file name: tomcat-embed-websocket-9.0.53.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@9.0.53</packageUrl>
-    <cve>CVE-2021-42340</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-    file name: spring-core-5.3.10.jar
-    ]]></notes>
-    <packageUrl regex="true">pkg:maven/org.springframework/spring-core@5.3.10</packageUrl>
-    <cve>CVE-2021-22096</cve>
-  </suppress>
 </suppressions>
