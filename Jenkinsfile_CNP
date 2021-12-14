@@ -6,7 +6,7 @@ def type = "java"
 def product = "pip"
 def component = "publication-services"
 
-def apiSecrets = [ 'pip-shared-kv-${env}' : [
+def apiSecrets = [ 'pip-ss-kv-${env}' : [
     secret('gov-uk-notify-api-testing-key', 'NOTIFY_API_KEY')
   ]
 ]
