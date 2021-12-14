@@ -5,9 +5,7 @@ java:
   image: 'sdshmctspublic.azurecr.io/pip/publication-services:latest'
   keyVaults:
     pip-ss-kv:
-      excludeEnvironmentSuffix: false
-      resourceGroup: pip-sharedservices-{{ .Values.global.environment }}-rg
-      usePodIdentity: true
+      resourceGroup: pip-ss-{{ .Values.global.environment }}-rg
       secrets:
         - name: gov-uk-notify-api-key
           alias: NOTIFY_API_KEY
