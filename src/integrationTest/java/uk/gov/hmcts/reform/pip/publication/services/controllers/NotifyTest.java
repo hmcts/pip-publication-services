@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.api;
+package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,15 +21,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@TestPropertySource(locations = "classpath:application.yaml")
 @AutoConfigureMockMvc
-class ApiTest {
+class NotifyTest {
 
     private static final String VALID_WELCOME_REQUEST_BODY_EXISTING =
         "{\"email\": \"test@email.com\", \"isExisting\": \"true\"}";
     private static final String VALID_WELCOME_REQUEST_BODY_NEW =
         "{\"email\": \"test@email.com\", \"isExisting\": \"false\"}";
     private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
+    private static final String URL = "/notify/welcome-email";
 
 
     @Autowired
@@ -45,7 +45,7 @@ class ApiTest {
 
     @Test
     void testValidPayloadReturnsSuccessExisting() throws Exception {
-        mockMvc.perform(post("/notify/welcome-email")
+        mockMvc.perform(post(URL)
                             .content(VALID_WELCOME_REQUEST_BODY_EXISTING)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -54,7 +54,7 @@ class ApiTest {
 
     @Test
     void testValidPayloadReturnsSuccessNew() throws Exception {
-        mockMvc.perform(post("/notify/welcome-email")
+        mockMvc.perform(post(URL)
                             .content(VALID_WELCOME_REQUEST_BODY_NEW)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -63,7 +63,7 @@ class ApiTest {
 
     @Test
     void testInvalidPayloadReturnsBadRequest() throws Exception {
-        mockMvc.perform(post("/notify/welcome-email")
+        mockMvc.perform(post(URL)
                             .content(INVALID_JSON_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
