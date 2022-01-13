@@ -6,22 +6,23 @@ def type = "java"
 def product = "pip"
 def component = "publication-services"
 
-
-
-static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
-  [ $class: 'AzureKeyVaultSecret',
-    secretType: 'Secret',
-    name: secretName,
-    version: '',
-    envVariable: envVar
+def apiSecrets = [ 'pip-ss-kv-${env}' : [
+    secret('gov-uk-notify-api-key', 'NOTIFY_API_KEY')
+  ]
+]
+static Map<String, Object> secret(String secretName, String envVariable) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   envVariable: envVariable
   ]
 }
 
 withPipeline(type, product, component) {
 
+  loadVaultSecrets(apiSecrets)
   enableSlackNotifications('#pip-build-notices')
   enableAksStagingDeployment()
   disableLegacyDeployment()
   enableApiGatewayTest()
-
 }
