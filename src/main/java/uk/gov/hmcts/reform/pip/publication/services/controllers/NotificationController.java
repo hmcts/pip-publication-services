@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.AadWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
@@ -42,6 +43,21 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "Welcome email successfully sent with referenceId %s",
             notificationService.handleWelcomeEmailRequest(body)
+        ));
+    }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "AAD welcome email successfully sent"),
+        @ApiResponse(code = 400, message = "BadPayloadException error message"),
+        @ApiResponse(code = 400, message = "NotifyException error message")
+    })
+    @ApiOperation(value="Send welcome email to new Azure Active Directory (AAD) user.")
+    @ApiImplicitParam(name = "body", example = "{email:'example@email.com'}")
+    @PostMapping("/aad-welcome-email")
+    public ResponseEntity<String> sendAadWelcomeEmail(@RequestBody AadWelcomeEmail body) {
+        return ResponseEntity.ok(String.format(
+            "AAD welcome email successfully sent with referenceId %s",
+            notificationService.azureNewUserEmailRequest(body)
         ));
     }
 }

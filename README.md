@@ -200,6 +200,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## API
 
+### Pre-requisites
+Devs will need to get the gov-uk-notify-api-key environment variable from the relevant keyvault before they are able to send emails.
+
 Publication services exposes restful api's to complete its tasks, these are:
   * `/notify/welcome-email` - POST request. This api takes in a body with the format
 
