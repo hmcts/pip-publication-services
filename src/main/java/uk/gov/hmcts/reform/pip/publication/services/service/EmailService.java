@@ -29,7 +29,7 @@ public class EmailService {
         + ".0/authorize?p=B2C_1_SignInUserFlow&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331&nonce=defaultNonce"
         + "&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn&scope=openid"
         + "&response_type=id_token&prompt=login";
-    private static final String AAD_RESET_PASSWORD_LINK = "https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft"
+    private static final String AAD_RESET_LINK = "https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft"
         + ".com/oauth2/v2.0/authorize?p=B2C_1_ResetTest&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331"
         + "&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn"
         + "&scope=openid&response_type=id_token&prompt=login";
@@ -70,7 +70,7 @@ public class EmailService {
         Map<String, String> personalisation = new ConcurrentHashMap<>();
         personalisation.put("surname", body.getSurname());
         personalisation.put("first_name", body.getForename());
-        personalisation.put("reset_password_link", AAD_RESET_PASSWORD_LINK);
+        personalisation.put("reset_password_link", AAD_RESET_LINK);
         personalisation.put("sign_in_page_link", AAD_SIGNIN_LINK);
         return personalisation;
     }
