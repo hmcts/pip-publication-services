@@ -25,8 +25,14 @@ public class EmailService {
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
+    private static final String AAD_SIGNIN_LINK = "https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft.com/oauth2/v2"
+        + ".0/authorize?p=B2C_1_SignInUserFlow&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331&nonce=defaultNonce"
+        + "&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn&scope=openid"
+        + "&response_type=id_token&prompt=login";
     private static final String AAD_RESET_PASSWORD_LINK = "https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft"
-        + ".com/oauth2/v2.0/authorize?p=B2C_1_ResetTest&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn&scope=openid&response_type=id_token&prompt=login";
+        + ".com/oauth2/v2.0/authorize?p=B2C_1_ResetTest&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331"
+        + "&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn"
+        + "&scope=openid&response_type=id_token&prompt=login";
     @Autowired
     NotifyConfigProperties notifyConfigProperties;
 
@@ -65,7 +71,7 @@ public class EmailService {
         personalisation.put("surname", body.getSurname());
         personalisation.put("first_name", body.getForename());
         personalisation.put("reset_password_link", AAD_RESET_PASSWORD_LINK);
-        personalisation.put("sign_in_page_link", AAD_RESET_PASSWORD_LINK);
+        personalisation.put("sign_in_page_link", AAD_SIGNIN_LINK);
         return personalisation;
     }
 
