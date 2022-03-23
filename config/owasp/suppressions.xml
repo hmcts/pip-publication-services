@@ -36,4 +36,11 @@
     <packageUrl regex="true">^pkg:maven/org.glassfish/jakarta.el@3.0.3</packageUrl>
     <cve>CVE-2021-28170</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+            jackson-databind-2.12.6.jar
+            ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.12.6</packageUrl>
+    <cve>CVE-2020-36518</cve>
+  </suppress>
 </suppressions>
