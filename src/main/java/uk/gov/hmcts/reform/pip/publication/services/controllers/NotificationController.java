@@ -51,8 +51,10 @@ public class NotificationController {
         @ApiResponse(code = 400, message = "BadPayloadException error message"),
         @ApiResponse(code = 400, message = "NotifyException error message")
     })
-    @ApiOperation(value="Send welcome email to new Azure Active Directory (AAD) user.")
-    @ApiImplicitParam(name = "body", example = "{email:'example@email.com'}")
+    @ApiOperation("Send welcome email to new Azure Active Directory (AAD) user.")
+    @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',"
+        + "\n forename: 'forename', \n"
+        + "surname: 'surname' \n}")
     @PostMapping("/aad-welcome-email")
     public ResponseEntity<String> sendAadWelcomeEmail(@RequestBody AadWelcomeEmail body) {
         return ResponseEntity.ok(String.format(
