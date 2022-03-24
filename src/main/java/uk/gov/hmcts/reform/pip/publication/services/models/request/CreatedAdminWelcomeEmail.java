@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Data
 @Value
-public class AadWelcomeEmail {
+public class CreatedAdminWelcomeEmail {
     String email;
     String forename;
     String surname;

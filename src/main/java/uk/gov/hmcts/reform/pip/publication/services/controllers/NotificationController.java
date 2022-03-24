@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.AadWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
@@ -55,8 +55,8 @@ public class NotificationController {
     @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',"
         + "\n forename: 'forename', \n"
         + "surname: 'surname' \n}")
-    @PostMapping("/aad-welcome-email")
-    public ResponseEntity<String> sendAadWelcomeEmail(@RequestBody AadWelcomeEmail body) {
+    @PostMapping("/created/admin")
+    public ResponseEntity<String> sendAadWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
         return ResponseEntity.ok(String.format(
             "AAD welcome email successfully sent with referenceId %s",
             notificationService.azureNewUserEmailRequest(body)

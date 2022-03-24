@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.AadWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
@@ -40,7 +40,7 @@ class EmailServiceTest {
     void setup() throws NotificationClientException {
         sendEmailResponse = mock(SendEmailResponse.class);
 
-        when(emailClient.sendEmail(eq(Templates.NEW_AZURE_USER_WELCOME_EMAIL.template), eq(INVALID_EMAIL), anyMap(),
+        when(emailClient.sendEmail(eq(Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template), eq(INVALID_EMAIL), anyMap(),
                                    anyString()
         ))
             .thenThrow(NotificationClientException.class);
@@ -68,7 +68,7 @@ class EmailServiceTest {
         ))
             .thenReturn(sendEmailResponse);
 
-        when(emailClient.sendEmail(eq(Templates.NEW_AZURE_USER_WELCOME_EMAIL.template), eq(EMAIL), anyMap(),
+        when(emailClient.sendEmail(eq(Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template), eq(EMAIL), anyMap(),
                                    anyString()
         ))
             .thenReturn(sendEmailResponse);
@@ -76,7 +76,7 @@ class EmailServiceTest {
 
     @Test
     void buildAadEmailReturnsSuccess() {
-        EmailToSend aadEmail = emailService.buildAadWelcomeEmail(new AadWelcomeEmail(
+        EmailToSend aadEmail = emailService.buildCreatedAdminWelcomeEmail(new CreatedAdminWelcomeEmail(
             EMAIL,
             "b",
             "c"
@@ -89,7 +89,10 @@ class EmailServiceTest {
     @Test
     void existingUserWelcomeValidEmailReturnsSuccess() {
         EmailToSend welcomeEmail =
-            emailService.buildWelcomeEmail(new WelcomeEmail(EMAIL, true));
+            emailService.buildWelcomeEmail(
+                new WelcomeEmail(EMAIL, true),
+                Templates.EXISTING_USER_WELCOME_EMAIL.template
+            );
         assertEquals(sendEmailResponse, emailService.sendEmail(welcomeEmail),
                      "Should return a SendEmailResponse"
         );
@@ -98,7 +101,7 @@ class EmailServiceTest {
     @Test
     void newUserWelcomeValidEmailReturnsSuccess() {
         EmailToSend welcomeEmail =
-            emailService.buildWelcomeEmail(new WelcomeEmail(EMAIL, false));
+            emailService.buildWelcomeEmail(new WelcomeEmail(EMAIL, false), Templates.NEW_USER_WELCOME_EMAIL.template);
         assertEquals(sendEmailResponse, emailService.sendEmail(welcomeEmail),
                      "Should return a SendEmailResponse"
         );
@@ -106,20 +109,26 @@ class EmailServiceTest {
 
     @Test
     void existingUserWelcomeInvalidEmailException() {
-        EmailToSend welcomeEmail = emailService.buildWelcomeEmail(new WelcomeEmail(INVALID_EMAIL, true));
+        EmailToSend welcomeEmail = emailService.buildWelcomeEmail(
+            new WelcomeEmail(INVALID_EMAIL, true),
+            Templates.EXISTING_USER_WELCOME_EMAIL.template
+        );
         assertThrows(NotifyException.class, () -> emailService.sendEmail(welcomeEmail));
     }
 
     @Test
     void newUserWelcomeInvalidEmailException() {
-        EmailToSend welcomeEmail = emailService.buildWelcomeEmail(new WelcomeEmail(INVALID_EMAIL, false));
+        EmailToSend welcomeEmail = emailService.buildWelcomeEmail(
+            new WelcomeEmail(INVALID_EMAIL, false),
+            Templates.NEW_USER_WELCOME_EMAIL.template
+        );
         assertThrows(NotifyException.class, () -> emailService.sendEmail(welcomeEmail));
     }
 
     @Test
     void newAadUserInvalidEmailException() {
-        EmailToSend aadEmail = emailService.buildAadWelcomeEmail(new AadWelcomeEmail(INVALID_EMAIL, "b",
-                                                                                     "c"));
+        EmailToSend aadEmail = emailService.buildCreatedAdminWelcomeEmail(new CreatedAdminWelcomeEmail(INVALID_EMAIL, "b",
+                                                                                                       "c"));
         assertThrows(NotifyException.class, () -> emailService.sendEmail(aadEmail));
     }
 }

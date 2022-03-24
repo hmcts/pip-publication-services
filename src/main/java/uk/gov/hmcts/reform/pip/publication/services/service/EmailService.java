@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.AadWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
@@ -25,19 +25,48 @@ public class EmailService {
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
-    private static final String AAD_SIGNIN_LINK = "https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft.com/oauth2/v2"
-        + ".0/authorize?p=B2C_1_SignInUserFlow&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331&nonce=defaultNonce"
-        + "&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn&scope=openid"
-        + "&response_type=id_token&prompt=login";
-    private static final String AAD_RESET_LINK = "https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft"
-        + ".com/oauth2/v2.0/authorize?p=B2C_1_ResetTest&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331"
-        + "&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn"
-        + "&scope=openid&response_type=id_token&prompt=login";
+    private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
+    private static final String AAD_RESET_LINK = "reset_password_link";
+    private static final String SURNAME = "surname";
+    private static final String FORENAME = "first_name";
+
     @Autowired
     NotifyConfigProperties notifyConfigProperties;
 
     @Autowired
     EmailClient emailClient;
+
+    protected Map<String, String> buildWelcomePersonalisation() {
+        Map<String, String> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
+        personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
+        personalisation.put(GOV_GUIDANCE_PAGE_LINK, notifyConfigProperties.getLinks().getGovGuidancePageLink());
+        return personalisation;
+    }
+
+    protected Map<String, String> buildAdminAccountPersonalisation(CreatedAdminWelcomeEmail body) {
+        Map<String, String> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(SURNAME, body.getSurname());
+        personalisation.put(FORENAME, body.getForename());
+        personalisation.put(AAD_RESET_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
+        personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadSignInPageLink());
+        return personalisation;
+    }
+
+    protected EmailToSend buildWelcomeEmail(WelcomeEmail body, String template) {
+        return generateEmail(body.getEmail(), template, buildWelcomePersonalisation());
+    }
+
+    protected EmailToSend buildCreatedAdminWelcomeEmail(CreatedAdminWelcomeEmail body) {
+        return generateEmail(body.getEmail(), Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template,
+                             buildAdminAccountPersonalisation(body)
+        );
+    }
+
+    public EmailToSend generateEmail(String email, String template, Map<String, String> personalisation) {
+        String referenceId = UUID.randomUUID().toString();
+        return new EmailToSend(email, template, personalisation, referenceId);
+    }
 
     public SendEmailResponse sendEmail(EmailToSend emailToSend) {
         try {
@@ -49,40 +78,5 @@ public class EmailService {
             log.warn("Failed to send email. Reference ID: {}. Reason:", emailToSend.getReferenceId(), e);
             throw new NotifyException(e.getMessage());
         }
-    }
-
-    protected EmailToSend buildWelcomeEmail(WelcomeEmail body) {
-        return generateEmail(body.getEmail(), body.isExisting()
-            ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
-            Templates.NEW_USER_WELCOME_EMAIL.template, buildWelcomePersonalisation());
-    }
-
-
-    protected Map<String, String> buildWelcomePersonalisation() {
-        Map<String, String> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
-        personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
-        personalisation.put(GOV_GUIDANCE_PAGE_LINK, notifyConfigProperties.getLinks().getGovGuidancePageLink());
-        return personalisation;
-    }
-
-    protected Map<String, String> buildAadPersonalisation(AadWelcomeEmail body) {
-        Map<String, String> personalisation = new ConcurrentHashMap<>();
-        personalisation.put("surname", body.getSurname());
-        personalisation.put("first_name", body.getForename());
-        personalisation.put("reset_password_link", AAD_RESET_LINK);
-        personalisation.put("sign_in_page_link", AAD_SIGNIN_LINK);
-        return personalisation;
-    }
-
-    protected EmailToSend buildAadWelcomeEmail(AadWelcomeEmail body) {
-        return generateEmail(body.getEmail(), Templates.NEW_AZURE_USER_WELCOME_EMAIL.template,
-                             buildAadPersonalisation(body)
-        );
-    }
-
-    public EmailToSend generateEmail(String email, String template, Map<String, String> personalisation) {
-        String referenceId = UUID.randomUUID().toString();
-        return new EmailToSend(email, template, personalisation, referenceId);
     }
 }

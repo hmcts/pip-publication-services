@@ -4,8 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.AadWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
 
 @Service
@@ -22,8 +23,8 @@ public class NotificationService {
      *             {email: 'example@email.com', isExisting: 'true'}
      */
     public String handleWelcomeEmailRequest(WelcomeEmail body) {
-        EmailToSend welcomeEmail = emailService.buildWelcomeEmail(body);
-        SendEmailResponse response = emailService.sendEmail(welcomeEmail);
+        SendEmailResponse response = emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting() ?
+            Templates.EXISTING_USER_WELCOME_EMAIL.template : Templates.NEW_USER_WELCOME_EMAIL.template));
         return response.getReference().orElse(null);
     }
 
@@ -33,8 +34,8 @@ public class NotificationService {
      * @param body JSONObject containing the email and forename/surname values e.g.
      *             {email: 'example@email.com', forename: 'foo', surname: 'bar'}
      */
-    public String azureNewUserEmailRequest(AadWelcomeEmail body) {
-        EmailToSend email = emailService.buildAadWelcomeEmail(body);
+    public String azureNewUserEmailRequest(CreatedAdminWelcomeEmail body) {
+        EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body);
         return emailService.sendEmail(email)
             .getReference().orElse(null);
     }

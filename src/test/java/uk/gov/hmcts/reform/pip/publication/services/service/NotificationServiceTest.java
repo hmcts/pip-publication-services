@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.AadWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
@@ -33,7 +33,7 @@ class NotificationServiceTest {
         "test@email.com", true);
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
         "test@email.com", false);
-    private static final AadWelcomeEmail VALID_BODY_AAD = new AadWelcomeEmail(
+    private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
         "test@email.com", "test_forename", "test_surname");
     static final String SUCCESS_REF_ID = "successRefId";
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
@@ -59,7 +59,7 @@ class NotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessExisting() {
-        when(emailService.buildWelcomeEmail(VALID_BODY_EXISTING))
+        when(emailService.buildWelcomeEmail(VALID_BODY_EXISTING, Templates.EXISTING_USER_WELCOME_EMAIL.template))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, notificationService.handleWelcomeEmailRequest(VALID_BODY_EXISTING),
                      "Existing user with valid JSON should return successful referenceId."
@@ -68,7 +68,7 @@ class NotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessNew() {
-        when(emailService.buildWelcomeEmail(VALID_BODY_NEW))
+        when(emailService.buildWelcomeEmail(VALID_BODY_NEW, Templates.NEW_USER_WELCOME_EMAIL.template))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, notificationService.handleWelcomeEmailRequest(VALID_BODY_NEW),
                      "Existing user with valid JSON should return successful referenceId."
@@ -77,7 +77,7 @@ class NotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessAzure() {
-        when(emailService.buildAadWelcomeEmail(VALID_BODY_AAD))
+        when(emailService.buildCreatedAdminWelcomeEmail(VALID_BODY_AAD))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, notificationService.azureNewUserEmailRequest(VALID_BODY_AAD),
                      "Azure user with valid JSON should return successful referenceId.");
