@@ -29,7 +29,6 @@ class NotifyTest {
         "{\"email\": \"test@email.com\", \"isExisting\": \"false\"}";
     private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
-    private static final String CREATED_ADMIN_WELCOME_EMAIL_URL = "/notify/created/admin";
 
     @Autowired
     private MockMvc mockMvc;

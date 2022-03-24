@@ -23,8 +23,8 @@ public class NotificationService {
      *             {email: 'example@email.com', isExisting: 'true'}
      */
     public String handleWelcomeEmailRequest(WelcomeEmail body) {
-        SendEmailResponse response = emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting() ?
-            Templates.EXISTING_USER_WELCOME_EMAIL.template : Templates.NEW_USER_WELCOME_EMAIL.template));
+        SendEmailResponse response = emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
+            ? Templates.EXISTING_USER_WELCOME_EMAIL.template : Templates.NEW_USER_WELCOME_EMAIL.template));
         return response.getReference().orElse(null);
     }
 

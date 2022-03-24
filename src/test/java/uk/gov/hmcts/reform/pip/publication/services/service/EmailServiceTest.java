@@ -127,8 +127,8 @@ class EmailServiceTest {
 
     @Test
     void newAadUserInvalidEmailException() {
-        EmailToSend aadEmail = emailService.buildCreatedAdminWelcomeEmail(new CreatedAdminWelcomeEmail(INVALID_EMAIL, "b",
-                                                                                                       "c"));
+        EmailToSend aadEmail = emailService.buildCreatedAdminWelcomeEmail(
+            new CreatedAdminWelcomeEmail(INVALID_EMAIL, "b", "c"));
         assertThrows(NotifyException.class, () -> emailService.sendEmail(aadEmail));
     }
 }
