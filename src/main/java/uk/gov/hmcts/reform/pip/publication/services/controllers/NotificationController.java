@@ -58,7 +58,7 @@ public class NotificationController {
     @PostMapping("/created/admin")
     public ResponseEntity<String> sendAadWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
         return ResponseEntity.ok(String.format(
-            "AAD welcome email successfully sent with referenceId %s",
+            "Admin created welcome email successfully sent with referenceId %s",
             notificationService.azureNewUserEmailRequest(body)
         ));
     }
