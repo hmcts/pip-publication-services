@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Not
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
-import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
@@ -57,8 +56,8 @@ public class EmailService {
         return generateEmail(body.getEmail(), template, buildWelcomePersonalisation());
     }
 
-    protected EmailToSend buildCreatedAdminWelcomeEmail(CreatedAdminWelcomeEmail body) {
-        return generateEmail(body.getEmail(), Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template,
+    protected EmailToSend buildCreatedAdminWelcomeEmail(CreatedAdminWelcomeEmail body, String template) {
+        return generateEmail(body.getEmail(), template,
                              buildAdminAccountPersonalisation(body)
         );
     }

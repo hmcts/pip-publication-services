@@ -77,7 +77,8 @@ class NotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessAzure() {
-        when(emailService.buildCreatedAdminWelcomeEmail(VALID_BODY_AAD))
+        when(emailService.buildCreatedAdminWelcomeEmail(VALID_BODY_AAD,
+                                                        Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, notificationService.azureNewUserEmailRequest(VALID_BODY_AAD),
                      "Azure user with valid JSON should return successful referenceId.");

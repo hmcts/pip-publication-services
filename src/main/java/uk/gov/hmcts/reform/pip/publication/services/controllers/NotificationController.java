@@ -47,7 +47,7 @@ public class NotificationController {
     }
 
     @ApiResponses({
-        @ApiResponse(code = 200, message = "AAD welcome email successfully sent"),
+        @ApiResponse(code = 200, message = "Created admin welcome email successfully sent with referenceId {Id}"),
         @ApiResponse(code = 400, message = "BadPayloadException error message"),
         @ApiResponse(code = 400, message = "NotifyException error message")
     })
@@ -56,9 +56,9 @@ public class NotificationController {
         + "\n forename: 'forename', \n"
         + "surname: 'surname' \n}")
     @PostMapping("/created/admin")
-    public ResponseEntity<String> sendAadWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
+    public ResponseEntity<String> sendAdminAccountWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
         return ResponseEntity.ok(String.format(
-            "Admin created welcome email successfully sent with referenceId %s",
+            "Created admin welcome email successfully sent with referenceId %s",
             notificationService.azureNewUserEmailRequest(body)
         ));
     }

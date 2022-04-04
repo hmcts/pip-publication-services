@@ -35,7 +35,8 @@ public class NotificationService {
      *             {email: 'example@email.com', forename: 'foo', surname: 'bar'}
      */
     public String azureNewUserEmailRequest(CreatedAdminWelcomeEmail body) {
-        EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body);
+        EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body,
+                                                                       Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
         return emailService.sendEmail(email)
             .getReference().orElse(null);
     }

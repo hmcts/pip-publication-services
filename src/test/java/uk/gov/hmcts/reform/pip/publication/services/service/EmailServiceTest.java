@@ -77,10 +77,7 @@ class EmailServiceTest {
     @Test
     void buildAadEmailReturnsSuccess() {
         EmailToSend aadEmail = emailService.buildCreatedAdminWelcomeEmail(new CreatedAdminWelcomeEmail(
-            EMAIL,
-            "b",
-            "c"
-        ));
+            EMAIL, "b", "c"), Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
         assertEquals(sendEmailResponse, emailService.sendEmail(aadEmail),
                      "Should return a SendEmailResponse"
         );
@@ -128,7 +125,8 @@ class EmailServiceTest {
     @Test
     void newAadUserInvalidEmailException() {
         EmailToSend aadEmail = emailService.buildCreatedAdminWelcomeEmail(
-            new CreatedAdminWelcomeEmail(INVALID_EMAIL, "b", "c"));
+            new CreatedAdminWelcomeEmail(INVALID_EMAIL, "b", "c"),
+            Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
         assertThrows(NotifyException.class, () -> emailService.sendEmail(aadEmail));
     }
 }
