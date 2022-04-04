@@ -76,8 +76,8 @@ class NotifyTest {
                             .content(VALID_ADMIN_CREATION_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Admin created welcome email successfully sent with "
-                                                           + "referenceId")));
+            .andExpect(content().string(containsString(
+                "Created admin welcome email successfully sent with referenceId")));
     }
 
     @Test
