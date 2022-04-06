@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
-import uk.gov.service.notify.SendEmailResponse;
 
 @Service
 @Slf4j
@@ -23,9 +22,9 @@ public class NotificationService {
      *             {email: 'example@email.com', isExisting: 'true'}
      */
     public String handleWelcomeEmailRequest(WelcomeEmail body) {
-        SendEmailResponse response = emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
-            ? Templates.EXISTING_USER_WELCOME_EMAIL.template : Templates.NEW_USER_WELCOME_EMAIL.template));
-        return response.getReference().orElse(null);
+        return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
+            ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
+            Templates.NEW_USER_WELCOME_EMAIL.template)).getReference().orElse(null);
     }
 
     /**
