@@ -13,6 +13,15 @@ management:
 
 #If you use a database then uncomment below lines and update db properties accordingly
 spring:
+  cloud:
+    azure:
+      active-directory:
+        enabled: true
+        profile:
+          tenant-id: ${TENANT_ID}
+        credential:
+          client-id: ${CLIENT_ID}
+        app-id-uri: ${APP_URI}
   config:
     import: "optional:configtree:/mnt/secrets/pip-ss-kv/"
   application:

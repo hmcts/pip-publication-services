@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
 @RestController
 @Api(tags = "Publication Services notification API")
 @RequestMapping("/notify")
+@IsAdmin
 public class NotificationController {
 
     @Autowired
@@ -32,7 +34,8 @@ public class NotificationController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "Welcome email successfully sent with referenceId abc123-123-432-4456"),
         @ApiResponse(code = 400, message = "BadPayloadException error message"),
-        @ApiResponse(code = 400, message = "NotifyException error message")
+        @ApiResponse(code = 400, message = "NotifyException error message"),
+        @ApiResponse(code = 403, message = "User has not been authorized"),
     })
     @ApiOperation(value = "Send welcome email to new or existing subscribed users",
         notes = "Use the bool isExisting as 'false' to send new user emails or 'true' to send existing user emails ")
