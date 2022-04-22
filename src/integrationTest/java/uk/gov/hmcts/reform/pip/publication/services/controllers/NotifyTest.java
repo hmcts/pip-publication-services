@@ -10,7 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,7 +35,7 @@ class NotifyTest {
     void testValidPayloadReturnsSuccessExisting() throws Exception {
         mockMvc.perform(post(URL)
                             .content(VALID_WELCOME_REQUEST_BODY_EXISTING)
-                            .contentType(MediaType.APPLICATION_JSON).with(csrf()))
+                            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
     }
@@ -45,7 +44,7 @@ class NotifyTest {
     void testValidPayloadReturnsSuccessNew() throws Exception {
         mockMvc.perform(post(URL)
                             .content(VALID_WELCOME_REQUEST_BODY_NEW)
-                            .contentType(MediaType.APPLICATION_JSON).with(csrf()))
+                            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
     }
@@ -54,7 +53,7 @@ class NotifyTest {
     void testInvalidPayloadReturnsBadRequest() throws Exception {
         mockMvc.perform(post(URL)
                             .content(INVALID_JSON_BODY)
-                            .contentType(MediaType.APPLICATION_JSON).with(csrf()))
+                            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
 
