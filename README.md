@@ -17,7 +17,7 @@ It contains:
  * Hystrix circuit breaker enabled
  * MIT license and contribution information
  * Helm chart using chart-java.
- * Jenkins deployment
+ * Jenkins deployment.
 
 The application exposes health endpoint (http://localhost:8081/health) and metrics endpoint
 (http://localhost:8081/metrics).
