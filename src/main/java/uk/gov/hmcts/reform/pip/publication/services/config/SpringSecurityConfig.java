@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@SuppressWarnings("java:S4502")
 public class SpringSecurityConfig extends AadResourceServerWebSecurityConfigurerAdapter {
 
     /**
