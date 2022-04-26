@@ -17,7 +17,7 @@ It contains:
  * Hystrix circuit breaker enabled
  * MIT license and contribution information
  * Helm chart using chart-java.
- * Jenkins deployment
+ * Jenkins deployment.
 
 The application exposes health endpoint (http://localhost:8081/health) and metrics endpoint
 (http://localhost:8081/metrics).
@@ -199,6 +199,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 ## API
+
+### Pre-requisites
+Devs will need to get the gov-uk-notify-api-key environment variable from the relevant keyvault before they are able to send emails.
 
 Publication services exposes restful api's to complete its tasks, these are:
   * `/notify/welcome-email` - POST request. This api takes in a body with the format

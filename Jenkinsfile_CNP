@@ -6,10 +6,17 @@ def type = "java"
 def product = "pip"
 def component = "publication-services"
 
-def apiSecrets = [ 'pip-ss-kv-${env}' : [
-    secret('gov-uk-notify-api-key', 'NOTIFY_API_KEY')
-  ]
-]
+def setupTestSecrets() {
+  def bootstap_env = env.ENV == "prod" || env.ENV == "demo" || env.ENV == "sbox" ? env.ENV : "stg"
+  azureKeyVault(
+    keyVaultURL: "https://pip-bootstrap-${bootstap_env}-kv.vault.azure.net/",
+    secrets: [
+      secret('gov-uk-notify-test-api-key', 'NOTIFY_API_KEY')
+    ]) {
+    env.NOTIFY_API_KEY = "${NOTIFY_API_KEY}"
+  }
+}
+
 static Map<String, Object> secret(String secretName, String envVariable) {
   [$class     : 'AzureKeyVaultSecret',
    secretType : 'Secret',
@@ -20,7 +27,24 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 
 withPipeline(type, product, component) {
 
-  loadVaultSecrets(apiSecrets)
+//  loadVaultSecrets(apiSecrets)
+
+  onMaster() {
+    env.ENV = 'stg'
+  }
+  onPR() {
+    env.ENV = 'dev'
+  }
+  onDemo {
+    env.ENV = 'demo'
+  }
+  onPerftest {
+    env.ENV = 'perftest'
+  }
+  onIthc {
+    env.ENV = 'ithc'
+  }
+  setupTestSecrets()
   enableSlackNotifications('#pip-build-notices')
   enableAksStagingDeployment()
   disableLegacyDeployment()

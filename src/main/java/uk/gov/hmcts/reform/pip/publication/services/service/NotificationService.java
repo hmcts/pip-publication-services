@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
@@ -20,8 +22,21 @@ public class NotificationService {
      *             {email: 'example@email.com', isExisting: 'true'}
      */
     public String handleWelcomeEmailRequest(WelcomeEmail body) {
-        return emailService.buildEmail(body.getEmail(), body.isExisting()
+        return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
             ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
-            Templates.NEW_USER_WELCOME_EMAIL.template).getReference().orElse(null);
+            Templates.NEW_USER_WELCOME_EMAIL.template)).getReference().orElse(null);
+    }
+
+    /**
+     * Handles the incoming request for AAD welcome emails, checks the json payload and builds and sends the email.
+     *
+     * @param body JSONObject containing the email and forename/surname values e.g.
+     *             {email: 'example@email.com', forename: 'foo', surname: 'bar'}
+     */
+    public String azureNewUserEmailRequest(CreatedAdminWelcomeEmail body) {
+        EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body,
+                                                                       Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
+        return emailService.sendEmail(email)
+            .getReference().orElse(null);
     }
 }

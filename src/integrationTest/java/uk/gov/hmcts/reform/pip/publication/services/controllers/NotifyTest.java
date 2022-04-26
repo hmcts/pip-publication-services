@@ -27,8 +27,11 @@ class NotifyTest {
         "{\"email\": \"test@email.com\", \"isExisting\": \"true\"}";
     private static final String VALID_WELCOME_REQUEST_BODY_NEW =
         "{\"email\": \"test@email.com\", \"isExisting\": \"false\"}";
+    private static final String VALID_ADMIN_CREATION_REQUEST_BODY =
+        "{\"email\": \"test@email.com\", \"surname\": \"surname\", \"forename\": \"forename\"}";
     private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
-    private static final String URL = "/notify/welcome-email";
+    private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
+    private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,7 +46,7 @@ class NotifyTest {
 
     @Test
     void testValidPayloadReturnsSuccessExisting() throws Exception {
-        mockMvc.perform(post(URL)
+        mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(VALID_WELCOME_REQUEST_BODY_EXISTING)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -52,7 +55,7 @@ class NotifyTest {
 
     @Test
     void testValidPayloadReturnsSuccessNew() throws Exception {
-        mockMvc.perform(post(URL)
+        mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(VALID_WELCOME_REQUEST_BODY_NEW)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -61,7 +64,25 @@ class NotifyTest {
 
     @Test
     void testInvalidPayloadReturnsBadRequest() throws Exception {
-        mockMvc.perform(post(URL)
+        mockMvc.perform(post(WELCOME_EMAIL_URL)
+                            .content(INVALID_JSON_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidPayloadReturnsSuccessAdminCreation() throws Exception {
+        mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
+                            .content(VALID_ADMIN_CREATION_REQUEST_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Created admin welcome email successfully sent with referenceId")));
+    }
+
+    @Test
+    void testInvalidPayloadReturnsBadRequestAdminCreation() throws Exception {
+        mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
                             .content(INVALID_JSON_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
