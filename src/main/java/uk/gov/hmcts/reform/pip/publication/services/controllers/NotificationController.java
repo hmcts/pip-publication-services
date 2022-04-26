@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
@@ -45,6 +46,23 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "Welcome email successfully sent with referenceId %s",
             notificationService.handleWelcomeEmailRequest(body)
+        ));
+    }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Created admin welcome email successfully sent with referenceId {Id}"),
+        @ApiResponse(code = 400, message = "BadPayloadException error message"),
+        @ApiResponse(code = 400, message = "NotifyException error message")
+    })
+    @ApiOperation("Send welcome email to new Azure Active Directory (AAD) user.")
+    @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',"
+        + "\n forename: 'forename', \n"
+        + "surname: 'surname' \n}")
+    @PostMapping("/created/admin")
+    public ResponseEntity<String> sendAdminAccountWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
+        return ResponseEntity.ok(String.format(
+            "Created admin welcome email successfully sent with referenceId %s",
+            notificationService.azureNewUserEmailRequest(body)
         ));
     }
 }

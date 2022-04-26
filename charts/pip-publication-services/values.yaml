@@ -16,3 +16,4 @@ java:
         - name: app-pip-publication-services-stg-api-id
           alias: APP_URI
   environment:
+
