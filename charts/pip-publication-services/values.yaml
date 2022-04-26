@@ -11,8 +11,6 @@ java:
           alias: NOTIFY_API_KEY
         - name: app-pip-publication-services-stg-id
           alias: CLIENT_ID
-        - name: app-pip-publication-services-stg-pwd
-          alias: CLIENT_SECRET
         - name: app-tenant-id
           alias: TENANT_ID
         - name: app-pip-publication-services-stg-api-id
