@@ -9,11 +9,11 @@ java:
       secrets:
         - name: gov-uk-notify-api-key
           alias: NOTIFY_API_KEY
-        - name: app-pip-publication-services-stg-id
+        - name: app-pip-publication-services-id
           alias: CLIENT_ID
         - name: app-tenant-id
           alias: TENANT_ID
-        - name: app-pip-publication-services-stg-api-id
+        - name: app-pip-publication-services-scope
           alias: APP_URI
   environment:
 
