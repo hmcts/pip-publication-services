@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
@@ -14,6 +16,9 @@ public class NotificationService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private DataManagementService dataManagementService;
 
     /**
      * Handles the incoming request for welcome emails, checks the json payload and builds and sends the email.
@@ -37,6 +42,18 @@ public class NotificationService {
         EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body,
                                                                        Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
         return emailService.sendEmail(email)
+            .getReference().orElse(null);
+    }
+
+    public String subscriptionEmailRequest(SubscriptionEmail body) {
+        Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
+        if (artefact.getIsFlatFile()) {
+            return emailService.sendEmail(emailService
+                                              .buildFlatFileSubscriptionEmail(body, Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
+                .getReference().orElse(null);
+        }
+        return emailService.sendEmail(emailService
+                                          .buildRawDataSubscriptionEmail(body, Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template))
             .getReference().orElse(null);
     }
 }

@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotifyException.class)
     public ResponseEntity<ExceptionResponse> handle(NotifyException ex) {
 
-        log.error(String.format("NotifyException was thrown with the init cause: %s", ex.getCause()));
+        log.error(String.format("NotifyException was thrown with the init cause: %s", ex.getMessage()));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());

@@ -7,14 +7,17 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
+import javax.validation.Valid;
 
 @RestController
 @Api(tags = "Publication Services notification API")
@@ -64,5 +67,20 @@ public class NotificationController {
             "Created admin welcome email successfully sent with referenceId %s",
             notificationService.azureNewUserEmailRequest(body)
         ));
+    }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message =
+            "Subscription email successfully sent to email: {recipientEmail} with reference id: {reference id}"),
+        @ApiResponse(code = 400, message = "BadPayloadException error message"),
+        @ApiResponse(code = 400, message = "NotifyException error message")
+    })
+    @ApiImplicitParam(name = "body", example = "")
+    @ApiOperation("Send subscription email to user")
+    @PostMapping("/subscription")
+    public ResponseEntity<String> sendSubscriptionEmail(@RequestBody SubscriptionEmail body) {
+        return ResponseEntity.ok(String.format(
+            "Subscription email successfully sent to email: %s with reference id: %s", body.getEmail(),
+            notificationService.subscriptionEmailRequest(body)));
     }
 }
