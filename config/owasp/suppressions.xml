@@ -97,4 +97,9 @@
     <packageUrl regex="true">^pkg:maven/org.springframework.security/spring-security-core@5.5.6</packageUrl>
     <vulnerabilityName>CWE-862: Missing Authorization</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes>Netty vulnerability, effects Java 6 and under</notes>
+    <packageUrl regex="true">^pkg:maven/io.netty/netty-.*@4.1.76.Final</packageUrl>
+    <cve>CVE-2022-24823</cve>
+  </suppress>
 </suppressions>
