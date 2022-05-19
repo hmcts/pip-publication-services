@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
 @ActiveProfiles("test")
-public class DataManagementServiceTest {
+class DataManagementServiceTest {
 
     private static MockWebServer mockPublicationServicesEndpoint;
 
@@ -65,7 +65,8 @@ public class DataManagementServiceTest {
 
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        NotifyException notifyException = assertThrows(NotifyException.class, () -> dataManagementService.getArtefact(uuid),
+        NotifyException notifyException = assertThrows(NotifyException.class, () ->
+                                                           dataManagementService.getArtefact(uuid),
                      "Expected exception has not been thrown");
 
         assertTrue(notifyException.getMessage().contains("404"),
@@ -92,7 +93,8 @@ public class DataManagementServiceTest {
 
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        NotifyException notifyException = assertThrows(NotifyException.class, () -> dataManagementService.getLocation(locationId),
+        NotifyException notifyException = assertThrows(NotifyException.class, () ->
+                                                           dataManagementService.getLocation(locationId),
                                                        "Expected exception has not been thrown");
 
         assertTrue(notifyException.getMessage().contains("404"),
@@ -111,8 +113,8 @@ public class DataManagementServiceTest {
                                                     .setResponseCode(200));
 
         byte[] returnedContent = dataManagementService.getArtefactFlatFile(artefactId);
-        assertEquals(responseBody, new String(returnedContent), "Returned file content does" +
-            " not match expected file content");
+        assertEquals(responseBody, new String(returnedContent), "Returned file content does"
+            + " not match expected file content");
     }
 
     @Test
@@ -121,7 +123,8 @@ public class DataManagementServiceTest {
 
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        NotifyException notifyException = assertThrows(NotifyException.class, () -> dataManagementService.getArtefactFlatFile(uuid),
+        NotifyException notifyException = assertThrows(NotifyException.class, () ->
+                                                           dataManagementService.getArtefactFlatFile(uuid),
                                                        "Expected exception has not been thrown");
 
         assertTrue(notifyException.getMessage().contains("404"),

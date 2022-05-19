@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.pip.publication.services.models;
 
 import lombok.Value;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 /**

@@ -15,11 +15,11 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,7 +49,7 @@ class NotificationServiceTest {
                                                                              SUCCESS_REF_ID
     );
 
-    private Map<SubscriptionTypes, List<String>> subscriptions = new HashMap<>();
+    private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
 
     @Mock
     private SendEmailResponse sendEmailResponse;

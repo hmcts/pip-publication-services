@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.models.external;
 
 import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;

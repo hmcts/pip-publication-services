@@ -46,7 +46,7 @@ public class NotificationService {
     }
 
     /**
-     * This method handles the sending of the subscription email, and forwarding on to the relevant email client
+     * This method handles the sending of the subscription email, and forwarding on to the relevant email client.
      * @param body The subscription message that is to be fulfilled.
      * @return The ID that references the subscription message.
      */
@@ -59,7 +59,8 @@ public class NotificationService {
                 .getReference().orElse(null);
         } else {
             //TODO: Update once JSON generation has been completed to call the Non-Flat-File email.
-            throw new UnsupportedOperationException("Subscription service does not currently support publications for JSON payloads");
+            throw new UnsupportedOperationException(
+                "Subscription service does not currently support publications for JSON payloads");
         }
     }
 }

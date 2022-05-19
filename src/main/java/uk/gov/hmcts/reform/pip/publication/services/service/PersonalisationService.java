@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 @Slf4j
+@SuppressWarnings({"PMD.PreserveStackTrace"})
 public class PersonalisationService {
 
     @Autowired
@@ -59,7 +60,7 @@ public class PersonalisationService {
     }
 
     /**
-     * Handles the personalisation for the admin account email
+     * Handles the personalisation for the admin account email.
      * @param body The body of the admin email.
      * @return The personalisation map for the admin account email.
      */
@@ -73,7 +74,7 @@ public class PersonalisationService {
     }
 
     /**
-     * Handles the personalisation for the raw data subscription email
+     * Handles the personalisation for the raw data subscription email.
      * @param body The body of the subscription.
      * @param artefact The artefact to send in the subscription.
      * @return The personalisation map for the raw data subscription email.
@@ -102,7 +103,7 @@ public class PersonalisationService {
     }
 
     /**
-     * Handles the personalisation for the flat file subscription email
+     * Handles the personalisation for the flat file subscription email.
      * @param body The body of the subscription.
      * @param artefact The artefact to send in the subscription.
      * @return The personalisation map for the flat file subscription email.
@@ -129,23 +130,23 @@ public class PersonalisationService {
 
     private void populateGenericPersonalisation(Map<String, Object> personalisation, String display,
                                          String displayValue, List<String> content) {
-        if (content != null && content.size() > 0) {
-            personalisation.put(display, YES);
-            personalisation.put(displayValue, content);
-        } else {
+        if (content == null || content.isEmpty()) {
             personalisation.put(display, NO);
             personalisation.put(displayValue, "");
+        } else {
+            personalisation.put(display, YES);
+            personalisation.put(displayValue, content);
         }
     }
 
     private void populateLocationPersonalisation(Map<String, Object> personalisation, List<String> content) {
-        if (content != null && content.size() > 0) {
+        if (content == null || content.isEmpty()) {
+            personalisation.put(DISPLAY_LOCATIONS, NO);
+            personalisation.put(LOCATIONS, "");
+        } else {
             Location subLocation = dataManagementService.getLocation(content.get(0));
             personalisation.put(DISPLAY_LOCATIONS, YES);
             personalisation.put(LOCATIONS, subLocation.getName());
-        } else {
-            personalisation.put(DISPLAY_LOCATIONS, NO);
-            personalisation.put(LOCATIONS, "");
         }
     }
 

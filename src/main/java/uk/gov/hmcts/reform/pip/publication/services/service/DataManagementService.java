@@ -11,11 +11,11 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Not
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
 @Service
+@SuppressWarnings({"PMD.PreserveStackTrace"})
 public class DataManagementService {
 
     @Value("${service-to-service.data-management}")

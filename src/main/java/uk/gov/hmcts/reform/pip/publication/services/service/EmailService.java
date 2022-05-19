@@ -4,24 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
-import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Slf4j
@@ -45,13 +38,15 @@ public class EmailService {
 
     protected EmailToSend buildFlatFileSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
                                                          String template) {
-        return generateEmail(body.getEmail(), template, personalisationService.buildFlatFileSubscriptionPersonalisation(body, artefact));
+        return generateEmail(body.getEmail(), template,
+                             personalisationService.buildFlatFileSubscriptionPersonalisation(body, artefact));
     }
 
     //TODO: This method is provided as a placeholder for now, and will be updated once JSON tickets have been played
     protected EmailToSend buildRawDataSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
                                                         String template) {
-        return generateEmail(body.getEmail(), template, personalisationService.buildRawDataSubscriptionPersonalisation(body, artefact));
+        return generateEmail(body.getEmail(), template,
+                             personalisationService.buildRawDataSubscriptionPersonalisation(body, artefact));
 
     }
 

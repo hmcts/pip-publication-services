@@ -17,10 +17,10 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminW
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class PersonalisationServiceTest {
+class PersonalisationServiceTest {
 
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String START_PAGE_LINK = "start_page_link";
@@ -45,6 +45,10 @@ public class PersonalisationServiceTest {
     private static final String DISPLAY_LOCATIONS = "display_locations";
     private static final String YES = "Yes";
     private static final String NO = "No";
+    private static final String EMAIL = "a@b.com";
+    private static final String CASE_URN_VALUE = "1234";
+    private static final String CASE_NUMBER_VALUE = "12345678";
+    private static final String LOCATION_ID = "12345";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -56,14 +60,13 @@ public class PersonalisationServiceTest {
     DataManagementService dataManagementService;
 
     private static Location location;
-    private UUID artefactId = UUID.randomUUID();
+    private final UUID artefactId = UUID.randomUUID();
 
     @BeforeAll
-    private static void setup() {
+    public static void setup() {
         location = new Location();
         location.setName("Location Name");
     }
-
 
     @Test
     void testBuildWelcomePersonalisation() {
@@ -88,10 +91,8 @@ public class PersonalisationServiceTest {
 
     @Test
     void testBuildAdminAccountPersonalisation() {
-        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
-
         CreatedAdminWelcomeEmail createdAdminWelcomeEmail =
-            new CreatedAdminWelcomeEmail("a@b.com", "firstname", "surname");
+            new CreatedAdminWelcomeEmail(EMAIL, "firstname", "surname");
 
         Map<String, Object> personalisation =
             personalisationService.buildAdminAccountPersonalisation(createdAdminWelcomeEmail);
@@ -106,6 +107,8 @@ public class PersonalisationServiceTest {
         assertEquals(createdAdminWelcomeEmail.getForename(), forename,
                      "Forename does not match expected forename");
 
+        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+
         Object aadResetLink = personalisation.get(AAD_RESET_LINK);
         assertNotNull(aadResetLink, "No aad reset link key found");
         assertEquals(personalisationLinks.getAadPwResetLink(), aadResetLink,
@@ -119,14 +122,13 @@ public class PersonalisationServiceTest {
 
     @Test
     void buildRawDataWhenAllPresent() {
-        String locationId = "12345";
-        Map<SubscriptionTypes, List<String>> subscriptions = new HashMap<>();
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
-        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of("1234"));
-        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(locationId));
+        Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
+        subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
+        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
+        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-        subscriptionEmail.setEmail("a@b.com");
+        subscriptionEmail.setEmail(EMAIL);
         subscriptionEmail.setArtefactId(artefactId);
         subscriptionEmail.setSubscriptions(subscriptions);
 
@@ -134,7 +136,7 @@ public class PersonalisationServiceTest {
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
-        when(dataManagementService.getLocation(locationId)).thenReturn(location);
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
@@ -158,16 +160,13 @@ public class PersonalisationServiceTest {
 
     @Test
     void buildFlatFileWhenAllPresent() {
-        String locationId = "12345";
-        byte[] fileContents = "Contents".getBytes();
-
-        Map<SubscriptionTypes, List<String>> subscriptions = new HashMap<>();
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
-        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of("1234"));
-        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(locationId));
+        Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
+        subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
+        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
+        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-        subscriptionEmail.setEmail("a@b.com");
+        subscriptionEmail.setEmail(EMAIL);
         subscriptionEmail.setArtefactId(artefactId);
         subscriptionEmail.setSubscriptions(subscriptions);
 
@@ -175,7 +174,9 @@ public class PersonalisationServiceTest {
         artefact.setArtefactId(artefactId);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
-        when(dataManagementService.getLocation(locationId)).thenReturn(location);
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+
+        byte[] fileContents = "Contents".getBytes();
         when(dataManagementService.getArtefactFlatFile(artefactId)).thenReturn(fileContents);
 
         Map<String, Object> personalisation =
@@ -192,16 +193,13 @@ public class PersonalisationServiceTest {
 
     @Test
     void buildFlatFileWhenUploadCreationFailed() {
-        String locationId = "12345";
-        byte[] overSizeArray = new byte[2100000];
-
-        Map<SubscriptionTypes, List<String>> subscriptions = new HashMap<>();
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
-        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of("1234"));
-        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(locationId));
+        Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
+        subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
+        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
+        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-        subscriptionEmail.setEmail("a@b.com");
+        subscriptionEmail.setEmail(EMAIL);
         subscriptionEmail.setArtefactId(artefactId);
         subscriptionEmail.setSubscriptions(subscriptions);
 
@@ -209,7 +207,9 @@ public class PersonalisationServiceTest {
         artefact.setArtefactId(artefactId);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
-        when(dataManagementService.getLocation(locationId)).thenReturn(location);
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+
+        byte[] overSizeArray = new byte[2_100_000];
         when(dataManagementService.getArtefactFlatFile(artefactId)).thenReturn(overSizeArray);
 
         assertThrows(NotifyException.class, () ->
@@ -218,12 +218,12 @@ public class PersonalisationServiceTest {
 
     @Test
     void testLocationMissing() {
-        Map<SubscriptionTypes, List<String>> subscriptions = new HashMap<>();
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
-        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of("1234"));
+        Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
+        subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
+        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-        subscriptionEmail.setEmail("a@b.com");
+        subscriptionEmail.setEmail(EMAIL);
         subscriptionEmail.setArtefactId(UUID.randomUUID());
         subscriptionEmail.setSubscriptions(subscriptions);
 
@@ -241,13 +241,12 @@ public class PersonalisationServiceTest {
 
     @Test
     void testNonLocationMissing() {
-        String locationId = "12345";
-        Map<SubscriptionTypes, List<String>> subscriptions = new HashMap<>();
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
-        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(locationId));
+        Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
+        subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN));
+        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-        subscriptionEmail.setEmail("a@b.com");
+        subscriptionEmail.setEmail(EMAIL);
         subscriptionEmail.setArtefactId(UUID.randomUUID());
         subscriptionEmail.setSubscriptions(subscriptions);
 
@@ -255,7 +254,7 @@ public class PersonalisationServiceTest {
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
-        when(dataManagementService.getLocation(locationId)).thenReturn(location);
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
