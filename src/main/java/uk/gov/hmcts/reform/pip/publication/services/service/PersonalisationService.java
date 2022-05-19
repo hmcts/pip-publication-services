@@ -46,7 +46,6 @@ public class PersonalisationService {
     private static final String YES = "Yes";
     private static final String NO = "No";
 
-
     /**
      * Handles the personalisation for the Welcome email.
      * @return The personalisation map for the welcome email.
@@ -84,19 +83,16 @@ public class PersonalisationService {
     public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body,
                                                                         Artefact artefact) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        body.getSubscriptions().forEach((key, value) -> {
-            switch (key) {
-                case CASE_NUMBER:
-                    populateGenericPersonalisation(personalisation, DISPLAY_CASE_NUMBERS, CASE_NUMBERS, value);
-                    break;
-                case CASE_URN:
-                    populateGenericPersonalisation(personalisation, DISPLAY_CASE_URN, CASE_URN, value);
-                    break;
-                case LOCATION_ID:
-                    populateLocationPersonalisation(personalisation, value);
-                    break;
-            }
-        });
+
+        Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
+
+        populateGenericPersonalisation(personalisation, DISPLAY_CASE_NUMBERS, CASE_NUMBERS,
+                                        subscriptions.get(SubscriptionTypes.CASE_NUMBER));
+
+        populateGenericPersonalisation(personalisation, DISPLAY_CASE_URN, CASE_URN,
+                                       subscriptions.get(SubscriptionTypes.CASE_URN));
+
+        populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
         personalisation.put("list_type", artefact.getListType());
         personalisation.put("link_to_file", "<Placeholder>");
@@ -133,7 +129,7 @@ public class PersonalisationService {
 
     private void populateGenericPersonalisation(Map<String, Object> personalisation, String display,
                                          String displayValue, List<String> content) {
-        if (content.size() > 0) {
+        if (content != null && content.size() > 0) {
             personalisation.put(display, YES);
             personalisation.put(displayValue, content);
         } else {

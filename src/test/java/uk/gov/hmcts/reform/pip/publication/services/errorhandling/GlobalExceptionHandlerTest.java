@@ -60,4 +60,20 @@ class GlobalExceptionHandlerTest {
         assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
                      "The message should match the message passed in");
     }
+
+    @Test
+    void testHandleUnsupportedOperationException() {
+        GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
+
+        UnsupportedOperationException unsupportedOperationException
+            = new UnsupportedOperationException(TEST_MESSAGE);
+
+        ResponseEntity<ExceptionResponse> responseEntity =
+            globalExceptionHandler.handle(unsupportedOperationException);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Status code should be not found");
+        assertNotNull(responseEntity.getBody(), "Response should contain a body");
+        assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
+                     "The message should match the message passed in");
+    }
 }

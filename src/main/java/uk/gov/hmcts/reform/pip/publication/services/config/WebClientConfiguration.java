@@ -17,7 +17,7 @@ public class WebClientConfiguration {
 
     @Bean
     @Profile("!dev")
-    WebClient webClient(ClientRegistrationRepository clientRegistrations,
+    public WebClient webClient(ClientRegistrationRepository clientRegistrations,
                         OAuth2AuthorizedClientRepository authorizedClients) {
         ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2 =
             new ServletOAuth2AuthorizedClientExchangeFilterFunction(
@@ -28,7 +28,7 @@ public class WebClientConfiguration {
 
     @Bean
     @Profile("dev")
-    WebClient webClientInsecure() {
+    public WebClient webClientInsecure() {
         return WebClient.builder().build();
     }
 
