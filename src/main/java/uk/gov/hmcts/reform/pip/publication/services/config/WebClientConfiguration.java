@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * Configures the Web Client that is used in requests to external services.
  */
 @Configuration
-@Profile("!test")
+@Profile("!test & !integration")
 public class WebClientConfiguration {
 
     @Bean

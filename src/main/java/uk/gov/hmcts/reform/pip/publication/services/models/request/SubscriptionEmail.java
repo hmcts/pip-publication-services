@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 public class SubscriptionEmail {
 
     @Email
+    @NotNull
     String email;
 
     @SubscriptionsConstraint

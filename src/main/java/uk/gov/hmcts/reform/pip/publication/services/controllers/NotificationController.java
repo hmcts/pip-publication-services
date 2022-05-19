@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
+import javax.validation.Valid;
+
 @RestController
 @Api(tags = "Publication Services notification API")
 @RequestMapping("/notify")
@@ -87,7 +89,7 @@ public class NotificationController {
         + "}")
     @ApiOperation("Send subscription email to user")
     @PostMapping("/subscription")
-    public ResponseEntity<String> sendSubscriptionEmail(@RequestBody SubscriptionEmail body) {
+    public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody SubscriptionEmail body) {
         return ResponseEntity.ok(String.format(
             "Subscription email successfully sent to email: %s with reference id: %s", body.getEmail(),
             notificationService.subscriptionEmailRequest(body)));
