@@ -45,15 +45,21 @@ public class NotificationService {
             .getReference().orElse(null);
     }
 
+    /**
+     * This method handles the sending of the subscription email, and forwarding on to the relevant email client
+     * @param body The subscription message that is to be fulfilled.
+     * @return The ID that references the subscription message.
+     */
     public String subscriptionEmailRequest(SubscriptionEmail body) {
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
         if (artefact.getIsFlatFile()) {
-            return emailService.sendEmail(emailService
-                                              .buildFlatFileSubscriptionEmail(body, Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
+            return emailService.sendEmail(emailService.buildFlatFileSubscriptionEmail(
+                                                  body, artefact,
+                                                  Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
                 .getReference().orElse(null);
+        } else {
+            //TODO: Update once JSON generation has been completed to call the Non-Flat-File email.
+            throw new UnsupportedOperationException("Subscription service does not currently support publications for JSON payloads");
         }
-        return emailService.sendEmail(emailService
-                                          .buildRawDataSubscriptionEmail(body, Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template))
-            .getReference().orElse(null);
     }
 }

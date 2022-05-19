@@ -75,7 +75,18 @@ public class NotificationController {
         @ApiResponse(code = 400, message = "BadPayloadException error message"),
         @ApiResponse(code = 400, message = "NotifyException error message")
     })
-    @ApiImplicitParam(name = "body", example = "")
+    @ApiImplicitParam(name = "body", example = "{\n" +
+        "    \"email\": \"a@b.com\",\n" +
+        "    \"subscriptions\": {\n" +
+        "        \"CASE_URN\": [\n" +
+        "            \"123\",\n" +
+        "            \"321\"\n" +
+        "        ],\n" +
+        "        \"CASE_NUMBER\": [\"5445\"],\n" +
+        "        \"LOCATION_ID\": [\"1\",\"2\"]\n" +
+        "    },\n" +
+        "    \"artefactId\": <artefactId>\n" +
+        "}")
     @ApiOperation("Send subscription email to user")
     @PostMapping("/subscription")
     public ResponseEntity<String> sendSubscriptionEmail(@RequestBody SubscriptionEmail body) {

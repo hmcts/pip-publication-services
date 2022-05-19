@@ -59,4 +59,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity<ExceptionResponse> handle(UnsupportedOperationException ex) {
+
+        log.error(String.format("UnsupportedOperationException was thrown with the init cause: %s", ex.getCause()));
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setMessage(ex.getMessage());
+        exceptionResponse.setTimestamp(LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
 }
