@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class NotificationServiceTest {
-    private final Map<String, String> personalisationMap = Map.ofEntries(
+    private final Map<String, Object> personalisationMap = Map.ofEntries(
         entry("email", VALID_BODY_AAD.getEmail()),
         entry("surname", VALID_BODY_AAD.getSurname()),
         entry("first_name", VALID_BODY_AAD.getForename()),

@@ -1,8 +1,15 @@
 package uk.gov.hmcts.reform.pip.publication.services.models;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+/**
+ * Model that represents a media application.
+ */
+@Data
 public class MediaApplication {
     private UUID id;
 
@@ -21,4 +28,23 @@ public class MediaApplication {
     private String status;
 
     private LocalDateTime statusDate;
+
+    /**
+     * Create an array of strings which will be added to the csv.
+     *
+     * @return An array of strings
+     */
+    public String[] toCsvStringArray() {
+        DateTimeFormatter formatter =
+            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+        return new String[] {
+            this.fullName,
+            this.email,
+            this.employer,
+            this.requestDate.format(formatter),
+            this.status,
+            this.statusDate.format(formatter)
+        };
+    }
 }
