@@ -15,5 +15,7 @@ java:
           alias: TENANT_ID
         - name: app-pip-publication-services-scope
           alias: APP_URI
+        - name: app-insights-java-instrumentation-key
+          alias: INSTRUMENTATION_KEY
   environment:
 
