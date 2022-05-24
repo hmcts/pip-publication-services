@@ -12,9 +12,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
+import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
+import uk.gov.service.notify.NotificationClientException;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @Api(tags = "Publication Services notification API")
@@ -32,37 +37,54 @@ public class NotificationController {
      *             example@email.com, isExisting: true}
      * @return HTTP status upon completion
      */
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "Welcome email successfully sent with referenceId abc123-123-432-4456"),
-        @ApiResponse(code = 400, message = "BadPayloadException error message"),
-        @ApiResponse(code = 400, message = "NotifyException error message"),
-        @ApiResponse(code = 403, message = "User has not been authorized"),
-    })
-    @ApiOperation(value = "Send welcome email to new or existing subscribed users",
-        notes = "Use the bool isExisting as 'false' to send new user emails or 'true' to send existing user emails ")
-    @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',\n isExisting: 'true'\n}")
-    @PostMapping("/welcome-email")
-    public ResponseEntity<String> sendWelcomeEmail(@RequestBody WelcomeEmail body) {
-        return ResponseEntity.ok(String.format(
-            "Welcome email successfully sent with referenceId %s",
-            notificationService.handleWelcomeEmailRequest(body)
-        ));
-    }
+//    @ApiResponses({
+//        @ApiResponse(code = 200, message = "Welcome email successfully sent with referenceId abc123-123-432-4456"),
+//        @ApiResponse(code = 400, message = "BadPayloadException error message"),
+//        @ApiResponse(code = 400, message = "NotifyException error message"),
+//        @ApiResponse(code = 403, message = "User has not been authorized"),
+//    })
+//    @ApiOperation(value = "Send welcome email to new or existing subscribed users",
+//        notes = "Use the bool isExisting as 'false' to send new user emails or 'true' to send existing user emails ")
+//    @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',\n isExisting: 'true'\n}")
+//    @PostMapping("/welcome-email")
+//    public ResponseEntity<String> sendWelcomeEmail(@RequestBody WelcomeEmail body) {
+//        return ResponseEntity.ok(String.format(
+//            "Welcome email successfully sent with referenceId %s",
+//            notificationService.handleWelcomeEmailRequest(body)
+//        ));
+//    }
+
+//    @ApiResponses({
+//        @ApiResponse(code = 200, message = "Created admin welcome email successfully sent with referenceId {Id}"),
+//        @ApiResponse(code = 400, message = "BadPayloadException error message"),
+//        @ApiResponse(code = 400, message = "NotifyException error message")
+//    })
+//    @ApiOperation("Send welcome email to new Azure Active Directory (AAD) user.")
+//    @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',"
+//        + "\n forename: 'forename', \n"
+//        + "surname: 'surname' \n}")
+//    @PostMapping("/created/admin")
+//    public ResponseEntity<String> sendAdminAccountWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
+//        return ResponseEntity.ok(String.format(
+//            "Created admin welcome email successfully sent with referenceId %s",
+//            notificationService.azureNewUserEmailRequest(body)
+//        ));
+//    }
 
     @ApiResponses({
-        @ApiResponse(code = 200, message = "Created admin welcome email successfully sent with referenceId {Id}"),
+        @ApiResponse(code = 200, message = "Media application report email successfully sent with referenceId {Id}"),
+        @ApiResponse(code = 400, message = "NotifyException error message"),
         @ApiResponse(code = 400, message = "BadPayloadException error message"),
-        @ApiResponse(code = 400, message = "NotifyException error message")
+        @ApiResponse(code = 400, message = "CsvError need a name ....")
     })
-    @ApiOperation("Send welcome email to new Azure Active Directory (AAD) user.")
-    @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',"
-        + "\n forename: 'forename', \n"
-        + "surname: 'surname' \n}")
-    @PostMapping("/created/admin")
-    public ResponseEntity<String> sendAdminAccountWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
-        return ResponseEntity.ok(String.format(
-            "Created admin welcome email successfully sent with referenceId %s",
-            notificationService.azureNewUserEmailRequest(body)
-        ));
+    @ApiOperation("Send the media application report to the P&I team")
+    @PostMapping("/media/report")
+    public ResponseEntity<String> sendMediaReportingEmail(@RequestBody List<MediaApplication> mediaApplicationList) throws IOException, NotificationClientException {
+        // Need to call the service in here etc
+        // Need to get a reference ID or something etc, or remove it from the Swagger
+        // Do we need badpayload error message etc
+        // Need to change 400 for csvError if error with forming etc
+        return ResponseEntity.ok(notificationService.handleMediaApplicationReportingRequest());
+       //  return ResponseEntity.ok("CHANGE ME");
     }
 }

@@ -11,6 +11,6 @@ import java.util.Map;
 public class EmailToSend {
     String emailAddress;
     String template;
-    Map<String, String> personalisation;
+    Map<String, Object> personalisation;
     String referenceId;
 }

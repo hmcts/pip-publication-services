@@ -35,34 +35,50 @@ public class EmailService {
     @Autowired
     EmailClient emailClient;
 
-    protected Map<String, String> buildWelcomePersonalisation() {
-        Map<String, String> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
-        personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
-        personalisation.put(GOV_GUIDANCE_PAGE_LINK, notifyConfigProperties.getLinks().getGovGuidancePageLink());
+//    protected Map<String, String> buildWelcomePersonalisation() {
+//        Map<String, String> personalisation = new ConcurrentHashMap<>();
+//        personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
+//        personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
+//        personalisation.put(GOV_GUIDANCE_PAGE_LINK, notifyConfigProperties.getLinks().getGovGuidancePageLink());
+//        return personalisation;
+//    }
+//
+//    protected Map<String, String> buildAdminAccountPersonalisation(CreatedAdminWelcomeEmail body) {
+//        Map<String, String> personalisation = new ConcurrentHashMap<>();
+//        personalisation.put(SURNAME, body.getSurname());
+//        personalisation.put(FORENAME, body.getForename());
+//        personalisation.put(AAD_RESET_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
+//        personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadSignInPageLink());
+//        return personalisation;
+//    }
+
+    protected Map<String, Object> buildMediaApplicationsReportingPersonalisation(byte[] csvMediaApplications) throws NotificationClientException {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put("link_to_file", emailClient.prepareUpload(csvMediaApplications, true));
         return personalisation;
     }
 
-    protected Map<String, String> buildAdminAccountPersonalisation(CreatedAdminWelcomeEmail body) {
-        Map<String, String> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(SURNAME, body.getSurname());
-        personalisation.put(FORENAME, body.getForename());
-        personalisation.put(AAD_RESET_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
-        personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadSignInPageLink());
-        return personalisation;
+//    protected EmailToSend buildWelcomeEmail(WelcomeEmail body, String template) {
+//        return generateEmail(body.getEmail(), template, buildWelcomePersonalisation());
+//    }
+
+//    protected EmailToSend buildCreatedAdminWelcomeEmail(CreatedAdminWelcomeEmail body, String template) {
+//        return generateEmail(body.getEmail(), template,
+//                             buildAdminAccountPersonalisation(body)
+//        );
+//    }
+
+    protected EmailToSend buildMediaApplicationReportingEmail(byte[] csvMediaApplications, String template) throws NotificationClientException {
+        return generateEmail("joshua.blackmoor@justice.gov.uk", template,
+                             buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
     }
 
-    protected EmailToSend buildWelcomeEmail(WelcomeEmail body, String template) {
-        return generateEmail(body.getEmail(), template, buildWelcomePersonalisation());
-    }
+//    public EmailToSend generateEmail(String email, String template, Map<String, String> personalisation) {
+//        String referenceId = UUID.randomUUID().toString();
+//        return new EmailToSend(email, template, personalisation, referenceId);
+//    }
 
-    protected EmailToSend buildCreatedAdminWelcomeEmail(CreatedAdminWelcomeEmail body, String template) {
-        return generateEmail(body.getEmail(), template,
-                             buildAdminAccountPersonalisation(body)
-        );
-    }
-
-    public EmailToSend generateEmail(String email, String template, Map<String, String> personalisation) {
+    public EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {
         String referenceId = UUID.randomUUID().toString();
         return new EmailToSend(email, template, personalisation, referenceId);
     }
