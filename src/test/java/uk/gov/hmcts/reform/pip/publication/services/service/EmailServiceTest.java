@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
@@ -23,10 +24,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class EmailServiceTest {
 
     private static final String EMAIL = "test@email.com";
     private static final String INVALID_EMAIL = "invalid";
+
+    private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
     @Autowired
     private EmailService emailService;
@@ -72,6 +76,11 @@ class EmailServiceTest {
                                    anyString()
         ))
             .thenReturn(sendEmailResponse);
+
+        when(emailClient.sendEmail(eq(Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template), eq(EMAIL), anyMap(),
+                                   anyString()
+        ))
+            .thenReturn(sendEmailResponse);
     }
 
     @Test
@@ -105,6 +114,15 @@ class EmailServiceTest {
     }
 
     @Test
+    void mediaApplicationReportingEmailReturnsSuccess() {
+        EmailToSend mediaReportingEmail =
+            emailService.buildMediaApplicationReportingEmail(TEST_BYTE,
+                                                             Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template);
+        assertEquals(sendEmailResponse, emailService.sendEmail(mediaReportingEmail),
+                     "should return a sendEmailResponse");
+    }
+
+    @Test
     void existingUserWelcomeInvalidEmailException() {
         EmailToSend welcomeEmail = emailService.buildWelcomeEmail(
             new WelcomeEmail(INVALID_EMAIL, true),
@@ -129,6 +147,15 @@ class EmailServiceTest {
             Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
         assertThrows(NotifyException.class, () -> emailService.sendEmail(aadEmail));
     }
-    //TODO tests
 
+    @Test
+    void mediaApplicationReportingEmailException() throws NotificationClientException {
+        when(emailClient.sendEmail(eq(Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template), eq(EMAIL), anyMap(),
+                                   anyString())).thenThrow(NotificationClientException.class);
+
+        EmailToSend mediaReportingEmail = emailService.buildMediaApplicationReportingEmail(TEST_BYTE,
+                                                            Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template);
+
+        assertThrows(NotifyException.class, () -> emailService.sendEmail(mediaReportingEmail));
+    }
 }

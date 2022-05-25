@@ -15,6 +15,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@SuppressWarnings("PMD.PreserveStackTrace")
 public class CsvCreationService {
     private static final String[] HEADINGS = {"Full name", "Email", "Employer",
         "Request date", "Status", "Status date"};

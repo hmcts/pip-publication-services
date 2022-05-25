@@ -14,6 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class GlobalExceptionHandlerTest {
 
     static final String TEST_MESSAGE = "This is a test message";
+    static final String STATUS_CODE_NOT_FOUND = "Status code should be not found";
+    static final String RESPONSE_SHOULD_CONTAIN_BODY = "Response should contain a body";
+    static final String ASSERT_MESSAGE = "The message should match the message passed in";
 
     @Test
     void testHandleSubscriptionNotFound() {
@@ -25,10 +28,10 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<ExceptionResponse> responseEntity =
             globalExceptionHandler.handle(subscriptionNotFoundException);
 
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode(), "Status code should be not found");
-        assertNotNull(responseEntity.getBody(), "Response should contain a body");
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode(), STATUS_CODE_NOT_FOUND);
+        assertNotNull(responseEntity.getBody(), RESPONSE_SHOULD_CONTAIN_BODY);
         assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
-                     "The message should match the message passed in");
+                     ASSERT_MESSAGE);
     }
 
     @Test
@@ -41,10 +44,10 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<ExceptionResponse> responseEntity =
             globalExceptionHandler.handle(badPayloadException);
 
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Status code should be not found");
-        assertNotNull(responseEntity.getBody(), "Response should contain a body");
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), STATUS_CODE_NOT_FOUND);
+        assertNotNull(responseEntity.getBody(), RESPONSE_SHOULD_CONTAIN_BODY);
         assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
-                     "The message should match the message passed in");
+                     ASSERT_MESSAGE);
     }
 
     @Test
@@ -56,10 +59,10 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<ExceptionResponse> responseEntity =
             globalExceptionHandler.handle(notifyException);
 
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Status code should be not found");
-        assertNotNull(responseEntity.getBody(), "Response should contain a body");
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), STATUS_CODE_NOT_FOUND);
+        assertNotNull(responseEntity.getBody(), RESPONSE_SHOULD_CONTAIN_BODY);
         assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
-                     "The message should match the message passed in");
+                     ASSERT_MESSAGE);
     }
 
     @Test
@@ -70,9 +73,9 @@ class GlobalExceptionHandlerTest {
 
         ResponseEntity<ExceptionResponse> responseEntity = globalExceptionHandler.handle(csvCreationException);
 
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Status code should be not found");
-        assertNotNull(responseEntity.getBody(), "Response should contain a body");
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), STATUS_CODE_NOT_FOUND);
+        assertNotNull(responseEntity.getBody(), RESPONSE_SHOULD_CONTAIN_BODY);
         assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
-                     "The message should match the message passed in");
+                     ASSERT_MESSAGE);
     }
 }

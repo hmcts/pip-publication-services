@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
@@ -28,8 +29,10 @@ public class EmailService {
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
-
     private static final String LINK_TO_FILE = "link_to_file";
+
+    @Value("${notify.pi-team-email}")
+    private String piTeamEmail;
 
     @Autowired
     NotifyConfigProperties notifyConfigProperties;
@@ -77,8 +80,7 @@ public class EmailService {
     }
 
     protected EmailToSend buildMediaApplicationReportingEmail(byte[] csvMediaApplications, String template) {
-        //TODO add the correct email
-        return generateEmail("joshua.blackmoor@justice.gov.uk", template,
+        return generateEmail(piTeamEmail, template,
                              buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
     }
 

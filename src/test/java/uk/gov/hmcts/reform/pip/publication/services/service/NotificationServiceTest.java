@@ -7,13 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
+import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,18 +33,16 @@ class NotificationServiceTest {
         entry("sign_in_page_link", "http://www.google.com")
     );
 
-    private final Map<String, Object> mediaReportPersonalisationMap = Map.ofEntries(
-        entry("link_to_file", TEST_BYTE)
-    );
+    private static final String TEST_EMAIL = "test@email.com";
 
     private static final WelcomeEmail VALID_BODY_EXISTING = new WelcomeEmail(
-        "test@email.com", true);
+        TEST_EMAIL, true);
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
-        "test@email.com", false);
+        TEST_EMAIL, false);
     private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
-        "test@email.com", "test_forename", "test_surname");
+        TEST_EMAIL, "test_forename", "test_surname");
     static final String SUCCESS_REF_ID = "successRefId";
-    private static final byte[] TEST_BYTE = "Test string".getBytes();
+    private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
                                                                              Templates.NEW_USER_WELCOME_EMAIL.template,
@@ -53,6 +55,9 @@ class NotificationServiceTest {
 
     @Autowired
     private NotificationService notificationService;
+
+    @MockBean
+    private CsvCreationService csvCreationService;
 
     @MockBean
     private EmailService emailService;
@@ -90,5 +95,20 @@ class NotificationServiceTest {
                      "Azure user with valid JSON should return successful referenceId.");
     }
 
-    //TODO Test media application test
+    @Test
+    void testValidPayloadReturnsSuccessMediaReport() {
+        List<MediaApplication> mediaApplicationList = List.of(new MediaApplication(
+            UUID.randomUUID(), "Test user", TEST_EMAIL, "Test employer",
+            UUID.randomUUID().toString(), "test-image.png", LocalDateTime.now(),
+            "REJECTED", LocalDateTime.now()));
+
+        when(csvCreationService.createMediaApplicationReportingCsv(mediaApplicationList)).thenReturn(TEST_BYTE);
+
+        when(emailService.buildMediaApplicationReportingEmail(TEST_BYTE,
+                                                              Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template))
+            .thenReturn(validEmailBodyForEmailClient);
+
+        assertEquals(SUCCESS_REF_ID, notificationService.handleMediaApplicationReportingRequest(mediaApplicationList),
+                     "Media applications report with valid payload should return successful referenceId.");
+    }
 }
