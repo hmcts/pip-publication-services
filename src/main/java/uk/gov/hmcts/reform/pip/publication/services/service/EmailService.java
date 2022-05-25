@@ -29,6 +29,8 @@ public class EmailService {
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
 
+    private static final String LINK_TO_FILE = "link_to_file";
+
     @Autowired
     NotifyConfigProperties notifyConfigProperties;
 
@@ -55,7 +57,7 @@ public class EmailService {
     protected Map<String, Object> buildMediaApplicationsReportingPersonalisation(byte[] csvMediaApplications) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
-            personalisation.put("link_to_file", emailClient.prepareUpload(csvMediaApplications, true));
+            personalisation.put(LINK_TO_FILE, emailClient.prepareUpload(csvMediaApplications, true));
             return personalisation;
         } catch (NotificationClientException e) {
             log.error(String.format("Error adding the csv attachment to the media application "

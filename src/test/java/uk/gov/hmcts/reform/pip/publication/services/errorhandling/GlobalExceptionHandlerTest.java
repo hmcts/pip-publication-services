@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.BadPayloadException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
 
@@ -54,6 +55,20 @@ class GlobalExceptionHandlerTest {
 
         ResponseEntity<ExceptionResponse> responseEntity =
             globalExceptionHandler.handle(notifyException);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Status code should be not found");
+        assertNotNull(responseEntity.getBody(), "Response should contain a body");
+        assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
+                     "The message should match the message passed in");
+    }
+
+    @Test
+    void testHandleCsvCreationException() {
+        GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
+
+        CsvCreationException csvCreationException = new CsvCreationException(TEST_MESSAGE);
+
+        ResponseEntity<ExceptionResponse> responseEntity = globalExceptionHandler.handle(csvCreationException);
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Status code should be not found");
         assertNotNull(responseEntity.getBody(), "Response should contain a body");

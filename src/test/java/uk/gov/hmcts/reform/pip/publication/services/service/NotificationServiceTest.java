@@ -29,6 +29,10 @@ class NotificationServiceTest {
         entry("sign_in_page_link", "http://www.google.com")
     );
 
+    private final Map<String, Object> mediaReportPersonalisationMap = Map.ofEntries(
+        entry("link_to_file", TEST_BYTE)
+    );
+
     private static final WelcomeEmail VALID_BODY_EXISTING = new WelcomeEmail(
         "test@email.com", true);
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
@@ -36,6 +40,8 @@ class NotificationServiceTest {
     private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
         "test@email.com", "test_forename", "test_surname");
     static final String SUCCESS_REF_ID = "successRefId";
+    private static final byte[] TEST_BYTE = "Test string".getBytes();
+
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
                                                                              Templates.NEW_USER_WELCOME_EMAIL.template,
                                                                              personalisationMap,
@@ -83,4 +89,6 @@ class NotificationServiceTest {
         assertEquals(SUCCESS_REF_ID, notificationService.azureNewUserEmailRequest(VALID_BODY_AAD),
                      "Azure user with valid JSON should return successful referenceId.");
     }
+
+    //TODO Test media application test
 }

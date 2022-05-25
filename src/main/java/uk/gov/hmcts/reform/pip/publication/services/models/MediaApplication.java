@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.util.UUID;
  * Model that represents a media application.
  */
 @Data
+@AllArgsConstructor
 public class MediaApplication {
     private UUID id;
 

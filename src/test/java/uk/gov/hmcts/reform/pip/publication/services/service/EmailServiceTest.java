@@ -129,4 +129,6 @@ class EmailServiceTest {
             Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
         assertThrows(NotifyException.class, () -> emailService.sendEmail(aadEmail));
     }
+    //TODO tests
+
 }
