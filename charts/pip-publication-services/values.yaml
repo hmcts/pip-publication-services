@@ -15,5 +15,7 @@ java:
           alias: TENANT_ID
         - name: app-pip-publication-services-scope
           alias: APP_URI
+        - name: pip-team-email
+          alias: PI_TEAM_EMAIL
   environment:
 
