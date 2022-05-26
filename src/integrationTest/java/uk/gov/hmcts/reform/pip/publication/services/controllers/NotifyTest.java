@@ -61,9 +61,6 @@ class NotifyTest {
     @Autowired
     private MockMvc mockMvc;
 
-    NotifyTest() {
-    }
-
     @BeforeEach
     void setup() throws JsonProcessingException {
         ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
