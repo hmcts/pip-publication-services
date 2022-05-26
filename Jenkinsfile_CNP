@@ -11,9 +11,11 @@ def setupTestSecrets() {
   azureKeyVault(
     keyVaultURL: "https://pip-bootstrap-${bootstap_env}-kv.vault.azure.net/",
     secrets: [
-      secret('gov-uk-notify-test-api-key', 'NOTIFY_API_KEY')
+      secret('gov-uk-notify-test-api-key', 'NOTIFY_API_KEY'),
+      secret('pip-team-email', 'PI_TEAM_EMAIL')
     ]) {
     env.NOTIFY_API_KEY = "${NOTIFY_API_KEY}"
+    env.PI_TEAM_EMAIL = "${PI_TEAM_EMAIL}"
   }
 }
 
