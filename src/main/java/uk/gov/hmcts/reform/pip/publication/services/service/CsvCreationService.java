@@ -34,8 +34,6 @@ public class CsvCreationService {
 
             return sw.toString().getBytes("UTF-8");
         } catch (IOException e) {
-            log.error("Error occurred %s when trying to create a csv with list %s",
-                      e.getMessage(), mediaApplicationList);
             throw new CsvCreationException(e.getMessage());
         }
     }
