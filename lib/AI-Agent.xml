@@ -1,0 +1,6 @@
+<Instrumentation>
+    <BuiltIn enabled="true">
+      <HTTP enabled="true"/>
+    </BuiltIn>
+  </Instrumentation>
+</ApplicationInsightsAgent>
