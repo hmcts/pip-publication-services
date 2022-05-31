@@ -27,7 +27,6 @@ public class EmailService {
     @Autowired
     PersonalisationService personalisationService;
 
-
     protected EmailToSend buildWelcomeEmail(WelcomeEmail body, String template) {
         return generateEmail(body.getEmail(), template, personalisationService.buildWelcomePersonalisation());
     }
