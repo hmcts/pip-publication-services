@@ -26,6 +26,7 @@ public class EmailService {
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
+    private static final String FORGOT_PASSWORD_PROCESS_LINK = "forgot_password_process_link";
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
 
@@ -37,6 +38,7 @@ public class EmailService {
 
     protected Map<String, String> buildWelcomePersonalisation() {
         Map<String, String> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(FORGOT_PASSWORD_PROCESS_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
         personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
         personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
         personalisation.put(GOV_GUIDANCE_PAGE_LINK, notifyConfigProperties.getLinks().getGovGuidancePageLink());
