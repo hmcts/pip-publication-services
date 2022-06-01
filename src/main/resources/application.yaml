@@ -21,7 +21,13 @@ spring:
           tenant-id: ${TENANT_ID}
         credential:
           client-id: ${CLIENT_ID}
+          client-secret: ${CLIENT_SECRET}
         app-id-uri: ${APP_URI}
+        authorization-clients:
+          dataManagementApi:
+            authorization-grant-type: client_credentials
+            scopes:
+              - ${DATA_MANAGEMENT_AZ_API}/.default
   config:
     import: "optional:configtree:/mnt/secrets/pip-ss-kv/"
   application:
@@ -50,6 +56,9 @@ spring:
 azure:
   application-insights:
     instrumentation-key: ${INSTRUMENTATION_KEY:00000000-0000-0000-0000-000000000000}
+
+service-to-service:
+  data-management: ${DATA_MANAGEMENT_URL:https://pip-data-management.staging.platform.hmcts.net}
 
 notify:
   api:

@@ -8,7 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
@@ -18,9 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -50,6 +55,8 @@ class NotificationServiceTest {
                                                                              SUCCESS_REF_ID
     );
 
+    private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
+
     @Mock
     private SendEmailResponse sendEmailResponse;
 
@@ -62,8 +69,12 @@ class NotificationServiceTest {
     @MockBean
     private EmailService emailService;
 
+    @MockBean
+    private DataManagementService dataManagementService;
+
     @BeforeEach
     void setup() {
+        subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
         when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
     }
@@ -110,5 +121,48 @@ class NotificationServiceTest {
 
         assertEquals(SUCCESS_REF_ID, notificationService.handleMediaApplicationReportingRequest(mediaApplicationList),
                      "Media applications report with valid payload should return successful referenceId.");
+
+    }
+    
+    @Test
+    void testIsFlatFile() {
+        UUID uuid = UUID.randomUUID();
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(uuid);
+        artefact.setIsFlatFile(true);
+
+        when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
+
+        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail("a@b.com");
+        subscriptionEmail.setArtefactId(uuid);
+        subscriptionEmail.setSubscriptions(subscriptions);
+
+        when(emailService.buildFlatFileSubscriptionEmail(subscriptionEmail, artefact,
+                                                        Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
+            .thenReturn(validEmailBodyForEmailClient);
+
+        assertEquals(SUCCESS_REF_ID, notificationService.subscriptionEmailRequest(subscriptionEmail),
+                     "Subscription with flat file should return successful referenceId.");
+
+    }
+
+    @Test
+    void testIsNotFlatFile() {
+        UUID uuid = UUID.randomUUID();
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(uuid);
+        artefact.setIsFlatFile(false);
+
+        when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
+
+        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail("a@b.com");
+        subscriptionEmail.setArtefactId(uuid);
+        subscriptionEmail.setSubscriptions(subscriptions);
+
+        assertThrows(UnsupportedOperationException.class, () ->
+            notificationService.subscriptionEmailRequest(subscriptionEmail));
+
     }
 }

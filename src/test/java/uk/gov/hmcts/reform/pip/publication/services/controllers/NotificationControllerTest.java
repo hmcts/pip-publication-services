@@ -6,12 +6,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,11 +34,11 @@ class NotificationControllerTest {
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String IMAGE_NAME = "test-image.png";
-
-
+    private static final String SUCCESS_ID = "successId";
 
     private WelcomeEmail validRequestBodyTrue;
     private List<MediaApplication> validMediaApplicationList;
+    private SubscriptionEmail subscriptionEmail;
 
     @Mock
     private NotificationService notificationService;
@@ -48,9 +52,15 @@ class NotificationControllerTest {
         validMediaApplicationList = List.of(new MediaApplication(ID, FULL_NAME,
             VALID_EMAIL, EMPLOYER, ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME));
 
-        when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn("successId");
+        subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail("a@b.com");
+        subscriptionEmail.setArtefactId(UUID.randomUUID());
+        subscriptionEmail.setSubscriptions(new HashMap<>());
+
+        when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
+        when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
-            .thenReturn("successId");
+            .thenReturn(SUCCESS_ID);
     }
 
     @Test
@@ -67,6 +77,15 @@ class NotificationControllerTest {
         assertEquals(HttpStatus.OK, notificationController.sendWelcomeEmail(validRequestBodyTrue).getStatusCode(),
                      "Status codes should match"
         );
+    }
+
+    @Test
+    void testSendSubscriptionReturnsOkResponse() {
+        ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmail(subscriptionEmail);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Status codes should match");
+        assertTrue(Objects.requireNonNull(responseEntity.getBody()).contains("successId"),
+                   "Response content does not contain the ID");
     }
 
     @Test

@@ -5,85 +5,57 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
-import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Slf4j
 @SuppressWarnings("PMD.PreserveStackTrace")
 public class EmailService {
+    @Autowired
+    EmailClient emailClient;
 
-    private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
-    private static final String START_PAGE_LINK = "start_page_link";
-    private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
-    private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
-    private static final String AAD_RESET_LINK = "reset_password_link";
-    private static final String FORGOT_PASSWORD_PROCESS_LINK = "forgot_password_process_link";
-    private static final String SURNAME = "surname";
-    private static final String FORENAME = "first_name";
-    private static final String LINK_TO_FILE = "link_to_file";
+    @Autowired
+    PersonalisationService personalisationService;
 
     @Value("${notify.pi-team-email}")
     private String piTeamEmail;
 
-    @Autowired
-    NotifyConfigProperties notifyConfigProperties;
-
-    @Autowired
-    EmailClient emailClient;
-
-    protected Map<String, Object> buildWelcomePersonalisation() {
-        Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(FORGOT_PASSWORD_PROCESS_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
-        personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
-        personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
-        personalisation.put(GOV_GUIDANCE_PAGE_LINK, notifyConfigProperties.getLinks().getGovGuidancePageLink());
-        return personalisation;
-    }
-
-    protected Map<String, Object> buildAdminAccountPersonalisation(CreatedAdminWelcomeEmail body) {
-        Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(SURNAME, body.getSurname());
-        personalisation.put(FORENAME, body.getForename());
-        personalisation.put(AAD_RESET_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
-        personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadSignInPageLink());
-        return personalisation;
-    }
-
-    protected Map<String, Object> buildMediaApplicationsReportingPersonalisation(byte[] csvMediaApplications) {
-        try {
-            Map<String, Object> personalisation = new ConcurrentHashMap<>();
-            personalisation.put(LINK_TO_FILE, emailClient.prepareUpload(csvMediaApplications, true));
-            return personalisation;
-        } catch (NotificationClientException e) {
-            log.error(String.format("Error adding the csv attachment to the media application "
-                                        + "reporting email with error %s", e.getMessage()));
-            throw new NotifyException(e.getMessage());
-        }
-    }
-
     protected EmailToSend buildWelcomeEmail(WelcomeEmail body, String template) {
-        return generateEmail(body.getEmail(), template, buildWelcomePersonalisation());
+        return generateEmail(body.getEmail(), template, personalisationService.buildWelcomePersonalisation());
     }
 
     protected EmailToSend buildCreatedAdminWelcomeEmail(CreatedAdminWelcomeEmail body, String template) {
+        return generateEmail(body.getEmail(), template, personalisationService.buildAdminAccountPersonalisation(body));
+    }
+
+    protected EmailToSend buildFlatFileSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
+                                                         String template) {
         return generateEmail(body.getEmail(), template,
-                             buildAdminAccountPersonalisation(body)
-        );
+                             personalisationService.buildFlatFileSubscriptionPersonalisation(body, artefact));
+    }
+
+    //TODO: This method is provided as a placeholder for now, and will be updated once JSON tickets have been played
+    protected EmailToSend buildRawDataSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
+                                                        String template) {
+        return generateEmail(body.getEmail(), template,
+                             personalisationService.buildRawDataSubscriptionPersonalisation(body, artefact));
+
     }
 
     protected EmailToSend buildMediaApplicationReportingEmail(byte[] csvMediaApplications, String template) {
         return generateEmail(piTeamEmail, template,
-                             buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
+                             personalisationService
+                                 .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
     }
 
     public EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {

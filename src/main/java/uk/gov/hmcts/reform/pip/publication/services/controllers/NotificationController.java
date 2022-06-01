@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
 import java.util.List;
+import javax.validation.Valid;
 
 @RestController
 @Api(tags = "Publication Services notification API")
@@ -28,6 +30,9 @@ public class NotificationController {
     @Autowired
     NotificationService notificationService;
 
+    private static final String BAD_PAYLOAD_ERROR_MESSAGE = "BadPayloadException error message";
+    private static final String NOTIFY_EXCEPTION_ERROR_MESSAGE = "NotifyException error message";
+
     /**
      * api to send welcome emails to new or existing users.
      *
@@ -37,8 +42,8 @@ public class NotificationController {
      */
     @ApiResponses({
         @ApiResponse(code = 200, message = "Welcome email successfully sent with referenceId abc123-123-432-4456"),
-        @ApiResponse(code = 400, message = "BadPayloadException error message"),
-        @ApiResponse(code = 400, message = "NotifyException error message"),
+        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR_MESSAGE),
+        @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE),
         @ApiResponse(code = 403, message = "User has not been authorized"),
     })
     @ApiOperation(value = "Send welcome email to new or existing subscribed users",
@@ -54,8 +59,8 @@ public class NotificationController {
 
     @ApiResponses({
         @ApiResponse(code = 200, message = "Created admin welcome email successfully sent with referenceId {Id}"),
-        @ApiResponse(code = 400, message = "BadPayloadException error message"),
-        @ApiResponse(code = 400, message = "NotifyException error message")
+        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR_MESSAGE),
+        @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     })
     @ApiOperation("Send welcome email to new Azure Active Directory (AAD) user.")
     @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',"
@@ -71,8 +76,8 @@ public class NotificationController {
 
     @ApiResponses({
         @ApiResponse(code = 200, message = "Media applications report email sent successfully with referenceId {Id}"),
-        @ApiResponse(code = 400, message = "NotifyException error message"),
-        @ApiResponse(code = 400, message = "BadPayloadException error message"),
+        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR_MESSAGE),
+        @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE),
         @ApiResponse(code = 400, message = "CsvCreationException error message")
     })
     @ApiOperation("Send the media application report to the P&I team")
@@ -82,5 +87,31 @@ public class NotificationController {
             "Media applications report email sent successfully with referenceId %s",
                 notificationService.handleMediaApplicationReportingRequest(
                     mediaApplicationList)));
+    }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message =
+            "Subscription email successfully sent to email: {recipientEmail} with reference id: {reference id}"),
+        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR_MESSAGE),
+        @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    })
+    @ApiImplicitParam(name = "body", example = "{\n"
+        + "    \"email\": \"a@b.com\",\n"
+        + "    \"subscriptions\": {\n"
+        + "        \"CASE_URN\": [\n"
+        + "            \"123\",\n"
+        + "            \"321\"\n"
+        + "        ],\n"
+        + "        \"CASE_NUMBER\": [\"5445\"],\n"
+        + "        \"LOCATION_ID\": [\"1\",\"2\"]\n"
+        + "    },\n"
+        + "    \"artefactId\": <artefactId>\n"
+        + "}")
+    @ApiOperation("Send subscription email to user")
+    @PostMapping("/subscription")
+    public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody SubscriptionEmail body) {
+        return ResponseEntity.ok(String.format(
+            "Subscription email successfully sent to email: %s with reference id: %s", body.getEmail(),
+            notificationService.subscriptionEmailRequest(body)));
     }
 }
