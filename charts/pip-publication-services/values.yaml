@@ -11,11 +11,15 @@ java:
           alias: NOTIFY_API_KEY
         - name: app-pip-publication-services-id
           alias: CLIENT_ID
+        - name: app-pip-publication-services-pwd
+          alias: CLIENT_SECRET
         - name: app-tenant-id
           alias: TENANT_ID
         - name: app-pip-publication-services-scope
           alias: APP_URI
         - name: app-insights-java-instrumentation-key
           alias: INSTRUMENTATION_KEY
+        - name: app-pip-data-management-scope
+          alias: DATA_MANAGEMENT_AZ_API
   environment:
 

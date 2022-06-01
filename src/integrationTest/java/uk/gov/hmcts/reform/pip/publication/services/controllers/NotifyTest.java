@@ -1,23 +1,31 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
+import uk.gov.hmcts.reform.pip.publication.services.client.WebClientConfigurationTest;
+
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-@SpringBootTest(classes = {Application.class},
+@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.TooManyMethods"})
+@SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @WithMockUser(username = "admin", authorities = { "APPROLE_api.request.admin" })
 class NotifyTest {
 
@@ -30,6 +38,7 @@ class NotifyTest {
     private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
+    private static final String SUBSCRIPTION_URL = "/notify/subscription";
 
     @Autowired
     private MockMvc mockMvc;
@@ -95,4 +104,98 @@ class NotifyTest {
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
     }
+
+    @Test
+    void testMissingEmailForSubscriptionReturnsBadRequest() throws Exception {
+
+        String missingEmailJsonBody =
+            "{\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}, \"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(missingEmailJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testInvalidEmailForSubscriptionReturnsBadRequest() throws Exception {
+
+        String invalidEmailJsonBody =
+            "{\"email\":\"abcd\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
+                + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(invalidEmailJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testMissingArtefactIdForSubscriptionReturnsBadRequest() throws Exception {
+
+        String missingArtefactIdJsonBody =
+            "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}}";
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(missingArtefactIdJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testInvalidSubscriptionCriteriaForSubscriptionReturnsBadRequest() throws Exception {
+
+        String invalidSubscriptionJsonBody =
+            "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[]},"
+            + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(invalidSubscriptionJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidFlatFileRequest() throws Exception {
+        try (MockWebServer mockPublicationServicesEndpoint = new MockWebServer()) {
+
+            mockPublicationServicesEndpoint.start(8081);
+
+            mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                        .addHeader(
+                                                            "Content-Type",
+                                                            ContentType.APPLICATION_JSON
+                                                        )
+                                                        .setBody("{\"artefactId\": \"" + UUID.randomUUID()
+                                                                     + "\", \"isFlatFile\": true, \"listType\":"
+                                                                     + "\"CIVIL_DAILY_CAUSE_LIST\"}")
+                                                        .setResponseCode(200));
+
+            mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                        .addHeader(
+                                                            "Content-Type",
+                                                            ContentType.APPLICATION_JSON
+                                                        )
+                                                        .setBody("{\"name\": \"thisIsAName\"}")
+                                                        .setResponseCode(200));
+
+            mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                        .addHeader(
+                                                            "Content-Type",
+                                                            ContentType.APPLICATION_OCTET_STREAM
+                                                        )
+                                                        .setBody("abcd")
+                                                        .setResponseCode(200));
+
+            String validBody =
+                "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
+                    + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+
+            mockMvc.perform(post(SUBSCRIPTION_URL)
+                                .content(validBody)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        }
+    }
+
 }
