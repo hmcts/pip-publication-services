@@ -1,0 +1,2 @@
+service-to-service:
+  data-management: localhost:8081

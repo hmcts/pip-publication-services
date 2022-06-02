@@ -9,8 +9,9 @@ import java.util.Map;
  */
 @Value
 public class EmailToSend {
+
     String emailAddress;
     String template;
-    Map<String, String> personalisation;
+    Map<String, Object> personalisation;
     String referenceId;
 }

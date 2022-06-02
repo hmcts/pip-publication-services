@@ -92,7 +92,7 @@ checkstyle {
 }
 
 pmd {
-  toolVersion = "6.39.0"
+  toolVersion = "6.45.0"
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
@@ -178,6 +178,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+
   implementation 'com.azure.spring:spring-cloud-azure-starter-active-directory:4.0.0'
   implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
@@ -190,6 +192,11 @@ dependencies {
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.17.2'
+  implementation group:'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '2.6.7'
+  testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
+  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '4.0.0'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '2.6.7'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '2.6.7'
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
   testImplementation libraries.junit5
@@ -197,6 +204,7 @@ dependencies {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
+  testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.9.3'
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
@@ -218,6 +226,11 @@ bootJar {
   manifest {
     attributes('Implementation-Version': project.version.toString())
   }
+}
+
+// Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083
+rootProject.tasks.named("processIntegrationTestResources") {
+  duplicatesStrategy = 'include'
 }
 
 wrapper {
