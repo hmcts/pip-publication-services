@@ -39,7 +39,7 @@ public class DataManagementService {
 
     public Location getLocation(String locationId) {
         try {
-            return webClient.get().uri(String.format("%s/courts/%s", url, locationId))
+            return webClient.get().uri(String.format("%s/locations/%s", url, locationId))
                 .retrieve()
                 .bodyToMono(Location.class).block();
         } catch (WebClientResponseException ex) {
