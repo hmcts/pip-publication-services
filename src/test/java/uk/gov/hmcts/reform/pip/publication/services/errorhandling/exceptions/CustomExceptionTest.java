@@ -34,4 +34,11 @@ class CustomExceptionTest {
                      EXPECTED_MESSAGE);
     }
 
+    @Test
+    void testCreationOfServiceToServiceException() {
+        ServiceToServiceException exception = new ServiceToServiceException("Test service", TEST_MESSAGE);
+        assertEquals("Request to Test service failed due to: " + TEST_MESSAGE, exception.getMessage(),
+                     EXPECTED_MESSAGE);
+    }
+
 }

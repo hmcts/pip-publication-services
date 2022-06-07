@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.BadPayloadException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
 import java.time.LocalDateTime;
 
@@ -25,8 +26,7 @@ public class GlobalExceptionHandler {
      * @return The error response, modelled using the ExceptionResponse object.
      */
     @ExceptionHandler(PublicationNotFoundException.class)
-    public ResponseEntity<ExceptionResponse> handle(
-        PublicationNotFoundException ex) {
+    public ResponseEntity<ExceptionResponse> handle(PublicationNotFoundException ex) {
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
@@ -57,6 +57,17 @@ public class GlobalExceptionHandler {
         exceptionResponse.setTimestamp(LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(ServiceToServiceException.class)
+    public ResponseEntity<ExceptionResponse> handle(ServiceToServiceException ex) {
+        log.error(String.format("ServiceToServiceException was thrown with the init cause: %s", ex.getCause()));
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setMessage(ex.getMessage());
+        exceptionResponse.setTimestamp(LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(exceptionResponse);
     }
 
 }

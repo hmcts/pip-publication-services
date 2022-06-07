@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
+
+import javax.validation.Valid;
 
 @RestController
 @Api(tags = "Publication Services notification API")
@@ -23,7 +26,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 public class NotificationController {
 
     @Autowired
-    NotificationService notificationService;
+    private NotificationService notificationService;
 
     /**
      * api to send welcome emails to new or existing users.
@@ -65,4 +68,15 @@ public class NotificationController {
             notificationService.azureNewUserEmailRequest(body)
         ));
     }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Successfully sent list to {thirdParty} at: {api}"),
+        @ApiResponse(code = 400, message = "BadPayloadException error message")
+    })
+    @ApiOperation("Send list to third party publisher")
+    @PostMapping("/api")
+    public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscription body) {
+        return ResponseEntity.ok(notificationService.handleThirdParty(body));
+    }
+
 }

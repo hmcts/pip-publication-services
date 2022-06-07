@@ -1,5 +1,11 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.tls.HandshakeCertificates;
+import org.apache.http.entity.ContentType;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,12 +15,15 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 
+import java.io.IOException;
+
+import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.TooManyMethods", "PMD.ImmutableField"})
 @SpringBootTest(classes = {Application.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -30,9 +39,32 @@ class NotifyTest {
     private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
+    private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY =
+        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"1d7cfeb3-3e4d-44f8-a185-80b9a8971676\"}";
+    private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY =
+        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
+    private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY =
+        "{\"apiDestination\": \"http://localhost:4444\", \"artefactId\": \"1e565487-23e4-4a25-9364-43277a5180d4\"}";
+    private static final String API_SUBSCRIPTION_URL = "/notify/api";
+    private static final String EXTERNAL_PAYLOAD = "test";
+
+    private MockWebServer externalApiMockServer;
 
     @Autowired
     private MockMvc mockMvc;
+
+    @BeforeEach
+    void setup() throws IOException {
+        HandshakeCertificates handshakeCertificates = localhost();
+        externalApiMockServer = new MockWebServer();
+        externalApiMockServer.useHttps(handshakeCertificates.sslSocketFactory(), false);
+        externalApiMockServer.start(4444);
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        externalApiMockServer.close();
+    }
 
     @Test
     void testValidPayloadReturnsSuccessExisting() throws Exception {
@@ -94,5 +126,55 @@ class NotifyTest {
                             .content(VALID_ADMIN_CREATION_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testNotifyApiSubscribersJson() throws Exception {
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .addHeader("Content-Type",
+                                                     ContentType.APPLICATION_JSON)
+                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setResponseCode(200));
+
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                                                 .content(THIRD_PARTY_SUBSCRIPTION_JSON_BODY)
+                                                 .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andExpect(content().string(containsString(
+                "Successfully sent list to Courtel at: https://localhost:4444")));
+    }
+
+    @Test
+    void testNotifyApiSubscribersFile() throws Exception {
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .addHeader("Content-Type",
+                                                     ContentType.APPLICATION_JSON)
+                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setResponseCode(200));
+
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                            .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andExpect(content().string(containsString(
+                "Successfully sent list to Courtel at: https://localhost:4444")));
+    }
+
+    @Test
+    void testNotifyApiSubscribersThrowsBadGateway() throws Exception {
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                            .content(THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadGateway());
+    }
+
+    @Test
+    void testNotifyApiSubscriberReturnsError() throws Exception {
+        //To be modified in 981 when errors are handled properly
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
+
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                            .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andExpect(content().string(containsString(
+                "Request Failed")));
     }
 }

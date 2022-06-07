@@ -6,8 +6,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,8 +22,15 @@ class NotificationControllerTest {
 
     private static final String VALID_EMAIL = "test@email.com";
     private static final boolean TRUE_BOOL = true;
+    private static final String TEST = "Test";
+    private static final UUID TEST_ID = UUID.randomUUID();
+    private static final String SUCCESS = "SuccessId";
+    private static final String MESSAGES_MATCH = "Messages should match";
+    private static final String STATUS_CODES_MATCH = "Status codes should match";
 
     private WelcomeEmail validRequestBodyTrue;
+    private CreatedAdminWelcomeEmail createdAdminWelcomeEmailValidBody;
+    private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
 
     @Mock
     private NotificationService notificationService;
@@ -30,23 +41,54 @@ class NotificationControllerTest {
     @BeforeEach
     void setup() {
         validRequestBodyTrue = new WelcomeEmail(VALID_EMAIL, TRUE_BOOL);
+        createdAdminWelcomeEmailValidBody = new CreatedAdminWelcomeEmail(VALID_EMAIL, TEST, TEST);
+        thirdPartySubscription.setApiDestination(TEST);
+        thirdPartySubscription.setArtefactId(TEST_ID);
 
-        when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn("successId");
+        when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS);
+        when(notificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody)).thenReturn(SUCCESS);
+        when(notificationService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS);
     }
 
     @Test
     void testValidBodyShouldReturnSuccessMessage() {
         assertTrue(
             notificationController.sendWelcomeEmail(validRequestBodyTrue).getBody()
-                .contains("Welcome email successfully sent with referenceId successId"),
-            "Messages should match"
+                .contains("Welcome email successfully sent with referenceId SuccessId"),
+            MESSAGES_MATCH
         );
     }
 
     @Test
     void testValidBodyShouldReturnOkResponse() {
         assertEquals(HttpStatus.OK, notificationController.sendWelcomeEmail(validRequestBodyTrue).getStatusCode(),
-                     "Status codes should match"
+                     STATUS_CODES_MATCH
         );
+    }
+
+    @Test
+    void testSendAdminAccountWelcomeEmail() {
+        assertTrue(notificationController.sendAdminAccountWelcomeEmail(createdAdminWelcomeEmailValidBody).getBody()
+                       .contains("Created admin welcome email successfully sent with referenceId SuccessId"),
+                   MESSAGES_MATCH);
+    }
+
+    @Test
+    void testSendAdminAccountWelcomeEmailReturnsOk() {
+        assertEquals(HttpStatus.OK, notificationController
+                         .sendAdminAccountWelcomeEmail(createdAdminWelcomeEmailValidBody).getStatusCode(),
+                     STATUS_CODES_MATCH);
+    }
+
+    @Test
+    void testSendThirdPartySubscription() {
+        assertTrue(notificationController.sendThirdPartySubscription(thirdPartySubscription).getBody()
+                       .contains(SUCCESS), MESSAGES_MATCH);
+    }
+
+    @Test
+    void testSendThirdPartySubscriptionReturnsOk() {
+        assertEquals(HttpStatus.OK, notificationController.sendThirdPartySubscription(thirdPartySubscription)
+            .getStatusCode(), STATUS_CODES_MATCH);
     }
 }

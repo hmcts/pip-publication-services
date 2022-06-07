@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
@@ -14,6 +16,12 @@ public class NotificationService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private DataManagementService dataManagementService;
+
+    @Autowired
+    private ThirdPartyService thirdPartyService;
 
     /**
      * Handles the incoming request for welcome emails, checks the json payload and builds and sends the email.
@@ -38,5 +46,23 @@ public class NotificationService {
                                                                        Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
         return emailService.sendEmail(email)
             .getReference().orElse(null);
+    }
+
+    /**
+     * Handles the incoming request for sending lists out to third party publishers, uses the artefact id from body
+     * to retrieve Artefact from Data Management and then gets the file or json payload to then send out.
+     * @param body Request body of ThirdParty subscription containing artefact id and the destination api.
+     * @return String of successful POST.
+     */
+    public String handleThirdParty(ThirdPartySubscription body) {
+        Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
+        if (artefact.getIsFlatFile()) {
+            return thirdPartyService.handleCourtelCall(body.getApiDestination(),
+                                                dataManagementService.getArtefactFlatFile(artefact.getArtefactId()));
+        } else {
+            return thirdPartyService.handleCourtelCall(body.getApiDestination(),
+                                                       dataManagementService.getArtefactJsonBlob(
+                                                           artefact.getArtefactId()));
+        }
     }
 }
