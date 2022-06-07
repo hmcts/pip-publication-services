@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
@@ -46,6 +47,25 @@ public class NotificationService {
                                                                        Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
         return emailService.sendEmail(email)
             .getReference().orElse(null);
+    }
+
+    /**
+     * This method handles the sending of the subscription email, and forwarding on to the relevant email client.
+     * @param body The subscription message that is to be fulfilled.
+     * @return The ID that references the subscription message.
+     */
+    public String subscriptionEmailRequest(SubscriptionEmail body) {
+        Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
+        if (artefact.getIsFlatFile()) {
+            return emailService.sendEmail(emailService.buildFlatFileSubscriptionEmail(
+                                                  body, artefact,
+                                                  Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
+                .getReference().orElse(null);
+        } else {
+            //TODO: Update once JSON generation has been completed to call the Non-Flat-File email.
+            throw new UnsupportedOperationException(
+                "Subscription service does not currently support publications for JSON payloads");
+        }
     }
 
     /**

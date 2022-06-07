@@ -14,7 +14,7 @@ class EmailToSendTest {
 
     private static final String EMAIL = "test@email.com";
     private static final String TEMPLATE = "template1";
-    private static final Map<String, String> PERSONALISATION = new ConcurrentHashMap<>();
+    private static final Map<String, Object> PERSONALISATION = new ConcurrentHashMap<>();
     private static final String REFERENCE_ID = "refID";
 
     @BeforeEach

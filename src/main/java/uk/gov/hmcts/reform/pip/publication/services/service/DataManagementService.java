@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 
 import java.util.UUID;
 
@@ -34,6 +35,16 @@ public class DataManagementService {
                 .header("x-admin", TRUE)
                 .retrieve()
                 .bodyToMono(Artefact.class).block();
+        } catch (WebClientResponseException ex) {
+            throw new ServiceToServiceException(SERVICE, ex.getMessage());
+        }
+    }
+
+    public Location getLocation(String locationId) {
+        try {
+            return webClient.get().uri(String.format("%s/locations/%s", url, locationId))
+                .retrieve()
+                .bodyToMono(Location.class).block();
         } catch (WebClientResponseException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }

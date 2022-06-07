@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
-
 import java.io.IOException;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
@@ -47,6 +46,7 @@ class NotifyTest {
         "{\"apiDestination\": \"http://localhost:4444\", \"artefactId\": \"1e565487-23e4-4a25-9364-43277a5180d4\"}";
     private static final String API_SUBSCRIPTION_URL = "/notify/api";
     private static final String EXTERNAL_PAYLOAD = "test";
+    private static final String SUBSCRIPTION_URL = "/notify/subscription";
 
     private MockWebServer externalApiMockServer;
 
@@ -176,5 +176,67 @@ class NotifyTest {
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk()).andExpect(content().string(containsString(
                 "Request Failed")));
+    }
+
+    @Test
+    void testMissingEmailForSubscriptionReturnsBadRequest() throws Exception {
+
+        String missingEmailJsonBody =
+            "{\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}, \"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(missingEmailJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testInvalidEmailForSubscriptionReturnsBadRequest() throws Exception {
+
+        String invalidEmailJsonBody =
+            "{\"email\":\"abcd\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
+                + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(invalidEmailJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testMissingArtefactIdForSubscriptionReturnsBadRequest() throws Exception {
+
+        String missingArtefactIdJsonBody =
+            "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}}";
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(missingArtefactIdJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testInvalidSubscriptionCriteriaForSubscriptionReturnsBadRequest() throws Exception {
+
+        String invalidSubscriptionJsonBody =
+            "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[]},"
+                + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(invalidSubscriptionJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidFlatFileRequest() throws Exception {
+        String validBody =
+            "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[\"9\"]},"
+                + "\"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(validBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
     }
 }

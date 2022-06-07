@@ -6,11 +6,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,6 +33,7 @@ class NotificationControllerTest {
     private static final String STATUS_CODES_MATCH = "Status codes should match";
 
     private WelcomeEmail validRequestBodyTrue;
+    private SubscriptionEmail subscriptionEmail;
     private CreatedAdminWelcomeEmail createdAdminWelcomeEmailValidBody;
     private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
 
@@ -45,6 +50,13 @@ class NotificationControllerTest {
         thirdPartySubscription.setApiDestination(TEST);
         thirdPartySubscription.setArtefactId(TEST_ID);
 
+        subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail("a@b.com");
+        subscriptionEmail.setArtefactId(UUID.randomUUID());
+        subscriptionEmail.setSubscriptions(new HashMap<>());
+
+        when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn("successId");
+        when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn("successId");
         when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS);
         when(notificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody)).thenReturn(SUCCESS);
         when(notificationService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS);
@@ -64,6 +76,15 @@ class NotificationControllerTest {
         assertEquals(HttpStatus.OK, notificationController.sendWelcomeEmail(validRequestBodyTrue).getStatusCode(),
                      STATUS_CODES_MATCH
         );
+    }
+
+    @Test
+    void testSendSubscriptionReturnsOkResponse() {
+        ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmail(subscriptionEmail);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Status codes should match");
+        assertTrue(Objects.requireNonNull(responseEntity.getBody()).contains("successId"),
+                   "Response content does not contain the ID");
     }
 
     @Test
