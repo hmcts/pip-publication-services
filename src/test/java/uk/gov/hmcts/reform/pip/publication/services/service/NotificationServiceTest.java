@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
@@ -46,10 +47,13 @@ class NotificationServiceTest {
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
                                                                              Templates.NEW_USER_WELCOME_EMAIL.template,
                                                                              personalisationMap,
-                                                                             SUCCESS_REF_ID
-    );
+                                                                             SUCCESS_REF_ID);
+    private static final UUID RAND_UUID = UUID.randomUUID();
+    private static final String API_DESTINATION = "testUrl";
 
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
+
+    private final Artefact artefact = new Artefact();
 
     @Mock
     private SendEmailResponse sendEmailResponse;
@@ -62,6 +66,9 @@ class NotificationServiceTest {
 
     @MockBean
     private DataManagementService dataManagementService;
+
+    @MockBean
+    private ThirdPartyService thirdPartyService;
 
     @BeforeEach
     void setup() {
@@ -99,16 +106,14 @@ class NotificationServiceTest {
 
     @Test
     void testIsFlatFile() {
-        UUID uuid = UUID.randomUUID();
-        Artefact artefact = new Artefact();
-        artefact.setArtefactId(uuid);
+        artefact.setArtefactId(RAND_UUID);
         artefact.setIsFlatFile(true);
 
-        when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
+        when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
-        subscriptionEmail.setArtefactId(uuid);
+        subscriptionEmail.setArtefactId(RAND_UUID);
         subscriptionEmail.setSubscriptions(subscriptions);
 
         when(emailService.buildFlatFileSubscriptionEmail(subscriptionEmail, artefact,
@@ -122,20 +127,52 @@ class NotificationServiceTest {
 
     @Test
     void testIsNotFlatFile() {
-        UUID uuid = UUID.randomUUID();
-        Artefact artefact = new Artefact();
-        artefact.setArtefactId(uuid);
+        artefact.setArtefactId(RAND_UUID);
         artefact.setIsFlatFile(false);
 
-        when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
+        when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
-        subscriptionEmail.setArtefactId(uuid);
+        subscriptionEmail.setArtefactId(RAND_UUID);
         subscriptionEmail.setSubscriptions(subscriptions);
 
         assertThrows(UnsupportedOperationException.class, () ->
             notificationService.subscriptionEmailRequest(subscriptionEmail));
 
+    }
+
+    @Test
+    void testHandleThirdPartyFlatFile() {
+        artefact.setArtefactId(RAND_UUID);
+        artefact.setIsFlatFile(true);
+        byte[] file = new byte[10];
+        when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
+        when(dataManagementService.getArtefactFlatFile(RAND_UUID)).thenReturn(file);
+        when(thirdPartyService.handleCourtelCall(API_DESTINATION, file)).thenReturn(SUCCESS_REF_ID);
+
+        ThirdPartySubscription subscription = new ThirdPartySubscription();
+        subscription.setArtefactId(RAND_UUID);
+        subscription.setApiDestination(API_DESTINATION);
+
+        assertEquals(SUCCESS_REF_ID, notificationService.handleThirdParty(subscription),
+                     "Api subscription with flat file should return successful referenceId.");
+    }
+
+    @Test
+    void testHandleThirdPartyJson() {
+        artefact.setArtefactId(RAND_UUID);
+        artefact.setIsFlatFile(false);
+        String jsonPayload = "test";
+        when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
+        when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
+        when(thirdPartyService.handleCourtelCall(API_DESTINATION, jsonPayload)).thenReturn(SUCCESS_REF_ID);
+
+        ThirdPartySubscription subscription = new ThirdPartySubscription();
+        subscription.setArtefactId(RAND_UUID);
+        subscription.setApiDestination(API_DESTINATION);
+
+        assertEquals(SUCCESS_REF_ID, notificationService.handleThirdParty(subscription),
+                     "Api subscription with flat file should return successful referenceId.");
     }
 }
