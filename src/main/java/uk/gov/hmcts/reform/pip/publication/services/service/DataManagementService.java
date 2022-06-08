@@ -27,7 +27,6 @@ public class DataManagementService {
     public Artefact getArtefact(UUID artefactId) {
         try {
             return webClient.get().uri(String.format("%s/publication/%s", url, artefactId))
-                .header("verification", "true")
                 .header("x-admin", "true")
                 .retrieve()
                 .bodyToMono(Artefact.class).block();
@@ -51,7 +50,7 @@ public class DataManagementService {
     public byte[] getArtefactFlatFile(UUID artefactId) {
         try {
             return webClient.get().uri(String.format("%s/publication/%s/file", url, artefactId))
-                .header("verification", "true")
+                .header("x-admin", "true")
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .retrieve()
                 .bodyToMono(byte[].class).block();
