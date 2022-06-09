@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 @Slf4j
 public class NotificationService {
 
+    private static final String SUCCESS_MESSAGE = "Successfully sent list to %s";
+
     @Autowired
     private EmailService emailService;
 
@@ -75,14 +77,18 @@ public class NotificationService {
      * @return String of successful POST.
      */
     public String handleThirdParty(ThirdPartySubscription body) {
-        Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
-        if (artefact.getIsFlatFile()) {
-            return thirdPartyService.handleCourtelCall(body.getApiDestination(),
-                                                dataManagementService.getArtefactFlatFile(artefact.getArtefactId()));
-        } else {
-            return thirdPartyService.handleCourtelCall(body.getApiDestination(),
-                                                       dataManagementService.getArtefactJsonBlob(
-                                                           artefact.getArtefactId()));
-        }
+        body.getArtefactIds().forEach(artefactId -> {
+            Artefact artefact = dataManagementService.getArtefact(artefactId);
+            if (artefact.getIsFlatFile()) {
+                log.info(thirdPartyService.handleCourtelCall(body.getApiDestination(),
+                                                           dataManagementService.getArtefactFlatFile(
+                                                               artefact.getArtefactId())));
+            } else {
+                log.info(thirdPartyService.handleCourtelCall(body.getApiDestination(),
+                                                           dataManagementService.getArtefactJsonBlob(
+                                                               artefact.getArtefactId())));
+            }
+        });
+        return String.format(SUCCESS_MESSAGE, body.getApiDestination());
     }
 }

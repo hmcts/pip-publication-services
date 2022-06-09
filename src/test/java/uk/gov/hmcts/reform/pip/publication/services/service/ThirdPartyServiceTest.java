@@ -61,7 +61,4 @@ class ThirdPartyServiceTest {
         String response = thirdPartyService.handleCourtelCall(API, PAYLOAD);
         assertEquals("Request Failed", response, "Returned messages should match");
     }
-
-    //TODO: write the fail test and then some bloody int tests then you need to go into channel mangement and write
-    // the thing that gets the api, might need to change file to octet stream content type
 }

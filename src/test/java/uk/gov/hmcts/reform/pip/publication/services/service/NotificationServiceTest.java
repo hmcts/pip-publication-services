@@ -44,6 +44,7 @@ class NotificationServiceTest {
     private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
         "test@email.com", "test_forename", "test_surname");
     static final String SUCCESS_REF_ID = "successRefId";
+    private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
                                                                              Templates.NEW_USER_WELCOME_EMAIL.template,
                                                                              personalisationMap,
@@ -152,10 +153,10 @@ class NotificationServiceTest {
         when(thirdPartyService.handleCourtelCall(API_DESTINATION, file)).thenReturn(SUCCESS_REF_ID);
 
         ThirdPartySubscription subscription = new ThirdPartySubscription();
-        subscription.setArtefactId(RAND_UUID);
+        subscription.setArtefactIds(List.of(RAND_UUID));
         subscription.setApiDestination(API_DESTINATION);
 
-        assertEquals(SUCCESS_REF_ID, notificationService.handleThirdParty(subscription),
+        assertEquals(SUCCESS_API_SENT, notificationService.handleThirdParty(subscription),
                      "Api subscription with flat file should return successful referenceId.");
     }
 
@@ -169,10 +170,10 @@ class NotificationServiceTest {
         when(thirdPartyService.handleCourtelCall(API_DESTINATION, jsonPayload)).thenReturn(SUCCESS_REF_ID);
 
         ThirdPartySubscription subscription = new ThirdPartySubscription();
-        subscription.setArtefactId(RAND_UUID);
+        subscription.setArtefactIds(List.of(RAND_UUID));
         subscription.setApiDestination(API_DESTINATION);
 
-        assertEquals(SUCCESS_REF_ID, notificationService.handleThirdParty(subscription),
+        assertEquals(SUCCESS_API_SENT, notificationService.handleThirdParty(subscription),
                      "Api subscription with flat file should return successful referenceId.");
     }
 }
