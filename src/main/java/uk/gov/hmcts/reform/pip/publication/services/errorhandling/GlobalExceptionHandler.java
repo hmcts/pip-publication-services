@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Pub
 
 import java.time.LocalDateTime;
 
-import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeGenericLog;
+import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 /**
  * Global exception handler, that captures exceptions thrown by the controllers, and encapsulates
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handle(
         PublicationNotFoundException ex) {
 
-        log.warn(writeGenericLog("404, publication has not been found when trying to send subscription"));
+        log.warn(writeLog("404, publication has not been found when trying to send subscription"));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotifyException.class)
     public ResponseEntity<ExceptionResponse> handle(NotifyException ex) {
 
-        log.error(writeGenericLog(String.format(
+        log.error(writeLog(String.format(
             "400, Error while communicating with the notify service with reason %s", ex.getMessage())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handle(MethodArgumentNotValidException ex) {
 
-        log.error(writeGenericLog(String.format(
+        log.error(writeLog(String.format(
             "400, Method argument is not valid. Details: %s", ex.getCause())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadPayloadException.class)
     public ResponseEntity<ExceptionResponse> handle(BadPayloadException ex) {
 
-        log.error(writeGenericLog(
+        log.error(writeLog(
             String.format("400, invalid payload sent to publication service. Cause: %s", ex.getCause())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
@@ -82,7 +82,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnsupportedOperationException.class)
     public ResponseEntity<ExceptionResponse> handle(UnsupportedOperationException ex) {
 
-        log.error(writeGenericLog(String.format(
+        log.error(writeLog(String.format(
             "400, unsupported REST operation send to publication service. Cause: %s", ex.getCause())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();

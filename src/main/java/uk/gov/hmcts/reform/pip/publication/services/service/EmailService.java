@@ -16,7 +16,7 @@ import uk.gov.service.notify.SendEmailResponse;
 import java.util.Map;
 import java.util.UUID;
 
-import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeGenericLog;
+import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Component
 @Slf4j
@@ -58,13 +58,13 @@ public class EmailService {
 
     public SendEmailResponse sendEmail(EmailToSend emailToSend) {
         try {
-            log.info(writeGenericLog(String.format("Sending email success. Reference ID: %s",
+            log.info(writeLog(String.format("Sending email success. Reference ID: %s",
                                                    emailToSend.getReferenceId())));
             return emailClient.sendEmail(emailToSend.getTemplate(), emailToSend.getEmailAddress(),
                                          emailToSend.getPersonalisation(), emailToSend.getReferenceId()
             );
         } catch (NotificationClientException e) {
-            log.warn(writeGenericLog(String.format("Failed to send email. "
+            log.warn(writeLog(String.format("Failed to send email. "
                                                        + "Reference ID: %s. "
                                                        + "Reason: %s", emailToSend.getReferenceId(), e)));
             throw new NotifyException(e.getMessage());
