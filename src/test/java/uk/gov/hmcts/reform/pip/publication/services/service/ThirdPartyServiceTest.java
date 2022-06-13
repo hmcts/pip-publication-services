@@ -12,10 +12,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientConfigurationTest;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
 @ActiveProfiles("test")
@@ -39,7 +42,7 @@ class ThirdPartyServiceTest {
 
     @AfterEach
     void after() throws IOException {
-        mockPublicationServicesEndpoint.close();
+        mockPublicationServicesEndpoint.shutdown();
     }
 
     @Test
@@ -57,8 +60,26 @@ class ThirdPartyServiceTest {
     @Test
     void testHandleCourtelCallReturnsFailed() {
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+        ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
+            thirdPartyService.handleCourtelCall(API, PAYLOAD), "Should throw ThirdPartyException");
+        assertTrue(ex.getMessage().contains(String.format("Third party request to: %s failed", API)),
+                   "Messages should match");
+    }
+
+    @Test
+    void testHandleCourtelCallReturnsOkAfterRetry() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                    .setResponseCode(200)
+                                                    .addHeader("Content-Type", ContentType.APPLICATION_JSON)
+                                                    .setBody(PAYLOAD));
 
         String response = thirdPartyService.handleCourtelCall(API, PAYLOAD);
-        assertEquals("Request Failed", response, "Returned messages should match");
+        assertEquals(String.format("Successfully sent list to Courtel at: %s", API), response,
+                     "Returned messages should match");
     }
 }

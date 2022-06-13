@@ -48,6 +48,8 @@ class NotifyTest {
     private static final String API_SUBSCRIPTION_URL = "/notify/api";
     private static final String EXTERNAL_PAYLOAD = "test";
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
+    private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
+        + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
 
     private MockWebServer externalApiMockServer;
 
@@ -167,17 +169,19 @@ class NotifyTest {
             .andExpect(status().isBadGateway());
     }
 
-    //@Test
-    //void testNotifyApiSubscriberReturnsError() throws Exception {
-    //    //To be modified in 981 when errors are handled properly
-    //    externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
-    //
-    //    mockMvc.perform(post(API_SUBSCRIPTION_URL)
-    //                        .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
-    //                        .contentType(MediaType.APPLICATION_JSON))
-    //        .andExpect(status().isOk()).andExpect(content().string(containsString(
-    //            "Request Failed")));
-    //}
+    @Test
+    void testNotifyApiSubscriberReturnsError() throws Exception {
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
+
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                            .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound()).andExpect(content().string(containsString(
+                THIRD_PARTY_FAIL_MESSAGE)));
+    }
 
     @Test
     void testMissingEmailForSubscriptionReturnsBadRequest() throws Exception {

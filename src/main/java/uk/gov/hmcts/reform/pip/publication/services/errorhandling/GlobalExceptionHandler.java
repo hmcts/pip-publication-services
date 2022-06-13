@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Bad
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
 
 import java.time.LocalDateTime;
 
@@ -95,4 +96,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(exceptionResponse);
     }
 
+    @ExceptionHandler(ThirdPartyServiceException.class)
+    public ResponseEntity<ExceptionResponse> handle(ThirdPartyServiceException ex) {
+        log.error(ex.getMessage());
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setMessage(ex.getMessage());
+        exceptionResponse.setTimestamp(LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.valueOf(ex.getStatusCode())).body(exceptionResponse);
+    }
 }

@@ -10,10 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.BadPayloadException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
 
 import java.util.List;
 
@@ -98,8 +100,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void testHandleUnsupportedOperationException() {
-        GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
-
         UnsupportedOperationException unsupportedOperationException
             = new UnsupportedOperationException(TEST_MESSAGE);
 
@@ -114,8 +114,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void testMethodArgumentTypeMismatchException() {
-        GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
-
         when(methodArgumentNotValidException.getAllErrors()).thenReturn(List.of(
             new ObjectError("Subscription", "Error message")));
 
@@ -128,5 +126,18 @@ class GlobalExceptionHandlerTest {
         assertTrue(responseEntity.getBody().getMessage().contains("Error message"),
                    "Body does not contain error message");
 
+    }
+
+    @Test
+    void testThirdPartyServiceException() {
+        ThirdPartyServiceException exception = new ThirdPartyServiceException(
+            new WebClientResponseException(404, TEST_MESSAGE, null, null, null), "testApi");
+
+        ResponseEntity<ExceptionResponse> responseEntity = globalExceptionHandler.handle(exception);
+
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode(), STATUS_CODE);
+        assertNotNull(responseEntity.getBody(), BODY_RESPONSE);
+        assertEquals("Third party request to: testApi failed after 3 retries due to: 404 This is a test message",
+                     responseEntity.getBody().getMessage(), MESSAGES_MATCH);
     }
 }
