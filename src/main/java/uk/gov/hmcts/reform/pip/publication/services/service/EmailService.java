@@ -16,6 +16,8 @@ import uk.gov.service.notify.SendEmailResponse;
 import java.util.Map;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeGenericLog;
+
 @Component
 @Slf4j
 @SuppressWarnings("PMD.PreserveStackTrace")
@@ -56,12 +58,15 @@ public class EmailService {
 
     public SendEmailResponse sendEmail(EmailToSend emailToSend) {
         try {
-            log.info("Sending email success. Reference ID: {}", emailToSend.getReferenceId());
+            log.info(writeGenericLog(String.format("Sending email success. Reference ID: %s",
+                                                   emailToSend.getReferenceId())));
             return emailClient.sendEmail(emailToSend.getTemplate(), emailToSend.getEmailAddress(),
                                          emailToSend.getPersonalisation(), emailToSend.getReferenceId()
             );
         } catch (NotificationClientException e) {
-            log.warn("Failed to send email. Reference ID: {}. Reason:", emailToSend.getReferenceId(), e);
+            log.warn(writeGenericLog(String.format("Failed to send email. "
+                                                       + "Reference ID: %s. "
+                                                       + "Reason: %s", emailToSend.getReferenceId(), e)));
             throw new NotifyException(e.getMessage());
         }
     }

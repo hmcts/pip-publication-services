@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
+import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeGenericLog;
+
 @Service
 @Slf4j
 public class NotificationService {
@@ -27,6 +29,9 @@ public class NotificationService {
      *             {email: 'example@email.com', isExisting: 'true'}
      */
     public String handleWelcomeEmailRequest(WelcomeEmail body) {
+        log.info(writeGenericLog(String.format("Existing User Welcome email "
+                                                   + "being processed for user %s", body.getEmail())));
+
         return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
             ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
             Templates.NEW_USER_WELCOME_EMAIL.template)).getReference().orElse(null);
@@ -39,6 +44,9 @@ public class NotificationService {
      *             {email: 'example@email.com', forename: 'foo', surname: 'bar'}
      */
     public String azureNewUserEmailRequest(CreatedAdminWelcomeEmail body) {
+        log.info(writeGenericLog(String.format("New User Welcome email "
+                                                   + "being processed for user %s", body.getEmail())));
+
         EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body,
                                                                        Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
         return emailService.sendEmail(email)
@@ -51,6 +59,8 @@ public class NotificationService {
      * @return The ID that references the subscription message.
      */
     public String subscriptionEmailRequest(SubscriptionEmail body) {
+        log.info(writeGenericLog(String.format("Sending subscription email for user %s", body.getEmail())));
+
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
         if (artefact.getIsFlatFile()) {
             return emailService.sendEmail(emailService.buildFlatFileSubscriptionEmail(
