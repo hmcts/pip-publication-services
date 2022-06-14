@@ -50,10 +50,6 @@ public class EmailService {
 
     }
 
-    protected EmailToSend buildCreatedMediaSetupEmail(CreateMediaSetupEmail body, String template) {
-        return generateEmail(body.getEmail(), template, personalisationService.buildMediaAccountPersonalisation(body));
-    }
-
     protected EmailToSend buildDuplicateMediaSetupEmail(CreateMediaSetupEmail body, String template) {
         return generateEmail(body.getEmail(), template,
                              personalisationService.buildDuplicateMediaAccountPersonalisation(body));

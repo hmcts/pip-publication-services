@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 class EmailServiceTest {
 
     private static final String EMAIL = "test@email.com";
+    private static final String FULL_NAME = "fullName";
 
     @Autowired
     private EmailService emailService;
@@ -78,7 +79,7 @@ class EmailServiceTest {
 
     @Test
     void existingUserWelcomeValidEmailReturnsSuccess() {
-        WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true);
+        WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true, FULL_NAME);
 
         when(personalisationService.buildWelcomePersonalisation()).thenReturn(personalisation);
 
@@ -94,7 +95,7 @@ class EmailServiceTest {
 
     @Test
     void newUserWelcomeValidEmailReturnsSuccess() {
-        WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true);
+        WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true, FULL_NAME);
 
         when(personalisationService.buildWelcomePersonalisation()).thenReturn(personalisation);
 
@@ -195,25 +196,6 @@ class EmailServiceTest {
 
         assertEquals(exceptionMessage, notificationClientException.getMessage(),
                      "Exception message does not match expected exception");
-    }
-
-    @Test
-    void newMediaUserValidEmailReturnsSuccess() {
-        CreateMediaSetupEmail createMediaSetupEmail = new CreateMediaSetupEmail();
-        createMediaSetupEmail.setFullName("testname");
-        createMediaSetupEmail.setEmail(EMAIL);
-
-        when(personalisationService.buildMediaAccountPersonalisation(createMediaSetupEmail))
-            .thenReturn(personalisation);
-
-        EmailToSend aadEmail = emailService.buildCreatedMediaSetupEmail(
-            createMediaSetupEmail, Templates.MEDIA_NEW_ACCOUNT_SETUP.template);
-
-        assertEquals(EMAIL, aadEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
-        assertEquals(personalisation, aadEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
-        assertNotNull(aadEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
-        assertEquals(Templates.MEDIA_NEW_ACCOUNT_SETUP.template, aadEmail.getTemplate(),
-                     TEMPLATE_MESSAGE);
     }
 
     @Test

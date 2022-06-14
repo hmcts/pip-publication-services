@@ -66,20 +66,6 @@ public class NotificationService {
     }
 
     /**
-     * Handles the incoming request for Media account welcome emails,
-     * checks the json payload and builds and sends the email.
-     *
-     * @param body JSONObject containing the email and forename/surname values e.g.
-     *             {email: 'example@email.com', fullname: 'foo bar'}
-     */
-    public String mediaNewUserEmailRequest(CreateMediaSetupEmail body) {
-        EmailToSend email = emailService.buildCreatedMediaSetupEmail(body,
-                                                                       Templates.MEDIA_NEW_ACCOUNT_SETUP.template);
-        return emailService.sendEmail(email)
-            .getReference().orElse(null);
-    }
-
-    /**
      * Handles the incoming request for duplicate media account emails,
      * checks the json payload and builds and sends the email.
      *

@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 class NotificationControllerTest {
 
     private static final String VALID_EMAIL = "test@email.com";
+    private static final String FULL_NAME = "fullName";
     private static final boolean TRUE_BOOL = true;
     private static final String SUCCESS_ID = "successId";
     private static final String STATUS_CODES_SHOULD_MATCH = "Status codes should match";
@@ -40,7 +41,7 @@ class NotificationControllerTest {
 
     @BeforeEach
     void setup() {
-        validRequestBodyTrue = new WelcomeEmail(VALID_EMAIL, TRUE_BOOL);
+        validRequestBodyTrue = new WelcomeEmail(VALID_EMAIL, TRUE_BOOL, FULL_NAME);
 
         subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
@@ -53,7 +54,6 @@ class NotificationControllerTest {
 
         when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
         when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
-        when(notificationService.mediaNewUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);
         when(notificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);
     }
 
@@ -76,15 +76,6 @@ class NotificationControllerTest {
     @Test
     void testSendSubscriptionReturnsOkResponse() {
         ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmail(subscriptionEmail);
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), STATUS_CODES_SHOULD_MATCH);
-        assertTrue(Objects.requireNonNull(responseEntity.getBody()).contains(SUCCESS_ID),
-                   "Response content does not contain the ID");
-    }
-
-    @Test
-    void testSendMediaAccountEmailReturnsOkResponse() {
-        ResponseEntity<String> responseEntity = notificationController.sendMediaAccountEmail(createMediaSetupEmail);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), STATUS_CODES_SHOULD_MATCH);
         assertTrue(Objects.requireNonNull(responseEntity.getBody()).contains(SUCCESS_ID),

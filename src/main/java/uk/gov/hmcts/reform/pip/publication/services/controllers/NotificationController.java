@@ -101,22 +101,6 @@ public class NotificationController {
     }
 
     @ApiResponses({
-        @ApiResponse(code = 200, message = "Created media account email successfully sent with referenceId {Id}"),
-        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR),
-        @ApiResponse(code = 400, message = NOTIFICATION_ERROR)
-    })
-    @ApiOperation("Send welcome email to new media account user.")
-    @ApiImplicitParam(name = BODY, example = "{\n email: 'example@email.com',"
-        + "fullName: 'fullName' \n}")
-    @PostMapping("/created/media")
-    public ResponseEntity<String> sendMediaAccountEmail(@RequestBody CreateMediaSetupEmail body) {
-        return ResponseEntity.ok(String.format(
-            "Created media account email successfully sent with referenceId %s",
-            notificationService.mediaNewUserEmailRequest(body)
-        ));
-    }
-
-    @ApiResponses({
         @ApiResponse(code = 200, message = "Duplicate media account email successfully sent with referenceId {Id}"),
         @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR),
         @ApiResponse(code = 400, message = NOTIFICATION_ERROR)

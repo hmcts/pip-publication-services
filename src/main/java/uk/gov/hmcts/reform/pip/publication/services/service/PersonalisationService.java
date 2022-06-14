@@ -156,18 +156,6 @@ public class PersonalisationService {
     }
 
     /**
-     * Handles the personalisation for the media account email.
-     * @param body The body of the admin email.
-     * @return The personalisation map for the media account email.
-     */
-    public Map<String, Object> buildMediaAccountPersonalisation(CreateMediaSetupEmail body) {
-        Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(FORENAME, body.getFullName());
-        personalisation.put(FORGOT_PASSWORD_PROCESS_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
-        return personalisation;
-    }
-
-    /**
      * Handles the personalisation for the duplicate media account email.
      * @param body The body of the admin email.
      * @return The personalisation map for the duplicate media account email.

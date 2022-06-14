@@ -37,11 +37,12 @@ class NotificationServiceTest {
         entry("sign_in_page_link", "http://www.google.com"),
         entry("media_sign_in_link", "http://www.google.com")
     );
+    private static final String FULL_NAME = "fullName";
     private static final String EMAIL = "test@email.com";
     private static final WelcomeEmail VALID_BODY_EXISTING = new WelcomeEmail(
-        EMAIL, true);
+        EMAIL, true, FULL_NAME);
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
-        EMAIL, false);
+        EMAIL, false, FULL_NAME);
     private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
         EMAIL, "test_forename", "test_surname");
     static final String SUCCESS_REF_ID = "successRefId";
@@ -50,12 +51,6 @@ class NotificationServiceTest {
                                                                              Templates.NEW_USER_WELCOME_EMAIL.template,
                                                                              personalisationMap,
                                                                              SUCCESS_REF_ID
-    );
-
-    private final EmailToSend validEmailBodyForNewMediaUserClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
-        Templates.MEDIA_NEW_ACCOUNT_SETUP.template,
-        personalisationMap,
-        SUCCESS_REF_ID
     );
 
     private final EmailToSend validEmailBodyForDuplicateMediaUserClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
@@ -86,7 +81,6 @@ class NotificationServiceTest {
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
         when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
-        when(emailService.sendEmail(validEmailBodyForNewMediaUserClient)).thenReturn(sendEmailResponse);
         when(emailService.sendEmail(validEmailBodyForDuplicateMediaUserClient)).thenReturn(sendEmailResponse);
     }
 
@@ -157,20 +151,6 @@ class NotificationServiceTest {
         assertThrows(UnsupportedOperationException.class, () ->
             notificationService.subscriptionEmailRequest(subscriptionEmail));
 
-    }
-
-    @Test
-    void testValidPayloadReturnsSuccessNewMediaAccount() {
-        CreateMediaSetupEmail createMediaSetupEmail = new CreateMediaSetupEmail();
-        createMediaSetupEmail.setFullName("test_forename");
-        createMediaSetupEmail.setEmail(EMAIL);
-
-        when(emailService.buildCreatedMediaSetupEmail(createMediaSetupEmail,
-                                                      Templates.MEDIA_NEW_ACCOUNT_SETUP.template))
-            .thenReturn(validEmailBodyForNewMediaUserClient);
-        assertEquals(SUCCESS_REF_ID, notificationService.mediaNewUserEmailRequest(createMediaSetupEmail),
-                     EXISTING_REFERENCE_ID
-        );
     }
 
     @Test
