@@ -26,7 +26,7 @@ public class ThirdPartyService {
     @Autowired
     private WebClient.Builder webClient;
 
-    public String handleCourtelCall(String api, Object payload) {
+    public String handleThirdPartyCall(String api, Object payload) {
         webClient.build().post().uri(api)
             .bodyValue(payload)
             .retrieve()

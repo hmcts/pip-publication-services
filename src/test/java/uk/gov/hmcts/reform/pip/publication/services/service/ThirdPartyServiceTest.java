@@ -52,7 +52,7 @@ class ThirdPartyServiceTest {
                                                                ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
-        String response = thirdPartyService.handleCourtelCall(API, PAYLOAD);
+        String response = thirdPartyService.handleThirdPartyCall(API, PAYLOAD);
         assertEquals(String.format("Successfully sent list to Courtel at: %s", API), response,
                      "Returned messages should match");
     }
@@ -65,7 +65,7 @@ class ThirdPartyServiceTest {
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
-            thirdPartyService.handleCourtelCall(API, PAYLOAD), "Should throw ThirdPartyException");
+            thirdPartyService.handleThirdPartyCall(API, PAYLOAD), "Should throw ThirdPartyException");
         assertTrue(ex.getMessage().contains(String.format("Third party request to: %s failed", API)),
                    "Messages should match");
     }
@@ -78,7 +78,7 @@ class ThirdPartyServiceTest {
                                                     .addHeader("Content-Type", ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD));
 
-        String response = thirdPartyService.handleCourtelCall(API, PAYLOAD);
+        String response = thirdPartyService.handleThirdPartyCall(API, PAYLOAD);
         assertEquals(String.format("Successfully sent list to Courtel at: %s", API), response,
                      "Returned messages should match");
     }

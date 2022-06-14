@@ -150,7 +150,7 @@ class NotificationServiceTest {
         byte[] file = new byte[10];
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
         when(dataManagementService.getArtefactFlatFile(RAND_UUID)).thenReturn(file);
-        when(thirdPartyService.handleCourtelCall(API_DESTINATION, file)).thenReturn(SUCCESS_REF_ID);
+        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, file)).thenReturn(SUCCESS_REF_ID);
 
         ThirdPartySubscription subscription = new ThirdPartySubscription();
         subscription.setArtefactIds(List.of(RAND_UUID));
@@ -167,7 +167,7 @@ class NotificationServiceTest {
         String jsonPayload = "test";
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
-        when(thirdPartyService.handleCourtelCall(API_DESTINATION, jsonPayload)).thenReturn(SUCCESS_REF_ID);
+        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, jsonPayload)).thenReturn(SUCCESS_REF_ID);
 
         ThirdPartySubscription subscription = new ThirdPartySubscription();
         subscription.setArtefactIds(List.of(RAND_UUID));

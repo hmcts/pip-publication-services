@@ -80,12 +80,12 @@ public class NotificationService {
         body.getArtefactIds().forEach(artefactId -> {
             Artefact artefact = dataManagementService.getArtefact(artefactId);
             if (artefact.getIsFlatFile()) {
-                log.info(thirdPartyService.handleCourtelCall(body.getApiDestination(),
-                                                           dataManagementService.getArtefactFlatFile(
+                log.info(thirdPartyService.handleThirdPartyCall(body.getApiDestination(),
+                                                                dataManagementService.getArtefactFlatFile(
                                                                artefact.getArtefactId())));
             } else {
-                log.info(thirdPartyService.handleCourtelCall(body.getApiDestination(),
-                                                           dataManagementService.getArtefactJsonBlob(
+                log.info(thirdPartyService.handleThirdPartyCall(body.getApiDestination(),
+                                                                dataManagementService.getArtefactJsonBlob(
                                                                artefact.getArtefactId())));
             }
         });
