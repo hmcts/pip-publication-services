@@ -21,5 +21,9 @@ java:
           alias: INSTRUMENTATION_KEY
         - name: app-pip-data-management-scope
           alias: DATA_MANAGEMENT_AZ_API
+        - name: third-party-number-of-retries
+          alias: NUM_OF_RETRIES
+        - name: third-party-seconds-backoff
+          alias: SECONDS_BACKOFF
   environment:
 
