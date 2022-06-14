@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreateMediaSetupEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -194,6 +195,44 @@ class EmailServiceTest {
 
         assertEquals(exceptionMessage, notificationClientException.getMessage(),
                      "Exception message does not match expected exception");
+    }
+
+    @Test
+    void newMediaUserValidEmailReturnsSuccess() {
+        CreateMediaSetupEmail createMediaSetupEmail = new CreateMediaSetupEmail();
+        createMediaSetupEmail.setFullName("testname");
+        createMediaSetupEmail.setEmail(EMAIL);
+
+        when(personalisationService.buildMediaAccountPersonalisation(createMediaSetupEmail))
+            .thenReturn(personalisation);
+
+        EmailToSend aadEmail = emailService.buildCreatedMediaSetupEmail(
+            createMediaSetupEmail, Templates.MEDIA_NEW_ACCOUNT_SETUP.template);
+
+        assertEquals(EMAIL, aadEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, aadEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
+        assertNotNull(aadEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
+        assertEquals(Templates.MEDIA_NEW_ACCOUNT_SETUP.template, aadEmail.getTemplate(),
+                     TEMPLATE_MESSAGE);
+    }
+
+    @Test
+    void duplicateMediaUserValidEmailReturnsSuccess() {
+        CreateMediaSetupEmail duplicateMediaSetupEmail = new CreateMediaSetupEmail();
+        duplicateMediaSetupEmail.setFullName("testname");
+        duplicateMediaSetupEmail.setEmail(EMAIL);
+
+        when(personalisationService.buildDuplicateMediaAccountPersonalisation(duplicateMediaSetupEmail))
+            .thenReturn(personalisation);
+
+        EmailToSend aadEmail = emailService.buildDuplicateMediaSetupEmail(
+            duplicateMediaSetupEmail, Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template);
+
+        assertEquals(EMAIL, aadEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, aadEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
+        assertNotNull(aadEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
+        assertEquals(Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template, aadEmail.getTemplate(),
+                     TEMPLATE_MESSAGE);
     }
 
 }

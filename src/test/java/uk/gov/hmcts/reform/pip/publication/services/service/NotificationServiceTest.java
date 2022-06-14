@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreateMediaSetupEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -33,23 +34,40 @@ class NotificationServiceTest {
         entry("surname", VALID_BODY_AAD.getSurname()),
         entry("first_name", VALID_BODY_AAD.getForename()),
         entry("reset_password_link", "http://www.test.com"),
-        entry("sign_in_page_link", "http://www.google.com")
+        entry("sign_in_page_link", "http://www.google.com"),
+        entry("media_sign_in_link", "http://www.google.com")
     );
-
+    private static final String EMAIL = "test@email.com";
     private static final WelcomeEmail VALID_BODY_EXISTING = new WelcomeEmail(
-        "test@email.com", true);
+        EMAIL, true);
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
-        "test@email.com", false);
+        EMAIL, false);
     private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
-        "test@email.com", "test_forename", "test_surname");
+        EMAIL, "test_forename", "test_surname");
     static final String SUCCESS_REF_ID = "successRefId";
+
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
                                                                              Templates.NEW_USER_WELCOME_EMAIL.template,
                                                                              personalisationMap,
                                                                              SUCCESS_REF_ID
     );
 
+    private final EmailToSend validEmailBodyForNewMediaUserClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
+        Templates.MEDIA_NEW_ACCOUNT_SETUP.template,
+        personalisationMap,
+        SUCCESS_REF_ID
+    );
+
+    private final EmailToSend validEmailBodyForDuplicateMediaUserClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
+        Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template,
+        personalisationMap,
+        SUCCESS_REF_ID
+    );
+
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
+
+    private static final String EXISTING_REFERENCE_ID =
+        "Existing user with valid JSON should return successful referenceId.";
 
     @Mock
     private SendEmailResponse sendEmailResponse;
@@ -68,6 +86,8 @@ class NotificationServiceTest {
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
         when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
+        when(emailService.sendEmail(validEmailBodyForNewMediaUserClient)).thenReturn(sendEmailResponse);
+        when(emailService.sendEmail(validEmailBodyForDuplicateMediaUserClient)).thenReturn(sendEmailResponse);
     }
 
     @Test
@@ -75,7 +95,7 @@ class NotificationServiceTest {
         when(emailService.buildWelcomeEmail(VALID_BODY_EXISTING, Templates.EXISTING_USER_WELCOME_EMAIL.template))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, notificationService.handleWelcomeEmailRequest(VALID_BODY_EXISTING),
-                     "Existing user with valid JSON should return successful referenceId."
+                     EXISTING_REFERENCE_ID
         );
     }
 
@@ -84,7 +104,7 @@ class NotificationServiceTest {
         when(emailService.buildWelcomeEmail(VALID_BODY_NEW, Templates.NEW_USER_WELCOME_EMAIL.template))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, notificationService.handleWelcomeEmailRequest(VALID_BODY_NEW),
-                     "Existing user with valid JSON should return successful referenceId."
+                     EXISTING_REFERENCE_ID
         );
     }
 
@@ -137,5 +157,33 @@ class NotificationServiceTest {
         assertThrows(UnsupportedOperationException.class, () ->
             notificationService.subscriptionEmailRequest(subscriptionEmail));
 
+    }
+
+    @Test
+    void testValidPayloadReturnsSuccessNewMediaAccount() {
+        CreateMediaSetupEmail createMediaSetupEmail = new CreateMediaSetupEmail();
+        createMediaSetupEmail.setFullName("test_forename");
+        createMediaSetupEmail.setEmail(EMAIL);
+
+        when(emailService.buildCreatedMediaSetupEmail(createMediaSetupEmail,
+                                                      Templates.MEDIA_NEW_ACCOUNT_SETUP.template))
+            .thenReturn(validEmailBodyForNewMediaUserClient);
+        assertEquals(SUCCESS_REF_ID, notificationService.mediaNewUserEmailRequest(createMediaSetupEmail),
+                     EXISTING_REFERENCE_ID
+        );
+    }
+
+    @Test
+    void testValidPayloadReturnsSuccessDuplicateMediaAccount() {
+        CreateMediaSetupEmail createMediaSetupEmail = new CreateMediaSetupEmail();
+        createMediaSetupEmail.setFullName("test_forename");
+        createMediaSetupEmail.setEmail(EMAIL);
+
+        when(emailService.buildDuplicateMediaSetupEmail(createMediaSetupEmail,
+                                                      Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template))
+            .thenReturn(validEmailBodyForDuplicateMediaUserClient);
+        assertEquals(SUCCESS_REF_ID, notificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail),
+                     EXISTING_REFERENCE_ID
+        );
     }
 }

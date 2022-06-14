@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigPropertie
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreateMediaSetupEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -35,10 +36,12 @@ public class PersonalisationService {
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
+    private static final String MEDIA_SIGN_IN_LINK = "media_sign_in_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String FORGOT_PASSWORD_PROCESS_LINK = "forgot_password_process_link";
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
+    private static final String FULL_NAME = "full_name";
     private static final String CASE_NUMBERS = "case_num";
     private static final String DISPLAY_CASE_NUMBERS = "display_case_num";
     private static final String CASE_URN = "case_urn";
@@ -150,6 +153,30 @@ public class PersonalisationService {
             personalisation.put(DISPLAY_LOCATIONS, YES);
             personalisation.put(LOCATIONS, subLocation.getName());
         }
+    }
+
+    /**
+     * Handles the personalisation for the media account email.
+     * @param body The body of the admin email.
+     * @return The personalisation map for the media account email.
+     */
+    public Map<String, Object> buildMediaAccountPersonalisation(CreateMediaSetupEmail body) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(FORENAME, body.getFullName());
+        personalisation.put(FORGOT_PASSWORD_PROCESS_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
+        return personalisation;
+    }
+
+    /**
+     * Handles the personalisation for the duplicate media account email.
+     * @param body The body of the admin email.
+     * @return The personalisation map for the duplicate media account email.
+     */
+    public Map<String, Object> buildDuplicateMediaAccountPersonalisation(CreateMediaSetupEmail body) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(FULL_NAME, body.getFullName());
+        personalisation.put(MEDIA_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadSignInPageLink());
+        return personalisation;
     }
 
 }

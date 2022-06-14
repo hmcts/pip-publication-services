@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreateMediaSetupEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -62,5 +63,33 @@ public class NotificationService {
             throw new UnsupportedOperationException(
                 "Subscription service does not currently support publications for JSON payloads");
         }
+    }
+
+    /**
+     * Handles the incoming request for Media account welcome emails,
+     * checks the json payload and builds and sends the email.
+     *
+     * @param body JSONObject containing the email and forename/surname values e.g.
+     *             {email: 'example@email.com', fullname: 'foo bar'}
+     */
+    public String mediaNewUserEmailRequest(CreateMediaSetupEmail body) {
+        EmailToSend email = emailService.buildCreatedMediaSetupEmail(body,
+                                                                       Templates.MEDIA_NEW_ACCOUNT_SETUP.template);
+        return emailService.sendEmail(email)
+            .getReference().orElse(null);
+    }
+
+    /**
+     * Handles the incoming request for duplicate media account emails,
+     * checks the json payload and builds and sends the email.
+     *
+     * @param body JSONObject containing the email and forename/surname values e.g.
+     *             {email: 'example@email.com', fullname: 'foo bar'}
+     */
+    public String mediaDuplicateUserEmailRequest(CreateMediaSetupEmail body) {
+        EmailToSend email = emailService.buildDuplicateMediaSetupEmail(body,
+                                                                     Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template);
+        return emailService.sendEmail(email)
+            .getReference().orElse(null);
     }
 }
