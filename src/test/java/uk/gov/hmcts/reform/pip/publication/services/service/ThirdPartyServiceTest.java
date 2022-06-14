@@ -49,7 +49,7 @@ class ThirdPartyServiceTest {
                                                                ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
-        String response = thirdPartyService.handleCourtelCall(API, PAYLOAD);
+        String response = thirdPartyService.handleThirdPartyCall(API, PAYLOAD);
         assertEquals(String.format("Successfully sent list to Courtel at: %s", API), response,
                      "Returned messages should match");
     }
@@ -58,7 +58,7 @@ class ThirdPartyServiceTest {
     void testHandleCourtelCallReturnsFailed() {
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        String response = thirdPartyService.handleCourtelCall(API, PAYLOAD);
+        String response = thirdPartyService.handleThirdPartyCall(API, PAYLOAD);
         assertEquals("Request Failed", response, "Returned messages should match");
     }
 }
