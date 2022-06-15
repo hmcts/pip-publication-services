@@ -77,18 +77,18 @@ public class NotificationService {
      * @return String of successful POST.
      */
     public String handleThirdParty(ThirdPartySubscription body) {
-        body.getArtefactIds().forEach(artefactId -> {
-            Artefact artefact = dataManagementService.getArtefact(artefactId);
-            if (artefact.getIsFlatFile()) {
-                log.info(thirdPartyService.handleThirdPartyCall(body.getApiDestination(),
-                                                                dataManagementService.getArtefactFlatFile(
-                                                               artefact.getArtefactId())));
-            } else {
-                log.info(thirdPartyService.handleThirdPartyCall(body.getApiDestination(),
-                                                                dataManagementService.getArtefactJsonBlob(
-                                                               artefact.getArtefactId())));
-            }
-        });
+        Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
+        if (artefact.getIsFlatFile()) {
+            log.info(thirdPartyService.handleThirdPartyCall(body.getApiDestination(),
+                                                            dataManagementService.getArtefactFlatFile(
+                                                                artefact.getArtefactId())));
+        } else {
+            log.info(thirdPartyService.handleThirdPartyCall(
+                body.getApiDestination(),
+                dataManagementService.getArtefactJsonBlob(
+                    artefact.getArtefactId())
+            ));
+        }
         return String.format(SUCCESS_MESSAGE, body.getApiDestination());
     }
 }

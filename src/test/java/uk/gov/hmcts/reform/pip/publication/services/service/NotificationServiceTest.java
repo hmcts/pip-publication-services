@@ -153,7 +153,7 @@ class NotificationServiceTest {
         when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, file)).thenReturn(SUCCESS_REF_ID);
 
         ThirdPartySubscription subscription = new ThirdPartySubscription();
-        subscription.setArtefactIds(List.of(RAND_UUID));
+        subscription.setArtefactId(RAND_UUID);
         subscription.setApiDestination(API_DESTINATION);
 
         assertEquals(SUCCESS_API_SENT, notificationService.handleThirdParty(subscription),
@@ -170,7 +170,7 @@ class NotificationServiceTest {
         when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, jsonPayload)).thenReturn(SUCCESS_REF_ID);
 
         ThirdPartySubscription subscription = new ThirdPartySubscription();
-        subscription.setArtefactIds(List.of(RAND_UUID));
+        subscription.setArtefactId(RAND_UUID);
         subscription.setApiDestination(API_DESTINATION);
 
         assertEquals(SUCCESS_API_SENT, notificationService.handleThirdParty(subscription),

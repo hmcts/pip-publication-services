@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.pip.publication.services.models.request;
 
 import lombok.Data;
 
-import java.util.List;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
 
@@ -13,5 +12,5 @@ public class ThirdPartySubscription {
     String apiDestination;
 
     @NotNull
-    List<UUID> artefactIds;
+    UUID artefactId;
 }
