@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -49,7 +48,7 @@ class NotificationControllerTest {
         validRequestBodyTrue = new WelcomeEmail(VALID_EMAIL, TRUE_BOOL);
         createdAdminWelcomeEmailValidBody = new CreatedAdminWelcomeEmail(VALID_EMAIL, TEST, TEST);
         thirdPartySubscription.setApiDestination(TEST);
-        thirdPartySubscription.setArtefactIds(List.of(TEST_ID));
+        thirdPartySubscription.setArtefactId(TEST_ID);
 
         subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
