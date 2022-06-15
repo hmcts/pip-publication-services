@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @Api(tags = "Publication Services notification API")
@@ -92,6 +93,15 @@ public class NotificationController {
     public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody SubscriptionEmail body) {
         return ResponseEntity.ok(String.format(
             "Subscription email successfully sent to email: %s with reference id: %s", body.getEmail(),
-            notificationService.subscriptionEmailRequest(body)));
+            notificationService.subscriptionEmailRequest(body)
+        ));
+    }
+
+    @PostMapping("/unidentified-blob")
+    public ResponseEntity<String> sendUnidentifiedBlobEmail(@RequestBody List<Integer> locationIds) {
+        return ResponseEntity.ok(String.format(
+            "Unidentified blob email successfully sent with reference id: %s",
+            notificationService.unidentifiedBlobEmailRequest(locationIds)
+        ));
     }
 }

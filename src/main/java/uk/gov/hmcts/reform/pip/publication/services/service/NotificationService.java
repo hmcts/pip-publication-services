@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class NotificationService {
@@ -62,5 +64,17 @@ public class NotificationService {
             throw new UnsupportedOperationException(
                 "Subscription service does not currently support publications for JSON payloads");
         }
+    }
+
+    /**
+     * This method handles the sending of the unidentified blobs email.
+     *
+     * @param locationIds A list of location Ids associated with unidentified blobs
+     * @return The ID that references the unidentified blobs email.
+     */
+    public String unidentifiedBlobEmailRequest(List<Integer> locationIds) {
+        EmailToSend email = emailService.buildUnidentifiedBlobsEmail(locationIds, Templates.BAD_BLOB_EMAIL.template);
+
+        return emailService.sendEmail(email).getReference().orElse(null);
     }
 }

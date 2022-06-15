@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -47,6 +48,11 @@ public class EmailService {
         return generateEmail(body.getEmail(), template,
                              personalisationService.buildRawDataSubscriptionPersonalisation(body, artefact));
 
+    }
+
+    protected EmailToSend buildUnidentifiedBlobsEmail(List<Integer> locationIds, String template) {
+        return generateEmail("joshua.blackmoor@justice.gov.uk", template,
+                             personalisationService.buildUnidentifiedBlobsPersonalisation(locationIds));
     }
 
     public EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {
