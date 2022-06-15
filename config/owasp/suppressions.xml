@@ -55,6 +55,7 @@
     <cve>CVE-2022-22965</cve>
     <cve>CVE-2022-22968</cve>
     <cve>CVE-2022-22970</cve>
+    <cve>CVE-2022-22978</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -68,6 +69,7 @@
     <cve>CVE-2022-22965</cve>
     <cve>CVE-2022-22968</cve>
     <cve>CVE-2022-22970</cve>
+    <cve>CVE-2022-22978</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -85,6 +87,7 @@
     <cve>CVE-2021-22112</cve>
     <cve>CVE-2022-22976</cve>
     <cve>CVE-2022-22970</cve>
+    <cve>CVE-2022-22978</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -95,6 +98,7 @@
     <cve>CVE-2021-22112</cve>
     <cve>CVE-2022-22976</cve>
     <cve>CVE-2022-22970</cve>
+    <cve>CVE-2022-22978</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
