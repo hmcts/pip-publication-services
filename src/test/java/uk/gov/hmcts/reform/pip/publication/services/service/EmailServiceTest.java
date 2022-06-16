@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class EmailServiceTest {
 
     private static final String EMAIL = "test@email.com";
@@ -50,6 +52,7 @@ class EmailServiceTest {
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
     private static final String REFERENCE_ID_MESSAGE = "Reference ID is present";
     private static final String TEMPLATE_MESSAGE = "Template does not match";
+    private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
     @BeforeEach
     void setup() {
@@ -196,4 +199,19 @@ class EmailServiceTest {
                      "Exception message does not match expected exception");
     }
 
+    @Test
+    void testMediaApplicationReportingEmailReturnsSuccess() {
+
+        when(personalisationService.buildMediaApplicationsReportingPersonalisation(TEST_BYTE))
+            .thenReturn(personalisation);
+
+        EmailToSend mediaReportingEmail = emailService
+            .buildMediaApplicationReportingEmail(TEST_BYTE,
+                                                 Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template);
+
+        assertEquals(EMAIL, mediaReportingEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, mediaReportingEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
+        assertEquals(Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template, mediaReportingEmail.getTemplate(),
+                     TEMPLATE_MESSAGE);
+    }
 }

@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.apache.http.entity.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,7 +17,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.client.WebClientConfigurationTest;
+import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsString;
@@ -38,10 +45,35 @@ class NotifyTest {
     private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
+    private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
+
+    private static final UUID ID = UUID.randomUUID();
+    private static final String ID_STRING = UUID.randomUUID().toString();
+    private static final String FULL_NAME = "Test user";
+    private static final String EMAIL = "test@email.com";
+    private static final String EMPLOYER = "Test employer";
+    private static final String STATUS = "APPROVED";
+    private static final LocalDateTime DATE_TIME = LocalDateTime.now();
+    private static final String IMAGE_NAME = "test-image.png";
+
+    private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
+        List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
+                                     ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME));
+
+
+
+    String validMediaReportingJson;
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
 
     @Autowired
     private MockMvc mockMvc;
+
+    @BeforeEach
+    void setup() throws JsonProcessingException {
+        ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
+
+        validMediaReportingJson = ow.writeValueAsString(MEDIA_APPLICATION_LIST);
+    }
 
     @Test
     void testValidPayloadReturnsSuccessExisting() throws Exception {
@@ -103,6 +135,22 @@ class NotifyTest {
                             .content(VALID_ADMIN_CREATION_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testValidPayloadMediaReportingEmail() throws Exception {
+        mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
+                            .content(validMediaReportingJson)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void testInvalidPayloadMediaReportingEmail() throws Exception {
+        mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
+                            .content("invalid content")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

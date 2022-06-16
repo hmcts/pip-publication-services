@@ -130,7 +130,4 @@ class DataManagementServiceTest {
         assertTrue(notifyException.getMessage().contains("404"),
                    "Exception response does not contain the status code in the message");
     }
-
-
-
 }
