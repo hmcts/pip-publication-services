@@ -156,5 +156,4 @@ class DataManagementServiceTest {
         assertTrue(notifyException.getMessage().contains("501"),
                    EXCEPTION_RESPONSE_MESSAGE);
     }
-
 }
