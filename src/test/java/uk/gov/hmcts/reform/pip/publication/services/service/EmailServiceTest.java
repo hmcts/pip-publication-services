@@ -54,8 +54,11 @@ class EmailServiceTest {
     private static final String TEMPLATE_MESSAGE = "Template does not match";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
+    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
+
     @BeforeEach
     void setup() {
+        LOCATIONS_MAP.put("test", "1234");
         sendEmailResponse = mock(SendEmailResponse.class);
         personalisation.put("Value", "OtherValue");
     }
@@ -215,5 +218,20 @@ class EmailServiceTest {
                      TEMPLATE_MESSAGE);
     }
 
-    //TODO tests in here
+    @Test
+    void testUnidentifiedBlobEmailReturnsSuccess() {
+        when(personalisationService.buildUnidentifiedBlobsPersonalisation(LOCATIONS_MAP))
+            .thenReturn(personalisation);
+
+        EmailToSend unidentifiedBlobEmail = emailService
+            .buildUnidentifiedBlobsEmail(LOCATIONS_MAP,
+                                         Templates.BAD_BLOB_EMAIL.template);
+
+        assertEquals(EMAIL, unidentifiedBlobEmail.getEmailAddress(),
+                     GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, unidentifiedBlobEmail.getPersonalisation(),
+                     PERSONALISATION_MESSAGE);
+        assertEquals(Templates.BAD_BLOB_EMAIL.template, unidentifiedBlobEmail.getTemplate(),
+                     TEMPLATE_MESSAGE);
+    }
 }

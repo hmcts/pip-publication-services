@@ -49,6 +49,8 @@ class NotificationServiceTest {
     static final String SUCCESS_REF_ID = "successRefId";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
+    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
+
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
                                                                              Templates.NEW_USER_WELCOME_EMAIL.template,
                                                                              personalisationMap,
@@ -74,6 +76,7 @@ class NotificationServiceTest {
 
     @BeforeEach
     void setup() {
+        LOCATIONS_MAP.put("test", "1234");
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
         when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
@@ -124,7 +127,15 @@ class NotificationServiceTest {
 
     }
 
-    //TODO tests in here
+    @Test
+    void testValidPayloadReturnsSuccessUnidentifiedBlob() {
+        when(emailService.buildUnidentifiedBlobsEmail(LOCATIONS_MAP,
+                                                      Templates.BAD_BLOB_EMAIL.template))
+            .thenReturn(validEmailBodyForEmailClient);
+
+        assertEquals(SUCCESS_REF_ID, notificationService.unidentifiedBlobEmailRequest(LOCATIONS_MAP),
+                     "Unidentified blob with valid payload should return successful referenceId.");
+    }
 
     @Test
     void testIsFlatFile() {

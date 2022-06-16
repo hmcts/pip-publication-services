@@ -21,7 +21,9 @@ import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -46,6 +48,7 @@ class NotifyTest {
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
     private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
+    private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
 
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
@@ -60,9 +63,12 @@ class NotifyTest {
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME));
 
+    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
+
 
 
     String validMediaReportingJson;
+    String validLocationsMapJson;
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
 
     @Autowired
@@ -70,9 +76,12 @@ class NotifyTest {
 
     @BeforeEach
     void setup() throws JsonProcessingException {
+        LOCATIONS_MAP.put("test", "1234");
+
         ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
 
         validMediaReportingJson = ow.writeValueAsString(MEDIA_APPLICATION_LIST);
+        validLocationsMapJson = ow.writeValueAsString(LOCATIONS_MAP);
     }
 
     @Test
@@ -246,5 +255,20 @@ class NotifyTest {
         }
     }
 
-    //TODO tests in here
+    @Test
+    void testValidPayloadUnidentifiedBlobEmail() throws Exception {
+
+        mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
+                            .content(validLocationsMapJson)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void testInvalidPayloadUnidentifiedBlobEmail() throws Exception {
+        mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
+                            .content("invalid content")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }
