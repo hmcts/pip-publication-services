@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -87,11 +88,12 @@ public class NotificationService {
     /**
      * This method handles the sending of the unidentified blobs email.
      *
-     * @param locationIds A list of location Ids associated with unidentified blobs
+     * @param locationMap A map of location Ids and provenances associated with unidentified blobs
      * @return The ID that references the unidentified blobs email.
      */
-    public String unidentifiedBlobEmailRequest(List<Integer> locationIds) {
-        EmailToSend email = emailService.buildUnidentifiedBlobsEmail(locationIds, Templates.BAD_BLOB_EMAIL.template);
+    public String unidentifiedBlobEmailRequest(Map<String, String> locationMap) {
+        EmailToSend email = emailService
+            .buildUnidentifiedBlobsEmail(locationMap, Templates.BAD_BLOB_EMAIL.template);
 
         return emailService.sendEmail(email).getReference().orElse(null);
     }

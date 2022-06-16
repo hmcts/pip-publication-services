@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -59,10 +58,10 @@ public class EmailService {
                                 .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
     }
 
-    protected EmailToSend buildUnidentifiedBlobsEmail(List<Integer> locationIds, String template) {
+    protected EmailToSend buildUnidentifiedBlobsEmail(Map<String, String> locationMap, String template) {
         return generateEmail(piTeamEmail, template,
                              personalisationService
-                                .buildUnidentifiedBlobsPersonalisation(locationIds));
+                                .buildUnidentifiedBlobsPersonalisation(locationMap));
     }
 
     public EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {

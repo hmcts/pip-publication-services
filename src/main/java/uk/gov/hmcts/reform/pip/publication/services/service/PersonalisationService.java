@@ -150,9 +150,20 @@ public class PersonalisationService {
         }
     }
 
-    public Map<String, Object> buildUnidentifiedBlobsPersonalisation(List<Integer> locationIds) {
+    /**
+     * Handles the personalisation for the unidentified blob email.
+     * @param locationMap A map of location Ids and provenances associated with unidentified blobs.
+     * @return The personalisation map for the unidentified blob email.
+     */
+    public Map<String, Object> buildUnidentifiedBlobsPersonalisation(Map<String, String> locationMap) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(ARRAY_OF_IDS, locationIds);
+        List<String> listOfUnmatched = new ArrayList<>();
+
+        locationMap.forEach((key, value) ->
+                                listOfUnmatched.add(String.format("%s - %s", key, value)));
+
+
+        personalisation.put(ARRAY_OF_IDS, listOfUnmatched);
         return personalisation;
     }
 
