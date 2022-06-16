@@ -41,4 +41,9 @@ class CustomExceptionTest {
                      EXPECTED_MESSAGE);
     }
 
+    @Test
+    void testCreationOfCsvCreationException() {
+        CsvCreationException csvCreationException = new CsvCreationException(TEST_MESSAGE);
+        assertEquals(TEST_MESSAGE, csvCreationException.getMessage(), EXPECTED_MESSAGE);
+    }
 }

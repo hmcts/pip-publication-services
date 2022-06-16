@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.tls.HandshakeCertificates;
@@ -14,8 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
+import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
@@ -40,13 +46,31 @@ class NotifyTest {
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
     private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY =
-        "{\"apiDestination\": \"https://localhost:4444\", \"artefactIds\": [\"1d7cfeb3-3e4d-44f8-a185-80b9a8971676\"]}";
+        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"1d7cfeb3-3e4d-44f8-a185-80b9a8971676\"}";
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY =
-        "{\"apiDestination\": \"https://localhost:4444\", \"artefactIds\": [\"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"]}";
+        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
     private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY =
-        "{\"apiDestination\": \"http://localhost:4444\", \"artefactIds\": [\"1e565487-23e4-4a25-9364-43277a5180d4\"]}";
+        "{\"apiDestination\": \"http://localhost:4444\", \"artefactId\": \"1e565487-23e4-4a25-9364-43277a5180d4\"}";
     private static final String API_SUBSCRIPTION_URL = "/notify/api";
     private static final String EXTERNAL_PAYLOAD = "test";
+    private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
+
+    private static final UUID ID = UUID.randomUUID();
+    private static final String ID_STRING = UUID.randomUUID().toString();
+    private static final String FULL_NAME = "Test user";
+    private static final String EMAIL = "test_account@hmcts.net";
+    private static final String EMPLOYER = "Test employer";
+    private static final String STATUS = "APPROVED";
+    private static final LocalDateTime DATE_TIME = LocalDateTime.now();
+    private static final String IMAGE_NAME = "test-image.png";
+
+    private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
+        List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
+                                     ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME));
+
+
+
+    private String validMediaReportingJson;
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
 
     private MockWebServer externalApiMockServer;
@@ -60,6 +84,10 @@ class NotifyTest {
         externalApiMockServer = new MockWebServer();
         externalApiMockServer.useHttps(handshakeCertificates.sslSocketFactory(), false);
         externalApiMockServer.start(4444);
+
+        ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
+
+        validMediaReportingJson = ow.writeValueAsString(MEDIA_APPLICATION_LIST);
     }
 
     @AfterEach
@@ -178,6 +206,22 @@ class NotifyTest {
     //        .andExpect(status().isOk()).andExpect(content().string(containsString(
     //            "Request Failed")));
     //}
+
+    @Test
+    void testValidPayloadMediaReportingEmail() throws Exception {
+        mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
+                            .content(validMediaReportingJson)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void testInvalidPayloadMediaReportingEmail() throws Exception {
+        mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
+                            .content("invalid content")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 
     @Test
     void testMissingEmailForSubscriptionReturnsBadRequest() throws Exception {
