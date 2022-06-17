@@ -7,7 +7,12 @@ def product = "pip"
 def component = "publication-services"
 
 def apiSecrets = [ 'pip-ss-kv-${env}' : [
-    secret('gov-uk-notify-api-testing-key', 'NOTIFY_API_KEY')
+    secret('gov-uk-notify-api-testing-key', 'NOTIFY_API_KEY'),
+    secret('app-pip-publication-services-scope', 'APP_URI'),
+    secret('app-pip-publication-services-id', 'CLIENT_ID'),
+    secret('app-pip-publication-services-pwd', 'CLIENT_SECRET'),
+    secret('app-pip-data-management-scope', 'DATA_MANAGEMENT_AZ_API'),
+    secret('app-tenant', 'TENANT_ID')
   ]
 ]
 
@@ -20,7 +25,7 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 }
 
 withPipeline(type, product, component) {
-    
+
   loadVaultSecrets(apiSecrets)
   enableSlackNotifications('#pip-build-notices')
 }

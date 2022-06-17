@@ -3,9 +3,6 @@ package uk.gov.hmcts.reform.pip.publication.services.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.client.WebClientConfigurationTest;
@@ -32,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
 @WithMockUser(username = "admin", authorities = { "APPROLE_api.request.admin" })
 class NotifyTest {
 
@@ -205,45 +200,15 @@ class NotifyTest {
 
     @Test
     void testValidFlatFileRequest() throws Exception {
-        try (MockWebServer mockPublicationServicesEndpoint = new MockWebServer()) {
+        String validBody =
+            "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[\"9\"]},"
+                + "\"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
 
-            mockPublicationServicesEndpoint.start(8081);
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(validBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
-            mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                        .addHeader(
-                                                            "Content-Type",
-                                                            ContentType.APPLICATION_JSON
-                                                        )
-                                                        .setBody("{\"artefactId\": \"" + UUID.randomUUID()
-                                                                     + "\", \"isFlatFile\": true, \"listType\":"
-                                                                     + "\"CIVIL_DAILY_CAUSE_LIST\"}")
-                                                        .setResponseCode(200));
-
-            mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                        .addHeader(
-                                                            "Content-Type",
-                                                            ContentType.APPLICATION_JSON
-                                                        )
-                                                        .setBody("{\"name\": \"thisIsAName\"}")
-                                                        .setResponseCode(200));
-
-            mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                        .addHeader(
-                                                            "Content-Type",
-                                                            ContentType.APPLICATION_OCTET_STREAM
-                                                        )
-                                                        .setBody("abcd")
-                                                        .setResponseCode(200));
-
-            String validBody =
-                "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
-                    + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
-
-            mockMvc.perform(post(SUBSCRIPTION_URL)
-                                .content(validBody)
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        }
     }
 
 }
