@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    pre {
+      font-family: Consolas,"courier new";
+      color: darkblue;
+      background-color: #f1f1f1;
+      padding: 2px;
+      font-size: 105%;
+    }
+  </style>
+  <meta charset="UTF-8"/>
+  <title>This is a file for testing JSON to PDF creation</title>
+</head>
+<body>
+<div class = "header">
+<img src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png"/>
+<h1>An example file for the creation of PDF lists from our JSON artefact payloads.</h1>
+</div>
+
+<h4>Currently, this is basically just a pretty-printed JSON file with a logo, but can be built on very easily using <a href="https://www.thymeleaf.org/">Thymeleaf templating</a></h4>
+
+<pre><code th:text="${jsonBody}"></code></pre>
+</body>
+</html>

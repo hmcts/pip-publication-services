@@ -21,6 +21,8 @@ public class DataManagementService {
     @Value("${service-to-service.data-management}")
     private String url;
 
+    private String dataManagementRequestError = "Request to data management failed due to: ";
+
     @Autowired
     WebClient webClient;
 
@@ -31,7 +33,7 @@ public class DataManagementService {
                 .retrieve()
                 .bodyToMono(Artefact.class).block();
         } catch (WebClientResponseException ex) {
-            log.error("Request to data management failed due to: " + ex.getResponseBodyAsString());
+            log.error(dataManagementRequestError + ex.getResponseBodyAsString());
             throw new NotifyException(ex.getMessage());
         }
     }
@@ -42,7 +44,7 @@ public class DataManagementService {
                 .retrieve()
                 .bodyToMono(Location.class).block();
         } catch (WebClientResponseException ex) {
-            log.error("Request to data management failed due to: " + ex.getResponseBodyAsString());
+            log.error(dataManagementRequestError + ex.getResponseBodyAsString());
             throw new NotifyException(ex.getMessage());
         }
     }
@@ -55,7 +57,20 @@ public class DataManagementService {
                 .retrieve()
                 .bodyToMono(byte[].class).block();
         } catch (WebClientResponseException ex) {
-            log.error("Request to data management failed due to: " + ex.getResponseBodyAsString());
+            log.error(dataManagementRequestError + ex.getResponseBodyAsString());
+            throw new NotifyException(ex.getMessage());
+        }
+    }
+
+    public String getArtefactJsonPayload(UUID artefactId) {
+        try {
+            return webClient.get().uri(String.format("%s/publication/%s/payload", url, artefactId))
+                .header("x-admin", "true")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class).block();
+        } catch (WebClientResponseException ex) {
+            log.error(dataManagementRequestError + ex.getResponseBodyAsString());
             throw new NotifyException(ex.getMessage());
         }
     }

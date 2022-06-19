@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
+import com.lowagie.text.DocumentException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
@@ -17,8 +19,11 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminW
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
+import uk.gov.hmcts.reform.pip.publication.services.service.PdfCreationService;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import javax.validation.Valid;
 
 @RestController
@@ -29,6 +34,10 @@ public class NotificationController {
 
     @Autowired
     NotificationService notificationService;
+
+    @Autowired
+    PdfCreationService pdfCreationService;
+
 
     private static final String BAD_PAYLOAD_ERROR_MESSAGE = "BadPayloadException error message";
     private static final String NOTIFY_EXCEPTION_ERROR_MESSAGE = "NotifyException error message";
@@ -113,5 +122,15 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "Subscription email successfully sent to email: %s with reference id: %s", body.getEmail(),
             notificationService.subscriptionEmailRequest(body)));
+    }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "artefactId received"),
+    })
+    @ApiOperation("Create PDF from blob")
+    @PostMapping("/createPDF")
+    public ResponseEntity<String> createPdf(@RequestParam UUID artefactId) throws DocumentException, IOException {
+        String returnedHtml = pdfCreationService.jsonToHtml(artefactId);
+        return ResponseEntity.ok(returnedHtml);
     }
 }
