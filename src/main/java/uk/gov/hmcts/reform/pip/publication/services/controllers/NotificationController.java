@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
@@ -28,7 +29,9 @@ import javax.validation.Valid;
 public class NotificationController {
 
     @Autowired
-    NotificationService notificationService;
+    private NotificationService notificationService;
+
+    private static final String BAD_PAYLOAD_EXCEPTION_MESSAGE = "BadPayloadException error message";
 
     private static final String BAD_PAYLOAD_ERROR_MESSAGE = "BadPayloadException error message";
     private static final String NOTIFY_EXCEPTION_ERROR_MESSAGE = "NotifyException error message";
@@ -114,4 +117,15 @@ public class NotificationController {
             "Subscription email successfully sent to email: %s with reference id: %s", body.getEmail(),
             notificationService.subscriptionEmailRequest(body)));
     }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Successfully sent list to {thirdParty} at: {api}"),
+        @ApiResponse(code = 400, message = BAD_PAYLOAD_EXCEPTION_MESSAGE)
+    })
+    @ApiOperation("Send list to third party publisher")
+    @PostMapping("/api")
+    public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscription body) {
+        return ResponseEntity.ok(notificationService.handleThirdParty(body));
+    }
+
 }
