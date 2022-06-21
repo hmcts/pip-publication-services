@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,4 +35,25 @@ class CustomExceptionTest {
                      EXPECTED_MESSAGE);
     }
 
+    @Test
+    void testCreationOfServiceToServiceException() {
+        ServiceToServiceException exception = new ServiceToServiceException("Test service", TEST_MESSAGE);
+        assertEquals("Request to Test service failed due to: " + TEST_MESSAGE, exception.getMessage(),
+                     EXPECTED_MESSAGE);
+    }
+
+    @Test
+    void testCreationOfThirdPartyServiceException() {
+        ThirdPartyServiceException exception = new ThirdPartyServiceException(
+            new WebClientResponseException(404, TEST_MESSAGE, null, null, null), "testApi");
+        assertEquals("Third party request to: testApi failed after 3 retries due to: 404 " + TEST_MESSAGE,
+                     exception.getMessage(), EXPECTED_MESSAGE);
+
+    }
+
+    @Test
+    void testCreationOfCsvCreationException() {
+        CsvCreationException csvCreationException = new CsvCreationException(TEST_MESSAGE);
+        assertEquals(TEST_MESSAGE, csvCreationException.getMessage(), EXPECTED_MESSAGE);
+    }
 }
