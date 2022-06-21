@@ -61,8 +61,8 @@ public class PdfCreationService {
             builder.usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_3_U); // may be required: select the level of conformance
             // Remember to add one or more fonts.
             File ourFont = new ClassPathResource(
-                "Roboto-Regular.ttf").getFile();
-            builder.useFont(ourFont, "Roboto-Regular");
+                "font1.otf").getFile();
+            builder.useFont(ourFont, "GDS Transport");
             builder.withHtmlContent(html, null);
             builder.toStream(os);
             builder.run();

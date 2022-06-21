@@ -3,14 +3,14 @@
 <head>
   <style>
     body {
-      font-family: 'Roboto-Regular';
+      font-family: 'GDS Transport';
       color: darkblue;
       background-color: #f1f1f1;
       padding: 2px;
       font-size: 105%;
     }
     pre code {
-      font-family: 'Roboto-Regular';
+      font-family: 'GDS Transport';
       color: darkblue;
       background-color: #f1f1f1;
       padding: 2px;
@@ -31,6 +31,7 @@
 
 <h4>Currently, this is basically just a pretty-printed JSON file with a logo, but can be built on very easily using <a href="https://www.thymeleaf.org/" title="Thymeleaf Website">Thymeleaf templating</a></h4>
 
-<pre><code th:text="${jsonBody}"></code></pre>
+<label for="code">This is a label for the code tag.</label>
+<pre><code id="code" th:text="${jsonBody}"></code></pre>
 </body>
 </html>
