@@ -35,6 +35,7 @@ class PersonalisationServiceTest {
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
+    private static final String LINK_TO_FILE = "link_to_file";
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
     private static final String CASE_NUMBERS = "case_num";
@@ -49,6 +50,7 @@ class PersonalisationServiceTest {
     private static final String CASE_URN_VALUE = "1234";
     private static final String CASE_NUMBER_VALUE = "12345678";
     private static final String LOCATION_ID = "12345";
+    private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
     @Autowired
     PersonalisationService personalisationService;
@@ -264,7 +266,12 @@ class PersonalisationServiceTest {
                      "Case number not as expected");
     }
 
+    @Test
+    void testBuildMediaApplicationReportingPersonalisation() {
+        Map<String, Object> personalisation = personalisationService
+            .buildMediaApplicationsReportingPersonalisation(TEST_BYTE);
 
-
-
+        Object csvFile = personalisation.get(LINK_TO_FILE);
+        assertNotNull(csvFile, "No csvFile key was found");
+    }
 }

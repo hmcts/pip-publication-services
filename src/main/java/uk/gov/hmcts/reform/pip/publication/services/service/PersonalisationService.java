@@ -37,6 +37,7 @@ public class PersonalisationService {
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String FORGOT_PASSWORD_PROCESS_LINK = "forgot_password_process_link";
+    private static final String LINK_TO_FILE = "link_to_file";
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
     private static final String CASE_NUMBERS = "case_num";
@@ -126,6 +127,23 @@ public class PersonalisationService {
         } catch (NotificationClientException e) {
             log.warn("Error adding attachment to flat file email {}. Artefact ID: {}", body.getEmail(),
                      artefact.getArtefactId());
+            throw new NotifyException(e.getMessage());
+        }
+    }
+
+    /**
+     * Handles the personalisation for the media reporting email.
+     * @param csvMediaApplications The csv byte array containing the media applications.
+     * @return The personalisation map for the media reporting email.
+     */
+    public Map<String, Object> buildMediaApplicationsReportingPersonalisation(byte[] csvMediaApplications) {
+        try {
+            Map<String, Object> personalisation = new ConcurrentHashMap<>();
+            personalisation.put(LINK_TO_FILE, EmailClient.prepareUpload(csvMediaApplications, true));
+            return personalisation;
+        } catch (NotificationClientException e) {
+            log.error(String.format("Error adding the csv attachment to the media application "
+                                        + "reporting email with error %s", e.getMessage()));
             throw new NotifyException(e.getMessage());
         }
     }
