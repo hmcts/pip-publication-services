@@ -6,7 +6,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class CreateMediaSetupEmail {
+public class DuplicatedMediaEmail {
     @Email
     @NotNull
     String email;

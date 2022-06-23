@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreateMediaSetupEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -155,7 +155,7 @@ class NotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessDuplicateMediaAccount() {
-        CreateMediaSetupEmail createMediaSetupEmail = new CreateMediaSetupEmail();
+        DuplicatedMediaEmail createMediaSetupEmail = new DuplicatedMediaEmail();
         createMediaSetupEmail.setFullName("test_forename");
         createMediaSetupEmail.setEmail(EMAIL);
 

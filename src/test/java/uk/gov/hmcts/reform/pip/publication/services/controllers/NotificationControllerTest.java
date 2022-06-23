@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreateMediaSetupEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
@@ -31,7 +31,7 @@ class NotificationControllerTest {
 
     private WelcomeEmail validRequestBodyTrue;
     private SubscriptionEmail subscriptionEmail;
-    private CreateMediaSetupEmail createMediaSetupEmail;
+    private DuplicatedMediaEmail createMediaSetupEmail;
 
     @Mock
     private NotificationService notificationService;
@@ -48,7 +48,7 @@ class NotificationControllerTest {
         subscriptionEmail.setArtefactId(UUID.randomUUID());
         subscriptionEmail.setSubscriptions(new HashMap<>());
 
-        createMediaSetupEmail = new CreateMediaSetupEmail();
+        createMediaSetupEmail = new DuplicatedMediaEmail();
         createMediaSetupEmail.setEmail("a@b.com");
         createMediaSetupEmail.setFullName("testName");
 

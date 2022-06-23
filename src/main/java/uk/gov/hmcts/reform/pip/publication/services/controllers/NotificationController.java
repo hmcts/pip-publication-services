@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreateMediaSetupEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
@@ -108,10 +108,10 @@ public class NotificationController {
     @ApiOperation("Send duplicate email to new media account user.")
     @ApiImplicitParam(name = BODY, example = "{\n email: 'example@email.com',"
         + "fullName: 'fullName' \n}")
-    @PostMapping("/created/duplicate/media")
-    public ResponseEntity<String> sendDuplicateMediaAccountEmail(@RequestBody CreateMediaSetupEmail body) {
+    @PostMapping("/duplicate/media")
+    public ResponseEntity<String> sendDuplicateMediaAccountEmail(@RequestBody DuplicatedMediaEmail body) {
         return ResponseEntity.ok(String.format(
-            "Created duplicate media account email successfully sent with referenceId %s",
+            "Duplicate media account email successfully sent with referenceId %s",
             notificationService.mediaDuplicateUserEmailRequest(body)
         ));
     }

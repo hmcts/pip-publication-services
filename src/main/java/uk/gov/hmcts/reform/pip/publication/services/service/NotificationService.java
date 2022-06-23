@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreateMediaSetupEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
@@ -72,7 +72,7 @@ public class NotificationService {
      * @param body JSONObject containing the email and forename/surname values e.g.
      *             {email: 'example@email.com', fullname: 'foo bar'}
      */
-    public String mediaDuplicateUserEmailRequest(CreateMediaSetupEmail body) {
+    public String mediaDuplicateUserEmailRequest(DuplicatedMediaEmail body) {
         EmailToSend email = emailService.buildDuplicateMediaSetupEmail(body,
                                                                      Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template);
         return emailService.sendEmail(email)
