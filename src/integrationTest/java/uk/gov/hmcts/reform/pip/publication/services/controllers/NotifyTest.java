@@ -36,9 +36,14 @@ class NotifyTest {
     private static final String VALID_ADMIN_CREATION_REQUEST_BODY =
         "{\"email\": \"test@email.com\", \"surname\": \"surname\", \"forename\": \"forename\"}";
     private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
+    private static final String VALID_DUPLICATE_MEDIA_REQUEST_BODY =
+        "{\"email\": \"test@email.com\", \"fullName\": \"fullName\"}";
+    private static final String DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY =
+        "{\"email\": \"test@email.com\", \"fullName\":}";
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
+    private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
 
     @Autowired
     private MockMvc mockMvc;
@@ -70,6 +75,24 @@ class NotifyTest {
     }
 
     @Test
+    void testValidPayloadReturnsSuccessDuplicateMedia() throws Exception {
+        mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
+                            .content(VALID_DUPLICATE_MEDIA_REQUEST_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Duplicate media account email successfully sent with referenceId")));
+    }
+
+    @Test
+    void testInvalidPayloadReturnsBadRequestDuplicateMedia() throws Exception {
+        mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
+                            .content(DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void testValidPayloadReturnsSuccessAdminCreation() throws Exception {
         mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
                             .content(VALID_ADMIN_CREATION_REQUEST_BODY)
@@ -92,6 +115,15 @@ class NotifyTest {
     void testUnauthorizedRequestWelcomeEmail() throws Exception {
         mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(VALID_WELCOME_REQUEST_BODY_EXISTING)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "unknown_user", authorities = { "APPROLE_api.request.unknown" })
+    void testUnauthorizedRequestDuplicateMediaEmail() throws Exception {
+        mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
+                            .content(VALID_DUPLICATE_MEDIA_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
     }
