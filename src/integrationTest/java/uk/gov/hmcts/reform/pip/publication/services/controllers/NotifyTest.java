@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.tls.HandshakeCertificates;
 import org.apache.http.entity.ContentType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,28 +14,27 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.client.WebClientConfigurationTest;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.TooManyMethods"})
-@SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class},
+@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.TooManyMethods", "PMD.ImmutableField"})
+@SpringBootTest(classes = {Application.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
 @WithMockUser(username = "admin", authorities = { "APPROLE_api.request.admin" })
 class NotifyTest {
 
@@ -47,9 +47,16 @@ class NotifyTest {
     private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
+    private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY =
+        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"1d7cfeb3-3e4d-44f8-a185-80b9a8971676\"}";
+    private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY =
+        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
+    private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY =
+        "{\"apiDestination\": \"http://localhost:4444\", \"artefactId\": \"1e565487-23e4-4a25-9364-43277a5180d4\"}";
+    private static final String API_SUBSCRIPTION_URL = "/notify/api";
+    private static final String EXTERNAL_PAYLOAD = "test";
     private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
-
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
     private static final String FULL_NAME = "Test user";
@@ -65,23 +72,34 @@ class NotifyTest {
 
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
 
-
-
     String validMediaReportingJson;
     String validLocationsMapJson;
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
+    private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
+        + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
+
+    private MockWebServer externalApiMockServer;
 
     @Autowired
     private MockMvc mockMvc;
 
     @BeforeEach
-    void setup() throws JsonProcessingException {
+    void setup() throws IOException {
         LOCATIONS_MAP.put("test", "1234");
+        HandshakeCertificates handshakeCertificates = localhost();
+        externalApiMockServer = new MockWebServer();
+        externalApiMockServer.useHttps(handshakeCertificates.sslSocketFactory(), false);
+        externalApiMockServer.start(4444);
 
         ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
 
         validMediaReportingJson = ow.writeValueAsString(MEDIA_APPLICATION_LIST);
         validLocationsMapJson = ow.writeValueAsString(LOCATIONS_MAP);
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        externalApiMockServer.close();
     }
 
     @Test
@@ -147,6 +165,58 @@ class NotifyTest {
     }
 
     @Test
+    void testNotifyApiSubscribersJson() throws Exception {
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .addHeader("Content-Type",
+                                                     ContentType.APPLICATION_JSON)
+                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setResponseCode(200));
+
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                                                 .content(THIRD_PARTY_SUBSCRIPTION_JSON_BODY)
+                                                 .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andExpect(content().string(containsString(
+                "Successfully sent list to https://localhost:4444")));
+    }
+
+    @Test
+    void testNotifyApiSubscribersFile() throws Exception {
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .addHeader("Content-Type",
+                                                     ContentType.APPLICATION_JSON)
+                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setResponseCode(200));
+
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                            .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andExpect(content().string(containsString(
+                "Successfully sent list to https://localhost:4444")));
+    }
+
+    @Test
+    void testNotifyApiSubscribersThrowsBadGateway() throws Exception {
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                            .content(THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadGateway());
+    }
+
+    @Test
+    void testNotifyApiSubscriberReturnsError() throws Exception {
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
+
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                            .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound()).andExpect(content().string(containsString(
+                THIRD_PARTY_FAIL_MESSAGE)));
+    }
+
+    @Test
     void testValidPayloadMediaReportingEmail() throws Exception {
         mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
                             .content(validMediaReportingJson)
@@ -204,7 +274,7 @@ class NotifyTest {
 
         String invalidSubscriptionJsonBody =
             "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[]},"
-            + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+                + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(invalidSubscriptionJsonBody)
@@ -214,45 +284,14 @@ class NotifyTest {
 
     @Test
     void testValidFlatFileRequest() throws Exception {
-        try (MockWebServer mockPublicationServicesEndpoint = new MockWebServer()) {
+        String validBody =
+            "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[\"9\"]},"
+                + "\"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
 
-            mockPublicationServicesEndpoint.start(8081);
-
-            mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                        .addHeader(
-                                                            "Content-Type",
-                                                            ContentType.APPLICATION_JSON
-                                                        )
-                                                        .setBody("{\"artefactId\": \"" + UUID.randomUUID()
-                                                                     + "\", \"isFlatFile\": true, \"listType\":"
-                                                                     + "\"CIVIL_DAILY_CAUSE_LIST\"}")
-                                                        .setResponseCode(200));
-
-            mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                        .addHeader(
-                                                            "Content-Type",
-                                                            ContentType.APPLICATION_JSON
-                                                        )
-                                                        .setBody("{\"name\": \"thisIsAName\"}")
-                                                        .setResponseCode(200));
-
-            mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                        .addHeader(
-                                                            "Content-Type",
-                                                            ContentType.APPLICATION_OCTET_STREAM
-                                                        )
-                                                        .setBody("abcd")
-                                                        .setResponseCode(200));
-
-            String validBody =
-                "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
-                    + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
-
-            mockMvc.perform(post(SUBSCRIPTION_URL)
-                                .content(validBody)
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        }
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(validBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
     }
 
     @Test
