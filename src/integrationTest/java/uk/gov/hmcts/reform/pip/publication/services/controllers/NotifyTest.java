@@ -296,11 +296,11 @@ class NotifyTest {
 
     @Test
     void testValidPayloadUnidentifiedBlobEmail() throws Exception {
-
         mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
                             .content(validLocationsMapJson)
                             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk()).andExpect(content().string(
+                containsString("Unidentified blob email successfully sent with reference id:")));
     }
 
     @Test
