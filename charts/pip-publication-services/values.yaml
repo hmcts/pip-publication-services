@@ -24,4 +24,5 @@ java:
         - name: pip-team-email
           alias: PI_TEAM_EMAIL
   environment:
+    SPRING_PROFILES_ACTIVE: dev
 
