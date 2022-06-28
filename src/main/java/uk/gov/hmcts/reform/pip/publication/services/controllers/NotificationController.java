@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -35,6 +36,7 @@ public class NotificationController {
 
     private static final String BAD_PAYLOAD_ERROR_MESSAGE = "BadPayloadException error message";
     private static final String NOTIFY_EXCEPTION_ERROR_MESSAGE = "NotifyException error message";
+    private static final String BODY = "body";
 
     /**
      * api to send welcome emails to new or existing users.
@@ -51,7 +53,7 @@ public class NotificationController {
     })
     @ApiOperation(value = "Send welcome email to new or existing subscribed users",
         notes = "Use the bool isExisting as 'false' to send new user emails or 'true' to send existing user emails ")
-    @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',\n isExisting: 'true'\n}")
+    @ApiImplicitParam(name = BODY, example = "{\n email: 'example@email.com',\n isExisting: 'true'\n}")
     @PostMapping("/welcome-email")
     public ResponseEntity<String> sendWelcomeEmail(@RequestBody WelcomeEmail body) {
         return ResponseEntity.ok(String.format(
@@ -66,7 +68,7 @@ public class NotificationController {
         @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     })
     @ApiOperation("Send welcome email to new Azure Active Directory (AAD) user.")
-    @ApiImplicitParam(name = "body", example = "{\n email: 'example@email.com',"
+    @ApiImplicitParam(name = BODY, example = "{\n email: 'example@email.com',"
         + "\n forename: 'forename', \n"
         + "surname: 'surname' \n}")
     @PostMapping("/created/admin")
@@ -98,7 +100,7 @@ public class NotificationController {
         @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR_MESSAGE),
         @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     })
-    @ApiImplicitParam(name = "body", example = "{\n"
+    @ApiImplicitParam(name = BODY, example = "{\n"
         + "    \"email\": \"a@b.com\",\n"
         + "    \"subscriptions\": {\n"
         + "        \"CASE_URN\": [\n"
@@ -120,8 +122,8 @@ public class NotificationController {
 
     @ApiResponses({
         @ApiResponse(code = 200, message = "Duplicate media account email successfully sent with referenceId {Id}"),
-        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR),
-        @ApiResponse(code = 400, message = NOTIFICATION_ERROR)
+        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR_MESSAGE),
+        @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     })
     @ApiOperation("Send duplicate email to new media account user.")
     @ApiImplicitParam(name = BODY, example = "{\n email: 'example@email.com',"

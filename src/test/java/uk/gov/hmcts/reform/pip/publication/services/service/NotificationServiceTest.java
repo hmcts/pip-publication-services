@@ -49,16 +49,8 @@ class NotificationServiceTest {
         EMAIL, false, FULL_NAME);
     private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
         EMAIL, "test_forename", "test_surname");
-    static final String SUCCESS_REF_ID = "successRefId";
 
     private static final String TEST_EMAIL = "test@email.com";
-
-    private static final WelcomeEmail VALID_BODY_EXISTING = new WelcomeEmail(
-        TEST_EMAIL, true);
-    private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
-        TEST_EMAIL, false);
-    private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
-        TEST_EMAIL, "test_forename", "test_surname");
     private static final String SUCCESS_REF_ID = "successRefId";
     private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
