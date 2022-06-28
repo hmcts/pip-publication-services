@@ -128,24 +128,6 @@ class NotifyTest {
     }
 
     @Test
-    void testValidPayloadReturnsSuccessDuplicateMedia() throws Exception {
-        mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
-                            .content(VALID_DUPLICATE_MEDIA_REQUEST_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(containsString(
-                "Duplicate media account email successfully sent with referenceId")));
-    }
-
-    @Test
-    void testInvalidPayloadReturnsBadRequestDuplicateMedia() throws Exception {
-        mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
-                            .content(DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void testValidPayloadReturnsSuccessAdminCreation() throws Exception {
         mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
                             .content(VALID_ADMIN_CREATION_REQUEST_BODY)
