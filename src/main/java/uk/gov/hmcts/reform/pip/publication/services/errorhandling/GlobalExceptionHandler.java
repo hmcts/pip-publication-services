@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PublicationNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handle(PublicationNotFoundException ex) {
 
-        log.warn(writeLog("404, publication has not been found when trying to send subscription"));
+        log.error(writeLog("404, publication has not been found when trying to send subscription"));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());

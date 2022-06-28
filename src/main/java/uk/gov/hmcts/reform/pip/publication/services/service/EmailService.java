@@ -73,7 +73,7 @@ public class EmailService {
                                          emailToSend.getPersonalisation(), emailToSend.getReferenceId()
             );
         } catch (NotificationClientException e) {
-            log.warn(writeLog(String.format("Failed to send email. "
+            log.error(writeLog(String.format("Failed to send email. "
                                                        + "Reference ID: %s. "
                                                        + "Reason: %s", emailToSend.getReferenceId(), e)));
             throw new NotifyException(e.getMessage());
