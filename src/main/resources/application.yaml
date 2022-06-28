@@ -69,4 +69,8 @@ notify:
     aad-sign-in-page-link: ${NOTIFY_LINK_AAD_SIGNIN_LINK:https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignInUserFlow&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331&nonce=defau&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn&scope=openid&response_type=id_token&prompt=login}
     gov-guidance-page-link: ${NOTIFY_LINK_GOV_GUIDANCE:https://www.gov.uk}
     aad-pw-reset-link: ${NOTIFY_LINK_AAD_RESET_PW_LINK:https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_initial_user_set_pwd&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn&scope=openid&response_type=id_token&prompt=login}
+  pi-team-email: ${PI_TEAM_EMAIL:teamEmail@email.com}
 
+error-handling:
+  num-of-retries: 3
+  backoff: 2

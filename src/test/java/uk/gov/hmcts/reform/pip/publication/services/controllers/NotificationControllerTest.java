@@ -8,11 +8,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -28,10 +33,22 @@ class NotificationControllerTest {
     private static final boolean TRUE_BOOL = true;
     private static final String SUCCESS_ID = "successId";
     private static final String STATUS_CODES_SHOULD_MATCH = "Status codes should match";
+    private static final String TEST = "Test";
+    private static final UUID ID = UUID.randomUUID();
+    private static final String ID_STRING = UUID.randomUUID().toString();
+    private static final String EMPLOYER = "Test employer";
+    private static final String STATUS = "APPROVED";
+    private static final LocalDateTime DATE_TIME = LocalDateTime.now();
+    private static final String IMAGE_NAME = "test-image.png";
+    private static final String MESSAGES_MATCH = "Messages should match";
+    private static final String STATUS_CODES_MATCH = "Status codes should match";
 
     private WelcomeEmail validRequestBodyTrue;
+    private List<MediaApplication> validMediaApplicationList;
     private SubscriptionEmail subscriptionEmail;
     private DuplicatedMediaEmail createMediaSetupEmail;
+    private CreatedAdminWelcomeEmail createdAdminWelcomeEmailValidBody;
+    private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
 
     @Mock
     private NotificationService notificationService;
@@ -42,6 +59,11 @@ class NotificationControllerTest {
     @BeforeEach
     void setup() {
         validRequestBodyTrue = new WelcomeEmail(VALID_EMAIL, TRUE_BOOL, FULL_NAME);
+        createdAdminWelcomeEmailValidBody = new CreatedAdminWelcomeEmail(VALID_EMAIL, TEST, TEST);
+        thirdPartySubscription.setApiDestination(TEST);
+        thirdPartySubscription.setArtefactId(ID);
+        validMediaApplicationList = List.of(new MediaApplication(ID, FULL_NAME,
+            VALID_EMAIL, EMPLOYER, ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME));
 
         subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
@@ -55,21 +77,25 @@ class NotificationControllerTest {
         when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
         when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
         when(notificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);
+        when(notificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody)).thenReturn(SUCCESS_ID);
+        when(notificationService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
+        when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
+            .thenReturn(SUCCESS_ID);
     }
 
     @Test
     void testValidBodyShouldReturnSuccessMessage() {
         assertTrue(
             notificationController.sendWelcomeEmail(validRequestBodyTrue).getBody()
-                .contains("Welcome email successfully sent with referenceId successId"),
-            "Messages should match"
+                .contains("Welcome email successfully sent with referenceId SuccessId"),
+            MESSAGES_MATCH
         );
     }
 
     @Test
     void testValidBodyShouldReturnOkResponse() {
         assertEquals(HttpStatus.OK, notificationController.sendWelcomeEmail(validRequestBodyTrue).getStatusCode(),
-                     STATUS_CODES_SHOULD_MATCH
+                     STATUS_CODES_MATCH
         );
     }
 
@@ -90,5 +116,46 @@ class NotificationControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), STATUS_CODES_SHOULD_MATCH);
         assertTrue(Objects.requireNonNull(responseEntity.getBody()).contains(SUCCESS_ID),
                    "Response content does not contain the ID");
+    }
+
+    @Test
+    void testSendAdminAccountWelcomeEmail() {
+        assertTrue(notificationController.sendAdminAccountWelcomeEmail(createdAdminWelcomeEmailValidBody).getBody()
+                       .contains("Created admin welcome email successfully sent with referenceId SuccessId"),
+                   MESSAGES_MATCH);
+    }
+
+    @Test
+    void testSendAdminAccountWelcomeEmailReturnsOk() {
+        assertEquals(HttpStatus.OK, notificationController
+                         .sendAdminAccountWelcomeEmail(createdAdminWelcomeEmailValidBody).getStatusCode(),
+                     STATUS_CODES_MATCH);
+    }
+
+    @Test
+    void testSendThirdPartySubscription() {
+        assertTrue(notificationController.sendThirdPartySubscription(thirdPartySubscription).getBody()
+                       .contains(SUCCESS_ID), MESSAGES_MATCH);
+    }
+
+    @Test
+    void testSendThirdPartySubscriptionReturnsOk() {
+        assertEquals(HttpStatus.OK, notificationController.sendThirdPartySubscription(thirdPartySubscription)
+            .getStatusCode(), STATUS_CODES_MATCH);
+    }
+
+    @Test
+    void testSendMediaReportingEmailReturnsSuccessMessage() {
+        assertTrue(
+            notificationController.sendMediaReportingEmail(validMediaApplicationList).getBody()
+                .contains("Media applications report email sent successfully with referenceId SuccessId"),
+            MESSAGES_MATCH
+        );
+    }
+
+    @Test
+    void testSendMediaReportingEmailReturnsOkResponse() {
+        assertEquals(HttpStatus.OK, notificationController.sendMediaReportingEmail(
+            validMediaApplicationList).getStatusCode(), STATUS_CODES_MATCH);
     }
 }

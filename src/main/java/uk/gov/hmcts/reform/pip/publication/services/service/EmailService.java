@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
@@ -21,12 +22,14 @@ import java.util.UUID;
 @Slf4j
 @SuppressWarnings("PMD.PreserveStackTrace")
 public class EmailService {
-
     @Autowired
     EmailClient emailClient;
 
     @Autowired
     PersonalisationService personalisationService;
+
+    @Value("${notify.pi-team-email}")
+    private String piTeamEmail;
 
     protected EmailToSend buildWelcomeEmail(WelcomeEmail body, String template) {
         return generateEmail(body.getEmail(), template, personalisationService.buildWelcomePersonalisation());
@@ -53,6 +56,12 @@ public class EmailService {
     protected EmailToSend buildDuplicateMediaSetupEmail(DuplicatedMediaEmail body, String template) {
         return generateEmail(body.getEmail(), template,
                              personalisationService.buildDuplicateMediaAccountPersonalisation(body));
+    }
+
+    protected EmailToSend buildMediaApplicationReportingEmail(byte[] csvMediaApplications, String template) {
+        return generateEmail(piTeamEmail, template,
+                             personalisationService
+                                 .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
     }
 
     public EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {
