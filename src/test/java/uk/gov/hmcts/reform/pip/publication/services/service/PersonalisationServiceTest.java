@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 
@@ -38,6 +39,7 @@ class PersonalisationServiceTest {
     private static final String LINK_TO_FILE = "link_to_file";
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
+    private static final String FULL_NAME = "FULL_NAME";
     private static final String CASE_NUMBERS = "case_num";
     private static final String DISPLAY_CASE_NUMBERS = "display_case_num";
     private static final String CASE_URN = "case_urn";
@@ -273,5 +275,26 @@ class PersonalisationServiceTest {
 
         Object csvFile = personalisation.get(LINK_TO_FILE);
         assertNotNull(csvFile, "No csvFile key was found");
+    }
+
+    @Test
+    void testBuildDuplicateMediaAccountPersonalisation() {
+        DuplicatedMediaEmail duplicatedMediaEmail = new DuplicatedMediaEmail();
+        duplicatedMediaEmail.setEmail(EMAIL);
+        duplicatedMediaEmail.setFullName(FULL_NAME);
+
+        Map<String, Object> personalisation = personalisationService
+            .buildDuplicateMediaAccountPersonalisation(duplicatedMediaEmail);
+
+        Object fullNameObject = personalisation.get("full_name");
+        assertNotNull(fullNameObject, "No full name found");
+        assertEquals(fullNameObject, FULL_NAME,
+                     "Full name does not match");
+
+        Object mediaSignInPageLink = personalisation.get(AAD_SIGN_IN_LINK);
+        assertNotNull(mediaSignInPageLink, "No media sign page link key found");
+        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+        assertEquals(personalisationLinks.getAadSignInPageLink(), mediaSignInPageLink,
+                     "Media Sign in page link does not match expected link");
     }
 }

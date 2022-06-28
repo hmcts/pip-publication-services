@@ -36,7 +36,6 @@ public class PersonalisationService {
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
-    private static final String MEDIA_SIGN_IN_LINK = "media_sign_in_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String FORGOT_PASSWORD_PROCESS_LINK = "forgot_password_process_link";
     private static final String LINK_TO_FILE = "link_to_file";
@@ -181,7 +180,7 @@ public class PersonalisationService {
     public Map<String, Object> buildDuplicateMediaAccountPersonalisation(DuplicatedMediaEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(FULL_NAME, body.getFullName());
-        personalisation.put(MEDIA_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadSignInPageLink());
+        personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadSignInPageLink());
         return personalisation;
     }
 
