@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@SuppressWarnings("PMD.ImmutableField")
 class EmailClientTest {
 
     @Value("${notify.api.key}")

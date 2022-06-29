@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
+import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientConfigurationTest;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
@@ -18,7 +20,6 @@ import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
 @ActiveProfiles("test")
 class EmailServiceTest {
 
@@ -54,9 +55,11 @@ class EmailServiceTest {
     private static final String REFERENCE_ID_MESSAGE = "Reference ID is present";
     private static final String TEMPLATE_MESSAGE = "Template does not match";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
+    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
 
     @BeforeEach
     void setup() {
+        LOCATIONS_MAP.put("test", "1234");
         sendEmailResponse = mock(SendEmailResponse.class);
         personalisation.put("Value", "OtherValue");
     }
@@ -141,7 +144,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void rawDataSubscriptionEmailReturnsSuccess() throws IOException {
+    void rawDataSubscriptionEmailReturnsSuccess() {
         UUID artefactId = UUID.randomUUID();
 
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
@@ -209,10 +212,26 @@ class EmailServiceTest {
         EmailToSend mediaReportingEmail = emailService
             .buildMediaApplicationReportingEmail(TEST_BYTE,
                                                  Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template);
-
         assertEquals(EMAIL, mediaReportingEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
         assertEquals(personalisation, mediaReportingEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
         assertEquals(Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template, mediaReportingEmail.getTemplate(),
+                     TEMPLATE_MESSAGE);
+    }
+
+    @Test
+    void testUnidentifiedBlobEmailReturnsSuccess() {
+        when(personalisationService.buildUnidentifiedBlobsPersonalisation(LOCATIONS_MAP))
+            .thenReturn(personalisation);
+
+        EmailToSend unidentifiedBlobEmail = emailService
+            .buildUnidentifiedBlobsEmail(LOCATIONS_MAP,
+                                         Templates.BAD_BLOB_EMAIL.template);
+
+        assertEquals(EMAIL, unidentifiedBlobEmail.getEmailAddress(),
+                     GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, unidentifiedBlobEmail.getPersonalisation(),
+                     PERSONALISATION_MESSAGE);
+        assertEquals(Templates.BAD_BLOB_EMAIL.template, unidentifiedBlobEmail.getTemplate(),
                      TEMPLATE_MESSAGE);
     }
 }

@@ -23,7 +23,7 @@ public class PdfCreationService {
     private DataManagementService dataManagementService;
 
     public byte[] jsonToPdf(UUID inputPayloadUuid) throws IOException {
-        String rawJson = dataManagementService.getArtefactJsonPayload(inputPayloadUuid);
+        String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         ObjectMapper mapper = new ObjectMapper();
         Object jsonObj = mapper.readValue(rawJson, Object.class);
         String prettyJsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj);

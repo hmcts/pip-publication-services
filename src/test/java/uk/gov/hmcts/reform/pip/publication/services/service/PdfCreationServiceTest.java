@@ -67,7 +67,7 @@ class PdfCreationServiceTest {
     void testJsontoHtmltoPdf() throws IOException {
         UUID uuid = UUID.randomUUID();
         String inputJson = "{\"document\":{\"value1\":\"x\",\"value2\":\"hiddenTestString\"}}";
-        when(dataManagementService.getArtefactJsonPayload(uuid)).thenReturn(inputJson);
+        when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(inputJson);
 
         byte[] outputPdf = pdfCreationService.jsonToPdf(uuid);
         try (PDDocument doc = PDDocument.load(outputPdf)) {

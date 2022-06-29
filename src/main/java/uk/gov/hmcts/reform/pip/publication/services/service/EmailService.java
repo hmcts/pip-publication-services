@@ -56,6 +56,13 @@ public class EmailService {
                                  .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
     }
 
+
+    protected EmailToSend buildUnidentifiedBlobsEmail(Map<String, String> locationMap, String template) {
+        return generateEmail(piTeamEmail, template,
+                             personalisationService
+                                .buildUnidentifiedBlobsPersonalisation(locationMap));
+    }
+
     public EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {
         String referenceId = UUID.randomUUID().toString();
         return new EmailToSend(email, template, personalisation, referenceId);

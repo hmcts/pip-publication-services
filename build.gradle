@@ -5,7 +5,7 @@ plugins {
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
   id 'org.springframework.boot' version '2.5.14'
-  id 'org.owasp.dependencycheck' version '7.0.3'
+  id 'org.owasp.dependencycheck' version '7.1.1'
   id 'com.github.ben-manes.versions' version '0.42.0'
   id 'org.sonarqube' version '3.3'
   id 'io.freefair.lombok' version '6.4.1'
@@ -21,15 +21,6 @@ allprojects {
 
 sourceSets {
   functionalTest {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/integrationTest/java')
-    }
-    resources.srcDir file('src/integrationTest/resources')
-  }
-
-  integrationTest {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
@@ -71,14 +62,6 @@ task functional(type: Test) {
   classpath = sourceSets.functionalTest.runtimeClasspath
 }
 
-task integration(type: Test) {
-  description = "Runs integration tests"
-  group = "Verification"
-  testClassesDirs = sourceSets.integrationTest.output.classesDirs
-  classpath = sourceSets.integrationTest.runtimeClasspath
-  failFast = true
-}
-
 task smoke(type: Test) {
   description = "Runs Smoke Tests"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
@@ -92,8 +75,8 @@ checkstyle {
 }
 
 pmd {
-  toolVersion = "6.45.0"
-  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
+  toolVersion = "6.46.0"
+  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
   ruleSets = []
@@ -192,12 +175,15 @@ dependencies {
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.17.2'
-  implementation group:'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '2.6.8'
-  testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
+  
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '2.6.7'
+
   implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '4.0.0'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '2.6.7'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '2.6.7'
   implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
+  implementation group: 'com.opencsv', name: 'opencsv', version: '5.5.2'
+
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.5.2'
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
@@ -207,9 +193,8 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
   testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.9.3'
-
-  integrationTestImplementation sourceSets.main.runtimeClasspath
-  integrationTestImplementation sourceSets.test.runtimeClasspath
+  testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
+  testImplementation group: 'com.squareup.okhttp3', name: 'okhttp-tls', version: '4.9.3'
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
@@ -228,11 +213,6 @@ bootJar {
   manifest {
     attributes('Implementation-Version': project.version.toString())
   }
-}
-
-// Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083
-rootProject.tasks.named("processIntegrationTestResources") {
-  duplicatesStrategy = 'include'
 }
 
 wrapper {

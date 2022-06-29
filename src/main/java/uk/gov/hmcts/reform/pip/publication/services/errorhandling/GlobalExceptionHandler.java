@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Bad
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
 
 import java.time.LocalDateTime;
 
@@ -27,8 +29,7 @@ public class GlobalExceptionHandler {
      * @return The error response, modelled using the ExceptionResponse object.
      */
     @ExceptionHandler(PublicationNotFoundException.class)
-    public ResponseEntity<ExceptionResponse> handle(
-        PublicationNotFoundException ex) {
+    public ResponseEntity<ExceptionResponse> handle(PublicationNotFoundException ex) {
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
@@ -40,7 +41,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotifyException.class)
     public ResponseEntity<ExceptionResponse> handle(NotifyException ex) {
 
-        log.error(String.format("NotifyException was thrown with the init cause: %s", ex.getMessage()));
+        log.error("NotifyException was thrown with the init cause: {}", ex.getMessage());
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
@@ -87,7 +88,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CsvCreationException.class)
     public ResponseEntity<ExceptionResponse> handle(CsvCreationException ex) {
-
         log.error(String.format("CsvCreationException was thrown with the init cause: %s", ex.getCause()));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
@@ -95,6 +95,28 @@ public class GlobalExceptionHandler {
         exceptionResponse.setTimestamp(LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(ServiceToServiceException.class)
+    public ResponseEntity<ExceptionResponse> handle(ServiceToServiceException ex) {
+        log.error(String.format("ServiceToServiceException was thrown with the init cause: %s", ex.getCause()));
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setMessage(ex.getMessage());
+        exceptionResponse.setTimestamp(LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(ThirdPartyServiceException.class)
+    public ResponseEntity<ExceptionResponse> handle(ThirdPartyServiceException ex) {
+        log.error(ex.getMessage());
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setMessage(ex.getMessage());
+        exceptionResponse.setTimestamp(LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.valueOf(ex.getStatusCode())).body(exceptionResponse);
     }
 
 }

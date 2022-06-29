@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,6 +53,7 @@ public class PersonalisationService {
     private static final String DISPLAY_LOCATIONS = "display_locations";
     private static final String YES = "Yes";
     private static final String NO = "No";
+    private static final String ARRAY_OF_IDS = "array_of_ids";
 
     /**
      * Handles the personalisation for the Welcome email.
@@ -166,6 +168,23 @@ public class PersonalisationService {
         }
     }
 
+    /**
+     * Handles the personalisation for the unidentified blob email.
+     * @param locationMap A map of location Ids and provenances associated with unidentified blobs.
+     * @return The personalisation map for the unidentified blob email.
+     */
+    public Map<String, Object> buildUnidentifiedBlobsPersonalisation(Map<String, String> locationMap) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        List<String> listOfUnmatched = new ArrayList<>();
+
+        locationMap.forEach((key, value) ->
+                                listOfUnmatched.add(String.format("%s - %s", key, value)));
+
+
+        personalisation.put(ARRAY_OF_IDS, listOfUnmatched);
+        return personalisation;
+    }
+
     private void populateGenericPersonalisation(Map<String, Object> personalisation, String display,
                                          String displayValue, List<String> content) {
         if (content == null || content.isEmpty()) {
@@ -187,5 +206,4 @@ public class PersonalisationService {
             personalisation.put(LOCATIONS, subLocation.getName());
         }
     }
-
 }

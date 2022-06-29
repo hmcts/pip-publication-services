@@ -212,6 +212,13 @@ Publication services exposes restful api's to complete its tasks, these are:
       isExisting: [BOOLEAN]
     }
     ```
+  * `/notify/api` - POST request. this takes in third party body with the format
+    ```json
+    {
+      artefactId: "[ARTEFACT ID TO SEND]",
+      apiDestination: "[DESTINATION API TO SEND TO]"
+    }
+```
 
 
 

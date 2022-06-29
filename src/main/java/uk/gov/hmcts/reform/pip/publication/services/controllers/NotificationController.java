@@ -15,10 +15,12 @@ import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 
 @RestController
@@ -28,7 +30,9 @@ import javax.validation.Valid;
 public class NotificationController {
 
     @Autowired
-    NotificationService notificationService;
+    private NotificationService notificationService;
+
+    private static final String BAD_PAYLOAD_EXCEPTION_MESSAGE = "BadPayloadException error message";
 
     private static final String BAD_PAYLOAD_ERROR_MESSAGE = "BadPayloadException error message";
     private static final String NOTIFY_EXCEPTION_ERROR_MESSAGE = "NotifyException error message";
@@ -112,6 +116,32 @@ public class NotificationController {
     public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody SubscriptionEmail body) {
         return ResponseEntity.ok(String.format(
             "Subscription email successfully sent to email: %s with reference id: %s", body.getEmail(),
-            notificationService.subscriptionEmailRequest(body)));
+            notificationService.subscriptionEmailRequest(body)
+        ));
     }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Unidentified blob email successfully sent with referenceId: {Id}"),
+        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR_MESSAGE),
+        @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    })
+    @ApiOperation("Send the unidentified blob report to the P&I team")
+    @PostMapping("/unidentified-blob")
+    public ResponseEntity<String> sendUnidentifiedBlobEmail(@RequestBody Map<String, String> locationMap) {
+        return ResponseEntity.ok(String.format(
+            "Unidentified blob email successfully sent with reference id: %s",
+            notificationService.unidentifiedBlobEmailRequest(locationMap)
+        ));
+    }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Successfully sent list to {thirdParty} at: {api}"),
+        @ApiResponse(code = 400, message = BAD_PAYLOAD_EXCEPTION_MESSAGE)
+    })
+    @ApiOperation("Send list to third party publisher")
+    @PostMapping("/api")
+    public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscription body) {
+        return ResponseEntity.ok(notificationService.handleThirdParty(body));
+    }
+
 }
