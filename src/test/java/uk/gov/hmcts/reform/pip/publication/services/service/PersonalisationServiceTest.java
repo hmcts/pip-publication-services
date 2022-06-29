@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminW
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -60,6 +61,9 @@ class PersonalisationServiceTest {
 
     @MockBean
     DataManagementService dataManagementService;
+
+    @MockBean
+    PdfCreationService pdfCreationService;
 
     private static Location location;
     private final UUID artefactId = UUID.randomUUID();
@@ -123,7 +127,7 @@ class PersonalisationServiceTest {
     }
 
     @Test
-    void buildRawDataWhenAllPresent() {
+    void buildRawDataWhenAllPresent() throws IOException {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
         subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
@@ -138,7 +142,10 @@ class PersonalisationServiceTest {
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
+
+        byte[] testByteArray = "hello".getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(pdfCreationService.jsonToPdf(artefactId)).thenReturn(testByteArray);
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
@@ -154,7 +161,7 @@ class PersonalisationServiceTest {
                      "Location not as expected");
         assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
                      "List type does not match expected list type");
-        assertEquals("<Placeholder>", personalisation.get("link_to_file"),
+        assertEquals(Base64.encode(testByteArray), ((JSONObject)personalisation.get("link_to_file")).get("file"),
                      "Link to file does not match expected value");
         assertEquals("<Placeholder>", personalisation.get("testing_of_array"),
                      "testing_of_array does not match expected value");
@@ -219,7 +226,7 @@ class PersonalisationServiceTest {
     }
 
     @Test
-    void testLocationMissing() {
+    void testLocationMissing() throws IOException {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
         subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
@@ -232,7 +239,7 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
-
+        when(pdfCreationService.jsonToPdf(subscriptionEmail.getArtefactId())).thenReturn("hello".getBytes());
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
 
@@ -242,14 +249,15 @@ class PersonalisationServiceTest {
     }
 
     @Test
-    void testNonLocationMissing() {
+    void testNonLocationMissing() throws IOException {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN));
         subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail(EMAIL);
-        subscriptionEmail.setArtefactId(UUID.randomUUID());
+        UUID uuid = UUID.randomUUID();
+        subscriptionEmail.setArtefactId(uuid);
         subscriptionEmail.setSubscriptions(subscriptions);
 
         Artefact artefact = new Artefact();
@@ -257,6 +265,7 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(pdfCreationService.jsonToPdf(uuid)).thenReturn("hello".getBytes());
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);

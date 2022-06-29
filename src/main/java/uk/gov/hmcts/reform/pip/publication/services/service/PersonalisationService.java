@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,7 +89,7 @@ public class PersonalisationService {
     //TODO: This method is not used and will be updated once JSON file subscription tickets have been played, however
     //TODO: provided as a placeholder for now
     public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body,
-                                                                        Artefact artefact) {
+                                                                       Artefact artefact) {
 
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
@@ -115,9 +114,10 @@ public class PersonalisationService {
 
             log.info("Personalisation map created");
             return personalisation;
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.warn("Error adding attachment to raw data email {}. Artefact ID: {}", body.getEmail(),
-                     artefact.getArtefactId());
+                     artefact.getArtefactId()
+            );
             throw new NotifyException(e.getMessage());
 
         }

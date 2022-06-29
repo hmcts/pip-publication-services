@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -45,7 +44,6 @@ public class EmailService {
                              personalisationService.buildFlatFileSubscriptionPersonalisation(body, artefact));
     }
 
-    //TODO: This method is provided as a placeholder for now, and will be updated once JSON tickets have been played
     protected EmailToSend buildRawDataSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
                                                         String template) {
         return generateEmail(body.getEmail(), template,

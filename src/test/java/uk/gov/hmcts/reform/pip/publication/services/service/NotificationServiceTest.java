@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -123,7 +122,7 @@ class NotificationServiceTest {
                      "Media applications report with valid payload should return successful referenceId.");
 
     }
-    
+
     @Test
     void testIsFlatFile() {
         UUID uuid = UUID.randomUUID();
@@ -161,8 +160,12 @@ class NotificationServiceTest {
         subscriptionEmail.setArtefactId(uuid);
         subscriptionEmail.setSubscriptions(subscriptions);
 
-        assertThrows(UnsupportedOperationException.class, () ->
-            notificationService.subscriptionEmailRequest(subscriptionEmail));
+        when(emailService.buildRawDataSubscriptionEmail(subscriptionEmail, artefact,
+                                                         Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template))
+            .thenReturn(validEmailBodyForEmailClient);
+
+        assertEquals(SUCCESS_REF_ID, notificationService.subscriptionEmailRequest(subscriptionEmail),
+                     "Subscription with raw data should return successful referenceId.");
 
     }
 }

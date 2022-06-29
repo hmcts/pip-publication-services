@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
-import com.lowagie.text.DocumentException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;

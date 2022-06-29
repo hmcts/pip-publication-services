@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lowagie.text.DocumentException;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,15 +8,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.xhtmlrenderer.pdf.ITextRenderer;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 @Slf4j
@@ -58,7 +53,7 @@ public class PdfCreationService {
             return baos.toByteArray();
         } catch (IOException ex) {
             log.error(ex.getMessage());
-            return null;
+            return new byte[0];
         }
     }
 }
