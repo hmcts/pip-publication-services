@@ -157,6 +157,5 @@ class GlobalExceptionHandlerTest {
         assertNotNull(responseEntity.getBody(), BODY_RESPONSE);
         assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
                      PASSED_IN_MESSAGE);
-
     }
 }
