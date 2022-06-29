@@ -54,6 +54,13 @@
     <cve>CVE-2013-4152</cve>
     <cve>CVE-2022-22965</cve>
     <cve>CVE-2022-22968</cve>
+    <cve>CVE-2022-22970</cve>
+    <cve>CVE-2022-22978</cve>
+    <cve>CVE-2022-22950</cve>
+    <cve>CVE-2018-1257</cve>
+    <cve>CVE-2018-11039</cve>
+    <cve>CVE-2018-11040</cve>
+    <cve>CVE-2020-5421</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -66,6 +73,13 @@
     <cve>CVE-2013-4152</cve>
     <cve>CVE-2022-22965</cve>
     <cve>CVE-2022-22968</cve>
+    <cve>CVE-2022-22970</cve>
+    <cve>CVE-2022-22978</cve>
+    <cve>CVE-2022-22950</cve>
+    <cve>CVE-2018-1257</cve>
+    <cve>CVE-2018-11039</cve>
+    <cve>CVE-2018-11040</cve>
+    <cve>CVE-2020-5421</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -76,19 +90,27 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-   file name: spring-boot-starter-oauth2-client-2.5.14.jar
+   file name: spring-boot-starter-oauth2-client-2.6.7.jar
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org.springframework.boot/spring-boot-starter-oauth2-client@2.6.7</packageUrl>
     <cve>CVE-2018-1258</cve>
     <cve>CVE-2021-22112</cve>
+    <cve>CVE-2022-22976</cve>
+    <cve>CVE-2022-22970</cve>
+    <cve>CVE-2022-22978</cve>
+    <cve>CVE-2022-22950</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
-   file name: spring-boot-starter-oauth2-resource-server-2.5.14.jar
+   file name: spring-boot-starter-oauth2-resource-server-2.6.7.jar
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org.springframework.boot/spring-boot-starter-oauth2-resource-server@2.6.7</packageUrl>
     <cve>CVE-2018-1258</cve>
     <cve>CVE-2021-22112</cve>
+    <cve>CVE-2022-22976</cve>
+    <cve>CVE-2022-22970</cve>
+    <cve>CVE-2022-22978</cve>
+    <cve>CVE-2022-22950</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -106,5 +128,15 @@
     <notes>Being brought in by okhttp but already on max version of that dependency</notes>
     <packageUrl regex="true">^pkg:maven/org\.jetbrains/kotlin.*$</packageUrl>
     <cve>CVE-2022-24329</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[file name: spring-plugin-core-2.0.0.RELEASE.jar]]></notes>
+    <packageUrl regex="true">^pkg:maven/org.springframework.plugin/spring-plugin-core@2.0.0.RELEASE</packageUrl>
+    <cve>CVE-2022-22970</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[file name: spring-plugin-metadata-2.0.0.RELEASE.jar]]></notes>
+    <packageUrl regex="true">^pkg:maven/org.springframework.plugin/spring-plugin-metadata@2.0.0.RELEASE</packageUrl>
+    <cve>CVE-2022-22970</cve>
   </suppress>
 </suppressions>

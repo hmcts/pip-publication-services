@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,6 +38,7 @@ public class PersonalisationService {
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String FORGOT_PASSWORD_PROCESS_LINK = "forgot_password_process_link";
+    private static final String LINK_TO_FILE = "link_to_file";
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
     private static final String CASE_NUMBERS = "case_num";
@@ -47,6 +49,7 @@ public class PersonalisationService {
     private static final String DISPLAY_LOCATIONS = "display_locations";
     private static final String YES = "Yes";
     private static final String NO = "No";
+    private static final String ARRAY_OF_IDS = "array_of_ids";
 
     /**
      * Handles the personalisation for the Welcome email.
@@ -130,6 +133,40 @@ public class PersonalisationService {
         }
     }
 
+    /**
+     * Handles the personalisation for the media reporting email.
+     * @param csvMediaApplications The csv byte array containing the media applications.
+     * @return The personalisation map for the media reporting email.
+     */
+    public Map<String, Object> buildMediaApplicationsReportingPersonalisation(byte[] csvMediaApplications) {
+        try {
+            Map<String, Object> personalisation = new ConcurrentHashMap<>();
+            personalisation.put(LINK_TO_FILE, EmailClient.prepareUpload(csvMediaApplications, true));
+            return personalisation;
+        } catch (NotificationClientException e) {
+            log.error(String.format("Error adding the csv attachment to the media application "
+                                        + "reporting email with error %s", e.getMessage()));
+            throw new NotifyException(e.getMessage());
+        }
+    }
+
+    /**
+     * Handles the personalisation for the unidentified blob email.
+     * @param locationMap A map of location Ids and provenances associated with unidentified blobs.
+     * @return The personalisation map for the unidentified blob email.
+     */
+    public Map<String, Object> buildUnidentifiedBlobsPersonalisation(Map<String, String> locationMap) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        List<String> listOfUnmatched = new ArrayList<>();
+
+        locationMap.forEach((key, value) ->
+                                listOfUnmatched.add(String.format("%s - %s", key, value)));
+
+
+        personalisation.put(ARRAY_OF_IDS, listOfUnmatched);
+        return personalisation;
+    }
+
     private void populateGenericPersonalisation(Map<String, Object> personalisation, String display,
                                          String displayValue, List<String> content) {
         if (content == null || content.isEmpty()) {
@@ -151,5 +188,4 @@ public class PersonalisationService {
             personalisation.put(LOCATIONS, subLocation.getName());
         }
     }
-
 }

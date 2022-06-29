@@ -5,7 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
+import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientConfigurationTest;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
@@ -28,7 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
+@ActiveProfiles("test")
 class EmailServiceTest {
 
     private static final String EMAIL = "test@email.com";
@@ -50,9 +54,13 @@ class EmailServiceTest {
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
     private static final String REFERENCE_ID_MESSAGE = "Reference ID is present";
     private static final String TEMPLATE_MESSAGE = "Template does not match";
+    private static final byte[] TEST_BYTE = "Test byte".getBytes();
+
+    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
 
     @BeforeEach
     void setup() {
+        LOCATIONS_MAP.put("test", "1234");
         sendEmailResponse = mock(SendEmailResponse.class);
         personalisation.put("Value", "OtherValue");
     }
@@ -196,4 +204,36 @@ class EmailServiceTest {
                      "Exception message does not match expected exception");
     }
 
+    @Test
+    void testMediaApplicationReportingEmailReturnsSuccess() {
+
+        when(personalisationService.buildMediaApplicationsReportingPersonalisation(TEST_BYTE))
+            .thenReturn(personalisation);
+
+        EmailToSend mediaReportingEmail = emailService
+            .buildMediaApplicationReportingEmail(TEST_BYTE,
+                                                 Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template);
+
+        assertEquals(EMAIL, mediaReportingEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, mediaReportingEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
+        assertEquals(Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template, mediaReportingEmail.getTemplate(),
+                     TEMPLATE_MESSAGE);
+    }
+
+    @Test
+    void testUnidentifiedBlobEmailReturnsSuccess() {
+        when(personalisationService.buildUnidentifiedBlobsPersonalisation(LOCATIONS_MAP))
+            .thenReturn(personalisation);
+
+        EmailToSend unidentifiedBlobEmail = emailService
+            .buildUnidentifiedBlobsEmail(LOCATIONS_MAP,
+                                         Templates.BAD_BLOB_EMAIL.template);
+
+        assertEquals(EMAIL, unidentifiedBlobEmail.getEmailAddress(),
+                     GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, unidentifiedBlobEmail.getPersonalisation(),
+                     PERSONALISATION_MESSAGE);
+        assertEquals(Templates.BAD_BLOB_EMAIL.template, unidentifiedBlobEmail.getTemplate(),
+                     TEMPLATE_MESSAGE);
+    }
 }
