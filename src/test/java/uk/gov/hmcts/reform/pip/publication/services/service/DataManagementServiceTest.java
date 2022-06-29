@@ -29,6 +29,11 @@ class DataManagementServiceTest {
 
     private static MockWebServer mockPublicationServicesEndpoint;
 
+    private static final String NOT_FOUND = "404";
+    private static final String NO_STATUS_CODE_IN_EXCEPTION = "Exception response does not contain the status code in"
+        + " the message";
+    private static final String NO_EXPECTED_EXCEPTION = "Expected exception has not been thrown.";
+
     @Autowired
     WebClient webClient;
 
@@ -67,10 +72,10 @@ class DataManagementServiceTest {
 
         NotifyException notifyException = assertThrows(NotifyException.class, () ->
                                                            dataManagementService.getArtefact(uuid),
-                     "Expected exception has not been thrown");
+                     NO_EXPECTED_EXCEPTION);
 
         assertTrue(notifyException.getMessage().contains("404"),
-                   "Exception response does not contain the status code in the message");
+                   NO_STATUS_CODE_IN_EXCEPTION);
     }
 
     @Test
@@ -95,10 +100,10 @@ class DataManagementServiceTest {
 
         NotifyException notifyException = assertThrows(NotifyException.class, () ->
                                                            dataManagementService.getLocation(locationId),
-                                                       "Expected exception has not been thrown");
+                                                       NO_EXPECTED_EXCEPTION);
 
-        assertTrue(notifyException.getMessage().contains("404"),
-                   "Exception response does not contain the status code in the message");
+        assertTrue(notifyException.getMessage().contains(NOT_FOUND),
+                   NO_STATUS_CODE_IN_EXCEPTION);
     }
 
     @Test
@@ -125,9 +130,32 @@ class DataManagementServiceTest {
 
         NotifyException notifyException = assertThrows(NotifyException.class, () ->
                                                            dataManagementService.getArtefactFlatFile(uuid),
-                                                       "Expected exception has not been thrown");
+                                                       NO_EXPECTED_EXCEPTION);
 
-        assertTrue(notifyException.getMessage().contains("404"),
-                   "Exception response does not contain the status code in the message");
+        assertTrue(notifyException.getMessage().contains(NOT_FOUND),
+                   NO_STATUS_CODE_IN_EXCEPTION);
+    }
+
+
+    @Test
+    void testGetArtefactJsonPayload() {
+        UUID uuid = UUID.randomUUID();
+        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                    .setBody("testJsonString")
+                                                    .setResponseCode(200));
+        String jsonPayload = dataManagementService.getArtefactJsonPayload(uuid);
+        assertEquals("testJsonString", jsonPayload, "Messages do not match");
+    }
+
+    @Test
+    void testFailedGetArtefactJsonPayload() {
+        UUID uuid = UUID.randomUUID();
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+        NotifyException notifyException = assertThrows(NotifyException.class, () ->
+                                                           dataManagementService.getArtefactJsonPayload(uuid),
+                                                       NO_EXPECTED_EXCEPTION);
+        assertTrue(notifyException.getMessage().contains(NOT_FOUND),
+                   NO_STATUS_CODE_IN_EXCEPTION);
     }
 }

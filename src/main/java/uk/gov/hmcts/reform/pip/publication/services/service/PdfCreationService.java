@@ -38,22 +38,19 @@ public class PdfCreationService {
         return templateEngine.process("testTemplate.html", context);
     }
 
-    public byte[] generatePdfFromHtml(String html) {
+    public byte[] generatePdfFromHtml(String html) throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
             builder.useFastMode();
             builder.usePdfUaAccessbility(true);
             builder.usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_3_U);
             File ourFont = new ClassPathResource(
-                "font1.otf").getFile();
+                "gdsFont.otf").getFile();
             builder.useFont(ourFont, "GDS Transport");
             builder.withHtmlContent(html, null);
             builder.toStream(baos);
             builder.run();
             return baos.toByteArray();
-        } catch (IOException ex) {
-            log.error(ex.getMessage());
-            return new byte[0];
         }
     }
 }

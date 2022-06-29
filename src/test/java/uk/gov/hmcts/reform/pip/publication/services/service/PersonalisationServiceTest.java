@@ -82,17 +82,20 @@ class PersonalisationServiceTest {
         Object subscriptionPageLink = personalisation.get(SUBSCRIPTION_PAGE_LINK);
         assertNotNull(subscriptionPageLink, "No subscription page link key found");
         assertEquals(personalisationLinks.getSubscriptionPageLink(), subscriptionPageLink,
-                     "Subscription page link does not match expected link");
+                     "Subscription page link does not match expected link"
+        );
 
         Object startPageLink = personalisation.get(START_PAGE_LINK);
         assertNotNull(startPageLink, "No start page link key found");
         assertEquals(personalisationLinks.getStartPageLink(), startPageLink,
-                     "Start page link does not match expected link");
+                     "Start page link does not match expected link"
+        );
 
         Object govGuidencePageLink = personalisation.get(GOV_GUIDANCE_PAGE_LINK);
         assertNotNull(govGuidencePageLink, "No gov guidance page link key found");
         assertEquals(personalisationLinks.getGovGuidancePageLink(), govGuidencePageLink,
-                     "gov guidance page link does not match expected link");
+                     "gov guidance page link does not match expected link"
+        );
     }
 
     @Test
@@ -106,24 +109,28 @@ class PersonalisationServiceTest {
         Object surname = personalisation.get(SURNAME);
         assertNotNull(surname, "No surname key found");
         assertEquals(createdAdminWelcomeEmail.getSurname(), surname,
-                     "Surname does not match expected surname");
+                     "Surname does not match expected surname"
+        );
 
         Object forename = personalisation.get(FORENAME);
         assertNotNull(forename, "No forename key found");
         assertEquals(createdAdminWelcomeEmail.getForename(), forename,
-                     "Forename does not match expected forename");
+                     "Forename does not match expected forename"
+        );
 
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
 
         Object aadResetLink = personalisation.get(AAD_RESET_LINK);
         assertNotNull(aadResetLink, "No aad reset link key found");
         assertEquals(personalisationLinks.getAadPwResetLink(), aadResetLink,
-                     "aad reset link does not match expected link");
+                     "aad reset link does not match expected link"
+        );
 
         Object aadSignInLink = personalisation.get(AAD_SIGN_IN_LINK);
         assertNotNull(aadSignInLink, "No aad sign in link key found");
         assertEquals(personalisationLinks.getAadSignInPageLink(), aadSignInLink,
-                     "Aad Sign In link does not match expected link");
+                     "Aad Sign In link does not match expected link"
+        );
     }
 
     @Test
@@ -152,19 +159,49 @@ class PersonalisationServiceTest {
 
         assertEquals(YES, personalisation.get(DISPLAY_CASE_NUMBERS), "Display case numbers is not Yes");
         assertEquals(subscriptions.get(SubscriptionTypes.CASE_NUMBER), personalisation.get(CASE_NUMBERS),
-                     "Case number not as expected");
+                     "Case number not as expected"
+        );
         assertEquals(YES, personalisation.get(DISPLAY_CASE_URN), "Display case urn is not Yes");
         assertEquals(subscriptions.get(SubscriptionTypes.CASE_URN), personalisation.get(CASE_URN),
-                     "Case urn not as expected");
+                     "Case urn not as expected"
+        );
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
-                     "Location not as expected");
+                     "Location not as expected"
+        );
         assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
-                     "List type does not match expected list type");
-        assertEquals(Base64.encode(testByteArray), ((JSONObject)personalisation.get("link_to_file")).get("file"),
-                     "Link to file does not match expected value");
+                     "List type does not match expected list type"
+        );
+        assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get("link_to_file")).get("file"),
+                     "Link to file does not match expected value"
+        );
         assertEquals("<Placeholder>", personalisation.get("testing_of_array"),
-                     "testing_of_array does not match expected value");
+                     "testing_of_array does not match expected value"
+        );
+    }
+
+    @Test
+    void buildRawDataFileWhenUploadFails() throws IOException {
+        Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
+        subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
+        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
+        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
+
+        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail(EMAIL);
+        subscriptionEmail.setArtefactId(artefactId);
+        subscriptionEmail.setSubscriptions(subscriptions);
+
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(UUID.randomUUID());
+        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        byte[] overSizeArray = new byte[2_100_000];
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(pdfCreationService.jsonToPdf(artefactId)).thenReturn(overSizeArray);
+
+        assertThrows(NotifyException.class, () ->
+            personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact), "desired "
+                         + "exception was not thrown");
     }
 
     @Test
@@ -193,11 +230,14 @@ class PersonalisationServiceTest {
 
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
-                     "Location not as expected");
+                     "Location not as expected"
+        );
         assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
-                     "List type does not match expected list type");
-        assertEquals(Base64.encode(fileContents), ((JSONObject)personalisation.get("link_to_file")).get("file"),
-                     "Link to file does not match expected value");
+                     "List type does not match expected list type"
+        );
+        assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get("link_to_file")).get("file"),
+                     "Link to file does not match expected value"
+        );
     }
 
     @Test
@@ -245,7 +285,8 @@ class PersonalisationServiceTest {
 
         assertEquals(NO, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not No");
         assertEquals("", personalisation.get(LOCATIONS),
-                     "Location not as expected");
+                     "Location not as expected"
+        );
     }
 
     @Test
@@ -272,7 +313,8 @@ class PersonalisationServiceTest {
 
         assertEquals(NO, personalisation.get(DISPLAY_CASE_NUMBERS), "Display case numbers is not Yes");
         assertEquals("", personalisation.get(CASE_NUMBERS),
-                     "Case number not as expected");
+                     "Case number not as expected"
+        );
     }
 
     @Test
