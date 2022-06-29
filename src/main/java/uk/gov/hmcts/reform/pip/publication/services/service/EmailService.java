@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -49,7 +50,6 @@ public class EmailService {
                                                         String template) {
         return generateEmail(body.getEmail(), template,
                              personalisationService.buildRawDataSubscriptionPersonalisation(body, artefact));
-
     }
 
     protected EmailToSend buildMediaApplicationReportingEmail(byte[] csvMediaApplications, String template) {

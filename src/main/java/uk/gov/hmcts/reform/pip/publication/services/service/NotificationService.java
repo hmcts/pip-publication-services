@@ -78,9 +78,14 @@ public class NotificationService {
                                                   Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
                 .getReference().orElse(null);
         } else {
-            //TODO: Update once JSON generation has been completed to call the Non-Flat-File email.
-            throw new UnsupportedOperationException(
-                "Subscription service does not currently support publications for JSON payloads");
+            log.info("attempting json email path");
+            emailService.sendEmail(emailService.buildRawDataSubscriptionEmail(
+                body, artefact, Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
+                .getReference().orElse(null);
+            return "Email is sent now.";
+//            //TODO: Update once JSON generation has been completed to call the Non-Flat-File email.
+//            throw new UnsupportedOperationException(
+//                "Subscription service does not currently support publications for JSON payloads");
         }
     }
 }

@@ -129,8 +129,8 @@ public class NotificationController {
     })
     @ApiOperation("Create PDF from blob")
     @PostMapping("/createPDF")
-    public ResponseEntity<String> createPdf(@RequestParam UUID artefactId) throws DocumentException, IOException {
-        String returnedHtml = pdfCreationService.jsonToHtml(artefactId);
+    public ResponseEntity<byte[]> createPdf(@RequestParam UUID artefactId) throws IOException {
+        byte[] returnedHtml = pdfCreationService.jsonToPdf(artefactId);
         return ResponseEntity.ok(returnedHtml);
     }
 }

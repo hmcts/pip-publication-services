@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +28,10 @@ public class PersonalisationService {
 
     @Autowired
     DataManagementService dataManagementService;
+
+
+    @Autowired
+    PdfCreationService pdfCreationService;
 
     @Autowired
     NotifyConfigProperties notifyConfigProperties;
@@ -86,23 +91,36 @@ public class PersonalisationService {
     //TODO: provided as a placeholder for now
     public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body,
                                                                         Artefact artefact) {
-        Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
-        Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
+        try {
+            Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
-        populateGenericPersonalisation(personalisation, DISPLAY_CASE_NUMBERS, CASE_NUMBERS,
-                                        subscriptions.get(SubscriptionTypes.CASE_NUMBER));
+            Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
 
-        populateGenericPersonalisation(personalisation, DISPLAY_CASE_URN, CASE_URN,
-                                       subscriptions.get(SubscriptionTypes.CASE_URN));
+            populateGenericPersonalisation(personalisation, DISPLAY_CASE_NUMBERS, CASE_NUMBERS,
+                                           subscriptions.get(SubscriptionTypes.CASE_NUMBER)
+            );
 
-        populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
+            populateGenericPersonalisation(personalisation, DISPLAY_CASE_URN, CASE_URN,
+                                           subscriptions.get(SubscriptionTypes.CASE_URN)
+            );
 
-        personalisation.put("list_type", artefact.getListType());
-        personalisation.put("link_to_file", "<Placeholder>");
-        personalisation.put("testing_of_array", "<Placeholder>");
+            populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
-        return personalisation;
+            personalisation.put("list_type", artefact.getListType());
+            byte[] artefactPdf = pdfCreationService.jsonToPdf(body.getArtefactId());
+            personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
+
+            personalisation.put("testing_of_array", "<Placeholder>");
+
+            log.info("Personalisation map created");
+            return personalisation;
+        }catch(Exception e) {
+            log.warn("Error adding attachment to raw data email {}. Artefact ID: {}", body.getEmail(),
+                     artefact.getArtefactId());
+            throw new NotifyException(e.getMessage());
+
+        }
     }
 
     /**

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -140,7 +141,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void rawDataSubscriptionEmailReturnsSuccess() {
+    void rawDataSubscriptionEmailReturnsSuccess() throws IOException {
         UUID artefactId = UUID.randomUUID();
 
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
