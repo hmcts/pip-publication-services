@@ -57,7 +57,7 @@ class NotificationControllerTest {
 
     @BeforeEach
     void setup() {
-        validRequestBodyTrue = new WelcomeEmail(VALID_EMAIL, TRUE_BOOL, "FULL_NAME");
+        validRequestBodyTrue = new WelcomeEmail(VALID_EMAIL, TRUE_BOOL, FULL_NAME);
         createdAdminWelcomeEmailValidBody = new CreatedAdminWelcomeEmail(VALID_EMAIL, TEST, TEST);
         thirdPartySubscription.setApiDestination(TEST);
         thirdPartySubscription.setArtefactId(ID);
