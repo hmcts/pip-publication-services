@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -53,6 +54,7 @@ class PersonalisationServiceTest {
     private static final String CASE_NUMBER_VALUE = "12345678";
     private static final String LOCATION_ID = "12345";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
+    private static final String ARRAY_OF_IDS = "array_of_ids";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -66,8 +68,12 @@ class PersonalisationServiceTest {
     private static Location location;
     private final UUID artefactId = UUID.randomUUID();
 
+    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
+
     @BeforeAll
     public static void setup() {
+        LOCATIONS_MAP.put("test", "1234");
+
         location = new Location();
         location.setName("Location Name");
     }
@@ -296,5 +302,16 @@ class PersonalisationServiceTest {
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
         assertEquals(personalisationLinks.getAadSignInPageLink(), mediaSignInPageLink,
                      "Media Sign in page link does not match expected link");
+    }
+
+    @Test
+    void testBuildUnidentifiedBlobsPersonalisation() {
+        Map<String, Object> personalisation = personalisationService
+            .buildUnidentifiedBlobsPersonalisation(LOCATIONS_MAP);
+        List<String> expectedData = new ArrayList<>();
+        expectedData.add("test - 1234");
+
+        assertEquals(expectedData, personalisation.get(ARRAY_OF_IDS),
+                     "Locations map not as expected");
     }
 }

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -103,6 +104,19 @@ public class NotificationService {
                                                                      Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template);
         return emailService.sendEmail(email)
             .getReference().orElse(null);
+    }
+
+    /**
+     * This method handles the sending of the unidentified blobs email.
+     *
+     * @param locationMap A map of location Ids and provenances associated with unidentified blobs
+     * @return The ID that references the unidentified blobs email.
+     */
+    public String unidentifiedBlobEmailRequest(Map<String, String> locationMap) {
+        EmailToSend email = emailService
+            .buildUnidentifiedBlobsEmail(locationMap, Templates.BAD_BLOB_EMAIL.template);
+
+        return emailService.sendEmail(email).getReference().orElse(null);
     }
 
     /**

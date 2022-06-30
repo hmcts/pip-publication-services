@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 
 @RestController
@@ -117,7 +118,22 @@ public class NotificationController {
     public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody SubscriptionEmail body) {
         return ResponseEntity.ok(String.format(
             "Subscription email successfully sent to email: %s with reference id: %s", body.getEmail(),
-            notificationService.subscriptionEmailRequest(body)));
+            notificationService.subscriptionEmailRequest(body)
+        ));
+    }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Unidentified blob email successfully sent with referenceId: {Id}"),
+        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR_MESSAGE),
+        @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    })
+    @ApiOperation("Send the unidentified blob report to the P&I team")
+    @PostMapping("/unidentified-blob")
+    public ResponseEntity<String> sendUnidentifiedBlobEmail(@RequestBody Map<String, String> locationMap) {
+        return ResponseEntity.ok(String.format(
+            "Unidentified blob email successfully sent with reference id: %s",
+            notificationService.unidentifiedBlobEmailRequest(locationMap)
+        ));
     }
 
     @ApiResponses({
