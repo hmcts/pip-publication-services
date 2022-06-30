@@ -90,7 +90,7 @@ class NotificationControllerTest {
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
         when(notificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);
-         when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
+        when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
             .thenReturn(SUCCESS_ID);
     }
 
