@@ -31,7 +31,7 @@ public class PdfCreationService {
 
 
     /**
-     * Wrapper class for the entire json to pdf process
+     * Wrapper class for the entire json to pdf process.
      * @param inputPayloadUuid UUID representing a particular artefact ID.
      * @return byteArray representing the generated PDF.
      * @throws IOException - uses file streams so needs this.
@@ -59,7 +59,7 @@ public class PdfCreationService {
     }
 
     /**
-     * Class which takes in an HTML file and generates an accessible PDF file (as a byteArray)
+     * Class which takes in an HTML file and generates an accessible PDF file (as a byteArray).
      * @param html - string input representing a well-formed HTML file conforming to WCAG pdf accessibility guidance
      * @return a byte array representing the generated PDF.
      * @throws IOException - if errors appear during the process.

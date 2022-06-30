@@ -17,7 +17,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
