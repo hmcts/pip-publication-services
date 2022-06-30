@@ -74,6 +74,7 @@ class NotifyTest {
 
     String validMediaReportingJson;
     String validLocationsMapJson;
+
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
