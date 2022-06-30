@@ -32,7 +32,6 @@ public class RootController {
     /**
      * Dummy endpoint, that demonstrates how the Global Exception handler can be used to capture
      * and parse exceptions into a standard format.
-     *
      * @return A ResponseEntity
      */
     @GetMapping("/publication")
