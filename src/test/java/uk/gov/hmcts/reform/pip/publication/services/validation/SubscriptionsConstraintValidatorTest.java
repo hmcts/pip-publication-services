@@ -21,7 +21,6 @@ class SubscriptionsConstraintValidatorTest {
     void testValid() {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
-
         assertTrue(subscriptionsConstraintValidator.isValid(subscriptions, null), "Marked as invalid when valid");
     }
 
@@ -29,7 +28,6 @@ class SubscriptionsConstraintValidatorTest {
     void testInvalid() {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of());
-
         assertFalse(subscriptionsConstraintValidator.isValid(subscriptions, null), "Marked as valid when invalid");
     }
 
