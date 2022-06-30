@@ -17,6 +17,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -65,6 +66,16 @@ class NotifyTest {
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String IMAGE_NAME = "test-image.png";
+    private static final String JSON_FOR_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
+        + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"CASE_URN\": [\n"
+        + "      \"123\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
+
 
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
@@ -248,6 +259,14 @@ class NotifyTest {
                             .content(missingEmailJsonBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    void testValidPayloadForSubsEmailThrowsBadGateway() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(JSON_FOR_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadGateway());
     }
 
     @Test
