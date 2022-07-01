@@ -65,7 +65,7 @@ class NotifyTest {
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String IMAGE_NAME = "test-image.png";
-    private static final String JSON_FOR_SUBS_EMAIL = "{\n"
+    private static final String NONEXISTENT_BLOB_SUBS_EMAIL = "{\n"
         + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
         + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
         + "  \"subscriptions\": {\n"
@@ -75,6 +75,15 @@ class NotifyTest {
         + "  }\n"
         + "}";
 
+    private static final String VALID_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"c8327f76-19e0-4190-84a7-49eeac89fd21\",\n"
+        + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"CASE_URN\": [\n"
+        + "      \"123\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
 
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
@@ -264,8 +273,16 @@ class NotifyTest {
     @Test
     void testValidPayloadForSubsEmailThrowsBadGateway() throws Exception {
         mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(JSON_FOR_SUBS_EMAIL)
+                            .content(NONEXISTENT_BLOB_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadGateway());
+    }
+
+    @Test
+    void testValidPayloadForSubsEmailReturnsOk() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(VALID_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString("Subscription email successfully sent to")));
     }
 
     @Test
