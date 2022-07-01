@@ -78,13 +78,8 @@ class NotificationControllerTest {
         testUnidentifiedBlobMap.put("Test", "500");
         testUnidentifiedBlobMap.put("Test2", "123");
 
-        when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
-        when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
-        when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
         when(notificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody)).thenReturn(SUCCESS_ID);
         when(notificationService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
-        when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
-            .thenReturn(SUCCESS_ID);
         when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
             .thenReturn(SUCCESS_ID);
     }
