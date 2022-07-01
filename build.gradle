@@ -192,7 +192,7 @@ dependencies {
   }
   testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.9.3'
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
-  testImplementation group: 'com.squareup.okhttp3', name: 'okhttp-tls', version: '4.9.3'
+  testImplementation group: 'com.squareup.okhttp3', name: 'okhttp-tls', version: '4.10.0'
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
