@@ -25,7 +25,7 @@ import java.util.UUID;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -297,7 +297,7 @@ class NotifyTest {
                                                      ContentType.APPLICATION_JSON)
                                           .setResponseCode(200));
 
-        mockMvc.perform(delete(API_SUBSCRIPTION_URL)
+        mockMvc.perform(put(API_SUBSCRIPTION_URL)
                             .content(VALID_API_DESTINATION)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
             .andExpect(content()

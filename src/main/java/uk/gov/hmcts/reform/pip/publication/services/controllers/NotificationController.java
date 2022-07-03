@@ -7,8 +7,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -133,7 +133,7 @@ public class NotificationController {
         @ApiResponse(code = 200, message = "Successfully sent empty list to {thirdParty} at: {api}"),
     })
     @ApiOperation("Send empty list to third party after being deleted from P&I")
-    @DeleteMapping("/api")
+    @PutMapping("/api")
     public ResponseEntity<String> sendThirdPartySubscription(@RequestBody String apiDestination) {
         return ResponseEntity.ok(notificationService.handleThirdParty(apiDestination));
     }
