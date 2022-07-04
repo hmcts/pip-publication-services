@@ -41,8 +41,7 @@ public class NotificationService {
      *             {email: 'example@email.com', isExisting: 'true'}
      */
     public String handleWelcomeEmailRequest(WelcomeEmail body) {
-        log.info(writeLog(String.format("Existing User Welcome email "
-                                                   + "being processed for user %s", body.getEmail())));
+        log.info(writeLog(String.format("Welcome email being processed for user %s", body.getEmail())));
 
         return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
             ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
@@ -113,7 +112,7 @@ public class NotificationService {
 
         return emailService.sendEmail(email).getReference().orElse(null);
     }
-    
+
     /**
      * Handles the incoming request for sending lists out to third party publishers, uses the artefact id from body
      * to retrieve Artefact from Data Management and then gets the file or json payload to then send out.
