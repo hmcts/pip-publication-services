@@ -13,6 +13,9 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.util.List;
+import java.util.Map;
+
+import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Service
 @Slf4j
@@ -39,6 +42,8 @@ public class NotificationService {
      *             {email: 'example@email.com', isExisting: 'true'}
      */
     public String handleWelcomeEmailRequest(WelcomeEmail body) {
+        log.info(writeLog(String.format("Welcome email being processed for user %s", body.getEmail())));
+
         return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
             ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
             Templates.NEW_USER_WELCOME_EMAIL.template)).getReference().orElse(null);
@@ -51,6 +56,9 @@ public class NotificationService {
      *             {email: 'example@email.com', forename: 'foo', surname: 'bar'}
      */
     public String azureNewUserEmailRequest(CreatedAdminWelcomeEmail body) {
+        log.info(writeLog(String.format("New User Welcome email "
+                                                   + "being processed for user %s", body.getEmail())));
+
         EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body,
                                                                        Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
         return emailService.sendEmail(email)
@@ -78,6 +86,8 @@ public class NotificationService {
      * @return The ID that references the subscription message.
      */
     public String subscriptionEmailRequest(SubscriptionEmail body) {
+        log.info(writeLog(String.format("Sending subscription email for user %s", body.getEmail())));
+
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
         if (artefact.getIsFlatFile()) {
             return emailService.sendEmail(emailService.buildFlatFileSubscriptionEmail(
@@ -89,6 +99,19 @@ public class NotificationService {
             throw new UnsupportedOperationException(
                 "Subscription service does not currently support publications for JSON payloads");
         }
+    }
+
+    /**
+     * This method handles the sending of the unidentified blobs email.
+     *
+     * @param locationMap A map of location Ids and provenances associated with unidentified blobs
+     * @return The ID that references the unidentified blobs email.
+     */
+    public String unidentifiedBlobEmailRequest(Map<String, String> locationMap) {
+        EmailToSend email = emailService
+            .buildUnidentifiedBlobsEmail(locationMap, Templates.BAD_BLOB_EMAIL.template);
+
+        return emailService.sendEmail(email).getReference().orElse(null);
     }
 
     /**

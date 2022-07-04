@@ -21,7 +21,9 @@ import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
@@ -55,6 +57,7 @@ class NotifyTest {
     private static final String API_SUBSCRIPTION_URL = "/notify/api";
     private static final String EXTERNAL_PAYLOAD = "test";
     private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
+    private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
     private static final String FULL_NAME = "Test user";
@@ -69,9 +72,11 @@ class NotifyTest {
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME));
 
-
+    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
 
     String validMediaReportingJson;
+    String validLocationsMapJson;
+
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
@@ -83,6 +88,7 @@ class NotifyTest {
 
     @BeforeEach
     void setup() throws IOException {
+        LOCATIONS_MAP.put("test", "1234");
         HandshakeCertificates handshakeCertificates = localhost();
         externalApiMockServer = new MockWebServer();
         externalApiMockServer.useHttps(handshakeCertificates.sslSocketFactory(), false);
@@ -91,6 +97,7 @@ class NotifyTest {
         ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
 
         validMediaReportingJson = ow.writeValueAsString(MEDIA_APPLICATION_LIST);
+        validLocationsMapJson = ow.writeValueAsString(LOCATIONS_MAP);
     }
 
     @AfterEach
@@ -293,8 +300,10 @@ class NotifyTest {
     @Test
     void testDeletePayloadThirdParty() throws Exception {
         externalApiMockServer.enqueue(new MockResponse()
-                                          .addHeader("Content-Type",
-                                                     ContentType.APPLICATION_JSON)
+                                          .addHeader(
+                                              "Content-Type",
+                                              ContentType.APPLICATION_JSON
+                                          )
                                           .setResponseCode(200));
 
         mockMvc.perform(put(API_SUBSCRIPTION_URL)
@@ -302,5 +311,22 @@ class NotifyTest {
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
             .andExpect(content()
                            .string(containsString("Successfully sent empty list to https://localhost:4444")));
+    }
+
+    @Test
+    void testValidPayloadUnidentifiedBlobEmail() throws Exception {
+        mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
+                            .content(validLocationsMapJson)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andExpect(content().string(
+                containsString("Unidentified blob email successfully sent with reference id:")));
+    }
+
+    @Test
+    void testInvalidPayloadUnidentifiedBlobEmail() throws Exception {
+        mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
+                            .content("invalid content")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 }

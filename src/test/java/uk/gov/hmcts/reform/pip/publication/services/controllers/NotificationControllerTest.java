@@ -17,13 +17,16 @@ import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings({"PMD.TooManyMethods"})
 @SpringBootTest
 @SuppressWarnings("PMD.TooManyMethods")
 class NotificationControllerTest {
@@ -45,6 +48,7 @@ class NotificationControllerTest {
     private WelcomeEmail validRequestBodyTrue;
     private List<MediaApplication> validMediaApplicationList;
     private SubscriptionEmail subscriptionEmail;
+    private final Map<String, String> testUnidentifiedBlobMap = new ConcurrentHashMap<>();
     private CreatedAdminWelcomeEmail createdAdminWelcomeEmailValidBody;
     private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
 
@@ -68,6 +72,9 @@ class NotificationControllerTest {
         subscriptionEmail.setArtefactId(UUID.randomUUID());
         subscriptionEmail.setSubscriptions(new HashMap<>());
 
+        testUnidentifiedBlobMap.put("Test", "500");
+        testUnidentifiedBlobMap.put("Test2", "123");
+
         when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
         when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
         when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
@@ -76,7 +83,8 @@ class NotificationControllerTest {
         when(notificationService.handleThirdParty(TEST)).thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
-
+        when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
+            .thenReturn(SUCCESS_ID);
     }
 
     @Test
@@ -99,9 +107,17 @@ class NotificationControllerTest {
     void testSendSubscriptionReturnsOkResponse() {
         ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmail(subscriptionEmail);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Status codes should match");
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), STATUS_CODES_MATCH);
         assertTrue(Objects.requireNonNull(responseEntity.getBody()).contains(SUCCESS_ID),
                    "Response content does not contain the ID");
+    }
+
+    @Test
+    void testSendMediaReportingEmailReturnsSuccessMessage() {
+        assertTrue(
+            notificationController.sendMediaReportingEmail(validMediaApplicationList).getBody()
+                .contains("Media applications report email sent successfully with referenceId SuccessId"),
+            MESSAGES_MATCH);
     }
 
     @Test
@@ -131,18 +147,24 @@ class NotificationControllerTest {
     }
 
     @Test
-    void testSendMediaReportingEmailReturnsSuccessMessage() {
-        assertTrue(
-            notificationController.sendMediaReportingEmail(validMediaApplicationList).getBody()
-                .contains("Media applications report email sent successfully with referenceId SuccessId"),
-            MESSAGES_MATCH
-        );
-    }
-
-    @Test
     void testSendMediaReportingEmailReturnsOkResponse() {
         assertEquals(HttpStatus.OK, notificationController.sendMediaReportingEmail(
             validMediaApplicationList).getStatusCode(), STATUS_CODES_MATCH);
+    }
+
+    @Test
+    void testSendUnidentifiedBlobEmailReturnsSuccessMessage() {
+        assertTrue(
+            notificationController.sendUnidentifiedBlobEmail(testUnidentifiedBlobMap).getBody()
+                .contains("Unidentified blob email successfully sent with reference id: SuccessId"),
+            MESSAGES_MATCH);
+    }
+
+    @Test
+    void testSendUnidentifiedBlobEmailReturnsOkResponse() {
+        assertEquals(HttpStatus.OK, notificationController
+            .sendUnidentifiedBlobEmail(testUnidentifiedBlobMap).getStatusCode(),
+                     STATUS_CODES_MATCH);
     }
 
     @Test
