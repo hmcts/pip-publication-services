@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
@@ -100,6 +101,19 @@ public class NotificationService {
         }
     }
 
+    /**
+     * This method handles the sending of the unidentified blobs email.
+     *
+     * @param locationMap A map of location Ids and provenances associated with unidentified blobs
+     * @return The ID that references the unidentified blobs email.
+     */
+    public String unidentifiedBlobEmailRequest(Map<String, String> locationMap) {
+        EmailToSend email = emailService
+            .buildUnidentifiedBlobsEmail(locationMap, Templates.BAD_BLOB_EMAIL.template);
+
+        return emailService.sendEmail(email).getReference().orElse(null);
+    }
+    
     /**
      * Handles the incoming request for sending lists out to third party publishers, uses the artefact id from body
      * to retrieve Artefact from Data Management and then gets the file or json payload to then send out.

@@ -57,7 +57,13 @@ public class EmailService {
     protected EmailToSend buildMediaApplicationReportingEmail(byte[] csvMediaApplications, String template) {
         return generateEmail(piTeamEmail, template,
                              personalisationService
-                                 .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
+                                .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
+    }
+
+    protected EmailToSend buildUnidentifiedBlobsEmail(Map<String, String> locationMap, String template) {
+        return generateEmail(piTeamEmail, template,
+                             personalisationService
+                                .buildUnidentifiedBlobsPersonalisation(locationMap));
     }
 
     public EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {
