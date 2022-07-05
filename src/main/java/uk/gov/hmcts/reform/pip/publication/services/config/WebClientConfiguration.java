@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.config;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -14,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 import javax.net.ssl.SSLException;
+import java.io.File;
 
 /**
  * Configures the Web Client that is used in requests to external services.
@@ -21,6 +23,9 @@ import javax.net.ssl.SSLException;
 @Configuration
 @Profile("!test")
 public class WebClientConfiguration {
+
+    @Value("${third-party.trustStore}")
+    private String trustStorePath;
 
     @Bean
     @Profile("!dev")
@@ -38,7 +43,7 @@ public class WebClientConfiguration {
     public WebClient.Builder webClientBuilder() throws SSLException {
         SslContext sslContext = SslContextBuilder
             .forClient()
-            .trustManager(InsecureTrustManagerFactory.INSTANCE) //To be changed once we have a trust store
+            .trustManager(new File(trustStorePath))
             .build();
 
         HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(sslContext));
