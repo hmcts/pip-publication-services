@@ -137,8 +137,8 @@ public class NotificationService {
     }
 
     public String handleThirdParty(String apiDestination) {
-        log.info("Sending blank payload to third party");
-        log.info(thirdPartyService.handleThirdPartyCall(apiDestination, ""));
+        log.info(writeLog("Sending blank payload to third party"));
+        log.info(writeLog(thirdPartyService.handleThirdPartyCall(apiDestination, "")));
 
         return String.format(EMPTY_SUCCESS_MESSAGE, apiDestination);
     }
