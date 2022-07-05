@@ -94,9 +94,9 @@ public class NotificationService {
                                                   Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
                 .getReference().orElse(null);
         } else {
-            //TODO: Update once JSON generation has been completed to call the Non-Flat-File email.
-            throw new UnsupportedOperationException(
-                "Subscription service does not currently support publications for JSON payloads");
+            return emailService.sendEmail(emailService.buildRawDataSubscriptionEmail(
+                body, artefact, Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template))
+                .getReference().orElse(null);
         }
     }
 

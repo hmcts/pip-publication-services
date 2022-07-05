@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    @page {
+      margin: 30px 20px;
+
+      @top-center {
+        font-family: 'GDS Transport';
+        font-size: 16px;
+        color: blue;
+        content: "This is PDF/UA page " counter(page) " of " counter(pages) ".";
+      }
+    }
+    body {
+      font-family: 'GDS Transport';
+      color: darkblue;
+      padding: 2px;
+      font-size: 105%;
+    }
+    h1, h4 {
+      font-family: "GDS Transport";
+      color: black;
+    }
+    pre p {
+      font-family: 'GDS Transport';
+      color: darkblue;
+      background-color: #f1f1f1;
+      padding: 2px;
+      font-size: 105%;
+    }
+  </style>
+  <meta charset="UTF-8"/>
+  <meta name="subject" content="Accessible PDF template"/>
+  <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
+  <meta name="description" content="Document description - vital for compliance."/>
+  <title>This is a file for testing JSON to PDF creation</title>
+</head>
+<body>
+<div class = "header">
+<img src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png" alt="HMCTS Logo"/>
+<h1>Court and Tribunal Hearings Service </h1>
+  <h2>Sample PDF Template</h2>
+  <h3>An example file for the creation of PDF lists from our JSON artefact payloads.</h3>
+</div>
+
+<h4>Currently, this is basically just a pretty-printed JSON file with a logo, but can be built on very easily using <a href="https://www.thymeleaf.org/" title="Thymeleaf Website">Thymeleaf templating</a></h4>
+
+<pre><p id="code" th:text="${jsonBody}"></p></pre>
+</body>
+</html>

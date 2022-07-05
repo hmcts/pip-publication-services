@@ -31,4 +31,9 @@ public class Artefact {
      */
     private Boolean isFlatFile = false;
 
+    /**
+     * The URL for the payload in the Azure Blob Service.
+     */
+    private String payload;
+
 }

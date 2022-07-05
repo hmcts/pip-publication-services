@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SuppressWarnings("PMD.TooManyMethods")
 @SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
 @ActiveProfiles("test")
 class DataManagementServiceTest {
@@ -34,6 +35,11 @@ class DataManagementServiceTest {
         "Exception response does not contain the status code in the message";
 
     private static MockWebServer mockPublicationServicesEndpoint;
+
+    private static final String NOT_FOUND = "404";
+    private static final String NO_STATUS_CODE_IN_EXCEPTION = "Exception response does not contain the status code in"
+        + " the message";
+    private static final String NO_EXPECTED_EXCEPTION = "Expected exception has not been thrown.";
 
     @Autowired
     WebClient webClient;
@@ -47,7 +53,6 @@ class DataManagementServiceTest {
     void setup() throws IOException {
         mockPublicationServicesEndpoint = new MockWebServer();
         mockPublicationServicesEndpoint.start(8081);
-
         uuid = UUID.randomUUID();
     }
 
@@ -74,7 +79,7 @@ class DataManagementServiceTest {
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
                                                            dataManagementService.getArtefact(uuid),
-                                                       EXCEPTION_THROWN_MESSAGE);
+                     NO_EXPECTED_EXCEPTION);
 
         assertTrue(notifyException.getMessage().contains("501"),
                    EXCEPTION_RESPONSE_MESSAGE);
@@ -106,7 +111,7 @@ class DataManagementServiceTest {
     }
 
     @Test
-    void testGetLocationReturnsOk() throws IOException {
+    void testGetLocationReturnsOk() {
         String locationName = "locationName";
 
         mockPublicationServicesEndpoint.enqueue(new MockResponse()
@@ -127,10 +132,10 @@ class DataManagementServiceTest {
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
                                                            dataManagementService.getLocation(locationId),
-                                                       EXCEPTION_THROWN_MESSAGE);
+                                                       NO_EXPECTED_EXCEPTION);
 
-        assertTrue(notifyException.getMessage().contains("404"),
-                   EXCEPTION_RESPONSE_MESSAGE);
+        assertTrue(notifyException.getMessage().contains(NOT_FOUND),
+                   NO_STATUS_CODE_IN_EXCEPTION);
     }
 
     @Test
@@ -147,13 +152,37 @@ class DataManagementServiceTest {
 
     @Test
     void testGetArtefactJsonBlobThrowsException() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(501));
+
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
-                                                                     dataManagementService.getArtefactFlatFile(uuid),
-                                                                 EXCEPTION_THROWN_MESSAGE);
+                                                           dataManagementService.getArtefactFlatFile(uuid),
+                                                       NO_EXPECTED_EXCEPTION);
 
-        assertTrue(notifyException.getMessage().contains("501"),
-                   EXCEPTION_RESPONSE_MESSAGE);
+        assertTrue(notifyException.getMessage().contains(NOT_FOUND),
+                   NO_STATUS_CODE_IN_EXCEPTION);
+    }
+
+
+    @Test
+    void testGetArtefactJsonPayload() {
+        UUID uuid = UUID.randomUUID();
+        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                    .setBody("testJsonString")
+                                                    .setResponseCode(200));
+        String jsonPayload = dataManagementService.getArtefactJsonBlob(uuid);
+        assertEquals("testJsonString", jsonPayload, "Messages do not match");
+    }
+
+    @Test
+    void testFailedGetArtefactJsonPayload() {
+        UUID uuid = UUID.randomUUID();
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
+                                                           dataManagementService.getArtefactJsonBlob(uuid),
+                                                       NO_EXPECTED_EXCEPTION);
+        assertTrue(notifyException.getMessage().contains(NOT_FOUND),
+                   NO_STATUS_CODE_IN_EXCEPTION);
     }
 }
