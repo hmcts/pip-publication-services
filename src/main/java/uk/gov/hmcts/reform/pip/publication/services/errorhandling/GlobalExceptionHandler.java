@@ -94,17 +94,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
-    @ExceptionHandler(CsvCreationException.class)
-    public ResponseEntity<ExceptionResponse> handle(CsvCreationException ex) {
-        log.error(String.format("CsvCreationException was thrown with the init cause: %s", ex.getCause()));
-
-        ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setMessage(ex.getMessage());
-        exceptionResponse.setTimestamp(LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
     @ExceptionHandler(ServiceToServiceException.class)
     public ResponseEntity<ExceptionResponse> handle(ServiceToServiceException ex) {
         log.error(String.format("ServiceToServiceException was thrown with the init cause: %s", ex.getCause()));
