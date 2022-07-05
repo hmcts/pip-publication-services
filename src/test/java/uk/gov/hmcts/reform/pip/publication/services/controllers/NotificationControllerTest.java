@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
 
 @SuppressWarnings({"PMD.TooManyMethods"})
 @SpringBootTest
-@SuppressWarnings("PMD.TooManyMethods")
 class NotificationControllerTest {
 
     private static final String VALID_EMAIL = "test@email.com";
