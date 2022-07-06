@@ -55,7 +55,6 @@ class EmailServiceTest {
     private static final String REFERENCE_ID_MESSAGE = "Reference ID is present";
     private static final String TEMPLATE_MESSAGE = "Template does not match";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
-
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
 
     @BeforeEach
@@ -213,7 +212,6 @@ class EmailServiceTest {
         EmailToSend mediaReportingEmail = emailService
             .buildMediaApplicationReportingEmail(TEST_BYTE,
                                                  Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template);
-
         assertEquals(EMAIL, mediaReportingEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
         assertEquals(personalisation, mediaReportingEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
         assertEquals(Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template, mediaReportingEmail.getTemplate(),

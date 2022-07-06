@@ -26,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -51,6 +50,7 @@ class NotificationServiceTest {
     private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
     private static final String EMPTY_API_SENT = "Successfully sent empty list to testUrl";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
+
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
                                                                              Templates.NEW_USER_WELCOME_EMAIL.template,
@@ -179,8 +179,12 @@ class NotificationServiceTest {
         subscriptionEmail.setArtefactId(RAND_UUID);
         subscriptionEmail.setSubscriptions(subscriptions);
 
-        assertThrows(UnsupportedOperationException.class, () ->
-            notificationService.subscriptionEmailRequest(subscriptionEmail));
+        when(emailService.buildRawDataSubscriptionEmail(subscriptionEmail, artefact,
+                                                         Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template))
+            .thenReturn(validEmailBodyForEmailClient);
+
+        assertEquals(SUCCESS_REF_ID, notificationService.subscriptionEmailRequest(subscriptionEmail),
+                     "Subscription with raw data should return successful referenceId.");
 
     }
 

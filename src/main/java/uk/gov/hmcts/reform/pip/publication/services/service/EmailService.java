@@ -46,19 +46,18 @@ public class EmailService {
                              personalisationService.buildFlatFileSubscriptionPersonalisation(body, artefact));
     }
 
-    //TODO: This method is provided as a placeholder for now, and will be updated once JSON tickets have been played
     protected EmailToSend buildRawDataSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
                                                         String template) {
         return generateEmail(body.getEmail(), template,
                              personalisationService.buildRawDataSubscriptionPersonalisation(body, artefact));
-
     }
 
     protected EmailToSend buildMediaApplicationReportingEmail(byte[] csvMediaApplications, String template) {
         return generateEmail(piTeamEmail, template,
                              personalisationService
-                                .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
+                                 .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
     }
+
 
     protected EmailToSend buildUnidentifiedBlobsEmail(Map<String, String> locationMap, String template) {
         return generateEmail(piTeamEmail, template,
