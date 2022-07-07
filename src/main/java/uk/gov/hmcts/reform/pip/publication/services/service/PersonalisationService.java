@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminW
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.ArrayList;
@@ -57,12 +58,13 @@ public class PersonalisationService {
      * Handles the personalisation for the Welcome email.
      * @return The personalisation map for the welcome email.
      */
-    public Map<String, Object> buildWelcomePersonalisation() {
+    public Map<String, Object> buildWelcomePersonalisation(WelcomeEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(FORGOT_PASSWORD_PROCESS_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
         personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
         personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
         personalisation.put(GOV_GUIDANCE_PAGE_LINK, notifyConfigProperties.getLinks().getGovGuidancePageLink());
+        personalisation.put(FULL_NAME, body.getFullName());
         return personalisation;
     }
 

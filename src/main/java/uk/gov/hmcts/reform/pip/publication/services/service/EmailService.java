@@ -34,7 +34,7 @@ public class EmailService {
     private String piTeamEmail;
 
     protected EmailToSend buildWelcomeEmail(WelcomeEmail body, String template) {
-        return generateEmail(body.getEmail(), template, personalisationService.buildWelcomePersonalisation());
+        return generateEmail(body.getEmail(), template, personalisationService.buildWelcomePersonalisation(body));
     }
 
     protected EmailToSend buildCreatedAdminWelcomeEmail(CreatedAdminWelcomeEmail body, String template) {

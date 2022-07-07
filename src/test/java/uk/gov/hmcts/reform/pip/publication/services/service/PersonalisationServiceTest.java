@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminW
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,8 +81,11 @@ class PersonalisationServiceTest {
 
     @Test
     void testBuildWelcomePersonalisation() {
+        WelcomeEmail welcomeEmail =
+            new WelcomeEmail(EMAIL, false, FULL_NAME);
+
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
-        Map<String, Object> personalisation = personalisationService.buildWelcomePersonalisation();
+        Map<String, Object> personalisation = personalisationService.buildWelcomePersonalisation(welcomeEmail);
 
         Object subscriptionPageLink = personalisation.get(SUBSCRIPTION_PAGE_LINK);
         assertNotNull(subscriptionPageLink, "No subscription page link key found");

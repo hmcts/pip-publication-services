@@ -46,7 +46,7 @@ public class NotificationService {
 
         return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
             ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
-            Templates.NEW_USER_WELCOME_EMAIL.template)).getReference().orElse(null);
+            Templates.MEDIA_NEW_ACCOUNT_SETUP.template)).getReference().orElse(null);
     }
 
     /**

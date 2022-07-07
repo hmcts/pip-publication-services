@@ -89,7 +89,8 @@ class EmailServiceTest {
     void existingUserWelcomeValidEmailReturnsSuccess() {
         WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true, FULL_NAME);
 
-        when(personalisationService.buildWelcomePersonalisation()).thenReturn(personalisation);
+        when(personalisationService.buildWelcomePersonalisation(createdWelcomeEmail))
+            .thenReturn(personalisation);
 
         EmailToSend aadEmail = emailService.buildWelcomeEmail(
             createdWelcomeEmail, Templates.EXISTING_USER_WELCOME_EMAIL.template);
@@ -105,7 +106,8 @@ class EmailServiceTest {
     void newUserWelcomeValidEmailReturnsSuccess() {
         WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true, FULL_NAME);
 
-        when(personalisationService.buildWelcomePersonalisation()).thenReturn(personalisation);
+        when(personalisationService.buildWelcomePersonalisation(createdWelcomeEmail))
+            .thenReturn(personalisation);
 
         EmailToSend aadEmail = emailService.buildWelcomeEmail(
             createdWelcomeEmail, Templates.NEW_USER_WELCOME_EMAIL.template);
