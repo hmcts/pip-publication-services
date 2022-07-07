@@ -22,6 +22,7 @@ import javax.net.ssl.SSLException;
  */
 @Configuration
 @Profile("!test & !functional")
+@SuppressWarnings("squid:S0016")
 public class WebClientConfiguration {
 
     @Value("${third-party.certificate}")
