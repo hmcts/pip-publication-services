@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class NotifyTest {
 
     private static final String VALID_WELCOME_REQUEST_BODY_EXISTING =
-        "{\"email\": \"test@email.com\", \"isExisting\": \"true\"}";
+        "{\"email\": \"test@email.com\", \"isExisting\": \"true\", \"fullName\": \"fullName\"}";
     private static final String VALID_WELCOME_REQUEST_BODY_NEW =
         "{\"email\": \"test@email.com\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
     private static final String VALID_ADMIN_CREATION_REQUEST_BODY =
