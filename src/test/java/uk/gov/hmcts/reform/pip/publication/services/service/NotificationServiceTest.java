@@ -54,7 +54,6 @@ class NotificationServiceTest {
     private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
-    private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
                                                                              Templates.NEW_USER_WELCOME_EMAIL.template,

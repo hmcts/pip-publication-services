@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@SuppressWarnings({"PMD.TooManyMethods"})
 class PersonalisationServiceTest {
 
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
