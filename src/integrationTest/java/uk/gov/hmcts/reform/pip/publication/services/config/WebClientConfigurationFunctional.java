@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.config;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import org.springframework.beans.factory.annotation.Value;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -13,22 +13,16 @@ import org.springframework.security.oauth2.client.web.reactive.function.client.S
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
-import java.io.ByteArrayInputStream;
-import java.util.Base64;
 import javax.net.ssl.SSLException;
 
 /**
  * Configures the Web Client that is used in requests to external services.
  */
 @Configuration
-@Profile("!test & !functional")
-public class WebClientConfiguration {
-
-    @Value("${third-party.certificate}")
-    private String trustStore;
+@Profile("functional")
+public class WebClientConfigurationFunctional {
 
     @Bean
-    @Profile("!dev")
     public WebClient webClient(ClientRegistrationRepository clientRegistrations,
                                OAuth2AuthorizedClientRepository authorizedClients) {
         ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2 =
@@ -39,21 +33,14 @@ public class WebClientConfiguration {
     }
 
     @Bean
-    @Profile("!dev")
     public WebClient.Builder webClientBuilder() throws SSLException {
         SslContext sslContext = SslContextBuilder
             .forClient()
-            .trustManager(new ByteArrayInputStream(Base64.getDecoder().decode(trustStore)))
+            .trustManager(InsecureTrustManagerFactory.INSTANCE) //To be changed once we have a trust store
             .build();
 
         HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(sslContext));
         return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient));
-    }
-
-    @Bean
-    @Profile("dev")
-    public WebClient webClientInsecure() {
-        return WebClient.builder().build();
     }
 
 }
