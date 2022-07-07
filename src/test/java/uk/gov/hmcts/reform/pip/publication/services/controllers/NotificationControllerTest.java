@@ -79,12 +79,15 @@ class NotificationControllerTest {
         createMediaSetupEmail.setEmail("a@b.com");
         createMediaSetupEmail.setFullName("testName");
 
-        testUnidentifiedBlobMap.put("Test", "500");
-        testUnidentifiedBlobMap.put("Test2", "123");
 
         when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
         when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
-        when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
+        when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
+            .thenReturn(SUCCESS_ID);
+
+        testUnidentifiedBlobMap.put("Test", "500");
+        testUnidentifiedBlobMap.put("Test2", "123");
+
         when(notificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody)).thenReturn(SUCCESS_ID);
         when(notificationService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
