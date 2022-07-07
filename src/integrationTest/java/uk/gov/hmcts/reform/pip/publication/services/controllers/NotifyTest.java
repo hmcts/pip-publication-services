@@ -41,7 +41,7 @@ class NotifyTest {
     private static final String VALID_WELCOME_REQUEST_BODY_EXISTING =
         "{\"email\": \"test@email.com\", \"isExisting\": \"true\"}";
     private static final String VALID_WELCOME_REQUEST_BODY_NEW =
-        "{\"email\": \"test@email.com\", \"isExisting\": \"false\"}";
+        "{\"email\": \"test@email.com\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
     private static final String VALID_ADMIN_CREATION_REQUEST_BODY =
         "{\"email\": \"test@email.com\", \"surname\": \"surname\", \"forename\": \"forename\"}";
     private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
