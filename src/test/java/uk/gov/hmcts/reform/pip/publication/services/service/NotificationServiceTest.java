@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
@@ -29,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class NotificationServiceTest {
     private final Map<String, Object> personalisationMap = Map.ofEntries(
         entry("email", VALID_BODY_AAD.getEmail()),
