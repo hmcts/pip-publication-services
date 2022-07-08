@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -160,6 +161,15 @@ public class NotificationController {
     @PostMapping("/api")
     public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscription body) {
         return ResponseEntity.ok(notificationService.handleThirdParty(body));
+    }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Successfully sent empty list to {thirdParty} at: {api}"),
+    })
+    @ApiOperation("Send empty list to third party after being deleted from P&I")
+    @PutMapping("/api")
+    public ResponseEntity<String> sendThirdPartySubscription(@RequestBody String apiDestination) {
+        return ResponseEntity.ok(notificationService.handleThirdParty(apiDestination));
     }
 
 }
