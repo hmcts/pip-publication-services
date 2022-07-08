@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -46,7 +47,7 @@ public class NotificationService {
 
         return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
             ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
-            Templates.NEW_USER_WELCOME_EMAIL.template)).getReference().orElse(null);
+            Templates.MEDIA_NEW_ACCOUNT_SETUP.template)).getReference().orElse(null);
     }
 
     /**
@@ -99,6 +100,20 @@ public class NotificationService {
                 body, artefact, Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template))
                 .getReference().orElse(null);
         }
+    }
+
+    /**
+     * Handles the incoming request for duplicate media account emails,
+     * checks the json payload and builds and sends the email.
+     *
+     * @param body JSONObject containing the email and forename/surname values e.g.
+     *             {email: 'example@email.com', fullname: 'foo bar'}
+     */
+    public String mediaDuplicateUserEmailRequest(DuplicatedMediaEmail body) {
+        EmailToSend email = emailService.buildDuplicateMediaSetupEmail(body,
+                                                                     Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template);
+        return emailService.sendEmail(email)
+            .getReference().orElse(null);
     }
 
     /**
