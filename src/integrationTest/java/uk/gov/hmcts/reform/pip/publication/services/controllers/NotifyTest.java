@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -67,6 +68,7 @@ class NotifyTest {
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String IMAGE_NAME = "test-image.png";
+    private static final String VALID_API_DESTINATION = "https://localhost:4444";
     private static final String NONEXISTENT_BLOB_SUBS_EMAIL = "{\n"
         + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
         + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
@@ -335,6 +337,22 @@ class NotifyTest {
                             .content(validBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    void testDeletePayloadThirdParty() throws Exception {
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .addHeader(
+                                              "Content-Type",
+                                              ContentType.APPLICATION_JSON
+                                          )
+                                          .setResponseCode(200));
+
+        mockMvc.perform(put(API_SUBSCRIPTION_URL)
+                            .content(VALID_API_DESTINATION)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content()
+                           .string(containsString("Successfully sent empty list to https://localhost:4444")));
     }
 
     @Test
