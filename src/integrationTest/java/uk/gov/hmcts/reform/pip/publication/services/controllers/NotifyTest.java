@@ -40,12 +40,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class NotifyTest {
 
     private static final String VALID_WELCOME_REQUEST_BODY_EXISTING =
-        "{\"email\": \"test@email.com\", \"isExisting\": \"true\"}";
+        "{\"email\": \"test@email.com\", \"isExisting\": \"true\", \"fullName\": \"fullName\"}";
     private static final String VALID_WELCOME_REQUEST_BODY_NEW =
-        "{\"email\": \"test@email.com\", \"isExisting\": \"false\"}";
+        "{\"email\": \"test@email.com\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
     private static final String VALID_ADMIN_CREATION_REQUEST_BODY =
         "{\"email\": \"test@email.com\", \"surname\": \"surname\", \"forename\": \"forename\"}";
     private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
+    private static final String VALID_DUPLICATE_MEDIA_REQUEST_BODY =
+        "{\"email\": \"test@email.com\", \"fullName\": \"fullName\"}";
+    private static final String DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY =
+        "{\"email\": \"test@email.com\", \"fullName\":}";
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
     private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
@@ -98,6 +102,7 @@ class NotifyTest {
     String validLocationsMapJson;
 
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
+    private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
 
@@ -147,6 +152,24 @@ class NotifyTest {
     void testInvalidPayloadReturnsBadRequest() throws Exception {
         mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(INVALID_JSON_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidPayloadReturnsSuccessDuplicateMedia() throws Exception {
+        mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
+                            .content(VALID_DUPLICATE_MEDIA_REQUEST_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Duplicate media account email successfully sent")));
+    }
+
+    @Test
+    void testInvalidPayloadReturnsBadRequestDuplicateMedia() throws Exception {
+        mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
+                            .content(DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }

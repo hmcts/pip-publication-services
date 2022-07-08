@@ -9,4 +9,5 @@ public class WelcomeEmail {
 
     private String email;
     private boolean isExisting;
+    private String fullName;
 }
