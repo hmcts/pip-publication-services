@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 public class NotificationService {
 
     private static final String SUCCESS_MESSAGE = "Successfully sent list to %s";
+    private static final String EMPTY_SUCCESS_MESSAGE = "Successfully sent empty list to %s";
 
     @Autowired
     private EmailService emailService;
@@ -133,5 +134,12 @@ public class NotificationService {
             ));
         }
         return String.format(SUCCESS_MESSAGE, body.getApiDestination());
+    }
+
+    public String handleThirdParty(String apiDestination) {
+        log.info(writeLog("Sending blank payload to third party"));
+        log.info(writeLog(thirdPartyService.handleThirdPartyCall(apiDestination, "")));
+
+        return String.format(EMPTY_SUCCESS_MESSAGE, apiDestination);
     }
 }

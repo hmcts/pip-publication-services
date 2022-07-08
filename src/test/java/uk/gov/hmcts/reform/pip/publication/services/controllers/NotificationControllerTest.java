@@ -80,6 +80,9 @@ class NotificationControllerTest {
 
         when(notificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody)).thenReturn(SUCCESS_ID);
         when(notificationService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
+        when(notificationService.handleThirdParty(TEST)).thenReturn(SUCCESS_ID);
+        when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
+            .thenReturn(SUCCESS_ID);
         when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
             .thenReturn(SUCCESS_ID);
     }
@@ -162,5 +165,17 @@ class NotificationControllerTest {
         assertEquals(HttpStatus.OK, notificationController
             .sendUnidentifiedBlobEmail(testUnidentifiedBlobMap).getStatusCode(),
                      STATUS_CODES_MATCH);
+    }
+
+    @Test
+    void testSendThirdPartySubscriptionEmptyListReturnsOk() {
+        assertEquals(HttpStatus.OK, notificationController.sendThirdPartySubscription(TEST).getStatusCode(),
+                     STATUS_CODES_MATCH);
+    }
+
+    @Test
+    void testSendThirdPartySubscriptionEmptyList() {
+        assertTrue(notificationController.sendThirdPartySubscription(TEST).getBody().contains(SUCCESS_ID),
+                   MESSAGES_MATCH);
     }
 }

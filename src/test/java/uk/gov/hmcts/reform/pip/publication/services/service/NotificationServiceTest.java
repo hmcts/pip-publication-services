@@ -46,10 +46,11 @@ class NotificationServiceTest {
         TEST_EMAIL, false);
     private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
         TEST_EMAIL, "test_forename", "test_surname");
-    static final String SUCCESS_REF_ID = "successRefId";
+    private static final String SUCCESS_REF_ID = "successRefId";
+    private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
+    private static final String EMPTY_API_SENT = "Successfully sent empty list to testUrl";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
-    private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
                                                                              Templates.NEW_USER_WELCOME_EMAIL.template,
@@ -57,6 +58,8 @@ class NotificationServiceTest {
                                                                              SUCCESS_REF_ID);
     private static final UUID RAND_UUID = UUID.randomUUID();
     private static final String API_DESTINATION = "testUrl";
+    private static final String MESSAGES_MATCH = "Messages should match";
+
 
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
 
@@ -217,5 +220,13 @@ class NotificationServiceTest {
 
         assertEquals(SUCCESS_API_SENT, notificationService.handleThirdParty(subscription),
                      "Api subscription with flat file should return successful referenceId.");
+    }
+
+    @Test
+    void testHandleThirdPartyEmpty() {
+        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, "")).thenReturn(SUCCESS_REF_ID);
+
+        assertEquals(EMPTY_API_SENT, notificationService.handleThirdParty(API_DESTINATION),
+                     MESSAGES_MATCH);
     }
 }
