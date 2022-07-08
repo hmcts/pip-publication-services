@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@SuppressWarnings({"PMD.TooManyMethods"})
 class NotificationServiceTest {
     private final Map<String, Object> personalisationMap = Map.ofEntries(
         entry("email", VALID_BODY_AAD.getEmail()),
@@ -52,10 +53,7 @@ class NotificationServiceTest {
     private static final String TEST_EMAIL = "test@email.com";
     private static final String SUCCESS_REF_ID = "successRefId";
     private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
-        TEST_EMAIL, "test_forename", "test_surname");
 
-    private static final String SUCCESS_REF_ID = "successRefId";
-    private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
     private static final String EMPTY_API_SENT = "Successfully sent empty list to testUrl";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
