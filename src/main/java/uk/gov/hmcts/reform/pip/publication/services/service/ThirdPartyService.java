@@ -10,8 +10,10 @@ import reactor.util.retry.Retry;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Sensitivity;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 @Service
@@ -64,9 +66,17 @@ public class ThirdPartyService {
             httpHeaders.add("x-type", artefact.getType().toString());
             httpHeaders.add("x-list-type", artefact.getListType().toString());
             httpHeaders.add("x-content-date", artefact.getContentDate().toString());
-            httpHeaders.add("x-sensitivity", artefact.getSensitivity().toString());
+
+            httpHeaders.add("x-sensitivity",
+                artefact.getSensitivity() != null ? artefact.getSensitivity().toString() :
+                    Sensitivity.PUBLIC.toString());
+
             httpHeaders.add("x-language", artefact.getLanguage().toString());
-            httpHeaders.add("x-display-from", artefact.getDisplayFrom().toString());
+
+            httpHeaders.add("x-display-from",
+                artefact.getDisplayFrom() != null ? artefact.getDisplayFrom().toString() :
+                    LocalDateTime.now().toLocalDate().atStartOfDay().toString());
+
             httpHeaders.add("x-display-to", artefact.getDisplayTo().toString());
             httpHeaders.add("x-location-name", location.getName());
             httpHeaders.add("x-location-jurisdiction", String.join(",", location.getJurisdiction()));
