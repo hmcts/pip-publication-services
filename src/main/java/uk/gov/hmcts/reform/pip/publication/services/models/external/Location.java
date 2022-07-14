@@ -7,6 +7,8 @@ import java.util.List;
 @Data
 public class Location {
 
+    private Integer locationId;
+
     private String name;
 
     private List<String> jurisdiction;

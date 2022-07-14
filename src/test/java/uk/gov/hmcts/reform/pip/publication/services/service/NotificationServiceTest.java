@@ -67,6 +67,7 @@ class NotificationServiceTest {
     private static final String API_DESTINATION = "testUrl";
     private static final String MESSAGES_MATCH = "Messages should match";
 
+    private static final Integer LOCATION_ID = 1;
     private static final String LOCATION_NAME = "Location Name";
 
 
@@ -108,6 +109,9 @@ class NotificationServiceTest {
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
         when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
         when(emailService.sendEmail(validEmailBodyForDuplicateMediaUserClient)).thenReturn(sendEmailResponse);
+
+        location.setLocationId(LOCATION_ID);
+        location.setName(LOCATION_NAME);
     }
 
     @Test
@@ -171,6 +175,7 @@ class NotificationServiceTest {
         artefact.setIsFlatFile(true);
 
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
@@ -192,6 +197,7 @@ class NotificationServiceTest {
         artefact.setIsFlatFile(false);
 
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
@@ -227,9 +233,10 @@ class NotificationServiceTest {
     void testHandleThirdPartyFlatFile() {
         artefact.setArtefactId(RAND_UUID);
         artefact.setIsFlatFile(true);
-        location.setName(LOCATION_NAME);
+
         byte[] file = new byte[10];
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
         when(dataManagementService.getArtefactFlatFile(RAND_UUID)).thenReturn(file);
         when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, file, artefact, location))
             .thenReturn(SUCCESS_REF_ID);
@@ -249,6 +256,7 @@ class NotificationServiceTest {
         location.setName(LOCATION_NAME);
         String jsonPayload = "test";
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
         when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, jsonPayload, artefact, location))
             .thenReturn(SUCCESS_REF_ID);
