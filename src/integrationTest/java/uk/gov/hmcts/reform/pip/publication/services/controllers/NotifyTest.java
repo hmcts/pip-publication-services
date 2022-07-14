@@ -217,6 +217,7 @@ class NotifyTest {
                                               "Content-Type",
                                               ContentType.APPLICATION_JSON
                                           )
+                                          .setHeader("name", "name")
                                           .setBody(EXTERNAL_PAYLOAD)
                                           .setResponseCode(200));
 
