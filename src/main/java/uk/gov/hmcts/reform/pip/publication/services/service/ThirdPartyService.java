@@ -53,11 +53,7 @@ public class ThirdPartyService {
     private Consumer<HttpHeaders> getHttpHeadersFromExchange(Artefact artefact,
                                                              Location location) {
         if (artefact == null || location == null) {
-            return new Consumer<HttpHeaders>() {
-                @Override
-                public void accept(HttpHeaders httpHeaders) {
-                }
-            };
+            return httpHeaders -> {};
         }
 
         return httpHeaders -> {
