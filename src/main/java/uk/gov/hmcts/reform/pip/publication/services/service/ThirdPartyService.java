@@ -53,7 +53,7 @@ public class ThirdPartyService {
     private Consumer<HttpHeaders> getHttpHeadersFromExchange(Artefact artefact,
                                                              Location location) {
         if (artefact == null || location == null) {
-            return httpHeaders -> {};
+            return httpHeaders -> { };
         }
 
         return httpHeaders -> {
