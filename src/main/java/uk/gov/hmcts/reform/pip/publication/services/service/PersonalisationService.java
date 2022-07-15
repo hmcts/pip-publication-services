@@ -31,6 +31,8 @@ public class PersonalisationService {
     @Autowired
     DataManagementService dataManagementService;
 
+    @Autowired
+    ArtefactSummaryService artefactSummaryService;
 
     @Autowired
     PdfCreationService pdfCreationService;
@@ -116,7 +118,11 @@ public class PersonalisationService {
             byte[] artefactPdf = pdfCreationService.jsonToPdf(body.getArtefactId());
             personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
 
-            personalisation.put("testing_of_array", "<Placeholder>");
+            String summary =
+                artefactSummaryService.artefactSummary(dataManagementService.getArtefactJsonBlob(artefact.getArtefactId()),
+                                                       artefact.getListType());
+
+            personalisation.put("testing_of_array", summary);
 
             log.info("Personalisation map created");
             return personalisation;
