@@ -68,11 +68,7 @@ public class ThirdPartyService {
                     Sensitivity.PUBLIC.toString());
 
             httpHeaders.add("x-language", artefact.getLanguage().toString());
-
-            httpHeaders.add("x-display-from",
-                artefact.getDisplayFrom() != null ? artefact.getDisplayFrom().toString() :
-                    LocalDateTime.now().toLocalDate().atStartOfDay().toString());
-
+            httpHeaders.add("x-display-from", artefact.getDisplayFrom().toString());
             httpHeaders.add("x-display-to", artefact.getDisplayTo().toString());
             httpHeaders.add("x-location-name", location.getName());
             httpHeaders.add("x-location-jurisdiction", String.join(",", location.getJurisdiction()));
