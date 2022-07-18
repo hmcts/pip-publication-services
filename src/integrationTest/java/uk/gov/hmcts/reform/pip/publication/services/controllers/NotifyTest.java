@@ -223,7 +223,8 @@ class NotifyTest {
         mockMvc.perform(post(API_SUBSCRIPTION_URL)
                             .content(THIRD_PARTY_SUBSCRIPTION_JSON_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andExpect(content().string(containsString(
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
                 "Successfully sent list to https://localhost:4444")));
     }
 
