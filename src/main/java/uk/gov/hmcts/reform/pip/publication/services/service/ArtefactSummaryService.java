@@ -18,6 +18,11 @@ import java.util.Locale;
 @Service
 @Slf4j
 @SuppressWarnings("PMD.TooManyMethods")
+/**
+ * Service which extracts relevant summary data from each list type to be included in gov.notify emails. For the most
+ * part, developing these is a very fiddly process and it doesn't seem like there's much of an easier way. Some
+ * refactoring may be helpful as the iteration pattern on JsonNodes is used over and over again.
+ */
 public class ArtefactSummaryService {
 
     private static final String COURT_LISTS = "courtLists";
@@ -29,6 +34,15 @@ public class ArtefactSummaryService {
     private static final String HEARING = "hearing";
     private static final String INDIVIDUAL_DETAILS = "individualDetails";
 
+    /**
+     * Parent class to route based on list types.
+     *
+     * @param payload  - json payload
+     * @param listType - list type from artefact
+     * @return String which is taken in by the personalisationService to populate bullet points at bottom of
+     *     subscriptions email templates.
+     * @throws JsonProcessingException - jackson prereq.
+     */
     public String artefactSummary(String payload, ListType listType) throws JsonProcessingException {
         switch (listType) {
             case SJP_PUBLIC_LIST:
@@ -44,6 +58,14 @@ public class ArtefactSummaryService {
         }
     }
 
+    /**
+     * Civil cause list parent method - iterates on courtHouse/courtList - if these need to be shown in further
+     * iterations, do it here.
+     *
+     * @param payload - json body.
+     * @return - string for output.
+     * @throws JsonProcessingException - jackson req.
+     */
     private String artefactSummaryCivilDailyCause(String payload) throws JsonProcessingException {
         StringBuilder output = new StringBuilder("");
         JsonNode node = new ObjectMapper().readTree(payload);
@@ -55,12 +77,20 @@ public class ArtefactSummaryService {
         return output.toString();
     }
 
+    /**
+     * court room iteration - cycles through courtrooms and deals with routing for hearing channel, judiciary
+     * and sitting methods.
+     *
+     * @param node - jsonnode of courtrooms.
+     * @return string with above-mentioned info.
+     */
     private String processCivilDailyCourtRooms(JsonNode node) {
         Iterator<JsonNode> courtRoomNode = node.get(COURT_ROOM).elements();
         ObjectMapper mapper = new ObjectMapper();
         StringBuilder outputString = new StringBuilder();
         List<String> sessionChannel;
-        TypeReference<List<String>> typeReference = new TypeReference<>(){};
+        TypeReference<List<String>> typeReference = new TypeReference<>() {
+        };
         while (courtRoomNode.hasNext()) {
             JsonNode thisCourtRoom = courtRoomNode.next();
             JsonNode sessionChannelNode = thisCourtRoom.get(SESSION).get(0).path("sessionChannel");
@@ -72,6 +102,12 @@ public class ArtefactSummaryService {
         return outputString.toString();
     }
 
+    /**
+     * Judiciary iteration - gets title and known as fields from judiciary node.
+     *
+     * @param node - node of judiciary.
+     * @return judiciary string
+     */
     private String processCivilDailyJudiciary(JsonNode node) {
         JsonNode judiciaryNode = node.get(SESSION).get(0).get("judiciary");
         if (judiciaryNode.isEmpty()) {
@@ -95,6 +131,14 @@ public class ArtefactSummaryService {
         return johName.toString();
     }
 
+    /**
+     * sitting iteration class - deals with hearing channel, start time and hearing data (e.g. case names, refs etc)
+     *
+     * @param node - node of sittings.
+     * @param sessionChannel - session channel passed in from parent method - overridden if sitting level channel
+     *                       exists.
+     * @return string of these bits.
+     */
     private String processCivilDailySittings(JsonNode node, List<String> sessionChannel) {
         JsonNode sittingNode = node.get(SESSION).get(0).get(SITTINGS);
         Iterator<JsonNode> sittingIterator = sittingNode.elements();
@@ -119,6 +163,14 @@ public class ArtefactSummaryService {
         return outputString.toString();
     }
 
+    /**
+     * hearing channel handler. Sitting channel takes precedence over session channel if both exist (session channel
+     * is mandatory, however).
+     *
+     * @param sessionChannel - mentioned above.
+     * @param currentSittingNode - node for getting current sitting channel data.
+     * @return - string of correct channel.
+     */
     private String processCivilDailyChannels(List<String> sessionChannel, JsonNode currentSittingNode) {
         StringBuilder outputString = new StringBuilder();
         ObjectMapper mapper = new ObjectMapper();
@@ -136,6 +188,12 @@ public class ArtefactSummaryService {
         return outputString.toString();
     }
 
+    /**
+     * hearing iterator - gets case names, refs and hearing types.
+     *
+     * @param node - iterator of hearings.
+     * @return String with that stuff in it.
+     */
     private String processCivilDailyHearings(JsonNode node) {
         StringBuilder output = new StringBuilder(47);
         Iterator<JsonNode> hearingNode = node.get("hearing").elements();
@@ -151,6 +209,14 @@ public class ArtefactSummaryService {
         return output.toString();
     }
 
+    /**
+     * sjp press parent method - iterates over session data. Routes to specific methods which handle offences and
+     * judiciary roles.
+     *
+     * @param payload - json body.
+     * @return String with final summary data.
+     * @throws JsonProcessingException - jackson req.
+     */
     private String artefactSummarysjpPress(String payload) throws JsonProcessingException {
         StringBuilder output = new StringBuilder();
         JsonNode node = new ObjectMapper().readTree(payload);
@@ -166,6 +232,12 @@ public class ArtefactSummaryService {
         return output.toString();
     }
 
+    /**
+     * offences iterator method - handles logic of accused of single or multiple offences and returns output string.
+     *
+     * @param offencesNode - iterator on offences.
+     * @return string with offence data.
+     */
     private String processOffencessjpPress(JsonNode offencesNode) {
         StringBuilder outputString = new StringBuilder();
         boolean sorryPmd = offencesNode.size() > 1;
@@ -186,6 +258,12 @@ public class ArtefactSummaryService {
         return outputString.toString();
     }
 
+    /**
+     * handles reporting restrictions for sjp press.
+     *
+     * @param node - node which is checked for reporting restriction.
+     * @return - text based on whether restriction exists.
+     */
     private String processReportingRestrictionsjpPress(JsonNode node) {
         boolean restriction = node.get("reportingRestriction").asBoolean();
         if (restriction) {
@@ -195,6 +273,12 @@ public class ArtefactSummaryService {
         }
     }
 
+    /**
+     * role iteration method for sjp press.
+     *
+     * @param party - iterator of party.
+     * @return list of roles.
+     */
     private String processRolessjpPress(JsonNode party) {
         Iterator<JsonNode> partyNode = party.get("party").elements();
         String accused = "";
@@ -214,28 +298,37 @@ public class ArtefactSummaryService {
         return "Accused: " + accused + "\nPostcode: " + postCode + "\nProsecutor: " + prosecutor;
     }
 
+    /**
+     * parent method for sjp public lists. iterates on sittings.
+     *
+     * @param payload - json body.
+     * @return string of data.
+     * @throws JsonProcessingException - jackson prereq.
+     */
     private String artefactSummarysjpPublic(String payload) throws JsonProcessingException {
         StringBuilder output = new StringBuilder();
         JsonNode node = new ObjectMapper().readTree(payload);
         Iterator<JsonNode> sittings =
             node.get(COURT_LISTS).get(0).get(COURT_HOUSE).get(COURT_ROOM).get(0)
                 .get(SESSION).get(0).get(SITTINGS).elements();
-
         while (sittings.hasNext()) {
             output.append('•');
             JsonNode currentHearing = sittings.next();
-            output.append(processRolessjpPublic(currentHearing));
+            output.append(processRolesSjpPublic(currentHearing));
             String offence = currentHearing.get(HEARING).get(0).get(OFFENCE).get(0).get("offenceTitle").asText();
             output.append("Offence: ").append(offence).append('\n');
         }
-
         return output.toString();
     }
 
-    private String processRolessjpPublic(JsonNode hearing) {
+    /**
+     * handle sjp public roles iteration.
+     * @param hearing - node of a given hearing.
+     * @return string of roles.
+     */
+    private String processRolesSjpPublic(JsonNode hearing) {
         StringBuilder outputString = new StringBuilder();
         Iterator<JsonNode> partyNames = hearing.get(HEARING).get(0).get("party").elements();
-
         while (partyNames.hasNext()) {
             JsonNode currentParty = partyNames.next();
             switch (currentParty.get("partyRole").asText()) {

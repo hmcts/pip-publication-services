@@ -48,9 +48,9 @@ class ArtefactSummaryServiceTest {
                      writer, Charset.defaultCharset()
         );
         String body = writer.toString();
-        assertThat(body).contains("Grand Theft Auto").as(BODY_WRONG);
-        assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PRESS_LIST))
-            .contains("Swampy Jorts").as(MISSING_DATA_RETURN);
+        assertThat(body).as(BODY_WRONG).contains("Grand Theft Auto");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PRESS_LIST)).as(MISSING_DATA_RETURN)
+            .contains("Swampy Jorts");
     }
 
     @Test
@@ -60,10 +60,10 @@ class ArtefactSummaryServiceTest {
                      writer, Charset.defaultCharset()
         );
         String body = writer.toString();
-        assertThat(body).contains("This is a middle name2").as(BODY_WRONG);
+        assertThat(body).as(BODY_WRONG).contains("This is a middle name2");
 
-        assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PUBLIC_LIST))
-            .contains("This is an organisation2").as(MISSING_DATA_RETURN);
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PUBLIC_LIST)).as(MISSING_DATA_RETURN)
+            .contains("This is an organisation2");
     }
 
     @Test
@@ -73,10 +73,10 @@ class ArtefactSummaryServiceTest {
                      writer, Charset.defaultCharset()
         );
         String body = writer.toString();
-        assertThat(body).contains("Re: A Minor").as(BODY_WRONG);
+        assertThat(body).as(BODY_WRONG).contains("Re: A Minor");
 
         assertThat(artefactSummaryService.artefactSummary(body, ListType.FAMILY_DAILY_CAUSE_LIST))
-            .contains("fam_cause").as(MISSING_DATA_RETURN);
+            .as(MISSING_DATA_RETURN).contains("fam_cause");
     }
 
     @Test
@@ -86,10 +86,7 @@ class ArtefactSummaryServiceTest {
                      writer, Charset.defaultCharset()
         );
         String body = writer.toString();
-        assertThat(artefactSummaryService.artefactSummary(body, ListType.MAGS_PUBLIC_LIST))
-            .hasSize(0).as(STRING_NOT_EMPTY);
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.MAGS_PUBLIC_LIST)).as(STRING_NOT_EMPTY)
+            .hasSize(0);
     }
-
-
-
 }
