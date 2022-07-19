@@ -62,6 +62,7 @@ public class PersonalisationService {
 
     /**
      * Handles the personalisation for the Welcome email.
+     *
      * @return The personalisation map for the welcome email.
      */
     public Map<String, Object> buildWelcomePersonalisation(WelcomeEmail body) {
@@ -76,6 +77,7 @@ public class PersonalisationService {
 
     /**
      * Handles the personalisation for the admin account email.
+     *
      * @param body The body of the admin email.
      * @return The personalisation map for the admin account email.
      */
@@ -90,7 +92,8 @@ public class PersonalisationService {
 
     /**
      * Handles the personalisation for the raw data subscription email.
-     * @param body The body of the subscription.
+     *
+     * @param body     The body of the subscription.
      * @param artefact The artefact to send in the subscription.
      * @return The personalisation map for the raw data subscription email.
      */
@@ -119,8 +122,11 @@ public class PersonalisationService {
             personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
 
             String summary =
-                artefactSummaryService.artefactSummary(dataManagementService.getArtefactJsonBlob(artefact.getArtefactId()),
-                                                       artefact.getListType());
+                artefactSummaryService.artefactSummary(
+                    dataManagementService
+                        .getArtefactJsonBlob(artefact.getArtefactId()),
+                    artefact.getListType()
+                );
 
             personalisation.put("testing_of_array", summary);
 
@@ -137,12 +143,13 @@ public class PersonalisationService {
 
     /**
      * Handles the personalisation for the flat file subscription email.
-     * @param body The body of the subscription.
+     *
+     * @param body     The body of the subscription.
      * @param artefact The artefact to send in the subscription.
      * @return The personalisation map for the flat file subscription email.
      */
     public Map<String, Object> buildFlatFileSubscriptionPersonalisation(SubscriptionEmail body,
-                                                                         Artefact artefact) {
+                                                                        Artefact artefact) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             List<String> location = body.getSubscriptions().get(SubscriptionTypes.LOCATION_ID);
@@ -156,13 +163,15 @@ public class PersonalisationService {
             return personalisation;
         } catch (NotificationClientException e) {
             log.warn("Error adding attachment to flat file email {}. Artefact ID: {}", body.getEmail(),
-                     artefact.getArtefactId());
+                     artefact.getArtefactId()
+            );
             throw new NotifyException(e.getMessage());
         }
     }
 
     /**
      * Handles the personalisation for the media reporting email.
+     *
      * @param csvMediaApplications The csv byte array containing the media applications.
      * @return The personalisation map for the media reporting email.
      */
@@ -180,6 +189,7 @@ public class PersonalisationService {
 
     /**
      * Handles the personalisation for the unidentified blob email.
+     *
      * @param locationMap A map of location Ids and provenances associated with unidentified blobs.
      * @return The personalisation map for the unidentified blob email.
      */
@@ -196,7 +206,7 @@ public class PersonalisationService {
     }
 
     private void populateGenericPersonalisation(Map<String, Object> personalisation, String display,
-                                         String displayValue, List<String> content) {
+                                                String displayValue, List<String> content) {
         if (content == null || content.isEmpty()) {
             personalisation.put(display, NO);
             personalisation.put(displayValue, "");
@@ -219,6 +229,7 @@ public class PersonalisationService {
 
     /**
      * Handles the personalisation for the duplicate media account email.
+     *
      * @param body The body of the admin email.
      * @return The personalisation map for the duplicate media account email.
      */
