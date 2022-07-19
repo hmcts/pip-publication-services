@@ -22,6 +22,7 @@ class ArtefactSummaryServiceTest {
 
     private static final String BODY_WRONG = "Body is not as expected.";
     private static final String MISSING_DATA_RETURN = "Data expected in the returned summary data did not arrive.";
+    private static final String STRING_NOT_EMPTY = "The returned string should trigger the default (i.e. empty string)";
 
     @Test
     void civilDailyCauseList() throws IOException {
@@ -63,6 +64,31 @@ class ArtefactSummaryServiceTest {
         assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PUBLIC_LIST))
             .contains("This is an organisation2").as(MISSING_DATA_RETURN);
     }
+
+    @Test
+    void familyDailyCauseList() throws IOException {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "familyDailyCauseList.json")),
+                     writer, Charset.defaultCharset()
+        );
+        String body = writer.toString();
+        assertThat(body).contains("Re: A Minor").as(BODY_WRONG);
+
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.FAMILY_DAILY_CAUSE_LIST))
+            .contains("fam_cause").as(MISSING_DATA_RETURN);
+    }
+
+    @Test
+    void MagsPublicList() throws IOException {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "familyDailyCauseList.json")),
+                     writer, Charset.defaultCharset()
+        );
+        String body = writer.toString();
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.MAGS_PUBLIC_LIST))
+            .hasSize(0).as(STRING_NOT_EMPTY);
+    }
+
 
 
 }
