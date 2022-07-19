@@ -1,26 +1,33 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.jni.Local;
 import org.json.JSONArray;
 import org.springframework.stereotype.Service;
-import springfox.documentation.spring.web.json.Json;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 
 @Service
 @Slf4j
 public class ArtefactSummaryService {
+
+    private static final String COURT_LISTS = "courtLists";
+    private static final String COURT_HOUSE = "courtHouse";
+    private static final String COURT_ROOM = "courtRoom";
+    private static final String SESSION = "session";
+    private static final String SITTINGS = "sittings";
+    private static final String HEARING = "hearing";
+    private static final String INDIVIDUAL_DETAILS = "individualDetails";
 
     public String artefactSummary(String payload, ListType listType) throws JsonProcessingException {
         switch (listType) {
@@ -43,8 +50,9 @@ public class ArtefactSummaryService {
         Iterator<JsonNode> courtHouseNode = node.get("courtLists").elements();
         while (courtHouseNode.hasNext()) {
             JsonNode thisCourtHouse = courtHouseNode.next().get("courtHouse");
-            output.append("\n•Courthouse: ")
-                .append(thisCourtHouse.get("courtHouseName").asText());
+
+//            output.append("\n•Courthouse: ")
+//                .append(thisCourtHouse.get("courtHouseName").asText());
             output.append(processCivilDailyCourtRooms(thisCourtHouse)).append("\n");
         }
         return output.toString();
@@ -55,15 +63,22 @@ public class ArtefactSummaryService {
         StringBuilder outputString = new StringBuilder();
         while (courtRoomNode.hasNext()) {
             JsonNode thisCourtRoom = courtRoomNode.next();
-            outputString.append("\nCourtroom: ").append(thisCourtRoom.get("courtRoomName").asText());
+            JsonNode sessionChannelNode =thisCourtRoom.get("session").get(0).path("sessionChannel");
+            ObjectMapper mapper = new ObjectMapper();
+            List<String> sessionChannel = mapper.convertValue(sessionChannelNode, new TypeReference<List<String>>() {
+            });
+            outputString.append("\n\nCourtroom: ").append(thisCourtRoom.get("courtRoomName").asText());
+            outputString.append(processCivilDailySittings(thisCourtRoom, sessionChannel));
             outputString.append(processCivilDailyJudiciary(thisCourtRoom));
-            outputString.append(processCivilDailySittings(thisCourtRoom));
         }
         return outputString.toString();
     }
 
     public String processCivilDailyJudiciary(JsonNode node) {
         JsonNode judiciaryNode = node.get("session").get(0).get("judiciary");
+        if(judiciaryNode.isEmpty()){
+            return "";
+        }
         Iterator<JsonNode> johNode = judiciaryNode.elements();
         StringBuilder johName = new StringBuilder("\nJudiciary: ");
         int counter = 1;
@@ -82,7 +97,7 @@ public class ArtefactSummaryService {
         return johName.toString();
     }
 
-    public String processCivilDailySittings(JsonNode node) {
+    public String processCivilDailySittings(JsonNode node, List<String> sessionChannel) {
         JsonNode sittingNode = node.get("session").get(0).get("sittings");
         Iterator<JsonNode> sittingIterator = sittingNode.elements();
         StringBuilder outputString = new StringBuilder();
@@ -93,13 +108,35 @@ public class ArtefactSummaryService {
                 outputString.append(" ").append(counter);
                 counter += 1;
             }
+
             JsonNode currentSitting = sittingIterator.next();
             DateTimeFormatter inputfmt = DateTimeFormatter.ISO_DATE_TIME;
             DateTimeFormatter outputfmt = DateTimeFormatter.ofPattern("hh:mm a");
+
             String startTime =
                 outputfmt.format(LocalDateTime.from(inputfmt.parse(currentSitting.get("sittingStart").asText())));
-            outputString.append(": \nStart Time: ").append(startTime)
-                .append(processCivilDailyHearings(currentSitting));
+
+            outputString.append(processCivilDailyHearings(currentSitting))
+                .append(": \nStart Time: ").append(startTime)
+                .append(processCivilDailyChannels(sessionChannel, currentSitting.path("channel")));
+        }
+        return outputString.toString();
+    }
+
+    public String processCivilDailyChannels(List<String> sessionChannel, JsonNode currentSittingNode) {
+        StringBuilder outputString = new StringBuilder();
+        ObjectMapper mapper = new ObjectMapper();
+        if(currentSittingNode.isMissingNode()){
+            for(String channel: sessionChannel){
+                outputString.append("\n").append(channel);
+            }
+        }
+        else {
+            List<String> channelList = mapper.convertValue(currentSittingNode, new TypeReference<List<String>>() {
+            });
+            for(String channel: channelList){
+                outputString.append("\n").append(channel);
+            }
         }
         return outputString.toString();
     }
@@ -170,9 +207,9 @@ public class ArtefactSummaryService {
         while (partyNode.hasNext()) {
             JsonNode currentParty = partyNode.next();
             if (currentParty.get("partyRole").asText().toLowerCase(Locale.ROOT).equals("accused")) {
-                String forename = currentParty.get("individualDetails").get("individualForenames").asText();
-                String surname = currentParty.get("individualDetails").get("individualSurname").asText();
-                postCode = currentParty.get("individualDetails").get("address").get("postCode").asText();
+                String forename = currentParty.get(INDIVIDUAL_DETAILS).get("individualForenames").asText();
+                String surname = currentParty.get(INDIVIDUAL_DETAILS).get("individualSurname").asText();
+                postCode = currentParty.get(INDIVIDUAL_DETAILS).get("address").get("postCode").asText();
                 accused = forename + " " + surname;
             } else {
                 prosecutor = currentParty.get("organisationDetails").get("organisationName").asText();
@@ -181,32 +218,35 @@ public class ArtefactSummaryService {
         return "Accused: " + accused + "\nPostcode: " + postCode + "\nProsecutor: " + prosecutor;
     }
 
-    public String artefactSummarySJPPublic(String payload) throws JsonProcessingException {
+    private String artefactSummarySJPPublic(String payload) throws JsonProcessingException {
         StringBuilder output = new StringBuilder();
         JsonNode node = new ObjectMapper().readTree(payload);
-        Iterator<JsonNode> endNode =
-            node.get("courtLists").get(0).get("courtHouse").get("courtRoom").get(0).get("session").get(0).get(
-                "sittings").elements();
-        while (endNode.hasNext()) {
+        Iterator<JsonNode> sittings =
+            node.get(COURT_LISTS).get(0).get(COURT_HOUSE).get(COURT_ROOM).get(0)
+                .get(SESSION).get(0).get(SITTINGS).elements();
+
+        while (sittings.hasNext()) {
             output.append("•");
-            JsonNode currentHearing = endNode.next();
+            JsonNode currentHearing = sittings.next();
             output.append(processRolesSJPPublic(currentHearing));
-            String offence = currentHearing.get("hearing").get(0).get("offence").get(0).get("offenceTitle").asText();
+            String offence = currentHearing.get(HEARING).get(0).get("offence").get(0).get("offenceTitle").asText();
             output.append("Offence: ").append(offence).append("\n");
         }
+
         return output.toString();
     }
 
-    public String processRolesSJPPublic(JsonNode hearing) {
+    private String processRolesSJPPublic(JsonNode hearing) {
         StringBuilder outputString = new StringBuilder();
-        Iterator<JsonNode> partyNames = hearing.get("hearing").get(0).get("party").elements();
+        Iterator<JsonNode> partyNames = hearing.get(HEARING).get(0).get("party").elements();
+
         while (partyNames.hasNext()) {
             JsonNode currentParty = partyNames.next();
             switch (currentParty.get("partyRole").asText()) {
                 case "ACCUSED":
-                    String forenames = currentParty.get("individualDetails").get("individualForenames").asText();
-                    String surname = currentParty.get("individualDetails").get("individualSurname").asText();
-                    String postCode = currentParty.get("individualDetails").get("address").get("postCode").asText();
+                    String forenames = currentParty.get(INDIVIDUAL_DETAILS).get("individualForenames").asText();
+                    String surname = currentParty.get(INDIVIDUAL_DETAILS).get("individualSurname").asText();
+                    String postCode = currentParty.get(INDIVIDUAL_DETAILS).get("address").get("postCode").asText();
                     outputString.append("Accused: ").append(forenames).append(" ").append(surname).append("\n");
                     outputString.append("Postcode: ").append(postCode).append("\n");
                     break;
