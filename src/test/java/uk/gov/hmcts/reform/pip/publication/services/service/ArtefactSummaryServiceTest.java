@@ -23,11 +23,12 @@ class ArtefactSummaryServiceTest {
     private static final String BODY_WRONG = "Body is not as expected.";
     private static final String MISSING_DATA_RETURN = "Data expected in the returned summary data did not arrive.";
     private static final String STRING_NOT_EMPTY = "The returned string should trigger the default (i.e. empty string)";
+    private static final String MOCKS_DIR = "src/test/resources/mocks/";
 
     @Test
     void civilDailyCauseList() throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "civilDailyCauseList"
+        IOUtils.copy(Files.newInputStream(Paths.get(MOCKS_DIR, "civilDailyCauseList"
                          + ".json")),
                      writer, Charset.defaultCharset()
         );
@@ -43,7 +44,7 @@ class ArtefactSummaryServiceTest {
     @Test
     void sjpPressList() throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "sjpPressList.json")),
+        IOUtils.copy(Files.newInputStream(Paths.get(MOCKS_DIR, "sjpPressList.json")),
                      writer, Charset.defaultCharset()
         );
         String body = writer.toString();
@@ -55,7 +56,7 @@ class ArtefactSummaryServiceTest {
     @Test
     void sjpPublicList() throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "sjpPublicList.json")),
+        IOUtils.copy(Files.newInputStream(Paths.get(MOCKS_DIR, "sjpPublicList.json")),
                      writer, Charset.defaultCharset()
         );
         String body = writer.toString();
@@ -68,7 +69,7 @@ class ArtefactSummaryServiceTest {
     @Test
     void familyDailyCauseList() throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "familyDailyCauseList.json")),
+        IOUtils.copy(Files.newInputStream(Paths.get(MOCKS_DIR, "familyDailyCauseList.json")),
                      writer, Charset.defaultCharset()
         );
         String body = writer.toString();
@@ -79,9 +80,9 @@ class ArtefactSummaryServiceTest {
     }
 
     @Test
-    void MagsPublicList() throws IOException {
+    void magsPublicList() throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "familyDailyCauseList.json")),
+        IOUtils.copy(Files.newInputStream(Paths.get(MOCKS_DIR, "familyDailyCauseList.json")),
                      writer, Charset.defaultCharset()
         );
         String body = writer.toString();
