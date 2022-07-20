@@ -67,31 +67,12 @@ public class PdfCreationService {
                 break;
             default:
                 //Throw exception
+                htmlFile = parseThymeleafTemplate(rawJson);
                 break;
             //todo add mixed lists
         }
         return generatePdfFromHtml(htmlFile);
     }
-
-    private String sjpPublicListTemplate(JsonNode json) throws JsonProcessingException {
-        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
-        Context context = new Context();
-        String date = json.get("document").get("publicationDate").asText();
-
-        context.setVariable("date", date);
-        context.setVariable("jsonBody", json);
-
-        Map<String, String> cases = new HashMap<>();
-        cases.put("Josh", "hello");
-        cases.put("Junaid", "hi");
-        cases.put("Danny", "你好");
-        cases.put("Kian", "ahoy!");
-        cases.put("Chris", "hola");
-        cases.put("Nigel", "bonjour");
-        context.setVariable("cases", cases);
-        return templateEngine.process("sjpPublicList.html", context);
-    }
-
 
     /**
      * Class which takes in JSON input and uses it to inform a given template. Consider this a placeholder until we
