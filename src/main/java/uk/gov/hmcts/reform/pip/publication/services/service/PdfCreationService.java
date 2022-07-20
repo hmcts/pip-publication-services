@@ -50,7 +50,6 @@ public class PdfCreationService {
         } else {
             htmlFile = parseThymeleafTemplate(rawJson);
         }
-
         return generatePdfFromHtml(htmlFile);
     }
 
