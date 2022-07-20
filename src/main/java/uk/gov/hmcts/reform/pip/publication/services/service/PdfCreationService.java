@@ -13,6 +13,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CivilDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.FamilyDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPressListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPublicListConverter;
@@ -40,7 +41,6 @@ public class PdfCreationService {
     @Autowired
     private DataManagementService dataManagementService;
 
-
     /**
      * Wrapper class for the entire json to pdf process.
      * @param inputPayloadUuid UUID representing a particular artefact ID.
@@ -52,25 +52,14 @@ public class PdfCreationService {
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
         String htmlFile = "";
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
-        switch (artefact.getListType()) {
-            case CIVIL_DAILY_CAUSE_LIST:
-                htmlFile = new CivilDailyCauseListConverter().convert(topLevelNode);
-                break;
-            case SJP_PUBLIC_LIST:
-                htmlFile = new SjpPublicListConverter().convert(topLevelNode);
-                break;
-            case FAMILY_DAILY_CAUSE_LIST:
-                htmlFile = new FamilyDailyCauseListConverter().convert(topLevelNode);
-                break;
-            case SJP_PRESS_LIST:
-                htmlFile = new SjpPressListConverter().convert(topLevelNode);
-                break;
-            default:
-                //Throw exception
-                htmlFile = parseThymeleafTemplate(rawJson);
-                break;
-            //todo add mixed lists
+
+        Converter converter = artefact.getListType().getConverter();
+        if(converter != null) {
+            htmlFile = converter.convert(topLevelNode);
+        } else {
+            htmlFile = parseThymeleafTemplate(rawJson);
         }
+
         return generatePdfFromHtml(htmlFile);
     }
 
