@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +11,15 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -38,12 +45,45 @@ public class PdfCreationService {
      */
     public byte[] jsonToPdf(UUID inputPayloadUuid) throws IOException {
         String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
-        ObjectMapper mapper = new ObjectMapper();
-        Object jsonObj = mapper.readValue(rawJson, Object.class);
-        String prettyJsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj);
-        String htmlFile = parseThymeleafTemplate(prettyJsonString);
+        Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
+        String htmlFile = "";
+        JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
+        switch (artefact.getListType()) {
+            case CIVIL_DAILY_CAUSE_LIST:
+                break;
+            case SJP_PUBLIC_LIST:
+                htmlFile = sjpPublicListTemplate(topLevelNode);
+                break;
+            case FAMILY_DAILY_CAUSE_LIST:
+                break;
+            case SJP_PRESS_LIST:
+                break;
+            default:
+                break;
+            //todo add mixed lists
+        }
         return generatePdfFromHtml(htmlFile);
     }
+
+    private String sjpPublicListTemplate(JsonNode json) throws JsonProcessingException {
+        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
+        Context context = new Context();
+        String date = json.get("document").get("publicationDate").asText();
+
+        context.setVariable("date", date);
+        context.setVariable("jsonBody", json);
+
+        Map<String, String> cases = new HashMap<>();
+        cases.put("Josh", "hello");
+        cases.put("Junaid", "hi");
+        cases.put("Danny", "你好");
+        cases.put("Kian", "ahoy!");
+        cases.put("Chris", "hola");
+        cases.put("Nigel", "bonjour");
+        context.setVariable("cases", cases);
+        return templateEngine.process("sjpPublicList.html", context);
+    }
+
 
     /**
      * Class which takes in JSON input and uses it to inform a given template. Consider this a placeholder until we
