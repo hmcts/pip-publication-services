@@ -12,6 +12,10 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CivilDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.FamilyDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPressListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPublicListConverter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -50,15 +54,19 @@ public class PdfCreationService {
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
         switch (artefact.getListType()) {
             case CIVIL_DAILY_CAUSE_LIST:
+                htmlFile = new CivilDailyCauseListConverter().convert(topLevelNode);
                 break;
             case SJP_PUBLIC_LIST:
-                htmlFile = sjpPublicListTemplate(topLevelNode);
+                htmlFile = new SjpPublicListConverter().convert(topLevelNode);
                 break;
             case FAMILY_DAILY_CAUSE_LIST:
+                htmlFile = new FamilyDailyCauseListConverter().convert(topLevelNode);
                 break;
             case SJP_PRESS_LIST:
+                htmlFile = new SjpPressListConverter().convert(topLevelNode);
                 break;
             default:
+                //Throw exception
                 break;
             //todo add mixed lists
         }
