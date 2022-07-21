@@ -11,7 +11,7 @@ import java.util.Map;
 public class SjpPublicListConverter implements Converter {
 
     @Override
-    public String convert(JsonNode artefact) {
+    public String convert(JsonNode artefact, Map<String, String> metadata) {
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         Context context = new Context();
         String date = artefact.get("document").get("publicationDate").asText();

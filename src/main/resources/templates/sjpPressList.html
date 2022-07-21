@@ -5,12 +5,28 @@
     @page {
       margin: 30px 20px;
 
-      @top-center {
+      @bottom-center {
         font-family: 'GDS Transport';
         font-size: 16px;
-        color: blue;
-        content: "This is PDF/UA page " counter(page) " of " counter(pages) ".";
+        color: grey;
+        content: "Court and Tribunal Hearings Service - PDF/UA page " counter(page) " of " counter(pages) ".";
       }
+    }
+
+    .headerBar {
+      background-color: #0b0c0c;
+      height: 50px;
+    }
+
+    .govUkHeader {
+      left: 0;
+      right: 0;
+      margin: auto;
+      font-size: 30px;
+      color: #f1f1f1;
+      text-align: center;
+      font-weight: 700;
+      display: inline;
     }
 
     body {
@@ -22,8 +38,32 @@
 
     .pageSeparatedCase {
       page-break-after: always;
-      border: darkblue solid 1px;
+      border: black solid 1px;
       text-align: center;
+    }
+
+    .logoText {
+      font-size: 18px;
+      margin-top: 0;
+      padding: 0;
+      line-height: 0.6;
+    }
+
+    .dateContainer {
+      font-size:12px;
+      margin-top: 0;
+      padding: 0;
+      line-height: 0.6;
+    }
+
+    .headerImage {
+      width:140px;
+      color: #0b0c0c;
+      padding-top: 10px;
+    }
+
+    .logoDatesContainer {
+      display: inline-block;
     }
 
     h1, h4 {
@@ -31,12 +71,24 @@
       color: black;
     }
 
-    pre p {
-      font-family: 'GDS Transport';
-      color: darkblue;
-      background-color: #f1f1f1;
-      padding: 2px;
-      font-size: 105%;
+    h5 {
+      font-family: "GDS Transport";
+      color: grey;
+    }
+    table {
+      table-layout: fixed;
+      width: 600px;
+    }
+
+    th {
+      width: 200px;
+      overflow: hidden;
+    }
+
+    td {
+      width: 400px;
+      overflow: hidden;
+      text-align: left;
     }
   </style>
   <meta charset="UTF-8"/>
@@ -46,28 +98,67 @@
   <title>This is a file for testing JSON to PDF creation</title>
 </head>
 <body>
-<div class="header">
-  <img
-    src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png"
-    alt="HMCTS Logo"/>
-  <h1>Court and Tribunal Hearings Service</h1>
-  <h2>Single Justice Procedure Press List - <span th:text="${date}"/></h2>
-  <h3>Single Justice Procedure cases that are ready for hearing.</h3>
-  <div class="pageSeparatedCase" th:each="case : ${cases}">
-    <tr><th>Name</th><td th:text="${case.name}"/></tr>
-    <tr><th>Date of Birth</th><td th:text="${case.dateOfBirth}"/></tr>
-<!--    <tr><th>Reference</th><td th:text="${case.forename}"/></tr>-->
-    <tr><th>Address</th>
-      <span th:each="addressLine : ${case.address}"><td style="white-space: pre-line" th:text="${addressLine}"/></span>
-    </tr>
-    <tr><th>Prosecutor</th><td th:text="${case.prosecutor}"/></tr>
+<div class="headerBar">
+<div class="govUkHeader">
+  <img src="https://www.gov.uk/assets/static/govuk-logotype-crown-66ad9a9b8fca42cf0ba18979eef6afc2e8056d5f158ca9b27ce9afdf852aae87.png" width="36px" height="32px" alt="Gov.UK banner"/>
+  GOV.UK
+</div>
+</div>
+<div class="logoDatesContainer">
+<div class="headerImage">
+  <img style="width:30px; height:auto;"
+       src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png"
+       alt="HMCTS Logo"/>
+  <div class="logoText">
+  <p class="logoText">HM Courts &amp;</p>
+  <p class="logoText">Tribunals Service</p>
   </div>
+</div>
+<div class="dateContainer">
+  <h4 th:text="${'List for ' + contentDate}"/>
+  <h5 th:text="${'Published: ' + publishedDate}"/>
+</div>
+</div>
+  <h1>Single Justice Procedure Press List</h1>
 
+  <h3>Single Justice Procedure cases that are ready for hearing.</h3>
+<div class="pageSeparatedCase" th:each="case : ${cases}">
+  <table>
+    <tr>
+      <th>Name</th>
+      <td th:text="${case.name}"/>
+    </tr>
+    <tr>
+      <th>Date of Birth</th>
+      <td th:text="${case.dateOfBirth + ' (' + case.age + ')'}"/>
+    </tr>
+    <tr>
+      <th>Address</th>
+      <td th:text="${case.addressLine1}"/>
+    </tr>
+    <tr th:each="addressLine : ${case.addressRemainder}">
+      <th/>
+      <td th:text="${addressLine}"></td>
+    </tr>
+    <tr>
+      <th>Prosecutor</th>
+      <td th:text="${case.prosecutor}"/>
+    </tr>
+    <tr>
+      <th>Case Reference(s)</th>
+      <td th:text="${case.reference1}"/>
+    </tr>
+    <tr th:each="reference: ${case.referenceRemainder}">
+      <th/>
+      <td th:text="${reference}"/>
+    </tr>
+    <span th:each="case: ${case.offences}">
+      <tr><th>Offence Title</th><td th:text="${case.offence}"/></tr>
+      <tr><th>Offence Wording</th><td th:text="${case.wording}"/></tr>
+      <tr><th>Reporting Restriction</th><td th:text="${case.reportingRestriction}"/></tr>
+    </span>
+  </table>
 </div>
 
-<h4>Currently, this is basically just a pretty-printed JSON file with a logo, but can be built on very easily using <a
-  href="https://www.thymeleaf.org/" title="Thymeleaf Website">Thymeleaf templating</a></h4>
-
-<pre><p id="code" th:text="${jsonBody}"/></pre>
 </body>
 </html>

@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Conve
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -42,11 +44,16 @@ public class PdfCreationService {
         String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
         String htmlFile;
+        Map<String, String> metadataMap = new HashMap<>();
+        metadataMap.put("contentDate", artefact.getContentDate().toString() + ":00.00Z");
+        metadataMap.put("provenance", artefact.getProvenance());
+        metadataMap.put("location", artefact.getLocationId());
+
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
 
         Converter converter = artefact.getListType().getConverter();
         if(converter != null) {
-            htmlFile = converter.convert(topLevelNode);
+            htmlFile = converter.convert(topLevelNode, metadataMap);
         } else {
             htmlFile = parseThymeleafTemplate(rawJson);
         }

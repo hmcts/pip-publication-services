@@ -13,8 +13,11 @@ import java.util.Map;
 public class sjpPressCase {
     String name;
     String dateOfBirth;
-    String reference;
-    List<String> address;
+    String age;
+    String reference1;
+    List<String> referenceRemainder;
+    String addressLine1;
+    List<String> addressRemainder;
     String prosecutor;
     List<Map<String, String>> offences;
 }
