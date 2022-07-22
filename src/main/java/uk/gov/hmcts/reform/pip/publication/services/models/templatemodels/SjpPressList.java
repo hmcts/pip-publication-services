@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.templateModels;
+package uk.gov.hmcts.reform.pip.publication.services.models.templatemodels;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class sjpPressCase {
+public class SjpPressList {
     String name;
     String dateOfBirth;
     String age;

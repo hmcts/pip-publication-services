@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Conve
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,33 +35,33 @@ public class PdfCreationService {
 
     /**
      * Wrapper class for the entire json to pdf process.
+     *
      * @param inputPayloadUuid UUID representing a particular artefact ID.
      * @return byteArray representing the generated PDF.
      * @throws IOException - uses file streams so needs this.
      */
-    public byte[] jsonToPdf(UUID inputPayloadUuid) throws IOException {
+    public String jsonToHtml(UUID inputPayloadUuid) throws IOException {
         String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
         String htmlFile;
-        Map<String, String> metadataMap = new HashMap<>();
-        metadataMap.put("contentDate", artefact.getContentDate().toString() + ":00.00Z");
-        metadataMap.put("provenance", artefact.getProvenance());
-        metadataMap.put("location", artefact.getLocationId());
+        Map<String, String> metadataMap = Map.of("contentDate", artefact.getContentDate().toString() + ":00.00Z",
+            "provenance", artefact.getProvenance(), "location", artefact.getLocationId());
 
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
 
         Converter converter = artefact.getListType().getConverter();
-        if(converter != null) {
+        if (converter != null) {
             htmlFile = converter.convert(topLevelNode, metadataMap);
         } else {
             htmlFile = parseThymeleafTemplate(rawJson);
         }
-        return generatePdfFromHtml(htmlFile);
+        return htmlFile;
     }
 
     /**
      * Class which takes in JSON input and uses it to inform a given template. Consider this a placeholder until we
      * have specific style guides created.
+     *
      * @param json - json string input representing a publication
      * @return formatted html string representing the input to the pdf reader
      */
@@ -75,6 +74,7 @@ public class PdfCreationService {
 
     /**
      * Class which takes in an HTML file and generates an accessible PDF file (as a byteArray).
+     *
      * @param html - string input representing a well-formed HTML file conforming to WCAG pdf accessibility guidance
      * @return a byte array representing the generated PDF.
      * @throws IOException - if errors appear during the process.
