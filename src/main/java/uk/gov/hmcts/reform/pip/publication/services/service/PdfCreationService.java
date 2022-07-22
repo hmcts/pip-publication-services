@@ -12,10 +12,12 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
+import uk.gov.hmcts.reform.pip.publication.services.utils.DateTimeHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -41,15 +43,15 @@ public class PdfCreationService {
     public byte[] jsonToPdf(UUID inputPayloadUuid) throws IOException {
         String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
-        String htmlFile;
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
 
         Converter converter = artefact.getListType().getConverter();
-        if(converter != null) {
-            htmlFile = converter.convert(topLevelNode);
-        } else {
-            htmlFile = parseThymeleafTemplate(rawJson);
-        }
+        Map<String, String> metadata = Map.of("contentDate", DateTimeHelper.formatDate(artefact.getContentDate()),
+                                              "locationId", artefact.getLocationId(),
+                                              "provenance", artefact.getProvenance());
+        String htmlFile = (converter == null)
+            ? parseThymeleafTemplate(rawJson)
+            : converter.convert(topLevelNode, metadata);
 
         return generatePdfFromHtml(htmlFile);
     }

@@ -9,12 +9,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,6 +71,13 @@ class PdfCreationServiceTest {
         UUID uuid = UUID.randomUUID();
         String inputJson = "{\"document\":{\"value1\":\"x\",\"value2\":\"hiddenTestString\"}}";
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(inputJson);
+
+        Artefact artefact = new Artefact();
+        artefact.setListType(ListType.CROWN_DAILY_LIST);
+        artefact.setContentDate(LocalDateTime.now());
+        artefact.setLocationId("123");
+        artefact.setProvenance("MANUAL_UPLOAD");
+        when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
 
         byte[] outputPdf = pdfCreationService.jsonToPdf(uuid);
         try (PDDocument doc = PDDocument.load(outputPdf)) {
