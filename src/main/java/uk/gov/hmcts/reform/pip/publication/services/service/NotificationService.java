@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
@@ -137,23 +138,25 @@ public class NotificationService {
      */
     public String handleThirdParty(ThirdPartySubscription body) {
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
+        Location location = dataManagementService.getLocation(artefact.getLocationId());
         if (artefact.getIsFlatFile()) {
             log.info(thirdPartyService.handleThirdPartyCall(body.getApiDestination(),
                                                             dataManagementService.getArtefactFlatFile(
-                                                                artefact.getArtefactId())));
+                                                                artefact.getArtefactId()), artefact, location));
         } else {
             log.info(thirdPartyService.handleThirdPartyCall(
                 body.getApiDestination(),
                 dataManagementService.getArtefactJsonBlob(
-                    artefact.getArtefactId())
+                    artefact.getArtefactId()), artefact, location
             ));
         }
         return String.format(SUCCESS_MESSAGE, body.getApiDestination());
     }
 
     public String handleThirdParty(String apiDestination) {
+
         log.info(writeLog("Sending blank payload to third party"));
-        log.info(writeLog(thirdPartyService.handleThirdPartyCall(apiDestination, "")));
+        log.info(writeLog(thirdPartyService.handleThirdPartyCall(apiDestination, "", null, null)));
 
         return String.format(EMPTY_SUCCESS_MESSAGE, apiDestination);
     }
