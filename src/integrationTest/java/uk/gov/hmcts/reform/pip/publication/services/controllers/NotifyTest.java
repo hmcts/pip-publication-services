@@ -54,7 +54,7 @@ class NotifyTest {
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
     private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
     private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY =
-        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"1d7cfeb3-3e4d-44f8-a185-80b9a8971676\"}";
+        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"70494df0-31c1-4290-bbd2-7bfe7acfeb81\"}";
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY =
         "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
     private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY =
