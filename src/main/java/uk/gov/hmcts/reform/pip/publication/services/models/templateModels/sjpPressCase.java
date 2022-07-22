@@ -20,4 +20,5 @@ public class sjpPressCase {
     List<String> addressRemainder;
     String prosecutor;
     List<Map<String, String>> offences;
+    int caseCounter;
 }

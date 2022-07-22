@@ -26,6 +26,7 @@ public class SjpPressListConverter implements Converter {
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         Context context = new Context();
         List<sjpPressCase> caseList = new ArrayList<>();
+        int count = 1;
         Iterator<JsonNode> hearingNode =
             artefact.get("courtLists").get(0).get("courtHouse").get("courtRoom").get(0).get("session").get(0).get(
                 "sittings").get(0).get("hearing").elements();
@@ -35,11 +36,17 @@ public class SjpPressListConverter implements Converter {
             processRoles(thisCase, currentCase);
             processCaseUrns(thisCase, currentCase.get("case"));
             processOffences(thisCase, currentCase.get("offence"));
+            thisCase.setCaseCounter(count);
             caseList.add(thisCase);
+            count +=1;
         }
 
-        String publishedDate = helpers.formatTimestampToBst(artefact.get("document").get("publicationDate").asText());
-        context.setVariable("contentDate", helpers.formatTimestampToBst(metadata.get("contentDate")));
+        String publishedDate = helpers.formatTimestampToBst(
+            artefact.get("document").get("publicationDate").asText(),
+            false
+        );
+        context.setVariable("contentDate", helpers.formatTimestampToBst(metadata.get("contentDate"),
+                                                                        true));
         context.setVariable("publishedDate", publishedDate);
         context.setVariable("jsonBody", artefact);
         context.setVariable("metaData", metadata);
@@ -86,7 +93,10 @@ public class SjpPressListConverter implements Converter {
         address.add(addressNode.get("county").asText());
         address.add(addressNode.get("postCode").asText());
         thisCase.setAddressLine1(address.get(0));
-        thisCase.setAddressRemainder(address.stream().skip(1).collect(Collectors.toList()));
+        thisCase.setAddressRemainder(address.stream()
+                                         .skip(1)
+                                         .filter(e -> !e.isEmpty())
+                                         .collect(Collectors.toList()));
     }
 
 

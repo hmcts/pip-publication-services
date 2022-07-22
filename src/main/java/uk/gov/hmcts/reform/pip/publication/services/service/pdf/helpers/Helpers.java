@@ -9,11 +9,17 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 public class Helpers {
-    public String formatTimestampToBst(String timestamp){
-        Instant unzonedDateTime = Instant.parse(timestamp);
+    public String formatTimestampToBst(String timestamp, boolean contentDate){
+        Instant unZonedDateTime = Instant.parse(timestamp);
         ZoneId zone = ZoneId.of("Europe/London");
-        ZonedDateTime zonedDateTime = unzonedDateTime.atZone(zone);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
+        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
+        DateTimeFormatter dtf;
+        if(!contentDate) {
+            dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
+        }
+        else {
+            dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy");
+        }
         return dtf.format(zonedDateTime);
     }
 }
