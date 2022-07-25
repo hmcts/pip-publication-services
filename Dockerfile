@@ -1,4 +1,4 @@
-FROM hmctspublic.azurecr.io/base/java11:debug
+FROM hmctspublic.azurecr.io/base/java:openjdk-11-distroless-debug-1.0
 
 ARG APP_INSIGHTS_AGENT_VERSION=2.5.1
 ARG APP
