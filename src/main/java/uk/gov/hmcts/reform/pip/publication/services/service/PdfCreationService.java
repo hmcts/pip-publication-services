@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -13,7 +12,6 @@ import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguratio
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.UUID;
 
 /**
@@ -71,7 +69,8 @@ public class PdfCreationService {
             builder.useFastMode();
             builder.usePdfUaAccessbility(true);
             builder.usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_3_U);
-            File ourFont = new File(this.getClass().getClassLoader().getResource("gdsFont.otf").getFile());
+            File ourFont =
+                new File(Thread.currentThread().getContextClassLoader().getResource("gdsFont.otf").getFile());
             builder.useFont(ourFont, "GDS Transport");
             builder.withHtmlContent(html, null);
             builder.toStream(baos);
