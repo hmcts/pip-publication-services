@@ -23,5 +23,7 @@ java:
           alias: DATA_MANAGEMENT_AZ_API
         - name: pip-team-email
           alias: PI_TEAM_EMAIL
+        - name: courtel-certificate
+          alias: THIRD_PARTY_CERTIFICATE
   environment:
 

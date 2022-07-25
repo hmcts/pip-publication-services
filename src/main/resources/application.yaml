@@ -75,4 +75,5 @@ error-handling:
   num-of-retries: 3
   backoff: 2
 
-
+third-party:
+  certificate: ${THIRD_PARTY_CERTIFICATE:abcd}
