@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguratio
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 /**
@@ -70,8 +71,7 @@ public class PdfCreationService {
             builder.useFastMode();
             builder.usePdfUaAccessbility(true);
             builder.usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_3_U);
-            File ourFont = new ClassPathResource(
-                "gdsFont.otf").getFile();
+            File ourFont = new File(this.getClass().getClassLoader().getResource("gdsFont.otf").getFile());
             builder.useFont(ourFont, "GDS Transport");
             builder.withHtmlContent(html, null);
             builder.toStream(baos);
