@@ -94,7 +94,7 @@ jacocoTestReport {
 
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 
-def sonarExclusions = []
+def sonarExclusions = ["**/PdfCreationService.java"]
 
 sonarqube {
   properties {
