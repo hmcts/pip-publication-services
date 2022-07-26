@@ -95,9 +95,9 @@ public class ArtefactSummaryService {
             JsonNode thisCourtRoom = courtRoomNode.next();
             JsonNode sessionChannelNode = thisCourtRoom.get(SESSION).get(0).path("sessionChannel");
             sessionChannel = mapper.convertValue(sessionChannelNode, typeReference);
-            outputString.append("\n\nCourtroom: ").append(thisCourtRoom.get("courtRoomName").asText());
-            outputString.append(processCivilDailySittings(thisCourtRoom, sessionChannel));
-            outputString.append(processCivilDailyJudiciary(thisCourtRoom));
+            outputString.append("\n\nCourtroom: ").append(thisCourtRoom.get("courtRoomName").asText())
+            .append(processCivilDailySittings(thisCourtRoom, sessionChannel))
+            .append(processCivilDailyJudiciary(thisCourtRoom));
         }
         return outputString.toString();
     }
@@ -144,10 +144,10 @@ public class ArtefactSummaryService {
         Iterator<JsonNode> sittingIterator = sittingNode.elements();
         StringBuilder outputString = new StringBuilder(26);
         int counter = 1;
-        boolean sorryPmd = sittingNode.size() > 1;
+        boolean pmdAvoidanceBool = sittingNode.size() > 1;
         while (sittingIterator.hasNext()) {
             outputString.append("\n•Hearing");
-            if (sorryPmd) {
+            if (pmdAvoidanceBool) {
                 outputString.append(' ').append(counter);
                 counter += 1;
             }
