@@ -115,18 +115,15 @@ public class ArtefactSummaryService {
         }
         Iterator<JsonNode> johNode = judiciaryNode.elements();
         StringBuilder johName = new StringBuilder("\nJudiciary: ");
-        int counter = 1;
-        int length = judiciaryNode.size();
         while (johNode.hasNext()) {
             JsonNode currentJoh = johNode.next();
             String title = currentJoh.path("johTitle").asText();
             String knownAs = currentJoh.path("johKnownAs").asText();
             johName.append(title).append(' ');
             johName.append(knownAs);
-            if (counter < length) {
+            if (johNode.hasNext()) {
                 johName.append(", ");
             }
-            counter += 1;
         }
         return johName.toString();
     }
