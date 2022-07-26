@@ -237,8 +237,8 @@ public class ArtefactSummaryService {
      */
     private String processOffencessjpPress(JsonNode offencesNode) {
         StringBuilder outputString = new StringBuilder();
-        boolean sorryPmd = offencesNode.size() > 1;
-        if (sorryPmd) {
+        boolean pmdAvoidanceBool = offencesNode.size() > 1;
+        if (pmdAvoidanceBool) {
             Iterator<JsonNode> offences = offencesNode.elements();
             int counter = 1;
             while (offences.hasNext()) {
