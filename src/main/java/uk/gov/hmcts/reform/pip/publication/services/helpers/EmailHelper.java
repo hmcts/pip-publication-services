@@ -15,7 +15,7 @@ public final class EmailHelper {
      * @return The masked email address.
      */
     public static String maskEmail(String email) {
-        return email.replaceAll("(^[^@]|(?!^)\\G)[^@]", "$1*");
+        return email.replaceAll("(^([^@])|(?!^)\\G)[^@]", "$1*");
     }
 
 }
