@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    @page {
+      margin: 30px 20px;
+
+      @bottom-center {
+        font-family: 'GDS Transport';
+        font-size: 16px;
+        content: "SSCS Daily List page " counter(page) " of " counter(pages);
+      }
+    }
+    body {
+      font-family: 'GDS Transport';
+      padding: 2px;
+      font-size: 105%;
+    }
+    h1, h4 {
+      font-family: "GDS Transport";
+      color: black;
+    }
+
+    .govuk-details__text {
+      padding-left: 20px;
+      border-left: 5px solid #b1b4b6;
+    }
+
+    .top-section {
+      border-bottom-width: 5px;
+      border-bottom-style: solid;
+    }
+
+    .govuk-body {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .govuk-bold {
+      font-weight: 700;
+    }
+
+    .govuk-font-14 {
+      font-size: 14px;
+    }
+
+  </style>
+  <meta charset="UTF-8"/>
+  <meta name="subject" content="SSCS Daily list"/>
+  <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
+  <meta name="description" content="SSCS Daily List PDF File"/>
+  <title>SSCS Daily List</title>
+</head>
+
+
+<body>
+  <section id="heading" class="top-section">
+    <h1>Court and Tribunal Hearings Service</h1>
+  </section>
+
+  <section id="information-section">
+    <h2 th:text="${location} + ' hearings for ' + ${contentDate}"/>
+    <p class="govuk-body govuk-bold" th:text="'List for ' + ${contentDate}"/>
+    <p class="govuk-body" th:text="'List updated ' + ${publicationDate} + ' at ' + ${publicationTime}"/>
+    <div class="govuk-details__text">
+      <p>Open justice is a fundamental principle in our courts and tribunals system, and will continue to be as we develop the use of audio and video technology.</p>
+      <p th:text="'Requests from the media and others to observe a hearing remotely in ' +  ${location} + ' should be made direct to: ' + ${jsonBody.get('venue').get('venueContact').get('venueEmail').asText()} + ' or by calling ' +  ${jsonBody.get('venue').get('venueContact').get('venueTelephone').asText()} + '. Arrangements will then be made to enable you to attend.'"/>
+      <p>When considering the use of telephone and video technology, the judiciary will have regard to the principles of open justice. Judges may determine that a hearing should be held in private if this is necessary to secure the proper administration of justice.</p>
+    </div>
+  </section>
+
+
+  <section id="list-content-section">
+    <div th:each="courtList: ${jsonBody.get('courtLists')}">
+      <h2 th:text="${courtList.get('courtHouse').get('courtHouseName').asText()}"/>
+      <div th:each="courtRoom: ${jsonBody.get('courtLists').get('courtRoom')}">
+        <h3 th:text="${courtRoom.get('courtRoomName').asText()}"/>
+      </div>
+    </div>
+
+  </section>
+
+
+
+
+  <p class="govuk-body govuk-font-14" th:text="'Data Source: ' + ${provenance}"/>
+</body>
+</html>
