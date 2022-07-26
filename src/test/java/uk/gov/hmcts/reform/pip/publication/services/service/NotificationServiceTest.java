@@ -6,9 +6,11 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
@@ -30,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @SuppressWarnings({"PMD.TooManyMethods"})
 class NotificationServiceTest {
     private final Map<String, Object> personalisationMap = Map.ofEntries(
@@ -66,6 +69,9 @@ class NotificationServiceTest {
     private static final String API_DESTINATION = "testUrl";
     private static final String MESSAGES_MATCH = "Messages should match";
 
+    private static final Integer LOCATION_ID = 1;
+    private static final String LOCATION_NAME = "Location Name";
+
 
     private final EmailToSend validEmailBodyForDuplicateMediaUserClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
         Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template,
@@ -78,6 +84,7 @@ class NotificationServiceTest {
     private static final String EXISTING_REFERENCE_ID =
         "Existing user with valid JSON should return successful referenceId.";
     private final Artefact artefact = new Artefact();
+    private final Location location = new Location();
 
     @Mock
     private SendEmailResponse sendEmailResponse;
@@ -104,6 +111,9 @@ class NotificationServiceTest {
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
         when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
         when(emailService.sendEmail(validEmailBodyForDuplicateMediaUserClient)).thenReturn(sendEmailResponse);
+
+        location.setLocationId(LOCATION_ID);
+        location.setName(LOCATION_NAME);
     }
 
     @Test
@@ -167,6 +177,7 @@ class NotificationServiceTest {
         artefact.setIsFlatFile(true);
 
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
@@ -188,6 +199,7 @@ class NotificationServiceTest {
         artefact.setIsFlatFile(false);
 
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
@@ -223,10 +235,13 @@ class NotificationServiceTest {
     void testHandleThirdPartyFlatFile() {
         artefact.setArtefactId(RAND_UUID);
         artefact.setIsFlatFile(true);
+
         byte[] file = new byte[10];
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
         when(dataManagementService.getArtefactFlatFile(RAND_UUID)).thenReturn(file);
-        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, file)).thenReturn(SUCCESS_REF_ID);
+        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, file, artefact, location))
+            .thenReturn(SUCCESS_REF_ID);
 
         ThirdPartySubscription subscription = new ThirdPartySubscription();
         subscription.setArtefactId(RAND_UUID);
@@ -240,10 +255,13 @@ class NotificationServiceTest {
     void testHandleThirdPartyJson() {
         artefact.setArtefactId(RAND_UUID);
         artefact.setIsFlatFile(false);
+        location.setName(LOCATION_NAME);
         String jsonPayload = "test";
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
-        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, jsonPayload)).thenReturn(SUCCESS_REF_ID);
+        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, jsonPayload, artefact, location))
+            .thenReturn(SUCCESS_REF_ID);
 
         ThirdPartySubscription subscription = new ThirdPartySubscription();
         subscription.setArtefactId(RAND_UUID);
@@ -255,7 +273,8 @@ class NotificationServiceTest {
 
     @Test
     void testHandleThirdPartyEmpty() {
-        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, "")).thenReturn(SUCCESS_REF_ID);
+        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, "", artefact, location))
+            .thenReturn(SUCCESS_REF_ID);
 
         assertEquals(EMPTY_API_SENT, notificationService.handleThirdParty(API_DESTINATION),
                      MESSAGES_MATCH);

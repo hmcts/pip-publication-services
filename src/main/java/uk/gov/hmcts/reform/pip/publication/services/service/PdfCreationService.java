@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -28,7 +27,6 @@ public class PdfCreationService {
 
     @Autowired
     private DataManagementService dataManagementService;
-
 
     /**
      * Wrapper class for the entire json to pdf process.
@@ -70,9 +68,15 @@ public class PdfCreationService {
             builder.useFastMode();
             builder.usePdfUaAccessbility(true);
             builder.usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_3_U);
-            File ourFont = new ClassPathResource(
-                "gdsFont.otf").getFile();
-            builder.useFont(ourFont, "GDS Transport");
+
+            File file = new File("/opt/app/gdsFont.otf");
+            if (file.exists()) {
+                builder.useFont(file, "GDS Transport");
+            } else {
+                builder.useFont(new File(Thread.currentThread().getContextClassLoader()
+                                             .getResource("gdsFont.otf").getFile()), "GDS Transport");
+            }
+
             builder.withHtmlContent(html, null);
             builder.toStream(baos);
             builder.run();
