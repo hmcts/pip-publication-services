@@ -11,11 +11,13 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -39,14 +41,27 @@ public class PdfCreationService {
      * @throws IOException - uses file streams so needs this.
      */
     public byte[] jsonToPdf(UUID inputPayloadUuid) throws IOException {
-        String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
+        Location location = dataManagementService.getLocation(artefact.getLocationId());
+
+        String contentDate = "";
+        if (artefact.getProvenance().equals("MANUAL_UPLOAD")
+            && !artefact.getContentDate().toString().contains("Z")) {
+            contentDate = artefact.getContentDate().toString() + ":00.00Z";
+        }
+
+        Map<String, String> metadataMap =
+            Map.of("ContentDate", contentDate,
+                   "Provenance", artefact.getProvenance(),
+                   "LocationName", location.getName());
+
         String htmlFile;
+        String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
 
         Converter converter = artefact.getListType().getConverter();
-        if(converter != null) {
-            htmlFile = converter.convert(topLevelNode);
+        if (converter != null) {
+            htmlFile = converter.convert(topLevelNode, metadataMap);
         } else {
             htmlFile = parseThymeleafTemplate(rawJson);
         }

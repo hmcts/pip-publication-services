@@ -1,12 +1,35 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DataManipulation;
+import uk.gov.hmcts.reform.pip.publication.services.service.helpers.Helpers;
+
+import java.util.Map;
 
 public class FamilyDailyCauseListConverter implements Converter {
 
     @Override
-    public String convert(JsonNode artefact) {
-        return null;
-    }
+    public String convert(JsonNode artefact, Map<String, String> artefactValues) {
+        Context context = new Context();
+        String publicationDate = artefact.get("document").get("publicationDate").asText();
+        DataManipulation.formatCourtAddress(artefact);
 
+        context.setVariable("publicationDate", Helpers.formatTimeStampToBst(publicationDate,
+                                                                            false, false));
+        context.setVariable("publicationTime", Helpers.formatTimeStampToBst(publicationDate,
+                true, false));
+        context.setVariable("contentDate", Helpers.formatTimeStampToBst(artefactValues.get("ContentDate"),
+                false, false));
+        context.setVariable("locationName", artefactValues.get("LocationName"));
+        context.setVariable("venueAddress", DataManipulation.formatVenueAddress(artefact));
+        context.setVariable("artefact", artefact);
+
+        DataManipulation.manipulatedDailyListData(artefact);
+
+        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
+        return templateEngine.process("familyCauseList.html", context);
+    }
 }

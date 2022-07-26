@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
-import uk.gov.hmcts.reform.pip.publication.services.models.templateModels.sjpPressCase;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SjpPressCase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,35 +17,34 @@ public class SjpPressListConverter implements Converter {
     public static final String INDIVIDUAL_DETAILS = "individualDetails";
 
     @Override
-    public String convert(JsonNode artefact) {
-        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
+    public String convert(JsonNode artefact, Map<String, String> artefactValues) {
         Context context = new Context();
         String date = artefact.get("document").get("publicationDate").asText();
-        List<sjpPressCase>  caseList= new ArrayList<>();
+        List<SjpPressCase>  caseList = new ArrayList<>();
         Iterator<JsonNode> hearingNode =
             artefact.get("courtLists").get(0).get("courtHouse").get("courtRoom").get(0).get("session").get(0).get(
                 "sittings").get(0).get("hearing").elements();
         while (hearingNode.hasNext()) {
             JsonNode currentCase = hearingNode.next();
-            sjpPressCase thisCase = new sjpPressCase();
+            SjpPressCase thisCase = new SjpPressCase();
             processRoles(thisCase, currentCase);
-//            thisCase.setReference(currentCase.get("case").get("caseUrn").asText());
             caseList.add(thisCase);
         }
         context.setVariable("date", date);
         context.setVariable("jsonBody", artefact);
         context.setVariable("cases", caseList);
+        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         return templateEngine.process("sjpPressList.html", context);
     }
 
-    void processRoles(sjpPressCase currentCase, JsonNode party) {
+    void processRoles(SjpPressCase currentCase, JsonNode party) {
         Iterator<JsonNode> partyNode = party.get("party").elements();
         while (partyNode.hasNext()) {
             JsonNode currentParty = partyNode.next();
             if ("accused".equals(currentParty.get("partyRole").asText().toLowerCase(Locale.ROOT))) {
                 JsonNode individualDetailsNode = currentParty.get(INDIVIDUAL_DETAILS);
-                currentCase.setName(individualDetailsNode.get("individualForenames").asText() + " " +
-                    individualDetailsNode.get("individualSurname").asText());
+                currentCase.setName(individualDetailsNode.get("individualForenames").asText() + " "
+                    + individualDetailsNode.get("individualSurname").asText());
                 currentCase.setAddress(processAddress(individualDetailsNode.get("address")));
                 currentCase.setDateOfBirth(individualDetailsNode.get("dateOfBirth").asText());
             } else {
@@ -69,7 +68,7 @@ public class SjpPressListConverter implements Converter {
     }
 
 
-    sjpPressCase processOffences(sjpPressCase currentCase, JsonNode offencesNode) {
+    SjpPressCase processOffences(SjpPressCase currentCase, JsonNode offencesNode) {
         List<Map<String, String>> listOfOffences = new ArrayList<>();
         Iterator<JsonNode> offences = offencesNode.elements();
         while (offences.hasNext()) {
