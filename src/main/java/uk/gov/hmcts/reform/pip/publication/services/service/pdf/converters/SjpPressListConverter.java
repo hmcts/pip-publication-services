@@ -24,8 +24,6 @@ import java.util.stream.Collectors;
 @Service
 public class SjpPressListConverter implements Converter {
 
-    Helpers helpers = new Helpers();
-
     public static final String INDIVIDUAL_DETAILS = "individualDetails";
 
     /**
@@ -54,14 +52,12 @@ public class SjpPressListConverter implements Converter {
             count += 1;
         }
 
-        String publishedDate = helpers.formatTimestampToBst(
-            jsonBody.get("document").get("publicationDate").asText(),
-            false
+        String publishedDate = Helpers.formatTimestampToBst(
+            jsonBody.get("document").get("publicationDate").asText()
         );
-        context.setVariable("contentDate", helpers.formatTimestampToBst(
-            metadata.get("contentDate"),
-            true
-        ));
+        context.setVariable("contentDate",
+            metadata.get("contentDate")
+        );
         context.setVariable("publishedDate", publishedDate);
         context.setVariable("jsonBody", jsonBody);
         context.setVariable("metaData", metadata);

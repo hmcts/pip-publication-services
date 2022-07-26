@@ -1,24 +1,31 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Service
-public class Helpers {
-    public String formatTimestampToBst(String timestamp, boolean contentDate) {
+/**
+ * Class for static utility methods assisting with json->html->pdf issues.
+ */
+public final class Helpers {
+
+    private Helpers() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static String formatTimestampToBst(String timestamp) {
         Instant unZonedDateTime = Instant.parse(timestamp);
         ZoneId zone = ZoneId.of("Europe/London");
         ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
         DateTimeFormatter dtf;
-        if (contentDate) {
-            dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy");
-        } else {
-            dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
-        }
+        dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
         return dtf.format(zonedDateTime);
+    }
+
+    public static String formatLocalDateTimeToBst(LocalDateTime date) {
+        return date.format(
+            DateTimeFormatter.ofPattern("dd MMMM yyyy"));
     }
 }

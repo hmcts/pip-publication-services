@@ -16,6 +16,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,9 +27,6 @@ class SjpPressListConverterTest {
 
     @Autowired
     SjpPressListConverter sjpPressListConverter;
-
-    @Autowired
-    Helpers helpers;
 
     @Test
     void testSjpPressListTemplate() throws IOException {
@@ -44,13 +43,19 @@ class SjpPressListConverterTest {
         String outputHtml = sjpPressListConverter.convert(inputJson, metadataMap);
         Document document = Jsoup.parse(outputHtml);
         assertThat(outputHtml).as("No html found").isNotEmpty();
+
+        assertThat(Helpers.formatLocalDateTimeToBst(LocalDateTime.now()))
+            .as("Helper method doesn't seem to be working correctly")
+            .isEqualTo(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
+
         assertThat(document.title()).as("incorrect title found.")
             .isEqualTo("Single Justice Procedure - Press List "
-                           + helpers.formatTimestampToBst(metadataMap.get("contentDate"), true));
+                           + metadataMap.get("contentDate"));
 
         assertThat(document.getElementsByClass("mainHeaderText")
                        .select(".mainHeaderText > h1:nth-child(1)").text())
             .as("incorrect header text").isEqualTo("Single Justice Procedure Press List");
+
         assertThat(document.select("div.pageSeparatedCase:nth-child(1) > table:nth-child(3) > tbody:nth-child(1) > "
                                        + "tr:nth-child(6) > td:nth-child(2)").text())
             .as("incorrect value found").isEqualTo("Hampshire Police");
