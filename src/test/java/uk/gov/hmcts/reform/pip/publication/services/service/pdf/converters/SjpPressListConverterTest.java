@@ -8,7 +8,6 @@ import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -16,8 +15,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,10 +40,6 @@ class SjpPressListConverterTest {
         String outputHtml = sjpPressListConverter.convert(inputJson, metadataMap);
         Document document = Jsoup.parse(outputHtml);
         assertThat(outputHtml).as("No html found").isNotEmpty();
-
-        assertThat(Helpers.formatLocalDateTimeToBst(LocalDateTime.now()))
-            .as("Helper method doesn't seem to be working correctly")
-            .isEqualTo(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
 
         assertThat(document.title()).as("incorrect title found.")
             .isEqualTo("Single Justice Procedure - Press List "
