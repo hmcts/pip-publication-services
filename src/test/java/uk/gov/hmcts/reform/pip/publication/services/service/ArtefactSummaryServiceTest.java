@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
+import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -56,7 +57,7 @@ class ArtefactSummaryServiceTest {
     @Test
     void sjpPublicList() throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(Files.newInputStream(Paths.get(MOCKS_DIR, "sjpPublicList.json")),
+        IOUtils.copy(Files.newInputStream(Paths.get(MOCKS_DIR, "SjpPublicList.json")),
                      writer, Charset.defaultCharset()
         );
         String body = writer.toString();
