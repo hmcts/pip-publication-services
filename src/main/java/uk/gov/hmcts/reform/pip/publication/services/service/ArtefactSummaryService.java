@@ -141,10 +141,11 @@ public class ArtefactSummaryService {
         Iterator<JsonNode> sittingIterator = sittingNode.elements();
         StringBuilder outputString = new StringBuilder(26);
         int counter = 1;
-        boolean pmdAvoidanceBool = sittingNode.size() > 1;
+//        below line is due to pmd "avoid using literals in conditional statements" rule.
+        boolean sittingNodeSizeBool = sittingNode.size() > 1;
         while (sittingIterator.hasNext()) {
             outputString.append("\n•Hearing");
-            if (pmdAvoidanceBool) {
+            if (sittingNodeSizeBool) {
                 outputString.append(' ').append(counter);
                 counter += 1;
             }
@@ -237,8 +238,9 @@ public class ArtefactSummaryService {
      */
     private String processOffencessjpPress(JsonNode offencesNode) {
         StringBuilder outputString = new StringBuilder();
-        boolean pmdAvoidanceBool = offencesNode.size() > 1;
-        if (pmdAvoidanceBool) {
+//        below line is due to pmd "avoid using literals in conditional statements" rule.
+        boolean offencesNodeSizeBool = offencesNode.size() > 1;
+        if (offencesNodeSizeBool) {
             Iterator<JsonNode> offences = offencesNode.elements();
             int counter = 1;
             while (offences.hasNext()) {
