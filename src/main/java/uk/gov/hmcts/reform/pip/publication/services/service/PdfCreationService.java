@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguratio
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -48,7 +49,7 @@ public class PdfCreationService {
         String htmlFile;
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
         Map<String, String> metadataMap = new HashMap<>();
-        metadataMap.put("contentDate", artefact.getContentDate().toString() + ":00.00Z");
+        metadataMap.put("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()));
         metadataMap.put("provenance", artefact.getProvenance());
         metadataMap.put("location", location.getName());
 

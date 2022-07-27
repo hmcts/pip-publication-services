@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -15,20 +16,20 @@ import java.util.Map;
 public class SscsDailyListConverter implements Converter {
 
     @Override
-    public String convert(JsonNode artefact,  Map<String, String> metadata) {
+    public String convert(JsonNode highestLevelNode,  Map<String, String> metadata) {
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         Context context = new Context();
-        JsonNode testRemoveMe = formatListData(artefact);
+        JsonNode testRemoveMe = formatListData(highestLevelNode);
         System.out.println(testRemoveMe);
         context.setVariable("jsonBody", testRemoveMe);
         context.setVariable("location", metadata.get("location"));
         context.setVariable("provenance", metadata.get("provenance"));
 
-        context.setVariable("publicationDate", formatTimeStampToBst(artefact.get("document")
-                                                                             .get("publicationDate").asText(), false));
-        context.setVariable("publicationTime", formatTimeStampToBst(artefact.get("document")
+        context.setVariable("publishedDate", Helpers.formatTimestampToBst(highestLevelNode.get("document")
+                                                                             .get("publicationDate").asText()));
+        context.setVariable("publicationTime", formatTimeStampToBst(highestLevelNode.get("document")
                                                                              .get("publicationDate").asText(), true));
-        context.setVariable("contentDate", formatTimeStampToBst(metadata.get("contentDate"), false));
+        context.setVariable("contentDate", metadata.get("contentDate"));
 
         return templateEngine.process("sscsDailyList.html", context);
     }

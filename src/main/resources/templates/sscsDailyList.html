@@ -8,7 +8,8 @@
       @bottom-center {
         font-family: 'GDS Transport';
         font-size: 16px;
-        content: "SSCS Daily List page " counter(page) " of " counter(pages);
+        color: grey;
+        content: "Court and Tribunal Hearings Service - PDF/UA page " counter(page) " of " counter(pages) ".";
       }
     }
     body {
@@ -16,19 +17,80 @@
       padding: 2px;
       font-size: 105%;
     }
+
+    .headerBar {
+      background-color: #0b0c0c;
+      height: 50px;
+    }
+
+    .govUkHeader {
+      left: 0;
+      right: 0;
+      margin: auto;
+      font-size: 30px;
+      color: #f1f1f1;
+      text-align: center;
+      font-weight: 700;
+      display: inline;
+    }
+
+    .dateContainer {
+      font-size: 12px;
+      margin-top: 0;
+      padding: 0;
+      line-height: 0.6;
+    }
+
+    .headerImage {
+      width: 140px;
+      color: #0b0c0c;
+      padding-top: 10px;
+      padding-bottom: 5px;
+    }
+
+    .logoDatesContainer {
+      vertical-align: middle;
+      display: inline-block;
+      width: 195px;
+    }
+
+    .logoHeaderWrapper {
+      width: 680px;
+      vertical-align: middle;
+    }
+
+    .logoText {
+      font-size: 18px;
+      margin-top: -3px;
+      margin-bottom: 12px;
+      vertical-align: middle;
+      padding: 0;
+      line-height: 0.6;
+      width: 300px;
+    }
+
+    .mainHeaderText {
+      font-family: "GDS Transport";
+      display: inline-block;
+      width: 450px;
+      text-align: center;
+      vertical-align: top;
+    }
+
+    h1 {
+      padding: 0;
+      font-size: 30px;
+    }
+
     h1, h4 {
       font-family: "GDS Transport";
       color: black;
     }
 
     .govuk-details__text {
-      padding-left: 20px;
+      padding-left: 24px;
+      font-size: 22px;
       border-left: 5px solid #b1b4b6;
-    }
-
-    .top-section {
-      border-bottom-width: 5px;
-      border-bottom-style: solid;
     }
 
     .govuk-body {
@@ -36,12 +98,13 @@
       margin-bottom: 10px;
     }
 
-    .govuk-bold {
-      font-weight: 700;
-    }
-
     .govuk-font-14 {
       font-size: 14px;
+    }
+
+    .overleaf {
+      page-break-after: always;
+      text-align: center;
     }
 
   </style>
@@ -49,24 +112,49 @@
   <meta name="subject" content="SSCS Daily list"/>
   <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
   <meta name="description" content="SSCS Daily List PDF File"/>
-  <title>SSCS Daily List</title>
+  <title th:text="${'SCSS Daily List for ' + location + ' - ' + contentDate}"/>
 </head>
 
 
 <body>
-  <section id="heading" class="top-section">
-    <h1>Court and Tribunal Hearings Service</h1>
-  </section>
+<div class="headerBar">
+  <div class="govUkHeader">
+    <img style="padding-left:20px; vertical-align: middle;"
+         src="https://www.gov.uk/assets/static/govuk-logotype-crown-66ad9a9b8fca42cf0ba18979eef6afc2e8056d5f158ca9b27ce9afdf852aae87.png"
+         width="36px" height="32px" alt="Gov.UK banner"/>
+    <span style="vertical-align: middle">GOV.UK</span>
+  </div>
+</div>
+<div class="logoHeaderWrapper">
+  <div class="logoDatesContainer">
+    <div class="headerImage">
+      <img style="width:30px; height:auto; padding-bottom: 3px;"
+           src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png"
+           alt="HMCTS Logo"/>
+      <div class="logoText">
+        <p class="logoText">HM Courts &amp;</p>
+        <p class="logoText">Tribunals Service</p>
+      </div>
+    </div>
+    <div class="dateContainer">
+      <h4 th:text="${'List for ' + contentDate}"/>
+      <h5 th:text="${'Published: ' + publishedDate}"/>
+    </div>
+  </div>
+  <div class="mainHeaderText">
+    <h1>Social Security and Child Support</h1>
+    <h2 th:text="${location + ' hearings for ' + contentDate}"/>
+  </div>
+</div>
 
   <section id="information-section">
-    <h2 th:text="${location} + ' hearings for ' + ${contentDate}"/>
-    <p class="govuk-body govuk-bold" th:text="'List for ' + ${contentDate}"/>
-    <p class="govuk-body" th:text="'List updated ' + ${publicationDate} + ' at ' + ${publicationTime}"/>
     <div class="govuk-details__text">
       <p>Open justice is a fundamental principle in our courts and tribunals system, and will continue to be as we develop the use of audio and video technology.</p>
       <p th:text="'Requests from the media and others to observe a hearing remotely in ' +  ${location} + ' should be made direct to: ' + ${jsonBody.get('venue').get('venueContact').get('venueEmail').asText()} + ' or by calling ' +  ${jsonBody.get('venue').get('venueContact').get('venueTelephone').asText()} + '. Arrangements will then be made to enable you to attend.'"/>
       <p>When considering the use of telephone and video technology, the judiciary will have regard to the principles of open justice. Judges may determine that a hearing should be held in private if this is necessary to secure the proper administration of justice.</p>
     </div>
+
+    <h3 class="overleaf">Hearing information appears overleaf.</h3>
   </section>
 
 
