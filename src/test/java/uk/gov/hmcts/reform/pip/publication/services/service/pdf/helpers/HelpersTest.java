@@ -55,7 +55,7 @@ class HelpersTest {
         assertThat(Helpers.formatTimeStampToBst(
             "2022-07-26T16:04:43.416924Z", true, false))
             .as(ERR_MSG)
-            .isEqualTo("05:04pm");
+            .isEqualTo("5:04pm");
     }
 
     @Test
@@ -63,7 +63,7 @@ class HelpersTest {
         assertThat(Helpers.formatTimeStampToBst(
             "2022-07-26T16:00:00.416924Z", true, false))
             .as(ERR_MSG)
-            .isEqualTo("05pm");
+            .isEqualTo("5pm");
     }
 
     @Test

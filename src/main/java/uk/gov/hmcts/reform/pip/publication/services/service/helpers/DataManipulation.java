@@ -38,29 +38,31 @@ public final class DataManipulation {
         artefact.get("courtLists").forEach(courtList -> {
             StringBuilder formattedCourtAddress = new StringBuilder();
 
-            JsonNode courtHouseAddress = courtList.get("courtHouse").get("courtHouseAddress");
-            courtHouseAddress.get("line").forEach(line -> {
-                if (!line.asText().isEmpty()) {
+            if (courtList.get("courtHouse").has("courtHouseAddress")) {
+                JsonNode courtHouseAddress = courtList.get("courtHouse").get("courtHouseAddress");
+                courtHouseAddress.get("line").forEach(line -> {
+                    if (!line.asText().isEmpty()) {
+                        formattedCourtAddress
+                            .append(line.asText())
+                            .append('|');
+                    }
+                });
+
+                if (courtHouseAddress.has("town")) {
                     formattedCourtAddress
-                        .append(line.asText())
+                        .append(courtHouseAddress.get("town").asText())
                         .append('|');
                 }
-            });
-
-            if (courtHouseAddress.has("town")) {
-                formattedCourtAddress
-                    .append(courtHouseAddress.get("town").asText())
-                    .append('|');
-            }
-            if (courtHouseAddress.has("county")) {
-                formattedCourtAddress
-                    .append(courtHouseAddress.get("county").asText())
-                    .append('|');
-            }
-            if (courtHouseAddress.has(POSTCODE)) {
-                formattedCourtAddress
-                    .append(courtHouseAddress.get(POSTCODE).asText())
-                    .append('|');
+                if (courtHouseAddress.has("county")) {
+                    formattedCourtAddress
+                        .append(courtHouseAddress.get("county").asText())
+                        .append('|');
+                }
+                if (courtHouseAddress.has(POSTCODE)) {
+                    formattedCourtAddress
+                        .append(courtHouseAddress.get(POSTCODE).asText())
+                        .append('|');
+                }
             }
 
             ((ObjectNode)courtList.get("courtHouse")).put("formattedCourtHouseAddress",
