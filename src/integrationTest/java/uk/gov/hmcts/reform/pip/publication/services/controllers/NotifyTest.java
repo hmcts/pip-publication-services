@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
@@ -37,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
+@ActiveProfiles("functional")
 class NotifyTest {
 
     private static final String VALID_WELCOME_REQUEST_BODY_EXISTING =
@@ -54,7 +56,7 @@ class NotifyTest {
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
     private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
     private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY =
-        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"1d7cfeb3-3e4d-44f8-a185-80b9a8971676\"}";
+        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"70494df0-31c1-4290-bbd2-7bfe7acfeb81\"}";
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY =
         "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
     private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY =

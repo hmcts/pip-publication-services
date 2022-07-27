@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 
+import org.springframework.test.context.ActiveProfiles;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -28,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 @Slf4j
 @SpringBootTest
+@ActiveProfiles("test")
 class PdfCreationServiceTest {
 
     @Mock
