@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SjpPublicCase {
+public class SjpPublicList {
     private String name;
     private String postcode;
     private String offence;

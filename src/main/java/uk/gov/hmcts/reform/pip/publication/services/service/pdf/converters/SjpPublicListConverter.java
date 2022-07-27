@@ -6,7 +6,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
-import uk.gov.hmcts.reform.pip.publication.services.models.template.SjpPublicCase;
+import uk.gov.hmcts.reform.pip.publication.services.models.template.SjpPublicList;
 import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DateTimeHelper;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class SjpPublicListConverter implements Converter {
         context.setVariable("publicationDate", publicationDate);
         context.setVariable("contentDate", metadata.get("contentDate"));
 
-        List<SjpPublicCase> cases = constructCases(
+        List<SjpPublicList> cases = constructCases(
             artefact.get("courtLists").get(0)
                 .get("courtHouse")
                 .get("courtRoom")
@@ -45,8 +45,8 @@ public class SjpPublicListConverter implements Converter {
         return templateEngine.process("sjpPublicList.html", context);
     }
 
-    private List<SjpPublicCase> constructCases(JsonNode sittingsNode) {
-        List<SjpPublicCase> sjpPublicCases = new ArrayList<>();
+    private List<SjpPublicList> constructCases(JsonNode sittingsNode) {
+        List<SjpPublicList> sjpPublicLists = new ArrayList<>();
         sittingsNode.forEach(sitting -> {
             JsonNode hearingNode = sitting.get("hearing").get(0);
             Triple<String, String, String> parties = getCaseParties(hearingNode.get("party"));
@@ -56,12 +56,12 @@ public class SjpPublicListConverter implements Converter {
                 && StringUtils.isNotBlank(parties.getMiddle())
                 && StringUtils.isNotBlank(parties.getRight())
                 && StringUtils.isNotBlank(offence)) {
-                sjpPublicCases.add(
-                    new SjpPublicCase(parties.getLeft(), parties.getMiddle(), offence, parties.getRight())
+                sjpPublicLists.add(
+                    new SjpPublicList(parties.getLeft(), parties.getMiddle(), offence, parties.getRight())
                 );
             }
         });
-        return sjpPublicCases;
+        return sjpPublicLists;
     }
 
     private Triple<String, String, String> getCaseParties(JsonNode partiesNode) {
