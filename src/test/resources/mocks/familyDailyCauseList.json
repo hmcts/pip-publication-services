@@ -45,8 +45,7 @@
             "session": [
               {
                 "sessionChannel": [
-                  "VIDEO HEARING",
-                  ""
+                  "VIDEO HEARING"
                 ],
                 "sittings": [
                   {
@@ -153,10 +152,71 @@
                             "caseJurisdictionET": "Family Law",
                             "caseSequenceIndicator": "2 of 3"
                           }
+                        ]
+                      }
+                    ],
+                    "channel": [
+                      "Teams",
+                      "Attended"
+                    ]
+                  }
+                ],
+                "judiciary": [
+                  {
+                    "johTitle": "Judge",
+                    "johNameSurname": "Test Name",
+                    "role": "JUDGE",
+                    "isPresiding": false
+                  },
+                  {
+                    "johTitle": "Magistrate",
+                    "johNameSurname": "Test Name",
+                    "role": "MAGISTRATE",
+                    "isPresiding": false
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "courtHouse": {
+        "courtHouseName": "This is the site name",
+        "courtHouseContact": {
+          "venueTelephone": "01234 123 123",
+          "venueEmail": "a@b.com"
+        },
+        "courtHouseAddress": {
+          "line": [
+            "Address Line 1"
+          ],
+          "postCode": "AA1 AA1"
+        },
+        "courtRoom": [
+          {
+            "courtRoomName": "This is the court room name",
+            "session": [
+              {
+                "sittings": [
+                  {
+                    "sittingStart": "2022-08-19T09:30:00Z",
+                    "sittingEnd": "2022-08-19T10:55:00Z",
+                    "hearing": [
+                      {
+                        "hearingType": "Directions",
+                        "case": [
+                          {
+                            "caseName": "This is a case name",
+                            "caseNumber": "12341234",
+                            "caseType": "normal",
+                            "caseJurisdictionET": "Family Law",
+                            "caseSequenceIndicator": "2 of 3"
+                          }
                         ],
                         "party": [
                           {
-                            "partyRole": "APPLICANT_PETITIONER",
                             "individualDetails": {
                               "individualSurname": "Surname"
                             }

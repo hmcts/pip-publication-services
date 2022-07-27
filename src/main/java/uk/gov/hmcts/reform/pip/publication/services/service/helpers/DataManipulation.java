@@ -167,29 +167,26 @@ public final class DataManipulation {
     }
 
     private static void calculateDuration(JsonNode sitting) {
-        if (!Helpers.findAndReturnNodeText(sitting,"sittingStart").isEmpty()
-            && !Helpers.findAndReturnNodeText(sitting,"sittingEnd").isEmpty()) {
-            ZonedDateTime sittingStart = Helpers.convertStringToUtc(sitting.get("sittingStart").asText());
-            ZonedDateTime sittingEnd = Helpers.convertStringToUtc(sitting.get("sittingEnd").asText());
+        ZonedDateTime sittingStart = Helpers.convertStringToUtc(sitting.get("sittingStart").asText());
+        ZonedDateTime sittingEnd = Helpers.convertStringToUtc(sitting.get("sittingEnd").asText());
 
-            double durationAsHours = 0;
-            double durationAsMinutes = Helpers.convertTimeToMinutes(sittingStart, sittingEnd);
+        double durationAsHours = 0;
+        double durationAsMinutes = Helpers.convertTimeToMinutes(sittingStart, sittingEnd);
 
-            if (durationAsMinutes >= MINUTES_PER_HOUR) {
-                durationAsHours = Math.floor(durationAsMinutes / MINUTES_PER_HOUR);
-                durationAsMinutes = durationAsMinutes - (durationAsHours * MINUTES_PER_HOUR);
-            }
-
-            String formattedDuration = Helpers.formatDuration((int) durationAsHours,
-                                                           (int) durationAsMinutes);
-
-            ((ObjectNode)sitting).put("formattedDuration", formattedDuration);
-
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
-            String time = dtf.format(sittingStart);
-
-            ((ObjectNode)sitting).put("time", time);
+        if (durationAsMinutes >= MINUTES_PER_HOUR) {
+            durationAsHours = Math.floor(durationAsMinutes / MINUTES_PER_HOUR);
+            durationAsMinutes = durationAsMinutes - (durationAsHours * MINUTES_PER_HOUR);
         }
+
+        String formattedDuration = Helpers.formatDuration((int) durationAsHours,
+            (int) durationAsMinutes);
+
+        ((ObjectNode)sitting).put("formattedDuration", formattedDuration);
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
+        String time = dtf.format(sittingStart);
+
+        ((ObjectNode)sitting).put("time", time);
     }
 
     private static void findAndConcatenateHearingPlatform(JsonNode sitting, JsonNode session) {

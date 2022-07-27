@@ -74,4 +74,11 @@ class PartyRoleMapperTest {
             .as(ERR_MSG)
             .isEqualTo(RESPONDENT_REPRESENTATIVE);
     }
+
+    @Test
+    void testConvertPartyRoleWhichNotExistsMethod() {
+        assertThat(PartyRoleMapper.convertPartyRole("TEST"))
+            .as(ERR_MSG)
+            .isEqualTo("");
+    }
 }
