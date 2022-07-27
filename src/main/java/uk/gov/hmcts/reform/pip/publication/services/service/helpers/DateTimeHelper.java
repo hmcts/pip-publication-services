@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.utils;
+package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

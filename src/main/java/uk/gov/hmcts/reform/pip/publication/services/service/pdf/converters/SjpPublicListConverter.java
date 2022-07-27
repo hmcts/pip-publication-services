@@ -7,7 +7,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.template.SjpPublicCase;
-import uk.gov.hmcts.reform.pip.publication.services.utils.DateTimeHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DateTimeHelper;
 
 import java.util.ArrayList;
 import java.util.List;
