@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.io.InputStream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class ArtefactSummaryServiceTest {
 
     @Autowired

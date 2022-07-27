@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.service.helpers.Helpers;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.time.ZonedDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("PMD.TooManyMethods")
+@ActiveProfiles("test")
 class HelpersTest {
     private static final String ERR_MSG = "Helper method doesn't seem to be working correctly";
     private static final String TEST = "test";

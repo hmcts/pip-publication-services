@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.service.helpers.PartyRoleMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("test")
 class PartyRoleMapperTest {
 
     private static final String ERR_MSG = "PartyRole Mapper method doesn't seem to be working correctly";
