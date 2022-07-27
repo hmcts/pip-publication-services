@@ -53,14 +53,6 @@ class HelpersTest {
     }
 
     @Test
-    void testZonedTimeMethod() {
-        assertThat(Helpers.formatTimeStampToBst(
-            "2022-07-26T16:04:43.416924Z", true, false))
-            .as(ERR_MSG)
-            .isEqualTo("5:04pm");
-    }
-
-    @Test
     void testZonedTimeOnlyHoursMethod() {
         assertThat(Helpers.formatTimeStampToBst(
             "2022-07-26T16:00:00.416924Z", true, false))
