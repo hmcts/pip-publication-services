@@ -26,6 +26,7 @@ public class FamilyDailyCauseListConverter implements Converter {
                 true, false));
         context.setVariable("contentDate", artefactValues.get("contentDate"));
         context.setVariable("locationName", artefactValues.get("locationName"));
+        context.setVariable("provenance", artefactValues.get("provenance"));
         context.setVariable("venueAddress", DataManipulation.formatVenueAddress(artefact));
         context.setVariable("artefact", artefact);
 

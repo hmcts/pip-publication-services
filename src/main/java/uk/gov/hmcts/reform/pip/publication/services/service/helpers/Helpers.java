@@ -30,9 +30,9 @@ public final class Helpers {
                                      Boolean isBothDateAndTime) {
         if (isTimeOnly) {
             if (zonedDateTime.getMinute() == 0) {
-                return "hha";
+                return "ha";
             } else {
-                return "hh:mma";
+                return "h:mma";
             }
         } else if (isBothDateAndTime) {
             return "dd MMMM yyyy HH:mm:ss";
