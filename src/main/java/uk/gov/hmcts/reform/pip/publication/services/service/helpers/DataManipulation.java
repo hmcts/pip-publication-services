@@ -107,35 +107,38 @@ public final class DataManipulation {
 
         if (hearing.has("party")) {
             hearing.get("party").forEach(party -> {
-                switch (PartyRoleMapper.convertPartyRole(party.get("partyRole").asText())) {
-                    case "APPLICANT_PETITIONER": {
-                        applicant.append(createIndividualDetails(party));
-                        applicant.append(Helpers.stringDelimiter(applicant.toString(), ", "));
-                        break;
-                    }
-                    case "APPLICANT_PETITIONER_REPRESENTATIVE": {
-                        final String applicantPetitionerDetails = createIndividualDetails(party);
-                        if (!applicantPetitionerDetails.isEmpty()) {
-                            applicant.append("LEGALADVISOR: ");
-                            applicant.append(applicantPetitionerDetails + ", ");
+                if (party.has("partyRole")
+                    && !party.get("partyRole").asText().isEmpty()) {
+                    switch (PartyRoleMapper.convertPartyRole(party.get("partyRole").asText())) {
+                        case "APPLICANT_PETITIONER": {
+                            applicant.append(createIndividualDetails(party));
+                            applicant.append(Helpers.stringDelimiter(applicant.toString(), ", "));
+                            break;
                         }
-                        break;
-                    }
-                    case "RESPONDENT": {
-                        respondent.append(createIndividualDetails(party));
-                        respondent.append(Helpers.stringDelimiter(applicant.toString(), ", "));
-                        break;
-                    }
-                    case "RESPONDENT_REPRESENTATIVE": {
-                        final String respondentDetails = createIndividualDetails(party);
-                        if (!respondentDetails.isEmpty()) {
-                            respondent.append("LEGALADVISOR: ");
-                            respondent.append(respondentDetails + ", ");
+                        case "APPLICANT_PETITIONER_REPRESENTATIVE": {
+                            final String applicantPetitionerDetails = createIndividualDetails(party);
+                            if (!applicantPetitionerDetails.isEmpty()) {
+                                applicant.append("LEGALADVISOR: ");
+                                applicant.append(applicantPetitionerDetails + ", ");
+                            }
+                            break;
                         }
-                        break;
+                        case "RESPONDENT": {
+                            respondent.append(createIndividualDetails(party));
+                            respondent.append(Helpers.stringDelimiter(applicant.toString(), ", "));
+                            break;
+                        }
+                        case "RESPONDENT_REPRESENTATIVE": {
+                            final String respondentDetails = createIndividualDetails(party);
+                            if (!respondentDetails.isEmpty()) {
+                                respondent.append("LEGALADVISOR: ");
+                                respondent.append(respondentDetails + ", ");
+                            }
+                            break;
+                        }
+                        default:
+                            break;
                     }
-                    default:
-                        break;
                 }
             });
 
