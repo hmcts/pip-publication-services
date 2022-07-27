@@ -11,8 +11,8 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
 import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DateTimeHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
