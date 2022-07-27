@@ -63,7 +63,7 @@ public final class DataManipulation {
             }
 
             ((ObjectNode)courtList.get("courtHouse")).put("formattedCourtHouseAddress",
-                                                          formattedCourtAddress.toString().replaceAll(", $", ""));
+                formattedCourtAddress.toString().replaceAll(", $", ""));
         });
     }
 
@@ -91,9 +91,11 @@ public final class DataManipulation {
     }
 
     private static void manipulateCaseInformation(JsonNode hearingCase) {
-        if (hearingCase.has("caseSequenceIndicator")) {
+        if (hearingCase.has("caseSequenceIndicator")
+                && !hearingCase.get("caseSequenceIndicator").asText().isEmpty()) {
             ((ObjectNode)hearingCase).put("caseName",
-                "[" + Helpers.findAndReturnNodeText(hearingCase, "caseName") + "]");
+                Helpers.findAndReturnNodeText(hearingCase, "caseName")
+                    + " [" + hearingCase.get("caseSequenceIndicator").asText() + "]");
         }
 
         if (!hearingCase.has("caseType")) {
