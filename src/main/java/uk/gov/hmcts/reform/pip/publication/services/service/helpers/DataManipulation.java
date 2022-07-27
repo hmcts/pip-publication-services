@@ -27,7 +27,7 @@ public final class DataManipulation {
                 address.add(jsonNode.asText());
             }
         }
-        if (!artefact.get("venue").get("venueAddress").get(POSTCODE).asText().isEmpty()) {
+        if (!Helpers.findAndReturnNodeText(artefact.get("venue").get("venueAddress"), POSTCODE).isEmpty()) {
             address.add(artefact.get("venue").get("venueAddress").get(POSTCODE).asText());
         }
         return address;
@@ -94,8 +94,7 @@ public final class DataManipulation {
     }
 
     private static void manipulateCaseInformation(JsonNode hearingCase) {
-        if (hearingCase.has("caseSequenceIndicator")
-                && !hearingCase.get("caseSequenceIndicator").asText().isEmpty()) {
+        if (!Helpers.findAndReturnNodeText(hearingCase, "caseSequenceIndicator").isEmpty()) {
             ((ObjectNode)hearingCase).put("caseName",
                 Helpers.findAndReturnNodeText(hearingCase, "caseName")
                     + " [" + hearingCase.get("caseSequenceIndicator").asText() + "]");

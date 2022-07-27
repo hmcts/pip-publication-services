@@ -8,7 +8,8 @@
     "venueName": "This is the venue name",
     "venueAddress": {
       "line": [
-        "Address Line 1"
+        "Address Line 1",
+        ""
       ],
       "town": "Venue Town",
       "county": "Venue County",
@@ -31,8 +32,11 @@
         },
         "courtHouseAddress": {
           "line": [
-            "Address Line 1"
+            "Address Line 1",
+            ""
           ],
+          "town": "Venue Town",
+          "county": "Venue County",
           "postCode": "AA1 AA1"
         },
         "courtRoom": [
@@ -40,6 +44,10 @@
             "courtRoomName": "This is the court room name",
             "session": [
               {
+                "sessionChannel": [
+                  "VIDEO HEARING",
+                  ""
+                ],
                 "sittings": [
                   {
                     "sittingStart": "2022-08-19T09:30:00Z",
@@ -52,6 +60,12 @@
                             "caseName": "This is a case name",
                             "caseNumber": "12341234",
                             "caseType": "normal",
+                            "caseJurisdictionET": "Family Law",
+                            "caseSequenceIndicator": "2 of 3"
+                          },
+                          {
+                            "caseName": "This is a case name",
+                            "caseNumber": "12341234",
                             "caseJurisdictionET": "Family Law",
                             "caseSequenceIndicator": "2 of 3"
                           }
@@ -81,13 +95,7 @@
                           },
                           {
                             "partyRole": "RESPONDENT_REPRESENTATIVE",
-                            "friendlyRoleName": "Legal Advisor",
-                            "individualDetails": {
-                              "individualForenames": "Individual Forenames",
-                              "individualMiddleName": "Individual Middlename",
-                              "individualSurname": "Individual Surname",
-                              "title": "Mr"
-                            }
+                            "friendlyRoleName": "Legal Advisor"
                           }
                         ]
                       }
@@ -193,7 +201,7 @@
                     "johTitle": "Judge",
                     "johNameSurname": "Test Name",
                     "role": "JUDGE",
-                    "isPresiding": true
+                    "isPresiding": false
                   },
                   {
                     "johTitle": "Magistrate",

@@ -169,7 +169,7 @@ class DataManipulationTest {
                        .get(HEARING).get(0)
                        .get("respondent").asText())
             .as("Unable to get hearing respondent")
-            .contains("Surname, LEGALADVISOR: Mr Individual Forenames");
+            .contains("Surname");
     }
 
     @Test
