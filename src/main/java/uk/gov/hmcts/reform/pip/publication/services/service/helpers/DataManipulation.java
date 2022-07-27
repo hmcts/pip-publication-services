@@ -111,8 +111,7 @@ public final class DataManipulation {
 
         if (hearing.has("party")) {
             hearing.get("party").forEach(party -> {
-                if (party.has("partyRole")
-                    && !party.get("partyRole").asText().isEmpty()) {
+                if (!Helpers.findAndReturnNodeText(party, "partyRole").isEmpty()) {
                     switch (PartyRoleMapper.convertPartyRole(party.get("partyRole").asText())) {
                         case "APPLICANT_PETITIONER": {
                             applicant.append(createIndividualDetails(party));

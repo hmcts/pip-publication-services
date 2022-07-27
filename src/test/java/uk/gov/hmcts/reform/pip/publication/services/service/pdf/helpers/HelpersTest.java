@@ -164,6 +164,13 @@ class HelpersTest {
     }
 
     @Test
+    void testFormatDurationWithNoHourAndOneMinuteMethod() {
+        assertThat(Helpers.formatDuration(0, 1))
+            .as(ERR_MSG)
+            .isEqualTo("1 min");
+    }
+
+    @Test
     void testFormatDurationWithSingleMinuteNoHourMethod() {
         assertThat(Helpers.formatDuration(0, 1))
             .as(ERR_MSG)
