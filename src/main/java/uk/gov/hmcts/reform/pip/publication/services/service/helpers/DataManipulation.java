@@ -48,17 +48,17 @@ public final class DataManipulation {
                     }
                 });
 
-                if (courtHouseAddress.has("town")) {
+                if (!Helpers.findAndReturnNodeText(courtHouseAddress,"town").isEmpty()) {
                     formattedCourtAddress
                         .append(courtHouseAddress.get("town").asText())
                         .append('|');
                 }
-                if (courtHouseAddress.has("county")) {
+                if (!Helpers.findAndReturnNodeText(courtHouseAddress,"county").isEmpty()) {
                     formattedCourtAddress
                         .append(courtHouseAddress.get("county").asText())
                         .append('|');
                 }
-                if (courtHouseAddress.has(POSTCODE)) {
+                if (!Helpers.findAndReturnNodeText(courtHouseAddress, POSTCODE).isEmpty()) {
                     formattedCourtAddress
                         .append(courtHouseAddress.get(POSTCODE).asText())
                         .append('|');
