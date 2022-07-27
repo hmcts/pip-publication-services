@@ -2,31 +2,32 @@ package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.micrometer.core.instrument.util.StringUtils;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class DataManipulation {
+    private static final String POSTCODE = "postcode";
+    private static final int MINUTES_PER_HOUR = 60;
 
     private DataManipulation() {
         throw new UnsupportedOperationException();
     }
 
     public static List<String> formatVenueAddress(JsonNode artefact) {
-        List<String> address = new ArrayList<String>();
+        List<String> address = new ArrayList<>();
         JsonNode arrayNode = artefact.get("venue").get("venueAddress").get("line");
         for (JsonNode jsonNode : arrayNode) {
             if (!jsonNode.asText().isEmpty()) {
                 address.add(jsonNode.asText());
             }
         }
-        if (!artefact.get("venue").get("venueAddress").get("postCode").asText().isEmpty()) {
-            address.add(artefact.get("venue").get("venueAddress").get("postCode").asText());
+        if (!artefact.get("venue").get("venueAddress").get(POSTCODE).asText().isEmpty()) {
+            address.add(artefact.get("venue").get("venueAddress").get(POSTCODE).asText());
         }
         return address;
 
@@ -55,9 +56,9 @@ public final class DataManipulation {
                     .append(courtHouseAddress.get("county").asText())
                     .append('|');
             }
-            if (courtHouseAddress.has("postCode")) {
+            if (courtHouseAddress.has(POSTCODE)) {
                 formattedCourtAddress
-                    .append(courtHouseAddress.get("postCode").asText())
+                    .append(courtHouseAddress.get(POSTCODE).asText())
                     .append('|');
             }
 
@@ -106,7 +107,7 @@ public final class DataManipulation {
 
         if (hearing.has("party")) {
             hearing.get("party").forEach(party -> {
-                switch (convertPartyRole(party.get("partyRole").asText())) {
+                switch (PartyRoleMapper.convertPartyRole(party.get("partyRole").asText())) {
                     case "APPLICANT_PETITIONER": {
                         applicant.append(createIndividualDetails(party));
                         applicant.append(Helpers.stringDelimiter(applicant.toString(), ", "));
@@ -134,8 +135,7 @@ public final class DataManipulation {
                         break;
                     }
                     default:
-                        respondent.append("");
-                        applicant.append("");
+                        break;
                 }
             });
 
@@ -155,34 +155,8 @@ public final class DataManipulation {
                 + Helpers.findAndReturnNodeText(individualDetails, "individualForenames") + " "
                 + Helpers.findAndReturnNodeText(individualDetails, "individualMiddleName") + " "
                 + Helpers.findAndReturnNodeText(individualDetails, "individualSurname")).trim();
-        } else {
-            return "";
         }
-    }
-
-    private static String convertPartyRole(String nonConvertedPartyRole) {
-        Map<String, List<String>> partyRoleMappings = new HashMap<>();
-
-        partyRoleMappings.put("APPLICANT_PETITIONER",
-                              List.of("APL", "APP", "CLP20", "CRED", "OTH", "PET"));
-
-        partyRoleMappings.put("APPLICANT_PETITIONER_REPRESENTATIVE",
-                              List.of("CREP", "CREP20"));
-
-        partyRoleMappings.put("RESPONDENT",
-                              List.of("DEBT", "DEF", "DEF20", "RES"));
-
-        partyRoleMappings.put("RESPONDENT_REPRESENTATIVE",
-                              List.of("DREP", "DREP20", "RREP"));
-
-        for (Map.Entry<String, List<String>> partyRole : partyRoleMappings.entrySet()) {
-            if (partyRole.getKey().equals(nonConvertedPartyRole)
-                || partyRole.getValue().contains(nonConvertedPartyRole)) {
-                return partyRole.getKey();
-            }
-        }
-
-        return  "";
+        return "";
     }
 
     private static void calculateDuration(JsonNode sitting) {
@@ -194,9 +168,9 @@ public final class DataManipulation {
             double durationAsHours = 0;
             double durationAsMinutes = Helpers.convertTimeToMinutes(sittingStart, sittingEnd);
 
-            if (durationAsMinutes >= 60) {
-                durationAsHours = Math.floor(durationAsMinutes / 60);
-                durationAsMinutes = durationAsMinutes - (durationAsHours * 60);
+            if (durationAsMinutes >= MINUTES_PER_HOUR) {
+                durationAsHours = Math.floor(durationAsMinutes / MINUTES_PER_HOUR);
+                durationAsMinutes = durationAsMinutes - (durationAsHours * MINUTES_PER_HOUR);
             }
 
             String formattedDuration = Helpers.formatDuration((int) durationAsHours,
@@ -233,10 +207,10 @@ public final class DataManipulation {
 
     private static void formattedCourtRoomName(JsonNode courtRoom, JsonNode session,
                                         StringBuilder formattedJudiciary) {
-        if (!formattedJudiciary.toString().trim().isEmpty()) {
-            formattedJudiciary.insert(0, courtRoom.get("courtRoomName").asText() + ": ");
-        } else {
+        if (StringUtils.isBlank(formattedJudiciary.toString())) {
             formattedJudiciary.append(courtRoom.get("courtRoomName").asText());
+        } else {
+            formattedJudiciary.insert(0, courtRoom.get("courtRoomName").asText() + ": ");
         }
 
         ((ObjectNode)session).put("formattedSessionCourtRoom",
@@ -249,8 +223,7 @@ public final class DataManipulation {
 
         if (session.has("judiciary")) {
             session.get("judiciary").forEach(judiciary -> {
-                if (Helpers.findAndReturnNodeText(judiciary, "isPresiding")
-                    .equals("true")) {
+                if ("true".equals(Helpers.findAndReturnNodeText(judiciary, "isPresiding"))) {
                     formattedJudiciary.set(new StringBuilder());
                     formattedJudiciary.get().append(Helpers.findAndReturnNodeText(judiciary, "johKnownAs"));
                     foundPresiding.set(true);
