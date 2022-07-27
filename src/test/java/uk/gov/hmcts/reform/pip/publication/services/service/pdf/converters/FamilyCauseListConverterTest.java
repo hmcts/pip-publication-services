@@ -25,7 +25,7 @@ class FamilyCauseListConverterTest {
     FamilyDailyCauseListConverter familyDailyCauseListConverter;
 
     @Test
-    void testSjpPressListTemplate() throws IOException {
+    void testFamilyCauseListTemplate() throws IOException {
         StringWriter writer = new StringWriter();
         IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/",
             "familyDailyCauseList.json")), writer,
