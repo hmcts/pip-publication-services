@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 @SuppressWarnings({"PMD.TooManyMethods"})
 @SpringBootTest
+@ActiveProfiles("test")
 class NotificationControllerTest {
 
     private static final String VALID_EMAIL = "test@email.com";
