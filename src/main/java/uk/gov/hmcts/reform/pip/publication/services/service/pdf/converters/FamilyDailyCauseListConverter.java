@@ -21,9 +21,8 @@ public class FamilyDailyCauseListConverter implements Converter {
                                                                             false, false));
         context.setVariable("publicationTime", Helpers.formatTimeStampToBst(publicationDate,
                 true, false));
-        context.setVariable("contentDate", Helpers.formatTimeStampToBst(artefactValues.get("ContentDate"),
-                false, false));
-        context.setVariable("locationName", artefactValues.get("LocationName"));
+        context.setVariable("contentDate", artefactValues.get("contentDate"));
+        context.setVariable("locationName", artefactValues.get("locationName"));
         context.setVariable("venueAddress", DataManipulation.formatVenueAddress(artefact));
         context.setVariable("artefact", artefact);
 
