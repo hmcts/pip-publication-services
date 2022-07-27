@@ -1,0 +1,155 @@
+{
+  "document": {
+    "publicationDate": "2016-09-13T23:30:52.123Z",
+    "documentName": "This is a document name",
+    "version": "This is a version"
+  },
+  "courtLists": [
+    {
+      "courtHouse": {
+        "courtRoom": [
+          {
+            "session": [
+              {
+                "sittings": [
+                  {
+                    "hearing": [
+                      {
+                        "party": [
+                          {
+                            "partyRole": "ACCUSED",
+                            "individualDetails": {
+                              "individualForenames": "Boris",
+                              "individualSurname": "Minister",
+                              "dateOfBirth": "25/07/1985",
+                              "age": 36,
+                              "address": {
+                                "county": "",
+                                "town": "London",
+                                "postCode": "SE23 6FH",
+                                "line": [
+                                  "72 Guild Street,"
+                                ]
+                              },
+                              "title": "Mr.",
+                              "individualMiddleName": "Middle"
+                            }
+                          },
+                          {
+                            "partyRole": "PROSECUTOR",
+                            "organisationDetails": {
+                              "organisationName": "Hampshire Police"
+                            }
+                          }
+                        ],
+                        "offence": [
+                          {
+                            "offenceTitle": "Sedition",
+                            "offenceWording": "Speeding - exceed 30 mph on restricted road - manned equipment - On 25/03/2021 at BLACKWATER HAMPSHIRE YOU drove a motor vehicle namely VW REG NO: 0000 ABC on a restricted road namely B3272 HAWLEY ROAD at a speed exceeding 30 miles per hour NAMELY 35MPH.",
+                            "reportingRestriction": true
+                          }
+                        ],
+                        "case": [
+                          {
+                            "caseUrn": "0012345"
+                          }
+                        ]
+                      },
+                      {
+                        "party": [
+                          {
+                            "partyRole": "ACCUSED",
+                            "individualDetails": {
+                              "individualForenames": "Nigel",
+                              "individualSurname": "Sausage",
+                              "dateOfBirth": "25/07/1985",
+                              "age": 36,
+                              "address": {
+                                "county": "",
+                                "town": "London",
+                                "postCode": "BD1 2XY",
+                                "line": [
+                                  "72 Guild Street,"
+                                ]
+                              },
+                              "title": "Mr.",
+                              "individualMiddleName": "Middle"
+                            }
+                          },
+                          {
+                            "partyRole": "PROSECUTOR",
+                            "organisationDetails": {
+                              "organisationName": "Hampshire Police"
+                            }
+                          }
+                        ],
+                        "offence": [
+                          {
+                            "offenceTitle": "Criminal Mischief",
+                            "offenceWording": "Speeding - exceed 30 mph on restricted road - manned equipment - On 25/03/2021 at BLACKWATER HAMPSHIRE YOU drove a motor vehicle namely VW REG NO: 0000 ABC on a restricted road namely B3272 HAWLEY ROAD at a speed exceeding 30 miles per hour NAMELY 35MPH.",
+                            "reportingRestriction": true
+                          },
+                          {
+                            "offenceTitle": "Swampy Jorts",
+                            "offenceWording": "Speeding - exceed 30 mph on restricted road - manned equipment - On 25/03/2021 at BLACKWATER HAMPSHIRE YOU drove a motor vehicle namely VW REG NO: 0000 ABC on a restricted road namely B3272 HAWLEY ROAD at a speed exceeding 30 miles per hour NAMELY 35MPH.",
+                            "reportingRestriction": false
+                          }
+                        ],
+                        "case": [
+                          {
+                            "caseUrn": "0012345"
+                          }
+                        ]
+                      },
+                      {
+                        "party": [
+                          {
+                            "partyRole": "ACCUSED",
+                            "individualDetails": {
+                              "individualForenames": "Joe",
+                              "individualSurname": "Bloggs",
+                              "dateOfBirth": "25/07/1985",
+                              "age": 36,
+                              "address": {
+                                "county": "",
+                                "town": "London",
+                                "postCode": "NW1 2XY",
+                                "line": [
+                                  "72 Guild Street,"
+                                ]
+                              },
+                              "title": "",
+                              "individualMiddleName": ""
+                            }
+                          },
+                          {
+                            "partyRole": "Prosecuter",
+                            "organisationDetails": {
+                              "organisationName": "Hampshire Police"
+                            }
+                          }
+                        ],
+                        "offence": [
+                          {
+                            "offenceTitle": "Grand Theft Auto",
+                            "offenceWording": "Speeding - exceed 30 mph on restricted road - manned equipment - On 25/03/2021 at BLACKWATER HAMPSHIRE YOU drove a motor vehicle namely VW REG NO: 0000 ABC on a restricted road namely B3272 HAWLEY ROAD at a speed exceeding 30 miles per hour NAMELY 35MPH.",
+                            "reportingRestriction": true
+                          }
+                        ],
+                        "case": [
+                          {
+                            "caseUrn": "0012345"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
