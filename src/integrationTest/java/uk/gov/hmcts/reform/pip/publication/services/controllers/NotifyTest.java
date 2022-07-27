@@ -91,6 +91,16 @@ class NotifyTest {
         + "  }\n"
         + "}";
 
+    private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"55b9e27b-d315-4c7e-9116-0b83939c03eb\",\n"
+        + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"CASE_URN\": [\n"
+        + "      \"123\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
+
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
@@ -322,6 +332,14 @@ class NotifyTest {
                             .content(invalidEmailJsonBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidPayloadForSubsFamilyCauseListListEmailReturnsOk() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString("Subscription email successfully sent to")));
     }
 
     @Test
