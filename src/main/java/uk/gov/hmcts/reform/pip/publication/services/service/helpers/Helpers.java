@@ -28,13 +28,13 @@ public final class Helpers {
 
     private static String getDateTimeFormat(ZonedDateTime zonedDateTime, Boolean isTimeOnly,
                                      Boolean isBothDateAndTime) {
-        if (Boolean.TRUE.equals(isTimeOnly)) {
+        if (isTimeOnly) {
             if (zonedDateTime.getMinute() == 0) {
                 return "ha";
             } else {
                 return "h:mma";
             }
-        } else if (Boolean.TRUE.equals(isBothDateAndTime)) {
+        } else if (isBothDateAndTime) {
             return "dd MMMM yyyy HH:mm:ss";
         } else {
             return "dd MMMM yyyy";
