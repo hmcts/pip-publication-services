@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+@SuppressWarnings("PMD")
 public final class DataManipulation {
     private static final String POSTCODE = "postCode";
     private static final int MINUTES_PER_HOUR = 60;

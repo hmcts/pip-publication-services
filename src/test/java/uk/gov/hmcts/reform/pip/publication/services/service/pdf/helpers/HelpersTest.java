@@ -18,8 +18,10 @@ import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("PMD.TooManyMethods")
 class HelpersTest {
     private static final String ERR_MSG = "Helper method doesn't seem to be working correctly";
+    private static final String TEST = "test";
     private static JsonNode inputJson;
 
     @BeforeAll
@@ -88,7 +90,7 @@ class HelpersTest {
 
     @Test
     void testStringDelimiterWithoutEmptyStringMethod() {
-        assertThat(Helpers.stringDelimiter("test", ","))
+        assertThat(Helpers.stringDelimiter(TEST, ","))
             .as(ERR_MSG)
             .isEqualTo(",");
     }
@@ -102,7 +104,7 @@ class HelpersTest {
 
     @Test
     void testFindAndReturnNodeTextNotExistsMethod() {
-        assertThat(Helpers.findAndReturnNodeText(inputJson.get("document"), "test"))
+        assertThat(Helpers.findAndReturnNodeText(inputJson.get("document"), TEST))
             .as(ERR_MSG)
             .isEqualTo("");
     }
@@ -111,14 +113,14 @@ class HelpersTest {
     void testTrimAnyCharacterFromStringEndMethod() {
         assertThat(Helpers.trimAnyCharacterFromStringEnd("test,"))
             .as(ERR_MSG)
-            .isEqualTo("test");
+            .isEqualTo(TEST);
     }
 
     @Test
     void testTrimAnyCharacterFromStringWithSpaceEndMethod() {
         assertThat(Helpers.trimAnyCharacterFromStringEnd("test, "))
             .as(ERR_MSG)
-            .isEqualTo("test");
+            .isEqualTo(TEST);
     }
 
     @Test

@@ -15,8 +15,6 @@ class PartyRoleMapperTest {
     private static final String RESPONDENT_REPRESENTATIVE =
         "RESPONDENT_REPRESENTATIVE";
 
-
-
     @Test
     void testConvertPartyRoleApplicantMethod() {
         assertThat(PartyRoleMapper.convertPartyRole(APPLICANT_PETITIONER))

@@ -15,7 +15,9 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SuppressWarnings("PMD")
 class DataManipulationTest {
     private static final String COURT_LISTS = "courtLists";
     private static final String COURT_HOUSE = "courtHouse";
@@ -43,13 +45,12 @@ class DataManipulationTest {
     void testFormatVenueAddressMethod() {
         List<String> venueAddress = DataManipulation.formatVenueAddress(inputJson);
 
-        assertThat(venueAddress.get(0))
-            .as("Unable to get address for venue")
-            .isEqualTo("Address Line 1");
+        assertEquals(venueAddress.get(0), "Address Line 1",
+                     "Unable to get address for venue");
 
-        assertThat(venueAddress.get(venueAddress.toArray().length - 1))
-            .as("Unable to get venue address")
-            .isEqualTo("AA1 AA1");
+        assertEquals(venueAddress.get(venueAddress.toArray().length - 1),
+                     "AA1 AA1",
+                     "Unable to get address for venue");
     }
 
     @Test
@@ -57,9 +58,10 @@ class DataManipulationTest {
         DataManipulation.formatCourtAddress(inputJson);
 
         inputJson.get(COURT_LISTS).forEach(courtList -> {
-            assertThat(courtList.get(COURT_HOUSE).has("formattedCourtHouseAddress"))
-                .as("Unable to get court address")
-                .isEqualTo(true);
+
+            assertEquals(courtList.get(COURT_HOUSE).has("formattedCourtHouseAddress"),
+                         true,
+                         "Unable to get court address");
 
             assertThat(courtList.get(COURT_HOUSE).get("formattedCourtHouseAddress").asText())
                 .as("Unable to get court address address")
