@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public final class Helpers {
-
+    private static final int ONE = 1;
     private Helpers() {
         throw new UnsupportedOperationException();
     }
@@ -47,33 +48,22 @@ public final class Helpers {
     public static ZonedDateTime convertStringToUtc(String timestamp) {
         Instant unZonedDateTime = Instant.parse(timestamp);
         ZoneId zone = ZoneId.of("Europe/London");
-        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
-        return zonedDateTime;
+        return unZonedDateTime.atZone(zone);
     }
 
     public static String stringDelimiter(String text, String delimiter) {
-        if (!text.isEmpty()) {
-            return delimiter;
-        } else {
-            return "";
-        }
+        return text.isEmpty() ? "" : delimiter;
     }
 
     public static String findAndReturnNodeText(JsonNode node, String nodeName) {
         if (node.has(nodeName)) {
             return node.get(nodeName).asText();
-        } else {
-            return "";
         }
+        return "";
     }
 
     public static String trimAnyCharacterFromStringEnd(String text) {
-        text = text.trim();
-        if (!text.isEmpty()) {
-            return text.replaceAll(",$", "").trim();
-        }
-
-        return "";
+        return StringUtils.isBlank(text) ? "" : text.trim().replaceAll(",$", "");
     }
 
     public static int convertTimeToMinutes(ZonedDateTime startDateTime,
@@ -81,7 +71,7 @@ public final class Helpers {
         int diffHours = endDateTime.getHour() - startDateTime.getHour();
         int diffMinutes = endDateTime.getMinute() - startDateTime.getMinute();
 
-        return (diffHours * 60)  + diffMinutes;
+        return diffHours * 60 + diffMinutes;
     }
 
     public static String formatDuration(int hours, int minutes) {
@@ -98,7 +88,7 @@ public final class Helpers {
     }
 
     private static String formatDurationTime(int duration, String format) {
-        if (duration > 1) {
+        if (duration > ONE) {
             return duration + " " + format + "s";
         } else {
             return duration + " " + format;
