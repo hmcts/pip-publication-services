@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 public final class Helpers {
     private static final int ONE = 1;
+
     private Helpers() {
         throw new UnsupportedOperationException();
     }

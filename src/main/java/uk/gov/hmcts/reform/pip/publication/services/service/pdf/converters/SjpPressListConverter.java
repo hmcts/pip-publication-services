@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguratio
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SjpPressCase;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +16,7 @@ public class SjpPressListConverter implements Converter {
     public static final String INDIVIDUAL_DETAILS = "individualDetails";
 
     @Override
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public String convert(JsonNode artefact, Map<String, String> artefactValues) {
         Context context = new Context();
         String date = artefact.get("document").get("publicationDate").asText();
@@ -73,10 +73,11 @@ public class SjpPressListConverter implements Converter {
         Iterator<JsonNode> offences = offencesNode.elements();
         while (offences.hasNext()) {
             JsonNode thisOffence = offences.next();
-            Map<String, String> thisOffenceMap = new HashMap<>();
-            thisOffenceMap.put("offence", thisOffence.get("offenceTitle").asText());
-            thisOffenceMap.put("reportingRestriction", processReportingRestrictionsjpPress(thisOffence));
-            thisOffenceMap.put("wording", thisOffence.get("offenceTitle").asText());
+            Map<String, String> thisOffenceMap = Map.of(
+                "offence", thisOffence.get("offenceTitle").asText(),
+                "reportingRestriction", processReportingRestrictionsjpPress(thisOffence),
+                "wording", thisOffence.get("offenceTitle").asText()
+            );
             listOfOffences.add(thisOffenceMap);
         }
         currentCase.setOffences(listOfOffences);
