@@ -37,28 +37,22 @@ public class PdfCreationService {
 
     /**
      * Wrapper class for the entire json to pdf process.
+     *
      * @param inputPayloadUuid UUID representing a particular artefact ID.
      * @return byteArray representing the generated PDF.
      * @throws IOException - uses file streams so needs this.
      */
-    public byte[] jsonToPdf(UUID inputPayloadUuid) throws IOException {
+    public String jsonToHtml(UUID inputPayloadUuid) throws IOException {
+        String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
         Location location = dataManagementService.getLocation(artefact.getLocationId());
-
-        String contentDate = "";
-        if (artefact.getProvenance().equals("MANUAL_UPLOAD")
-            && !artefact.getContentDate().toString().contains("Z")) {
-            contentDate = artefact.getContentDate().toString() + ":00.00Z";
-        }
+        String htmlFile;
 
         Map<String, String> metadataMap =
-            Map.of("contentDate", Helpers.formatTimeStampToBst(contentDate,
-        false,false),
+            Map.of("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
                    "provenance", artefact.getProvenance(),
                    "locationName", location.getName());
 
-        String htmlFile;
-        String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
 
         Converter converter = artefact.getListType().getConverter();
@@ -67,7 +61,7 @@ public class PdfCreationService {
         } else {
             htmlFile = parseThymeleafTemplate(rawJson);
         }
-        return generatePdfFromHtml(htmlFile);
+        return htmlFile;
     }
 
     /**

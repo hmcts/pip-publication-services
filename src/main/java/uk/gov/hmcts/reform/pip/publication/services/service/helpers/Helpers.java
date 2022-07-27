@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,6 +37,11 @@ public final class Helpers {
         } else {
             return "dd MMMM yyyy";
         }
+    }
+
+    public static String formatLocalDateTimeToBst(LocalDateTime date) {
+        return date.format(
+            DateTimeFormatter.ofPattern("dd MMMM yyyy"));
     }
 
     public static ZonedDateTime convertStringToUtc(String timestamp) {

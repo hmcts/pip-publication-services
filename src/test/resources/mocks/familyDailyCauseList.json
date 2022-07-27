@@ -1,0 +1,121 @@
+{
+  "document": {
+    "publicationDate": "20-02-2020T20:00.001Z",
+    "documentName": "This is a document name",
+    "version": "This is a document version"
+  },
+  "venue": {
+    "venueName": "This is the venue name",
+    "venueAddress": {
+      "line": [
+        "Address Line 1"
+      ],
+      "town": "Venue Town",
+      "county": "Venue County",
+      "postCode": "AA1 AA1"
+
+
+    },
+    "venueContact": {
+      "venueTelephone": "01234 123 123",
+      "venueEmail": "a@b.com"
+    }
+  },
+  "courtLists": [
+    {
+      "courtHouse": {
+        "courtHouseName": "This is the site name",
+        "courtHouseContact": {
+          "venueTelephone": "01234 123 123",
+          "venueEmail": "a@b.com"
+        },
+        "courtHouseAddress": {
+          "line": [
+            "Address Line 1"
+          ],
+          "postCode": "AA1 AA1"
+        },
+        "courtRoom": [
+          {
+            "courtRoomName": "This is the court room name",
+            "session": [
+              {
+                "sittings": [
+                  {
+                    "sittingStart": "20-02-2020T20:00.001Z",
+                    "sittingEnd": "20-02-2020T20:00.001Z",
+                    "hearing": [
+                      {
+                        "hearingType": "Directions",
+                        "case": [
+                          {
+                            "caseName": "This is a case name",
+                            "caseNumber": "12341234",
+                            "caseJurisdictionET": "Family Law",
+                            "caseSequenceIndicator": "[2 of 3]"
+                          }
+                        ],
+                        "party": [
+                          {
+                            "partyRole": "APPLICANT_PETITIONER",
+                            "individualDetails": {
+                              "individualSurname": "Surname"
+                            }
+                          },
+                          {
+                            "partyRole": "RESPONDENT",
+                            "individualDetails": {
+                              "individualSurname": "Surname"
+                            }
+                          },
+                          {
+                            "partyRole": "APPLICANT_PETITIONER_REPRESENTATIVE",
+                            "friendlyRoleName": "Legal Advisor",
+                            "individualDetails": {
+                              "individualForenames": "Individual Forenames",
+                              "individualMiddleName": "Individual Middlename",
+                              "individualSurname": "Individual Surname",
+                              "title": "Mr"
+                            }
+                          },
+                          {
+                            "partyRole": "RESPONDENT_REPRESENTATIVE",
+                            "friendlyRoleName": "Legal Advisor",
+                            "individualDetails": {
+                              "individualForenames": "Individual Forenames",
+                              "individualMiddleName": "Individual Middlename",
+                              "individualSurname": "Individual Surname",
+                              "title": "Mr"
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "channel": [
+                      "Teams",
+                      "Attended"
+                    ]
+                  }
+                ],
+                "judiciary": [
+                  {
+                    "johTitle": "Judge",
+                    "johNameSurname": "Test Name",
+                    "role": "JUDGE",
+                    "isPresiding": true
+                  },
+                  {
+                    "johTitle": "Magistrate",
+                    "johNameSurname": "Test Name",
+                    "role": "MAGISTRATE",
+                    "isPresiding": false
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
