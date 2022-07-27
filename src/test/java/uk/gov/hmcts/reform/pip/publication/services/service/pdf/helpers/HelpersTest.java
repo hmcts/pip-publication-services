@@ -67,6 +67,14 @@ class HelpersTest {
     }
 
     @Test
+    void testZonedTimeOnlyTwoDigitsHoursMethod() {
+        assertThat(Helpers.formatTimeStampToBst(
+            "2022-07-26T22:00:00.416924Z", true, false))
+            .as(ERR_MSG)
+            .isEqualTo("11pm");
+    }
+
+    @Test
     void testZonedDateTimeMethod() {
         assertThat(Helpers.formatTimeStampToBst(
             "2022-07-26T16:04:43.416924Z", false, true))

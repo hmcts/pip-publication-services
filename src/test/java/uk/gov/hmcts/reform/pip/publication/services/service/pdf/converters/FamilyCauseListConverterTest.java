@@ -50,6 +50,6 @@ class FamilyCauseListConverterTest {
 
         assertThat(document.getElementsByClass("govuk-body")
                        .get(2).text())
-            .as("incorrect header text").isEqualTo("Last Updated 21 July 2022 at 03:01pm");
+            .as("incorrect header text").isEqualTo("Last Updated 21 July 2022 at 3:01pm");
     }
 }

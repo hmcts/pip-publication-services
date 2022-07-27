@@ -29,6 +29,8 @@ class DataManipulationTest {
     private static final String CASE_NAME = "caseName";
     private static final String CASE_TYPE = "caseType";
 
+    private static final String COURT_ADDRESS_ERROR = "Unable to get court address address";
+
     private static JsonNode inputJson;
 
     @BeforeAll
@@ -57,20 +59,35 @@ class DataManipulationTest {
     void testFormatCourtAddressMethod() {
         DataManipulation.formatCourtAddress(inputJson);
 
-        inputJson.get(COURT_LISTS).forEach(courtList -> {
+        assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
+                       .has("formattedCourtHouseAddress"))
+            .as(COURT_ADDRESS_ERROR)
+            .isEqualTo(true);
 
-            assertEquals(courtList.get(COURT_HOUSE).has("formattedCourtHouseAddress"),
-                         true,
-                         "Unable to get court address");
+        assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
+                       .get("formattedCourtHouseAddress").asText())
+            .as(COURT_ADDRESS_ERROR)
+            .contains("Address Line 1");
 
-            assertThat(courtList.get(COURT_HOUSE).get("formattedCourtHouseAddress").asText())
-                .as("Unable to get court address address")
-                .contains("Address Line 1");
+        assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
+                       .get("formattedCourtHouseAddress").asText())
+            .as("Unable to get court address postcode")
+            .contains("AA1 AA1");
+    }
 
-            assertThat(courtList.get(COURT_HOUSE).get("formattedCourtHouseAddress").asText())
-                .as("Unable to get court address postcode")
-                .contains("AA1 AA1");
-        });
+    @Test
+    void testFormatWithNoCourtAddressMethod() {
+        DataManipulation.formatCourtAddress(inputJson);
+
+        assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
+                       .has("formattedCourtHouseAddress"))
+            .as(COURT_ADDRESS_ERROR)
+            .isEqualTo(true);
+
+        assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
+                       .get("formattedCourtHouseAddress").asText())
+            .as(COURT_ADDRESS_ERROR)
+            .isEqualTo("");
     }
 
     @Test
