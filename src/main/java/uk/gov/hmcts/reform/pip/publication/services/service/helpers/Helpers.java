@@ -18,9 +18,7 @@ public final class Helpers {
 
     public static String formatTimeStampToBst(String timestamp, Boolean isTimeOnly,
                                         Boolean isBothDateAndTime) {
-        Instant unZonedDateTime = Instant.parse(timestamp);
-        ZoneId zone = ZoneId.of("Europe/London");
-        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
+        ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
         String pattern = getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime);
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
         return dtf.format(zonedDateTime);
@@ -31,14 +29,12 @@ public final class Helpers {
         if (isTimeOnly) {
             if (zonedDateTime.getMinute() == 0) {
                 return "ha";
-            } else {
-                return "h:mma";
             }
+            return "h:mma";
         } else if (isBothDateAndTime) {
             return "dd MMMM yyyy HH:mm:ss";
-        } else {
-            return "dd MMMM yyyy";
         }
+        return "dd MMMM yyyy";
     }
 
     public static String formatLocalDateTimeToBst(LocalDateTime date) {
@@ -46,7 +42,7 @@ public final class Helpers {
             DateTimeFormatter.ofPattern("dd MMMM yyyy"));
     }
 
-    public static ZonedDateTime convertStringToUtc(String timestamp) {
+    public static ZonedDateTime convertStringToBst(String timestamp) {
         Instant unZonedDateTime = Instant.parse(timestamp);
         ZoneId zone = ZoneId.of("Europe/London");
         return unZonedDateTime.atZone(zone);
@@ -83,16 +79,18 @@ public final class Helpers {
             return formatDurationTime(hours, "hour");
         } else if (hours == 0 && minutes > 0) {
             return formatDurationTime(minutes, "min");
-        } else {
-            return "";
         }
+        return "";
     }
 
     private static String formatDurationTime(int duration, String format) {
         if (duration > ONE) {
             return duration + " " + format + "s";
-        } else {
-            return duration + " " + format;
         }
+        return duration + " " + format;
+    }
+
+    public static void appendToStringBuilder(StringBuilder builder, String text) {
+        builder.append(text);
     }
 }

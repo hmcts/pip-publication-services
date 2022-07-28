@@ -21,54 +21,48 @@ class ArtefactSummaryServiceTest {
     private static final String BODY_WRONG = "Body is not as expected.";
     private static final String MISSING_DATA_RETURN = "Data expected in the returned summary data did not arrive.";
 
+    private String readMockJsonFile(String filePath)  throws IOException {
+        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream(filePath)) {
+            return new String(mockFile.readAllBytes());
+        } catch (IOException ex) {
+            return "";
+        }
+    }
+
     @Test
     void familyDailyCauseListTest() throws IOException {
-        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
-            .getResourceAsStream("mocks/familyDailyCauseList.json")) {
-            String body = new String(mockFile.readAllBytes());
-            assertThat(body).as(BODY_WRONG).contains("AA1 AA1");
-            assertThat(artefactSummaryService.artefactSummary(body, ListType.FAMILY_DAILY_CAUSE_LIST))
-                .as(MISSING_DATA_RETURN).contains("12341234");
-        }
+        String body = readMockJsonFile("mocks/familyDailyCauseList.json");
+        assertThat(body).as(BODY_WRONG).contains("AA1 AA1");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.FAMILY_DAILY_CAUSE_LIST))
+            .as(MISSING_DATA_RETURN).contains("12341234");
     }
 
     @Test
     void sjpPublicListTest() throws IOException {
-        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
-            .getResourceAsStream("mocks/sjpPublicList.json")) {
-            String body = new String(mockFile.readAllBytes());
-            assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PUBLIC_LIST))
-                .as(MISSING_DATA_RETURN).contains("SJP PUBLIC LIST");
-        }
+        String body = readMockJsonFile("mocks/sjpPublicList.json");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PUBLIC_LIST))
+           .as(MISSING_DATA_RETURN).contains("SJP PUBLIC LIST");
     }
 
     @Test
     void sjpPressListTest() throws IOException {
-        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
-            .getResourceAsStream("mocks/sjpPressList.json")) {
-            String body = new String(mockFile.readAllBytes());
-            assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PRESS_LIST))
-                .as(MISSING_DATA_RETURN).contains("SJP PRESS LIST");
-        }
+        String body = readMockJsonFile("mocks/sjpPressList.json");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PRESS_LIST))
+            .as(MISSING_DATA_RETURN).contains("SJP PRESS LIST");
     }
 
     @Test
     void civilDailyCauseListTest() throws IOException {
-        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
-            .getResourceAsStream("mocks/sjpPressList.json")) {
-            String body = new String(mockFile.readAllBytes());
-            assertThat(artefactSummaryService.artefactSummary(body, ListType.CIVIL_DAILY_CAUSE_LIST))
-                .as(MISSING_DATA_RETURN).contains("CIVIL DAILY CAUSE LIST");
-        }
+        String body = readMockJsonFile("mocks/civilDailyCauseList.json");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.CIVIL_DAILY_CAUSE_LIST))
+            .as(MISSING_DATA_RETURN).contains("CIVIL DAILY CAUSE LIST");
     }
 
     @Test
     void notImplementedListTest() throws IOException {
-        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
-            .getResourceAsStream("mocks/sjpPressList.json")) {
-            String body = new String(mockFile.readAllBytes());
-            assertThat(artefactSummaryService.artefactSummary(body, ListType.CROWN_DAILY_LIST))
-                .as(MISSING_DATA_RETURN).isEqualTo("");
-        }
+        String body = readMockJsonFile("mocks/civilDailyCauseList.json");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.CROWN_DAILY_LIST))
+           .as(MISSING_DATA_RETURN).isEqualTo("");
     }
 }

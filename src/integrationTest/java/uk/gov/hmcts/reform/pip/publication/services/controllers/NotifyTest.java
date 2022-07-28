@@ -83,17 +83,6 @@ class NotifyTest {
         + "  }\n"
         + "}";
 
-    //Uncomment this code when SJP Pdf merge
-    /*private static final String VALID_SUBS_EMAIL = "{\n"
-        + "  \"artefactId\": \"c8327f76-19e0-4190-84a7-49eeac89fd21\",\n"
-        + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
-        + "  \"subscriptions\": {\n"
-        + "    \"CASE_URN\": [\n"
-        + "      \"123\"\n"
-        + "    ]\n"
-        + "  }\n"
-        + "}";
-    */
     private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = "{\n"
         + "  \"artefactId\": \"55b9e27b-d315-4c7e-9116-0b83939c03eb\",\n"
         + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
@@ -315,17 +304,6 @@ class NotifyTest {
                             .content(NONEXISTENT_BLOB_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadGateway());
     }
-
-    //Uncomment this code when SJP Pdf merge
-    /*
-    @Test
-    void testValidPayloadForSubsEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString("Subscription email successfully sent to")));
-    }
-    */
 
     @Test
     void testInvalidEmailForSubscriptionReturnsBadRequest() throws Exception {

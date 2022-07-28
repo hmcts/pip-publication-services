@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 
 @Service
 @Slf4j
-@SuppressWarnings("PMD.TooManyMethods")
 /**
  * Service which extracts relevant summary data from each list type to be included in gov.notify emails. For the most
  * part, developing these is a very fiddly process and it doesn't seem like there's much of an easier way. Some

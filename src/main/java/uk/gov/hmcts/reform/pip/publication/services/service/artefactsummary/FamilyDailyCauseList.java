@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DataManipula
 import uk.gov.hmcts.reform.pip.publication.services.service.helpers.Helpers;
 
 @Service
-@SuppressWarnings("PMD")
 public class FamilyDailyCauseList {
     /**
      * Civil cause list parent method - iterates on courtHouse/courtList - if these need to be shown in further
@@ -39,27 +38,28 @@ public class FamilyDailyCauseList {
             courtList.get("courtHouse").get("courtRoom").forEach(courtRoom -> {
                 courtRoom.get("session").forEach(session -> {
                     session.get("sittings").forEach(sitting -> {
-
                         sitting.get("hearing").forEach(hearing -> {
                             hearing.get("case").forEach(hearingCase -> {
-                                output.append('\n').append('\n')
-                                    .append("Name of Party(ies) - ")
-                                    .append(Helpers.findAndReturnNodeText(hearingCase, "caseName"))
-                                    .append('\n')
-                                    .append("Case ID - ")
-                                    .append(Helpers.findAndReturnNodeText(hearingCase, "caseNumber"))
-                                    .append('\n').append('\n')
-                                    .append("Hearing Type - ")
-                                    .append(Helpers.findAndReturnNodeText(hearing, "hearingType"))
-                                    .append('\n')
-                                    .append("Location - ")
-                                    .append(Helpers.findAndReturnNodeText(sitting, "caseHearingChannel"))
-                                    .append('\n')
-                                    .append("Duration - ")
-                                    .append(Helpers.findAndReturnNodeText(sitting, "formattedDuration"))
-                                    .append('\n')
-                                    .append("Judge - ")
-                                    .append(Helpers.findAndReturnNodeText(session, "formattedSessionCourtRoom"));
+                                Helpers.appendToStringBuilder(output, "\n");
+                                Helpers.appendToStringBuilder(output, "\n");
+                                Helpers.appendToStringBuilder(output, "Name of Party(ies) - ");
+                                output.append(Helpers.findAndReturnNodeText(hearingCase, "caseName"));
+                                Helpers.appendToStringBuilder(output, "\n");
+                                Helpers.appendToStringBuilder(output, "Case ID - ");
+                                output.append(Helpers.findAndReturnNodeText(hearingCase, "caseNumber"));
+                                Helpers.appendToStringBuilder(output, "\n");
+                                Helpers.appendToStringBuilder(output, "\n");
+                                Helpers.appendToStringBuilder(output, "Hearing Type - ");
+                                output.append(Helpers.findAndReturnNodeText(hearing, "hearingType"));
+                                Helpers.appendToStringBuilder(output, "\n");
+                                Helpers.appendToStringBuilder(output, "Location - ");
+                                output.append(Helpers.findAndReturnNodeText(sitting, "caseHearingChannel"));
+                                Helpers.appendToStringBuilder(output, "\n");
+                                Helpers.appendToStringBuilder(output, "Duration - ");
+                                output.append(Helpers.findAndReturnNodeText(sitting, "formattedDuration"));
+                                Helpers.appendToStringBuilder(output, "\n");
+                                Helpers.appendToStringBuilder(output, "Judge - ");
+                                output.append(Helpers.findAndReturnNodeText(session, "formattedSessionCourtRoom"));
                             });
                         });
                     });

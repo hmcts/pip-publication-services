@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
+package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DataManipulation;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -52,7 +51,7 @@ class DataManipulationTest {
         assertEquals(venueAddress.get(0), "Address Line 1",
                      "Unable to get address for venue");
 
-        assertEquals(venueAddress.get(venueAddress.toArray().length - 1),
+        assertEquals(venueAddress.get(venueAddress.size() - 1),
                      "AA1 AA1",
                      "Unable to get address for venue");
     }
@@ -64,7 +63,7 @@ class DataManipulationTest {
         assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
                        .has("formattedCourtHouseAddress"))
             .as(COURT_ADDRESS_ERROR)
-            .isEqualTo(true);
+            .isTrue();
 
         assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
                        .get("formattedCourtHouseAddress").asText())
@@ -84,12 +83,12 @@ class DataManipulationTest {
         assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
                        .has("formattedCourtHouseAddress"))
             .as(COURT_ADDRESS_ERROR)
-            .isEqualTo(true);
+            .isTrue();
 
         assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
                        .get("formattedCourtHouseAddress").asText())
             .as(COURT_ADDRESS_ERROR)
-            .isEqualTo("");
+            .isEmpty();
     }
 
     @Test

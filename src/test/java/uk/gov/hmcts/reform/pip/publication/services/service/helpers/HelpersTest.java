@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
+package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.service.helpers.Helpers;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -77,8 +76,8 @@ class HelpersTest {
     }
 
     @Test
-    void testConvertStringToUtcMethod() {
-        assertThat(Helpers.convertStringToUtc("2022-08-19T09:30:00Z").toLocalDateTime())
+    void testConvertStringToBstMethod() {
+        assertThat(Helpers.convertStringToBst("2022-08-19T09:30:00Z").toLocalDateTime())
             .as(ERR_MSG)
             .isEqualTo("2022-08-19T10:30");
     }
@@ -87,7 +86,7 @@ class HelpersTest {
     void testStringDelimiterWithEmptyStringMethod() {
         assertThat(Helpers.stringDelimiter("", ","))
             .as(ERR_MSG)
-            .isEqualTo("");
+            .isEmpty();
     }
 
     @Test
@@ -108,7 +107,7 @@ class HelpersTest {
     void testFindAndReturnNodeTextNotExistsMethod() {
         assertThat(Helpers.findAndReturnNodeText(inputJson.get("document"), TEST))
             .as(ERR_MSG)
-            .isEqualTo("");
+            .isEmpty();
     }
 
     @Test
@@ -127,8 +126,8 @@ class HelpersTest {
 
     @Test
     void testConvertTimeToMinutesMethod() {
-        ZonedDateTime startTime = Helpers.convertStringToUtc("2022-08-19T09:30:00Z");
-        ZonedDateTime endTime = Helpers.convertStringToUtc("2022-08-19T10:55:00Z");
+        ZonedDateTime startTime = Helpers.convertStringToBst("2022-08-19T09:30:00Z");
+        ZonedDateTime endTime = Helpers.convertStringToBst("2022-08-19T10:55:00Z");
 
         assertThat(Helpers.convertTimeToMinutes(startTime, endTime))
             .as(ERR_MSG)
@@ -181,6 +180,17 @@ class HelpersTest {
     void testFormatDurationWithNoMinuteNoHourMethod() {
         assertThat(Helpers.formatDuration(0, 0))
             .as(ERR_MSG)
-            .isEqualTo("");
+            .isEmpty();
+    }
+
+    @Test
+    void testAppendToStringBuilderMethod() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Test1");
+        Helpers.appendToStringBuilder(builder,
+                "Test2");
+        assertThat(builder.toString())
+            .as(ERR_MSG)
+            .isEqualTo("Test1Test2");
     }
 }
