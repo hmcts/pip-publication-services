@@ -229,9 +229,12 @@ public final class DataManipulation {
                     formattedJudiciary.get().append(Helpers.findAndReturnNodeText(judiciary, "johKnownAs"));
                     foundPresiding.set(true);
                 } else if (!foundPresiding.get()) {
-                    formattedJudiciary.get()
-                        .append(Helpers.findAndReturnNodeText(judiciary, "johKnownAs"))
-                        .append(", ");
+                    String johKnownAs = Helpers.findAndReturnNodeText(judiciary, "johKnownAs");
+                    if (StringUtils.isNotBlank(johKnownAs)) {
+                        formattedJudiciary.get()
+                            .append(johKnownAs)
+                            .append(", ");
+                    }
                 }
             });
 
