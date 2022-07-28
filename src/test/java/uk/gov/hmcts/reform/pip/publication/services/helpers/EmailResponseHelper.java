@@ -7,6 +7,7 @@ import java.util.UUID;
 public final class EmailResponseHelper {
 
     private EmailResponseHelper() {
+        throw new UnsupportedOperationException();
     }
 
     public static SendEmailResponse stubSendEmailResponseWithReferenceID(String reference) {
