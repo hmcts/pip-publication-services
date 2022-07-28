@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @SuppressWarnings("PMD.TooManyMethods")
 public final class Helpers {
@@ -21,7 +22,7 @@ public final class Helpers {
                                         Boolean isBothDateAndTime) {
         ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
         String pattern = getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern, Locale.UK);
         return dtf.format(zonedDateTime);
     }
 
