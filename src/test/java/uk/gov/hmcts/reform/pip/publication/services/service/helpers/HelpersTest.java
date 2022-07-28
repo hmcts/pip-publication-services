@@ -193,4 +193,14 @@ class HelpersTest {
             .as(ERR_MSG)
             .isEqualTo("Test1Test2");
     }
+
+    @Test
+    void testLoopAndFormatString() {
+        StringBuilder builder = new StringBuilder();
+        JsonNode node = inputJson.get("venue").get("venueAddress");
+        Helpers.loopAndFormatString(node, "line", builder, ",");
+        assertThat(builder.toString())
+            .as(ERR_MSG)
+            .isEqualTo("Address Line 1,");
+    }
 }

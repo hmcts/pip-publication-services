@@ -25,8 +25,6 @@ class ArtefactSummaryServiceTest {
         try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
             .getResourceAsStream(filePath)) {
             return new String(mockFile.readAllBytes());
-        } catch (IOException ex) {
-            return "";
         }
     }
 

@@ -41,13 +41,9 @@ public final class DataManipulation {
 
             if (courtList.get(COURT_HOUSE).has("courtHouseAddress")) {
                 JsonNode courtHouseAddress = courtList.get(COURT_HOUSE).get("courtHouseAddress");
-                courtHouseAddress.get("line").forEach(line -> {
-                    if (!line.asText().isEmpty()) {
-                        formattedCourtAddress
-                            .append(line.asText())
-                            .append('|');
-                    }
-                });
+
+                Helpers.loopAndFormatString(courtHouseAddress, "line",
+                                            formattedCourtAddress, "|");
 
                 checkAndFormatAddress(courtHouseAddress, "town",
                                            formattedCourtAddress, '|');
@@ -121,8 +117,7 @@ public final class DataManipulation {
             if (!Helpers.findAndReturnNodeText(party, "partyRole").isEmpty()) {
                 switch (PartyRoleMapper.convertPartyRole(party.get("partyRole").asText())) {
                     case "APPLICANT_PETITIONER": {
-                        applicant.append(createIndividualDetails(party));
-                        applicant.append(Helpers.stringDelimiter(applicant.toString(), ", "));
+                        formatPartyNonRepresentative(party, applicant);
                         break;
                     }
                     case "APPLICANT_PETITIONER_REPRESENTATIVE": {
@@ -134,8 +129,7 @@ public final class DataManipulation {
                         break;
                     }
                     case "RESPONDENT": {
-                        respondent.append(createIndividualDetails(party));
-                        respondent.append(Helpers.stringDelimiter(applicant.toString(), ", "));
+                        formatPartyNonRepresentative(party, respondent);
                         break;
                     }
                     case "RESPONDENT_REPRESENTATIVE": {
@@ -154,6 +148,13 @@ public final class DataManipulation {
 
         ((ObjectNode)hearing).put("applicant", Helpers.trimAnyCharacterFromStringEnd(applicant.toString()));
         ((ObjectNode)hearing).put("respondent", Helpers.trimAnyCharacterFromStringEnd(respondent.toString()));
+    }
+
+    private static void formatPartyNonRepresentative(JsonNode party, StringBuilder builder) {
+        String respondentDetails = createIndividualDetails(party);
+        respondentDetails = respondentDetails
+            + Helpers.stringDelimiter(respondentDetails, ", ");
+        builder.insert(0, respondentDetails);
     }
 
     private static String createIndividualDetails(JsonNode party) {
@@ -192,18 +193,13 @@ public final class DataManipulation {
 
     private static void findAndConcatenateHearingPlatform(JsonNode sitting, JsonNode session) {
         StringBuilder formattedHearingPlatform = new StringBuilder();
+
         if (sitting.has("channel")) {
-            sitting.get("channel").forEach(channel -> {
-                formattedHearingPlatform
-                    .append(channel.asText())
-                    .append(", ");
-            });
+            Helpers.loopAndFormatString(sitting, "channel",
+                                formattedHearingPlatform, ", ");
         } else if (session.has("sessionChannel")) {
-            session.get("sessionChannel").forEach(channel -> {
-                formattedHearingPlatform
-                    .append(channel.asText())
-                    .append(", ");
-            });
+            Helpers.loopAndFormatString(session, "sessionChannel",
+                                formattedHearingPlatform, ", ");
         }
 
         ((ObjectNode)sitting).put("caseHearingChannel",

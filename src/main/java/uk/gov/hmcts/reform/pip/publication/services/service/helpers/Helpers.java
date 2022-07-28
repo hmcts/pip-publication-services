@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+@SuppressWarnings("PMD.TooManyMethods")
 public final class Helpers {
     private static final int ONE = 1;
 
@@ -92,5 +93,16 @@ public final class Helpers {
 
     public static void appendToStringBuilder(StringBuilder builder, String text) {
         builder.append(text);
+    }
+
+    public static void loopAndFormatString(JsonNode nodes, String nodeName,
+                                            StringBuilder builder, String delimiter) {
+        nodes.get(nodeName).forEach(node -> {
+            if (!node.asText().isEmpty()) {
+                builder
+                    .append(node.asText())
+                    .append(delimiter);
+            }
+        });
     }
 }
