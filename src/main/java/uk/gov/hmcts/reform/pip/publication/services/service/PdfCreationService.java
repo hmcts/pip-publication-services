@@ -52,6 +52,7 @@ public class PdfCreationService {
         metadataMap.put("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()));
         metadataMap.put("provenance", artefact.getProvenance());
         metadataMap.put("location", location.getName());
+        metadataMap.put("language", artefact.getLanguage().toString());
 
         Converter converter = artefact.getListType().getConverter();
         if(converter != null) {

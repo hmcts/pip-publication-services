@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <style>
+
+
+  <style th:inline="text">
     @page {
       margin: 30px 20px;
 
@@ -9,9 +11,10 @@
         font-family: 'GDS Transport';
         font-size: 16px;
         color: grey;
-        content: "Court and Tribunal Hearings Service - PDF/UA page " counter(page) " of " counter(pages) ".";
+        content: "[[${i18n.serviceName}]]" counter(page) "[[${i18n.of}]]" counter(pages) ".";
       }
     }
+
     body {
       font-family: 'GDS Transport';
       padding: 2px;
@@ -112,7 +115,7 @@
   <meta name="subject" content="SSCS Daily list"/>
   <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
   <meta name="description" content="SSCS Daily List PDF File"/>
-  <title th:text="${'SCSS Daily List for ' + location + ' - ' + contentDate}"/>
+  <title th:text="${i18n.title1 + location + ' - ' + contentDate}"/>
 </head>
 
 
@@ -132,8 +135,8 @@
            src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png"
            alt="HMCTS Logo"/>
       <div class="logoText">
-        <p class="logoText">HM Courts &amp;</p>
-        <p class="logoText">Tribunals Service</p>
+        <p class="logoText" th:text="${i18n.logoText1}"/>
+        <p class="logoText" th:text="${i18n.logoText2}"/>
       </div>
     </div>
     <div class="dateContainer">
@@ -142,35 +145,35 @@
     </div>
   </div>
   <div class="mainHeaderText">
-    <h1>Social Security and Child Support</h1>
-    <h2 th:text="${location + ' hearings for ' + contentDate}"/>
+    <h1 th:text="${i18n.mainHeaderText}"/>
+    <h2 th:text="${location + i18n.headerSubText + contentDate}"/>
   </div>
 </div>
+<hr/>
 
-  <section id="information-section">
-    <div class="govuk-details__text">
-      <p>Open justice is a fundamental principle in our courts and tribunals system, and will continue to be as we develop the use of audio and video technology.</p>
-      <p th:text="'Requests from the media and others to observe a hearing remotely in ' +  ${location} + ' should be made direct to: ' + ${jsonBody.get('venue').get('venueContact').get('venueEmail').asText()} + ' or by calling ' +  ${jsonBody.get('venue').get('venueContact').get('venueTelephone').asText()} + '. Arrangements will then be made to enable you to attend.'"/>
-      <p>When considering the use of telephone and video technology, the judiciary will have regard to the principles of open justice. Judges may determine that a hearing should be held in private if this is necessary to secure the proper administration of justice.</p>
+<section id="information-section">
+  <div class="govuk-details__text">
+    <p th:text="${i18n.infoSectionPara1}"/>
+    <p
+      th:text="${i18n.infoSectionMiddlePara1 + location + i18n.infoSectionMiddlePara2  + venue.email + i18n.infoSectionMiddlePara3 + venue.telephone + i18n.infoSectionMiddlePara4}"/>
+    <p th:text="${i18n.infoSectionPara3}"/>
+  </div>
+
+  <hr/>
+  <h3 class="overleaf" th:text="${i18n.hearingOverleaf}"/>
+</section>
+
+
+<section id="list-content-section">
+  <div th:each="courtList: ${jsonBody.get('courtLists')}">
+    <h2 th:text="${courtList.get('courtHouse').get('courtHouseName').asText()}"/>
+    <div th:each="courtRoom: ${jsonBody.get('courtLists').get('courtRoom')}">
+      <h3 th:text="${courtRoom.get('courtRoomName').asText()}"/>
     </div>
+  </div>
 
-    <h3 class="overleaf">Hearing information appears overleaf.</h3>
-  </section>
+</section>
 
-
-  <section id="list-content-section">
-    <div th:each="courtList: ${jsonBody.get('courtLists')}">
-      <h2 th:text="${courtList.get('courtHouse').get('courtHouseName').asText()}"/>
-      <div th:each="courtRoom: ${jsonBody.get('courtLists').get('courtRoom')}">
-        <h3 th:text="${courtRoom.get('courtRoomName').asText()}"/>
-      </div>
-    </div>
-
-  </section>
-
-
-
-
-  <p class="govuk-body govuk-font-14" th:text="'Data Source: ' + ${provenance}"/>
+<p class="govuk-body govuk-font-14" th:text="${i18n.dataSource + provenance}"/>
 </body>
 </html>
