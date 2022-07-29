@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public final class DateHelper {
 
@@ -18,7 +19,7 @@ public final class DateHelper {
                                               Boolean isBothDateAndTime) {
         ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
         String pattern = getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern, Locale.UK);
         return dtf.format(zonedDateTime);
     }
 
@@ -39,7 +40,7 @@ public final class DateHelper {
 
     public static String formatLocalDateTimeToBst(LocalDateTime date) {
         return date.format(
-            DateTimeFormatter.ofPattern("dd MMMM yyyy"));
+            DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.UK));
     }
 
     public static ZonedDateTime convertStringToBst(String timestamp) {
