@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
+package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -19,6 +19,15 @@ public final class DateHelper {
         ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
         String pattern = getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime);
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+        return dtf.format(zonedDateTime);
+    }
+
+    public static String formatTimestampToBst(String timestamp) {
+        Instant unZonedDateTime = Instant.parse(timestamp);
+        ZoneId zone = ZoneId.of("Europe/London");
+        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
+        DateTimeFormatter dtf;
+        dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
         return dtf.format(zonedDateTime);
     }
 

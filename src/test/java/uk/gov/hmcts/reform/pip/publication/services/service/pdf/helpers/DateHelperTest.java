@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
+package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
 import org.junit.jupiter.api.Test;
 
@@ -117,6 +117,20 @@ class DateHelperTest {
         assertThat(DateHelper.formatDuration(0, 0))
             .as(ERR_MSG)
             .isEmpty();
+    }
+
+    @Test
+    void testLocalTimeMethodOther() {
+        assertThat(DateHelper.formatLocalDateTimeToBst(LocalDateTime.of(1988, Month.SEPTEMBER, 29, 8, 30)))
+            .as(ERR_MSG)
+            .isEqualTo("29 September 1988");
+    }
+
+    @Test
+    void testZonedDateTimeMethodOther() {
+        assertThat(DateHelper.formatTimestampToBst("2022-07-26T16:04:43.416924Z"))
+            .as(ERR_MSG)
+            .isEqualTo("26 July 2022 at 17:04");
     }
 
 }

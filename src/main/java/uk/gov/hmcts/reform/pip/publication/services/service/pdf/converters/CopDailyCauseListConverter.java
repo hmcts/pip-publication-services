@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
-import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DataManipulation;
-import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DateHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DataManipulation;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DateHelper;
 
 import java.util.Map;
 
