@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
+package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;

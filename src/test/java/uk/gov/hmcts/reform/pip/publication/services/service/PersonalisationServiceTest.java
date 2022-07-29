@@ -193,7 +193,7 @@ class PersonalisationServiceTest {
         assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get("link_to_file")).get("file"),
                      "Link to file does not match expected value"
         );
-        assertEquals("<Placeholder>", personalisation.get("testing_of_array"),
+        assertEquals("CIVIL DAILY CAUSE LIST", personalisation.get("testing_of_array"),
                      "testing_of_array does not match expected value"
         );
     }

@@ -73,46 +73,34 @@ class NotifyTest {
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String IMAGE_NAME = "test-image.png";
     private static final String VALID_API_DESTINATION = "https://localhost:4444";
-    private static final String NONEXISTENT_BLOB_SUBS_EMAIL = "{\n"
+    private static final String NEW_LINE_WITH_BRACKET = "{\n";
+    private static final String SUBSCRIPTION_REQUEST = "\"subscriptions\": {\n\n"
+        + "    \"CASE_URN\": [\n\n"
+        + "      \"123\"\n\n"
+        + "    ]\n\n"
+        + "  }\n\n"
+        + "}\"";
+
+    private static final String NONEXISTENT_BLOB_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
         + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
-        + "  \"subscriptions\": {\n"
-        + "    \"CASE_URN\": [\n"
-        + "      \"123\"\n"
-        + "    ]\n"
-        + "  }\n"
-        + "}";
+        + SUBSCRIPTION_REQUEST;
 
-    private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = "{\n"
+    private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"55b9e27b-d315-4c7e-9116-0b83939c03eb\",\n"
         + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
-        + "  \"subscriptions\": {\n"
-        + "    \"CASE_URN\": [\n"
-        + "      \"123\"\n"
-        + "    ]\n"
-        + "  }\n"
-        + "}";
+        + SUBSCRIPTION_REQUEST;
 
-    private static final String VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL = "{\n"
+    private static final String VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"af77ae82-b0c2-4515-8bc0-dc3fed1853d8\",\n"
         + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
-        + "  \"subscriptions\": {\n"
-        + "    \"CASE_URN\": [\n"
-        + "      \"123\"\n"
-        + "    ]\n"
-        + "  }\n"
-        + "}";
+        + SUBSCRIPTION_REQUEST;
 
 
-    private static final String VALID_SJP_PRESS_SUBS_EMAIL = "{\n"
+    private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
         + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
-        + "  \"subscriptions\": {\n"
-        + "    \"CASE_URN\": [\n"
-        + "      \"123\"\n"
-        + "    ]\n"
-        + "  }\n"
-        + "}";
+        + SUBSCRIPTION_REQUEST;
 
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
