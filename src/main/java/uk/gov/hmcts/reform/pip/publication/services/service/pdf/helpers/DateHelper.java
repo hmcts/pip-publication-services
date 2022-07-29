@@ -22,15 +22,6 @@ public final class DateHelper {
         return dtf.format(zonedDateTime);
     }
 
-    public static String formatTimestampToBst(String timestamp) {
-        Instant unZonedDateTime = Instant.parse(timestamp);
-        ZoneId zone = ZoneId.of("Europe/London");
-        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
-        DateTimeFormatter dtf;
-        dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
-        return dtf.format(zonedDateTime);
-    }
-
     private static String getDateTimeFormat(ZonedDateTime zonedDateTime, Boolean isTimeOnly,
                                             Boolean isBothDateAndTime) {
         if (isTimeOnly) {
