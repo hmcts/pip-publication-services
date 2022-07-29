@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
+package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,6 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DataManipulation;
 
 import java.io.IOException;
 import java.io.StringWriter;

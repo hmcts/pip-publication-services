@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DataManipulation;
-import uk.gov.hmcts.reform.pip.publication.services.service.helpers.Helpers;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DataManipulation;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 
 @Service
 public class FamilyDailyCauseList {

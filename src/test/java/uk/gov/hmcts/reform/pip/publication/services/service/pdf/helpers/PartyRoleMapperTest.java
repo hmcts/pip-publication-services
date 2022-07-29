@@ -1,7 +1,8 @@
-package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
+package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.PartyRoleMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
