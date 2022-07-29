@@ -337,7 +337,7 @@ class NotifyTest {
     }
 
     @Test
-    void testValidPayloadForSubsCivilAndFamilyCauseListListEmailReturnsOk() throws Exception {
+    void testValidPayloadForSubsCivilAndFamilyCauseListEmailReturnsOk() throws Exception {
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())

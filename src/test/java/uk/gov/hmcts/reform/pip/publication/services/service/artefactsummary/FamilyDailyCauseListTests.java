@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 class FamilyDailyCauseListTests {
     @Autowired
-    FamilyDailyCauseList familyDailyCauseList;
+    DailyCauseList familyDailyCauseList;
 
     @Test
     void testFamilyCauseListTemplate() throws IOException {
@@ -30,7 +30,7 @@ class FamilyDailyCauseListTests {
                      Charset.defaultCharset()
         );
 
-        String emailOutput = familyDailyCauseList.artefactSummaryFamilyDailyCause(writer.toString());
+        String emailOutput = familyDailyCauseList.artefactSummaryDailyCause(writer.toString());
 
         assertThat(emailOutput)
             .as("incorrect party name found")

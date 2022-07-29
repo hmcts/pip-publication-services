@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.pip.publication.services.service.helpers.Helpers;
 
 import java.util.Map;
 
-@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
 @Service
 public class CivilAndFamilyDailyCauseListConverter implements Converter {
     @Override

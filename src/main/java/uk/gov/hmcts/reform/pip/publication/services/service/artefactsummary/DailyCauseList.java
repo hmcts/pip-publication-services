@@ -1,14 +1,31 @@
-package uk.gov.hmcts.reform.pip.publication.services.service.helpers;
+package uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DataManipulation;
+import uk.gov.hmcts.reform.pip.publication.services.service.helpers.Helpers;
 
-public final class ArtefactSummary {
+@Service
+public class DailyCauseList {
+    /**
+     * Civil cause list parent method - iterates on courtHouse/courtList - if these need to be shown in further
+     * iterations, do it here.
+     *
+     * @param payload - json body.
+     * @return - string for output.
+     * @throws JsonProcessingException - jackson req.
+     */
+    public String artefactSummaryDailyCause(String payload) throws JsonProcessingException {
+        JsonNode node = new ObjectMapper().readTree(payload);
 
-    private ArtefactSummary() {
-        throw new UnsupportedOperationException();
+        DataManipulation.manipulatedDailyListData(node);
+
+        return this.processDailyCauseList(node);
     }
 
-    public static String processDailyCauseList(JsonNode node) {
+    public String processDailyCauseList(JsonNode node) {
         StringBuilder output = new StringBuilder();
         node.get("courtLists").forEach(courtList -> {
             courtList.get("courtHouse").get("courtRoom").forEach(courtRoom -> {

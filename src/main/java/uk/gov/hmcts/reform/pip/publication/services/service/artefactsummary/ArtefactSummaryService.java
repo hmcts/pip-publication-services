@@ -17,10 +17,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 public class ArtefactSummaryService {
 
     @Autowired
-    FamilyDailyCauseList familyDailyCauseList;
-
-    @Autowired
-    CivilAndFamilyDailyCauseList civilAndFamilyCauseList;
+    DailyCauseList dailyCauseList;
 
     /**
      * Parent class to route based on list types.
@@ -40,9 +37,9 @@ public class ArtefactSummaryService {
             case CIVIL_DAILY_CAUSE_LIST:
                 return "CIVIL DAILY CAUSE LIST";
             case FAMILY_DAILY_CAUSE_LIST:
-                return familyDailyCauseList.artefactSummaryFamilyDailyCause(payload);
+                return dailyCauseList.artefactSummaryDailyCause(payload);
             case CIVIL_AND_FAMILY_DAILY_CAUSE_LIST:
-                return civilAndFamilyCauseList.artefactSummaryCivilAndFamilyDailyCause(payload);
+                return dailyCauseList.artefactSummaryDailyCause(payload);
             default:
                 return "";
         }
