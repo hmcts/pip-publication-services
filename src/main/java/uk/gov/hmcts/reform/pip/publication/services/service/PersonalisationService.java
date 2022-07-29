@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ public class PersonalisationService {
     @Autowired
     DataManagementService dataManagementService;
 
+    @Autowired
+    ArtefactSummaryService artefactSummaryService;
 
     @Autowired
     PdfCreationService pdfCreationService;
@@ -117,7 +120,14 @@ public class PersonalisationService {
             byte[] artefactPdf = pdfCreationService.generatePdfFromHtml(html);
             personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
 
-            personalisation.put("testing_of_array", "<Placeholder>");
+            String summary =
+                artefactSummaryService.artefactSummary(
+                    dataManagementService
+                        .getArtefactJsonBlob(artefact.getArtefactId()),
+                    artefact.getListType()
+                );
+
+            personalisation.put("testing_of_array", summary);
 
             log.info("Personalisation map created");
             return personalisation;

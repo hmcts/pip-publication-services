@@ -11,8 +11,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 import java.util.Map;
 
 @Service
-public class FamilyDailyCauseListConverter implements Converter {
-
+public class CivilAndFamilyDailyCauseListConverter implements Converter {
     @Override
     public String convert(JsonNode artefact, Map<String, String> artefactValues) {
         Context context = new Context();
@@ -22,7 +21,7 @@ public class FamilyDailyCauseListConverter implements Converter {
         context.setVariable("publicationDate", Helpers.formatTimeStampToBst(publicationDate,
                                                                             false, false));
         context.setVariable("publicationTime", Helpers.formatTimeStampToBst(publicationDate,
-                true, false));
+                                                                            true, false));
         context.setVariable("contentDate", artefactValues.get("contentDate"));
         context.setVariable("locationName", artefactValues.get("locationName"));
         context.setVariable("provenance", artefactValues.get("provenance"));
@@ -32,6 +31,6 @@ public class FamilyDailyCauseListConverter implements Converter {
         DataManipulation.manipulatedDailyListData(artefact);
 
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
-        return templateEngine.process("familyCauseList.html", context);
+        return templateEngine.process("civilAndFamilyDailyCauseList.html", context);
     }
 }
