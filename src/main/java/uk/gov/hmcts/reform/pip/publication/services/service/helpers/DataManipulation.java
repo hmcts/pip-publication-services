@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.function.Consumer;
 
 public final class DataManipulation {
     private static final int MINUTES_PER_HOUR = 60;

@@ -4,14 +4,6 @@
   },
   "locationDetails": {
     "region": {
-      "regionalJOH": [
-        {
-          "isPresiding": false,
-          "johNameSurname": "Firstname Surname",
-          "johTitle": "Mr",
-          "johKnownAs": "Judge"
-        }
-      ],
       "name": "Regional COP Court"
     },
     "jurisdiction": "Criminal"

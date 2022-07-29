@@ -94,4 +94,69 @@ class DataManipulationTest {
             .as("Unable to get case name")
             .contains("[1 of 2]");
     }
+
+    @Test
+    void testFindAndManipulateJudiciary() {
+        DataManipulation.manipulateCopListData(inputJson);
+
+        assertThat(inputJson.get(COURT_LISTS).get(0)
+                       .get(COURT_HOUSE)
+                       .get(COURT_ROOM).get(0)
+                       .get(SESSION).get(0)
+                       .get("formattedSessionJoh").asText())
+            .as("Unable to get session Joh")
+            .contains("Mrs Firstname Surname");
+
+        assertThat(inputJson.get(COURT_LISTS).get(1)
+                       .get(COURT_HOUSE)
+                       .get(COURT_ROOM).get(0)
+                       .get(SESSION).get(0)
+                       .get("formattedSessionJoh").asText())
+            .as("Unable to get session Joh")
+            .contains("Mrs Firstname Surname, Mrs OtherFirstname OtherSurname");
+    }
+
+    @Test
+    void testformatRegionNameWhenNotPresent() throws IOException {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(
+            Paths.get("src/test/resources/mocks/copDailyCauseListMissingRegion.json")), writer,
+                     Charset.defaultCharset()
+        );
+
+        JsonNode newInputJson = new ObjectMapper().readTree(writer.toString());
+
+        DataManipulation.manipulateCopListData(newInputJson);
+
+        assertThat(newInputJson.get("regionName").asText())
+            .as("Unable to get region name")
+            .isEqualTo("");
+    }
+
+    @Test
+    void testFormatRegionalJoh() {
+        DataManipulation.manipulateCopListData(inputJson);
+
+        assertThat(inputJson.get("regionalJoh").asText())
+            .as("Unable to get regional Joh")
+            .contains("Judge Firstname Surname");
+    }
+
+    @Test
+    void testMissingRegionalJoh() throws IOException {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(
+            Paths.get("src/test/resources/mocks/copDailyCauseListMissingRegionalJoh.json")), writer,
+                     Charset.defaultCharset()
+        );
+
+        JsonNode newInputJson = new ObjectMapper().readTree(writer.toString());
+
+        DataManipulation.manipulateCopListData(newInputJson);
+
+        assertThat(newInputJson.get("regionalJoh").asText())
+            .as("Unable to get regional Joh")
+            .isEqualTo("");
+    }
+
 }
