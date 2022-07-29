@@ -66,6 +66,7 @@ public class PdfCreationService {
     /**
      * Class which takes in JSON input and uses it to inform a given template. Consider this a placeholder until we
      * have specific style guides created.
+     *
      * @param json - json string input representing a publication
      * @return formatted html string representing the input to the pdf reader
      */
@@ -78,6 +79,7 @@ public class PdfCreationService {
 
     /**
      * Class which takes in an HTML file and generates an accessible PDF file (as a byteArray).
+     *
      * @param html - string input representing a well-formed HTML file conforming to WCAG pdf accessibility guidance
      * @return a byte array representing the generated PDF.
      * @throws IOException - if errors appear during the process.

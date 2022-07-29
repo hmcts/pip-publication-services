@@ -83,6 +83,16 @@ class NotifyTest {
         + "  }\n"
         + "}";
 
+    private static final String VALID_SJP_PRESS_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
+        + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"CASE_URN\": [\n"
+        + "      \"123\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
+
     private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = "{\n"
         + "  \"artefactId\": \"55b9e27b-d315-4c7e-9116-0b83939c03eb\",\n"
         + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
@@ -316,16 +326,11 @@ class NotifyTest {
     }
 
     @Test
-    void testInvalidEmailForSubscriptionReturnsBadRequest() throws Exception {
-
-        String invalidEmailJsonBody =
-            "{\"email\":\"abcd\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
-                + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
-
+    void testValidPayloadForSubsSjpPressListEmailReturnsOk() throws Exception {
         mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(invalidEmailJsonBody)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
+                            .content(VALID_SJP_PRESS_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString("Subscription email successfully sent to")));
     }
 
     @Test
@@ -342,6 +347,19 @@ class NotifyTest {
                             .content(VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
             .andExpect(content().string(containsString("Subscription email successfully sent to")));
+    }
+
+    @Test
+    void testInvalidEmailForSubscriptionReturnsBadRequest() throws Exception {
+
+        String invalidEmailJsonBody =
+            "{\"email\":\"abcd\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
+                + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(invalidEmailJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
