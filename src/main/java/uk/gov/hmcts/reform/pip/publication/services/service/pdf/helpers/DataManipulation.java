@@ -123,7 +123,7 @@ public final class DataManipulation {
                     case "APPLICANT_PETITIONER_REPRESENTATIVE": {
                         final String applicantPetitionerDetails = createIndividualDetails(party);
                         if (!applicantPetitionerDetails.isEmpty()) {
-                            applicant.append("LEGALADVISOR: ");
+                            applicant.append("Legal Advisor: ");
                             applicant.append(applicantPetitionerDetails + ", ");
                         }
                         break;
@@ -135,7 +135,7 @@ public final class DataManipulation {
                     case "RESPONDENT_REPRESENTATIVE": {
                         final String respondentDetails = createIndividualDetails(party);
                         if (!respondentDetails.isEmpty()) {
-                            respondent.append("LEGALADVISOR: ");
+                            respondent.append("Legal Advisor: ");
                             respondent.append(respondentDetails + ", ");
                         }
                         break;
