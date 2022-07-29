@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DataManipulation;
 
 import java.io.IOException;
 import java.io.StringWriter;
