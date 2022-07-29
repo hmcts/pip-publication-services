@@ -69,16 +69,12 @@ public final class DataManipulation {
     public static void findAndConcatenateHearingPlatform(JsonNode sitting, JsonNode session) {
         StringBuilder formattedHearingPlatform = new StringBuilder();
 
-        Consumer<JsonNode> consumer = (channel) -> {
-            formattedHearingPlatform
-                .append(channel.asText())
-                .append(", ");
-        };
-
         if (sitting.has("channel")) {
-            sitting.get("channel").forEach(consumer);
+            Helpers.loopAndFormatString(sitting, "channel",
+                                        formattedHearingPlatform, ", ");
         } else if (session.has("sessionChannel")) {
-            session.get("sessionChannel").forEach(consumer);
+            Helpers.loopAndFormatString(session, "sessionChannel",
+                                        formattedHearingPlatform, ", ");
         }
 
         ((ObjectNode)sitting).put("caseHearingChannel",
