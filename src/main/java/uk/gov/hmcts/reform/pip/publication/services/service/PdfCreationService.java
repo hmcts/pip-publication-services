@@ -43,7 +43,6 @@ public class PdfCreationService {
     public String jsonToHtml(UUID inputPayloadUuid) throws IOException {
         String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
-        String htmlFile;
         Map<String, String> metadataMap =
             Map.of("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
                    "provenance", artefact.getProvenance(), "location", artefact.getLocationId());
@@ -51,12 +50,9 @@ public class PdfCreationService {
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
 
         Converter converter = artefact.getListType().getConverter();
-        if (converter != null) {
-            htmlFile = converter.convert(topLevelNode, metadataMap);
-        } else {
-            htmlFile = parseThymeleafTemplate(rawJson);
-        }
-        return htmlFile;
+        return (converter == null)
+            ? parseThymeleafTemplate(rawJson)
+            : converter.convert(topLevelNode, metadataMap);
     }
 
     /**
