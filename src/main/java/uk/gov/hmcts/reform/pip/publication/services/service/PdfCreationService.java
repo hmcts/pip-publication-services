@@ -52,7 +52,7 @@ public class PdfCreationService {
         Converter converter = artefact.getListType().getConverter();
         return (converter == null)
             ? parseThymeleafTemplate(rawJson)
-            : converter.convert(topLevelNode, metadata);
+            : converter.convert(topLevelNode, metadataMap);
     }
 
     /**

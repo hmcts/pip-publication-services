@@ -7,7 +7,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.template.SjpPublicList;
-import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DateTimeHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class SjpPublicListConverter implements Converter {
     @Override
     public String convert(JsonNode artefact, Map<String, String> metadata) {
         Context context = new Context();
-        String publicationDate = DateTimeHelper.formatZonedDateTime(
+        String publicationDate = Helpers.formatTimestampToBst(
             artefact.get("document").get("publicationDate").textValue()
         );
         context.setVariable("publicationDate", publicationDate);
@@ -45,7 +45,6 @@ public class SjpPublicListConverter implements Converter {
         return templateEngine.process("sjpPublicList.html", context);
     }
 
-<<<<<<< HEAD
     private List<SjpPublicList> constructCases(JsonNode sittingsNode) {
         List<SjpPublicList> sjpPublicLists = new ArrayList<>();
         sittingsNode.forEach(sitting -> {
@@ -88,6 +87,4 @@ public class SjpPublicListConverter implements Converter {
             + " "
             + individual.get("individualSurname").textValue();
     }
-=======
->>>>>>> origin/master
 }
