@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    @page {
+      margin: 30px 20px;
+
+      @top-center {
+        font-family: 'GDS Transport';
+        font-size: 16px;
+        color: blue;
+        content: "This is PDF/UA page " counter(page) " of " counter(pages) ".";
+      }
+    }
+
+    @page landscapePage {
+      size: A4 landscape;
+
+    }
+
+    .landscape {
+      page: landscapePage;
+    }
+    body {
+      font-family: 'GDS Transport';
+      color: darkblue;
+      padding: 2px;
+      font-size: 105%;
+    }
+    h1, h4 {
+      font-family: "GDS Transport";
+      color: black;
+    }
+    .govuk-heading-l {
+      color: #0b0c0c;
+      font-family: "GDS Transport";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-weight: 700;
+      font-size: 24px;
+      font-size: 1.5rem;
+      line-height: 1.04167;
+      display: block;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    .govuk-body {
+      color: #0b0c0c;
+      font-family: "GDS Transport";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-weight: 400;
+      font-size: 16px;
+      font-size: 1rem;
+      line-height: 1.25;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    .govuk-\!-font-weight-bold {
+      font-weight: 700 !important;
+    }
+    .govuk-details {
+      font-family: "GDS Transport", arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-weight: 400;
+      font-size: 16px;
+      font-size: 1rem;
+      line-height: 1.25;
+      color: #0b0c0c;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .govuk-details__summary {
+      display: inline-block;
+      position: relative;
+      margin-bottom: 5px;
+      padding-left: 25px;
+      color: #1d70b8;
+      cursor: pointer;
+    }
+    .govuk-details__summary {
+      display: inline-block;
+      position: relative;
+      margin-bottom: 5px;
+      padding-left: 25px;
+      color: #1d70b8;
+      cursor: pointer;
+    }
+    .govuk-details__text {
+      padding-top: 15px;
+      padding-bottom: 15px;
+      padding-left: 20px;
+      border-left: 5px solid #b1b4b6;
+    }
+    .site-header {
+      position: relative;
+      top: 2em;
+    }
+    .site-address {
+      margin-block-end: 0.5em;
+    }
+    .govuk-accordion__section-heading {
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      font-family: "GDS Transport", arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-weight: 700;
+      font-size: 18px;
+      font-size: 1.125rem;
+      line-height: 1.11111;
+      color: #0b0c0c;
+      display: block;
+    }
+    .govuk-accordion {
+      page-break-after: always;
+    }
+    .govuk-table {
+      font-family: "GDS Transport", arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-weight: 400;
+      font-size: 16px;
+      font-size: 1rem;
+      line-height: 1.25;
+      color: #0b0c0c;
+      width: 100%;
+      margin-bottom: 20px;
+      border-spacing: 0;
+      border-collapse: collapse;
+    }
+    .no-wrap {
+      white-space: nowrap;
+    }
+    .govuk-table__header, .govuk-table__cell {
+      padding: 10px 20px 10px 0;
+      border-bottom: 1px solid #b1b4b6;
+      text-align: left;
+      vertical-align: top;
+    }
+    .govuk-table__header {
+      font-weight: 700;
+    }
+    pre p {
+      font-family: 'GDS Transport';
+      color: darkblue;
+      background-color: #f1f1f1;
+      padding: 2px;
+      font-size: 105%;
+    }
+  </style>
+  <meta charset="UTF-8"/>
+  <meta name="subject" content="Accessible PDF template"/>
+  <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
+  <meta name="description" content="Document description - vital for compliance."/>
+  <title>COP Daily Cause List</title>
+</head>
+<body>
+<div class = "header">
+  <img src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png" alt="HMCTS Logo"/>
+  <h1>Court and Tribunal Hearings Service</h1>
+  <h2 id="page-heading" class="govuk-heading-l" th:text="${'In the court of Protection: ' + artefact.get('regionName').asText()}" />
+  <h2 class="govuk-heading-l" th:text="${'Regional Lead Judge: ' + artefact.get('regionalJoh').asText()}" />
+  <h2 class="govuk-heading-l" th:text="${'Sitting at ' + locationName}" />
+  <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1" th:text="${'List for ' + contentDate}" />
+  <p class="govuk-body" th:text="${'Last Updated ' + publicationDate + ' at ' + publicationTime}" />
+  <details class="govuk-details" data-module="govuk-details" open="">
+    <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">
+          Important information
+        </span>
+    </summary>
+    <div class="govuk-details__text">
+      <p>Open justice is a fundamental principle in our courts and tribunals system, and will continue to be as we increase the use of audio and video technology.</p>
+      <p>Dispute Resolution Hearings are not attended hearings for the purpose of Practice Direction 4C. Requests to observe any other hearing should be made to:</p>
+      <p th:text="${artefact.get('venue').get('venueContact').get('venueEmail').asText() + ' ' +  artefact.get('venue').get('venueContact').get('venueTelephone').asText()}" />
+      <p>Judges will have regard to the principles of open justice when considering the use of telephone and video technology. Observers may be excluded where necessary to secure the proper administration of justice</p>
+    </div>
+  </details>
+
+  <div aria-label="Court Lists" class="landscape">
+    <div class="site-header" tabindex="0" aria-label="Court Details" th:each="courtList : ${artefact.get('courtLists')}">
+      <h1 class="govuk-heading-l site-address" tabindex="0" th:text="${courtList.get('courtHouse').get('courtHouseName').asText()}" />
+      <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default" th:each="courtRoom : ${courtList.get('courtHouse').get('courtRoom')}">
+        <div th:each="session : ${courtRoom.get('session')}">
+          <div class="govuk-accordion__section-header">
+            <h2 class="govuk-accordion__section-heading" th:text="${'Before Hon ' + session.get('formattedSessionJoh').asText()}" />
+          </div>
+          <div class="govuk-accordion__section-content">
+            <div class="parent-box overflow-table">
+              <table class="govuk-table">
+                <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header no-wrap">Start Time</th>
+                  <th scope="col" class="govuk-table__header no-wrap">Case ref</th>
+                  <th scope="col" class="govuk-table__header no-wrap">Case Details</th>
+                  <th scope="col" class="govuk-table__header no-wrap">Hearing type</th>
+                  <th scope="col" class="govuk-table__header no-wrap">Time Estimate</th>
+                  <th scope="col" class="govuk-table__header no-wrap">Hearing Channel</th>
+                </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                <span th:each="sitting : ${session.get('sittings')}">
+                    <span th:each="hearing : ${sitting.get('hearing')}">
+                      <tr class="govuk-table__row" th:each="case : ${hearing.get('case')}">
+                        <td class="govuk-table__cell no-wrap" th:text="${sitting.get('time').asText()}" />
+                        <td class="govuk-table__cell no-wrap" th:text="${case.get('caseNumber').asText()}" />
+                        <td class="govuk-table__cell" th:text="${case.get('caseSuppressionName').asText()}" />
+                        <td class="govuk-table__cell" th:text="${hearing.get('hearingType').asText()}" />
+                        <td class="govuk-table__cell no-wrap" th:text="${sitting.get('formattedDuration').asText() + ' ' + case.get('caseIndicator').asText()}" />
+                        <td class="govuk-table__cell" th:text="${sitting.get('caseHearingChannel').asText()}" />
+                      </tr>
+                    </span>
+                  </span>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="govuk-body govuk-!-font-size-14" th:text="${'Data Source: ' + provenance}" />
+</div>
+</body>
+</html>

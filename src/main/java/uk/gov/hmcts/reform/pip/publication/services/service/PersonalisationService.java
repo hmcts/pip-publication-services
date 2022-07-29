@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.ArrayList;
@@ -32,9 +33,11 @@ public class PersonalisationService {
     @Autowired
     DataManagementService dataManagementService;
 
-
     @Autowired
     PdfCreationService pdfCreationService;
+
+    @Autowired
+    ArtefactSummaryService artefactSummaryService;
 
     @Autowired
     NotifyConfigProperties notifyConfigProperties;
@@ -93,8 +96,6 @@ public class PersonalisationService {
      * @param artefact The artefact to send in the subscription.
      * @return The personalisation map for the raw data subscription email.
      */
-    //TODO: This method is not used and will be updated once JSON file subscription tickets have been played, however
-    //TODO: provided as a placeholder for now
     public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body,
                                                                        Artefact artefact) {
 
@@ -114,10 +115,18 @@ public class PersonalisationService {
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
             personalisation.put("list_type", artefact.getListType());
-            byte[] artefactPdf = pdfCreationService.jsonToPdf(body.getArtefactId());
+            String html = pdfCreationService.jsonToHtml(artefact.getArtefactId());
+            byte[] artefactPdf = pdfCreationService.generatePdfFromHtml(html);
             personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
 
-            personalisation.put("testing_of_array", "<Placeholder>");
+            String summary =
+                artefactSummaryService.artefactSummary(
+                    dataManagementService
+                        .getArtefactJsonBlob(artefact.getArtefactId()),
+                    artefact.getListType()
+                );
+
+            personalisation.put("testing_of_array", summary);
 
             log.info("Personalisation map created");
             return personalisation;

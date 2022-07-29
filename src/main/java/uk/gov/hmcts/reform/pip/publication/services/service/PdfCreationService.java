@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -8,10 +9,15 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
+import uk.gov.hmcts.reform.pip.publication.services.service.helpers.Helpers;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -34,13 +40,24 @@ public class PdfCreationService {
      * @return byteArray representing the generated PDF.
      * @throws IOException - uses file streams so needs this.
      */
-    public byte[] jsonToPdf(UUID inputPayloadUuid) throws IOException {
+    public String jsonToHtml(UUID inputPayloadUuid) throws IOException {
         String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
-        ObjectMapper mapper = new ObjectMapper();
-        Object jsonObj = mapper.readValue(rawJson, Object.class);
-        String prettyJsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj);
-        String htmlFile = parseThymeleafTemplate(prettyJsonString);
-        return generatePdfFromHtml(htmlFile);
+        Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
+        Location location = dataManagementService.getLocation(artefact.getLocationId());
+        String htmlFile;
+        Map<String, String> metadataMap =
+            Map.of("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
+                   "provenance", artefact.getProvenance(), "locationName", location.getName());
+
+        JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
+
+        Converter converter = artefact.getListType().getConverter();
+        if (converter != null) {
+            htmlFile = converter.convert(topLevelNode, metadataMap);
+        } else {
+            htmlFile = parseThymeleafTemplate(rawJson);
+        }
+        return htmlFile;
     }
 
     /**
