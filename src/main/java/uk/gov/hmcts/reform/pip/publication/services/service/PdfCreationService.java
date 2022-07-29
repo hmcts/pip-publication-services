@@ -11,7 +11,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
-import uk.gov.hmcts.reform.pip.publication.services.service.helpers.Helpers;
+import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DateHelper;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
 
 import java.io.ByteArrayOutputStream;
@@ -46,7 +46,7 @@ public class PdfCreationService {
         Location location = dataManagementService.getLocation(artefact.getLocationId());
         String htmlFile;
         Map<String, String> metadataMap =
-            Map.of("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
+            Map.of("contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
                    "provenance", artefact.getProvenance(), "locationName", location.getName());
 
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);

@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class CopCauseListConverterTest {
+class CopCauseListConverterTest {
 
     @Autowired
     CopDailyCauseListConverter copDailyCauseListConverter;

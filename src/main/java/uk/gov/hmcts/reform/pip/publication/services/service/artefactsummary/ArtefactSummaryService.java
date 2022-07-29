@@ -28,11 +28,9 @@ public class ArtefactSummaryService {
      * @throws JsonProcessingException - jackson prereq.
      */
     public String artefactSummary(String payload, ListType listType) throws JsonProcessingException {
-        switch (listType) {
-            case COP_DAILY_CAUSE_LIST:
-                return copDailyCauseList.createCopDailyCauseListSummary(payload);
-            default:
-                return "";
+        if (listType == ListType.COP_DAILY_CAUSE_LIST) {
+            return copDailyCauseList.createCopDailyCauseListSummary(payload);
         }
+        return "";
     }
 }

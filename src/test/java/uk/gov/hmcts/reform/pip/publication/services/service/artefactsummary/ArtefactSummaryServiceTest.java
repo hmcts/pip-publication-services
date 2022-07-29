@@ -18,7 +18,6 @@ class ArtefactSummaryServiceTest {
     @Autowired
     ArtefactSummaryService artefactSummaryService;
 
-    private static final String BODY_WRONG = "Body is not as expected.";
     private static final String MISSING_DATA_RETURN = "Data expected in the returned summary data did not arrive.";
 
     private String readMockJsonFile(String filePath)  throws IOException {

@@ -6,7 +6,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DataManipulation;
-import uk.gov.hmcts.reform.pip.publication.services.service.helpers.Helpers;
+import uk.gov.hmcts.reform.pip.publication.services.service.helpers.DateHelper;
 
 import java.util.Map;
 
@@ -18,10 +18,10 @@ public class CopDailyCauseListConverter implements Converter {
         Context context = new Context();
         String publicationDate = artefact.get("document").get("publicationDate").asText();
 
-        context.setVariable("publicationDate", Helpers.formatTimeStampToBst(publicationDate,
-                                                                            false, false));
-        context.setVariable("publicationTime", Helpers.formatTimeStampToBst(publicationDate,
-                                                                            true, false));
+        context.setVariable("publicationDate", DateHelper.formatTimeStampToBst(publicationDate,
+                                                                               false, false));
+        context.setVariable("publicationTime", DateHelper.formatTimeStampToBst(publicationDate,
+                                                                                  true, false));
         context.setVariable("contentDate", metadata.get("contentDate"));
         context.setVariable("locationName", metadata.get("locationName"));
         context.setVariable("locationDetails", artefact.get("locationDetails"));

@@ -14,7 +14,7 @@ public final class DataManipulation {
     }
 
     public static void manipulateCaseInformation(JsonNode hearingCase) {
-        if (!Helpers.findAndReturnNodeText(hearingCase, "caseSequenceIndicator").isEmpty()) {
+        if (!GeneralHelper.findAndReturnNodeText(hearingCase, "caseSequenceIndicator").isEmpty()) {
             ((ObjectNode)hearingCase).put("caseIndicator",
                                           "[" + hearingCase.get("caseSequenceIndicator").asText() + "]");
         }
@@ -43,19 +43,19 @@ public final class DataManipulation {
     }
 
     public static void calculateDuration(JsonNode sitting) {
-        ZonedDateTime sittingStart = Helpers.convertStringToUtc(sitting.get("sittingStart").asText());
-        ZonedDateTime sittingEnd = Helpers.convertStringToUtc(sitting.get("sittingEnd").asText());
+        ZonedDateTime sittingStart = DateHelper.convertStringToUtc(sitting.get("sittingStart").asText());
+        ZonedDateTime sittingEnd = DateHelper.convertStringToUtc(sitting.get("sittingEnd").asText());
 
         double durationAsHours = 0;
-        double durationAsMinutes = Helpers.convertTimeToMinutes(sittingStart, sittingEnd);
+        double durationAsMinutes = DateHelper.convertTimeToMinutes(sittingStart, sittingEnd);
 
         if (durationAsMinutes >= MINUTES_PER_HOUR) {
             durationAsHours = Math.floor(durationAsMinutes / MINUTES_PER_HOUR);
             durationAsMinutes = durationAsMinutes - (durationAsHours * MINUTES_PER_HOUR);
         }
 
-        String formattedDuration = Helpers.formatDuration((int) durationAsHours,
-                                                          (int) durationAsMinutes);
+        String formattedDuration = DateHelper.formatDuration((int) durationAsHours,
+                                                                (int) durationAsMinutes);
 
         ((ObjectNode)sitting).put("formattedDuration", formattedDuration);
 
@@ -69,15 +69,15 @@ public final class DataManipulation {
         StringBuilder formattedHearingPlatform = new StringBuilder();
 
         if (sitting.has("channel")) {
-            Helpers.loopAndFormatString(sitting, "channel",
-                                        formattedHearingPlatform, ", ");
+            GeneralHelper.loopAndFormatString(sitting, "channel",
+                                              formattedHearingPlatform, ", ");
         } else if (session.has("sessionChannel")) {
-            Helpers.loopAndFormatString(session, "sessionChannel",
-                                        formattedHearingPlatform, ", ");
+            GeneralHelper.loopAndFormatString(session, "sessionChannel",
+                                              formattedHearingPlatform, ", ");
         }
 
-        ((ObjectNode)sitting).put("caseHearingChannel",
-                                  Helpers.trimAnyCharacterFromStringEnd(formattedHearingPlatform.toString().trim()));
+        ((ObjectNode)sitting).put("caseHearingChannel", GeneralHelper.trimAnyCharacterFromStringEnd(
+            formattedHearingPlatform.toString().trim()));
     }
 
     public static String findAndManipulateJudiciary(JsonNode session) {
@@ -89,16 +89,16 @@ public final class DataManipulation {
                     formattedJudiciary.append(", ");
                 }
 
-                formattedJudiciary.append(Helpers.findAndReturnNodeText(judiciary, "johTitle"));
-                formattedJudiciary.append(" ");
-                formattedJudiciary.append(Helpers.findAndReturnNodeText(judiciary, "johNameSurname"));
+                formattedJudiciary.append(GeneralHelper.findAndReturnNodeText(judiciary, "johTitle"));
+                formattedJudiciary.append(' ');
+                formattedJudiciary.append(GeneralHelper.findAndReturnNodeText(judiciary, "johNameSurname"));
             });
 
         } catch (Exception ignored) {
             //No catch required, this is a valid scenario and makes the code cleaner than many if statements
         }
 
-        return Helpers.trimAnyCharacterFromStringEnd(formattedJudiciary.toString());
+        return GeneralHelper.trimAnyCharacterFromStringEnd(formattedJudiciary.toString());
     }
 
     public static void formatRegionName(JsonNode artefact) {
@@ -118,9 +118,9 @@ public final class DataManipulation {
                     formattedJoh.append(", ");
                 }
 
-                formattedJoh.append(Helpers.findAndReturnNodeText(joh, "johKnownAs"));
-                formattedJoh.append(" ");
-                formattedJoh.append(Helpers.findAndReturnNodeText(joh, "johNameSurname"));
+                formattedJoh.append(GeneralHelper.findAndReturnNodeText(joh, "johKnownAs"));
+                formattedJoh.append(' ');
+                formattedJoh.append(GeneralHelper.findAndReturnNodeText(joh, "johNameSurname"));
             });
 
             ((ObjectNode) artefact).put("regionalJoh", formattedJoh.toString());
