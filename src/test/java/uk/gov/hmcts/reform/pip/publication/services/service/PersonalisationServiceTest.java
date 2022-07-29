@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -73,9 +75,13 @@ class PersonalisationServiceTest {
     @MockBean
     PdfCreationService pdfCreationService;
 
+    @MockBean
+    ArtefactSummaryService artefactSummaryService;
+
     private static Location location;
     private final UUID artefactId = UUID.randomUUID();
 
+    private static final String HELLO = "hello";
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
 
     @BeforeAll
@@ -165,9 +171,11 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
 
-        byte[] testByteArray = "hello".getBytes();
+        byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(pdfCreationService.jsonToPdf(artefactId)).thenReturn(testByteArray);
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(any())).thenReturn(testByteArray);
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
@@ -190,7 +198,7 @@ class PersonalisationServiceTest {
         assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get("link_to_file")).get("file"),
                      "Link to file does not match expected value"
         );
-        assertEquals("<Placeholder>", personalisation.get("testing_of_array"),
+        assertEquals("hi", personalisation.get("testing_of_array"),
                      "testing_of_array does not match expected value"
         );
     }
@@ -212,7 +220,8 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         byte[] overSizeArray = new byte[2_100_000];
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(pdfCreationService.jsonToPdf(artefactId)).thenReturn(overSizeArray);
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(overSizeArray);
 
         assertThrows(NotifyException.class, () ->
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact), "desired "
@@ -294,7 +303,9 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
-        when(pdfCreationService.jsonToPdf(subscriptionEmail.getArtefactId())).thenReturn("hello".getBytes());
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
 
@@ -321,7 +332,10 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(pdfCreationService.jsonToPdf(uuid)).thenReturn("hello".getBytes());
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);

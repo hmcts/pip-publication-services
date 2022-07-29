@@ -21,7 +21,7 @@ public enum ListType {
     MAGS_PUBLIC_LIST,
     MAGS_STANDARD_LIST,
     CIVIL_DAILY_CAUSE_LIST,
-    FAMILY_DAILY_CAUSE_LIST(new CopDailyCauseListConverter()),
+    FAMILY_DAILY_CAUSE_LIST,
     CIVIL_AND_FAMILY_DAILY_CAUSE_LIST,
     COP_DAILY_CAUSE_LIST(new CopDailyCauseListConverter()),
     SSCS_DAILY_LIST;

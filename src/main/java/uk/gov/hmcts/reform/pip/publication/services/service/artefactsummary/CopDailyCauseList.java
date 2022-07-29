@@ -41,7 +41,7 @@ public class CopDailyCauseList {
                             hearing.get("case").forEach(hearingCase -> {
                                 output.append('\n').append('\n')
                                     .append("Name of Party(ies) - ")
-                                    .append(Helpers.findAndReturnNodeText(hearingCase, "caseSupressionName"))
+                                    .append(Helpers.findAndReturnNodeText(hearingCase, "caseSuppressionName"))
                                     .append('\n')
                                     .append("Case ID - ")
                                     .append(Helpers.findAndReturnNodeText(hearingCase, "caseNumber"))
@@ -54,6 +54,8 @@ public class CopDailyCauseList {
                                     .append('\n')
                                     .append("Duration - ")
                                     .append(Helpers.findAndReturnNodeText(sitting, "formattedDuration"))
+                                    .append(" ")
+                                    .append(Helpers.findAndReturnNodeText(hearingCase, "caseIndicator"))
                                     .append('\n')
                                     .append("Before Hon - ")
                                     .append(Helpers.findAndReturnNodeText(session, "formattedSessionJoh"));
