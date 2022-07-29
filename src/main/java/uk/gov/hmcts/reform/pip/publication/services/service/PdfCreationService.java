@@ -49,9 +49,8 @@ public class PdfCreationService {
         String htmlFile;
         Map<String, String> metadataMap =
             Map.of("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
-                   "locationName", location.getName(),
                    "provenance", artefact.getProvenance(),
-                   "location", artefact.getLocationId());
+                   "locationName", location.getName());
 
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
 
