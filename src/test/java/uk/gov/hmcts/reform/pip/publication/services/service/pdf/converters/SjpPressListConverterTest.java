@@ -8,6 +8,9 @@ import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.Application;
+import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientConfigurationTest;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -19,7 +22,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@ActiveProfiles("test")
+@SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
 class SjpPressListConverterTest {
 
     @Autowired
