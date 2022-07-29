@@ -52,7 +52,7 @@ public class SjpPressListConverter implements Converter {
             count += 1;
         }
 
-        String publishedDate = Helpers.formatTimestampToBst(
+        String publishedDate = Helpers.formatTimestampToBstForSjp(
             jsonBody.get("document").get("publicationDate").asText()
         );
         context.setVariable("contentDate",
