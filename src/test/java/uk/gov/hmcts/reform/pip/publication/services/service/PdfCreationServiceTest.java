@@ -76,7 +76,6 @@ class PdfCreationServiceTest {
         artefact.setLocationId("1");
         artefact.setProvenance("france");
         artefact.setListType(ListType.MAGS_STANDARD_LIST);
-
         Location location = new Location();
         location.setName("Test Location");
 

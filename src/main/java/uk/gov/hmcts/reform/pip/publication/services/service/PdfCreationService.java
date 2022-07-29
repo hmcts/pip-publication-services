@@ -36,6 +36,7 @@ public class PdfCreationService {
 
     /**
      * Wrapper class for the entire json to pdf process.
+     *
      * @param inputPayloadUuid UUID representing a particular artefact ID.
      * @return byteArray representing the generated PDF.
      * @throws IOException - uses file streams so needs this.
@@ -47,7 +48,9 @@ public class PdfCreationService {
         String htmlFile;
         Map<String, String> metadataMap =
             Map.of("contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
-                   "provenance", artefact.getProvenance(), "locationName", location.getName());
+                   "provenance", artefact.getProvenance(),
+                   "location", artefact.getLocationId(),
+                   "locationName", location.getName());
 
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
 
@@ -63,6 +66,7 @@ public class PdfCreationService {
     /**
      * Class which takes in JSON input and uses it to inform a given template. Consider this a placeholder until we
      * have specific style guides created.
+     *
      * @param json - json string input representing a publication
      * @return formatted html string representing the input to the pdf reader
      */
@@ -75,6 +79,7 @@ public class PdfCreationService {
 
     /**
      * Class which takes in an HTML file and generates an accessible PDF file (as a byteArray).
+     *
      * @param html - string input representing a well-formed HTML file conforming to WCAG pdf accessibility guidance
      * @return a byte array representing the generated PDF.
      * @throws IOException - if errors appear during the process.

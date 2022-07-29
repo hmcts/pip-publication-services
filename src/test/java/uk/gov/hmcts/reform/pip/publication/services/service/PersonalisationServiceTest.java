@@ -306,6 +306,7 @@ class PersonalisationServiceTest {
         when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
+
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
 
