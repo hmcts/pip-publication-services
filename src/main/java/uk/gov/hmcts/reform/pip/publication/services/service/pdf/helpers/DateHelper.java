@@ -28,14 +28,13 @@ public final class DateHelper {
         if (isTimeOnly) {
             if (zonedDateTime.getMinute() == 0) {
                 return "ha";
-            } else {
-                return "h:mma";
             }
+            return "h:mma";
         } else if (isBothDateAndTime) {
             return "dd MMMM yyyy HH:mm:ss";
-        } else {
-            return "dd MMMM yyyy";
         }
+        return "dd MMMM yyyy";
+
     }
 
     public static String formatLocalDateTimeToBst(LocalDateTime date) {
@@ -65,17 +64,18 @@ public final class DateHelper {
             return formatDurationTime(hours, "hour");
         } else if (hours == 0 && minutes > 0) {
             return formatDurationTime(minutes, "min");
-        } else {
-            return "";
         }
+
+        return "";
+
     }
 
     private static String formatDurationTime(int duration, String format) {
         if (duration > ONE) {
             return duration + " " + format + "s";
-        } else {
-            return duration + " " + format;
         }
+
+        return duration + " " + format;
     }
 
     public static ZonedDateTime convertStringToUtc(String timestamp) {
