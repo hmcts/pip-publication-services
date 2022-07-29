@@ -94,14 +94,17 @@ public final class DataManipulation {
                 formattedJudiciary.append(Helpers.findAndReturnNodeText(judiciary, "johNameSurname"));
             });
 
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+            //No catch required, this is a valid scenario and makes the code cleaner than many if statements
+        }
 
         return Helpers.trimAnyCharacterFromStringEnd(formattedJudiciary.toString());
     }
 
     public static void formatRegionName(JsonNode artefact) {
         try {
-            ((ObjectNode) artefact).put("regionName", artefact.get("locationDetails").get("region").get("name").asText());
+            ((ObjectNode) artefact).put("regionName",
+                                        artefact.get("locationDetails").get("region").get("name").asText());
         } catch (Exception e) {
             ((ObjectNode) artefact).put("regionName", "");
         }
