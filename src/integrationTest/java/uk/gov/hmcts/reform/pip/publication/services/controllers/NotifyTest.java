@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
@@ -37,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
+@ActiveProfiles("functional")
 class NotifyTest {
 
     private static final String VALID_WELCOME_REQUEST_BODY_EXISTING =
