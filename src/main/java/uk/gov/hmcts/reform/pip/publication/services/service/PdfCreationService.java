@@ -10,8 +10,9 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DateHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,10 +44,12 @@ public class PdfCreationService {
     public String jsonToHtml(UUID inputPayloadUuid) throws IOException {
         String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
+        Location location = dataManagementService.getLocation(artefact.getLocationId());
         String htmlFile;
         Map<String, String> metadataMap =
-            Map.of("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
-                   "provenance", artefact.getProvenance(), "location", artefact.getLocationId());
+            Map.of("contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
+                   "provenance", artefact.getProvenance(),
+                   "locationName", location.getName());
 
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
 
