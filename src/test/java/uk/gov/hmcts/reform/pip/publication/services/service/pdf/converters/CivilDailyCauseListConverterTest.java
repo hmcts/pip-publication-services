@@ -78,6 +78,7 @@ class CivilDailyCauseListConverterTest {
 
     public void assertCourtHouseInfo(Elements elements) {
         assertThat(elements)
+            .as("Incorrect court house info")
             .hasSize(3)
             .extracting(Element::text)
             .containsExactly(
@@ -89,6 +90,7 @@ class CivilDailyCauseListConverterTest {
 
     public void assertHearingTables(Document document) {
         assertThat(document.getElementsByClass("govuk-accordion__section-heading"))
+            .as("Incorrect table titles")
             .hasSize(NUMBER_OF_TABLES)
             .extracting(Element::text)
             .containsExactly(
@@ -98,6 +100,7 @@ class CivilDailyCauseListConverterTest {
 
         Elements tableElements = document.getElementsByClass("govuk-table");
         assertThat(tableElements)
+            .as("Incorrect number of tables")
             .hasSize(NUMBER_OF_TABLES);
 
         Element firstTableElement = tableElements.get(0);
@@ -106,6 +109,7 @@ class CivilDailyCauseListConverterTest {
 
         // Assert the table columns are expected
         assertThat(getTableHeaders(firstTableElement))
+            .as("Incorrect table headers")
             .hasSize(6)
             .extracting(Element::text)
             .containsExactly(
@@ -119,16 +123,20 @@ class CivilDailyCauseListConverterTest {
 
         // Assert number of rows for each table
         assertThat(getTableBodyRows(firstTableElement))
+            .as("Incorrect table rows for the first table")
             .hasSize(5);
         assertThat(getTableBodyRows(secondTableElement))
+            .as("Incorrect table rows for the second table")
             .hasSize(5);
         assertThat(getTableBodyRows(thirdTableElement))
+            .as("Incorrect table rows for the third table")
             .hasSize(2);
     }
 
     private void assertDataSource(Document document) {
         Elements elements = document.getElementsByTag("p");
         assertThat(elements.get(elements.size() - 1))
+            .as("Incorrect data source")
             .extracting(Element::text)
             .isEqualTo("Data Source: " + MANUAL_UPLOAD);
     }
