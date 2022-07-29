@@ -114,7 +114,8 @@ public class PersonalisationService {
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
             personalisation.put("list_type", artefact.getListType());
-            byte[] artefactPdf = pdfCreationService.jsonToPdf(body.getArtefactId());
+            String html = pdfCreationService.jsonToHtml(artefact.getArtefactId());
+            byte[] artefactPdf = pdfCreationService.generatePdfFromHtml(html);
             personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
 
             personalisation.put("testing_of_array", "<Placeholder>");
