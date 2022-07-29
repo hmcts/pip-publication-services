@@ -49,8 +49,7 @@ class SjpPressListConverterTest {
                        .select(".mainHeaderText > h1:nth-child(1)").text())
             .as("incorrect header text").isEqualTo("Single Justice Procedure Press List");
 
-        assertThat(document.select("div.pageSeparatedCase:nth-child(1) > table:nth-child(3) > tbody:nth-child(1) > "
-                                       + "tr:nth-child(6) > td:nth-child(2)").text())
+        assertThat(document.select("div.pageSeparatedCase:nth-child(2) > table:nth-child(3) > tbody:nth-child(1) > tr:nth-child(7) > td:nth-child(2)").text())
             .as("incorrect value found").isEqualTo("Hampshire Police");
     }
 }
