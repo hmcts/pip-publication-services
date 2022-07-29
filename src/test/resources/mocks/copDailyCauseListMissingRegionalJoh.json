@@ -1,0 +1,202 @@
+{
+  "document": {
+    "publicationDate": "2022-02-14T10:30:52.123Z"
+  },
+  "locationDetails": {
+    "region": {
+      "name": "Regional COP Court"
+    },
+    "jurisdiction": "Criminal"
+  },
+  "venue": {
+    "venueName": "Regional Venue South",
+    "venueContact": {
+      "venueEmail": "a@b.com",
+      "venueTelephone": "+44 1234 1234 1234"
+    },
+    "venueAddress": {
+      "postCode": "AA1 AA1",
+      "county": "Lancashire",
+      "town": "Town",
+      "line": ["Address Line 1", "Address Line 2"]
+    }
+  },
+  "courtLists": [
+    {
+      "courtHouse": {
+        "courtHouseName": "Regional Venue North",
+        "courtHouseContact": {
+          "venueEmail": "a@c.com",
+          "venueTelephone": "+44 1234 1234 1234"
+        },
+        "courtRoom": [
+          {
+            "session": [
+              {
+                "sittings": [
+                  {
+                    "sittingStart": "2022-02-13T14:30:52.123Z",
+                    "sittingEnd": "2022-02-13T15:30:52.123Z",
+                    "hearing": [
+                      {
+                        "case": [
+                          {
+                            "caseNumber": "12341234",
+                            "caseSuppressionName": "ThisIsACaseSupressionName",
+                            "caseSequenceIndicator": "1 of 2"
+                          }
+                        ],
+                        "hearingType": "Criminal"
+                      }
+                    ],
+                    "channel": [
+                      "Teams",
+                      "In-Person"
+                    ]
+                  }
+                ],
+                "judiciary": [
+                  {
+                    "johTitle": "Mrs",
+                    "johNameSurname": "Firstname Surname",
+                    "johKnownAs": "Crown Judge",
+                    "isPresiding": true
+                  }
+                ]
+              },
+              {
+                "sittings": [
+                  {
+                    "sittingStart": "2022-02-13T14:30:52.123Z",
+                    "sittingEnd": "2022-02-13T15:30:52.123Z",
+                    "hearing": [
+                      {
+                        "case": [
+                          {
+                            "caseNumber": "12341234",
+                            "caseSuppressionName": "ThisIsACaseSupressionName",
+                            "caseSequenceIndicator": "1 of 2"
+                          }
+                        ],
+                        "hearingType": "Criminal"
+                      }
+                    ],
+                    "channel": [
+                      "Teams",
+                      "In-Person"
+                    ]
+                  }
+                ],
+                "judiciary": [
+                  {
+                    "johTitle": "Mrs",
+                    "johNameSurname": "Firstname Surname",
+                    "johKnownAs": "Crown Judge",
+                    "isPresiding": true
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "courtHouseAddress": {
+          "town": "Address Town",
+          "county": "Lancashire",
+          "postCode": "AA1 AA1",
+          "line": ["Address Line 1", "Address Line 2"]
+        }
+      }
+    },
+    {
+      "courtHouse": {
+        "courtHouseName": "Regional Venue North",
+        "courtHouseContact": {
+          "venueEmail": "a@c.com",
+          "venueTelephone": "+44 1234 1234 1234"
+        },
+        "courtRoom": [
+          {
+            "session": [
+              {
+                "sittings": [
+                  {
+                    "sittingStart": "2022-02-13T14:30:52.123Z",
+                    "sittingEnd": "2022-02-13T15:30:52.123Z",
+                    "hearing": [
+                      {
+                        "case": [
+                          {
+                            "caseNumber": "12341234",
+                            "caseSuppressionName": "ThisIsACaseSupressionName",
+                            "caseSequenceIndicator": "1 of 2"
+                          }
+                        ],
+                        "hearingType": "Criminal"
+                      }
+                    ],
+                    "channel": [
+                      "Teams",
+                      "In-Person"
+                    ]
+                  }
+                ],
+                "judiciary": [
+                  {
+                    "johTitle": "Mrs",
+                    "johNameSurname": "Firstname Surname",
+                    "johKnownAs": "Crown Judge",
+                    "isPresiding": true
+                  },
+                  {
+                    "johTitle": "Mrs",
+                    "johNameSurname": "OtherFirstname OtherSurname",
+                    "johKnownAs": "Crown Judge",
+                    "isPresiding": false
+                  }
+                ]
+              },
+              {
+                "sittings": [
+                  {
+                    "sittingStart": "2022-02-13T14:30:52.123Z",
+                    "sittingEnd": "2022-02-13T15:30:52.123Z",
+                    "hearing": [
+                      {
+                        "case": [
+                          {
+                            "caseNumber": "12341234",
+                            "caseSuppressionName": "ThisIsACaseSupressionName",
+                            "caseSequenceIndicator": "1 of 2"
+                          }
+                        ],
+                        "hearingType": "Criminal"
+                      }
+                    ],
+                    "channel": [
+                      "Teams",
+                      "In-Person"
+                    ]
+                  }
+                ],
+                "judiciary": [
+                  {
+                    "johTitle": "Mrs",
+                    "johNameSurname": "Firstname Surname",
+                    "johKnownAs": "Crown Judge",
+                    "isPresiding": true
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "courtHouseAddress": {
+          "town": "Address Town",
+          "county": "Lancashire",
+          "postCode": "AA1 AA1",
+          "line": ["Address Line 1", "Address Line 2"]
+        }
+      }
+    }
+  ]
+}
