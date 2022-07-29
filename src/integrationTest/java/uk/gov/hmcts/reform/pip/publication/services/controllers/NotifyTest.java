@@ -93,6 +93,16 @@ class NotifyTest {
         + "  }\n"
         + "}";
 
+    private static final String VALID_SJP_PRESS_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
+        + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"CASE_URN\": [\n"
+        + "      \"123\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
+
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
@@ -309,6 +319,14 @@ class NotifyTest {
     void testValidPayloadForSubsSjpPublicListEmailReturnsOk() throws Exception {
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(VALID_SJP_PUBLIC_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString("Subscription email successfully sent to")));
+    }
+
+    @Test
+    void testValidPayloadForSubsSjpPressListEmailReturnsOk() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(VALID_SJP_PRESS_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
             .andExpect(content().string(containsString("Subscription email successfully sent to")));
     }

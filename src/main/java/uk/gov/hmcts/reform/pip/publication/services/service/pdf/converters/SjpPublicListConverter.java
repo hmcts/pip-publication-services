@@ -45,6 +45,7 @@ public class SjpPublicListConverter implements Converter {
         return templateEngine.process("sjpPublicList.html", context);
     }
 
+<<<<<<< HEAD
     private List<SjpPublicList> constructCases(JsonNode sittingsNode) {
         List<SjpPublicList> sjpPublicLists = new ArrayList<>();
         sittingsNode.forEach(sitting -> {
@@ -87,4 +88,6 @@ public class SjpPublicListConverter implements Converter {
             + " "
             + individual.get("individualSurname").textValue();
     }
+=======
+>>>>>>> origin/master
 }
