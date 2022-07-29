@@ -29,8 +29,6 @@
     .govuk-heading-l {
       color: #0b0c0c;
       font-family: "GDS Transport";
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
       font-weight: 700;
       font-size: 24px;
       font-size: 1.5rem;
@@ -42,8 +40,6 @@
     .govuk-body {
       color: #0b0c0c;
       font-family: "GDS Transport";
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
       font-weight: 400;
       font-size: 16px;
       font-size: 1rem;
@@ -56,8 +52,6 @@
     }
     .govuk-details {
       font-family: "GDS Transport", arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
       font-weight: 400;
       font-size: 16px;
       font-size: 1rem;
@@ -93,7 +87,6 @@
       top: 2em;
     }
     .site-address {
-      margin-block-end: 0.5em;
     }
     .govuk-accordion__section-heading {
       margin-top: 0;
@@ -101,8 +94,6 @@
       padding-top: 15px;
       padding-bottom: 15px;
       font-family: "GDS Transport", arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
       font-weight: 700;
       font-size: 18px;
       font-size: 1.125rem;
@@ -115,8 +106,6 @@
     }
     .govuk-table {
       font-family: "GDS Transport", arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
       font-weight: 400;
       font-size: 16px;
       font-size: 1rem;
@@ -207,8 +196,8 @@
                 </tr>
                 </thead>
                 <tbody class="govuk-table__body">
-                <span th:each="sitting : ${session.get('sittings')}">
-                    <span th:each="hearing : ${sitting.get('hearing')}">
+                <th:block th:each="sitting : ${session.get('sittings')}">
+                  <th:block th:each="hearing : ${sitting.get('hearing')}">
                       <tr class="govuk-table__row" th:each="case : ${hearing.get('case')}">
                         <td class="govuk-table__cell no-wrap" th:text="${sitting.get('time').asText()}" />
                         <td class="govuk-table__cell no-wrap" th:text="${case.get('caseNumber').asText()}" />
@@ -217,8 +206,8 @@
                         <td class="govuk-table__cell" th:text="${sitting.get('caseHearingChannel').asText()}" />
                         <td class="govuk-table__cell no-wrap" th:text="${sitting.get('formattedDuration').asText()}" />
                       </tr>
-                    </span>
-                  </span>
+                    </th:block>
+                  </th:block>
                 </tbody>
               </table>
             </div>
