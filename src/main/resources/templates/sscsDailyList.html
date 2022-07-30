@@ -171,9 +171,12 @@
     <hr/>
     <div th:each="courtRoom: ${courtHouse.ListOfCourtRooms}">
       <h3 th:text="${courtRoom.name}"/>
+      <div th:each="sitting: ${courtRoom.ListOfSittings}">
+        <h4 th:text="${sitting.sittingStart}"/>
+          <p th:text="${sitting.channel}"/>
+      </div>
     </div>
   </div>
-  <h2></h2>
 </section>
 
 

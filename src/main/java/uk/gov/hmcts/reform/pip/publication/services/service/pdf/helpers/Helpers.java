@@ -28,4 +28,13 @@ public final class Helpers {
         return date.format(
             DateTimeFormatter.ofPattern("dd MMMM yyyy"));
     }
+
+    public static String timeStampToBstTime(String timestamp) {
+        Instant unZonedDateTime = Instant.parse(timestamp);
+        ZoneId zone = ZoneId.of("Europe/London");
+        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
+        DateTimeFormatter dtf;
+        dtf = DateTimeFormatter.ofPattern("HH:mm");
+        return dtf.format(zonedDateTime);
+    }
 }

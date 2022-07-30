@@ -1,14 +1,17 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
+import springfox.documentation.spring.web.json.Json;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SscsDailyList.CourtHouse;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SscsDailyList.CourtRoom;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SscsDailyList.Sitting;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 
 import java.io.IOException;
@@ -45,7 +48,7 @@ public class SscsDailyListConverter implements Converter {
     }
 
 
-    private CourtHouse courtHouseBuilder(JsonNode node) {
+    private CourtHouse courtHouseBuilder(JsonNode node) throws JsonProcessingException {
         JsonNode thisCourtHouseNode = node.get("courtHouse");
         CourtHouse thisCourtHouse = new CourtHouse();
         Map<String, String> metadata = courtHouseInfoRetriever(thisCourtHouseNode);
@@ -67,17 +70,37 @@ public class SscsDailyListConverter implements Converter {
         );
     }
 
-    private CourtRoom courtRoomBuilder(JsonNode node) {
+    private CourtRoom courtRoomBuilder(JsonNode node) throws JsonProcessingException {
         CourtRoom thisCourtRoom = new CourtRoom();
         thisCourtRoom.setName(node.get("courtRoomName").asText());
+        List<Sitting> sittingList = new ArrayList<>();
         for (final JsonNode session: node.get("session")) {
-            List<String> seshChannel = new ArrayList<>();
-            for (JsonNode sessionChannel : session.get("sessionChannel")) {
-               seshChannel.add(sessionChannel.asText());
+            JsonNode sittingsNode = session.get("sessionChannel");
+            String sittingsString = sittingsNode.toString();
+            List<String> seshChannel = new ObjectMapper().readValue(
+                session.get("sessionChannel").toString(),
+                new TypeReference<List<String>>(){});
+            String sessionChannel = String.join(", ", seshChannel);
+            for(JsonNode sitting: session.get("sittings")) {
+                sittingList.add(sittingBuilder(sessionChannel, sitting));
             }
-            System.out.println(seshChannel.stream().collect(Collectors.joining(", ")));
         }
+        thisCourtRoom.setListOfSittings(sittingList);
         return thisCourtRoom;
+    }
+
+    private Sitting sittingBuilder(String sessionChannel, JsonNode node) throws JsonProcessingException {
+        Sitting sitting = new Sitting();
+        sitting.setSittingStart(Helpers.timeStampToBstTime(node.get("sittingStart").asText()));
+        if (node.has("channel")) {
+            List<String> channelList = new ObjectMapper().readValue(node.get("channel").toString(),
+                                                            new TypeReference<List<String>>(){});
+            sitting.setChannel(String.join(", ", channelList));
+        }
+        else {
+            sitting.setChannel(sessionChannel);
+        }
+        return sitting;
     }
 
 
