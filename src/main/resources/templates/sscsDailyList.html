@@ -115,7 +115,7 @@
   <meta name="subject" content="SSCS Daily list"/>
   <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
   <meta name="description" content="SSCS Daily List PDF File"/>
-  <title th:text="${i18n.title1 + location + ' - ' + contentDate}"/>
+  <title th:text="${i18n.title1 + metadata.location + ' - ' + metadata.contentDate}"/>
 </head>
 
 
@@ -140,13 +140,13 @@
       </div>
     </div>
     <div class="dateContainer">
-      <h4 th:text="${'List for ' + contentDate}"/>
+      <h4 th:text="${'List for ' + metadata.contentDate}"/>
       <h5 th:text="${'Published: ' + publishedDate}"/>
     </div>
   </div>
   <div class="mainHeaderText">
     <h1 th:text="${i18n.mainHeaderText}"/>
-    <h2 th:text="${location + i18n.headerSubText + contentDate}"/>
+    <h2 th:text="${metadata.location + i18n.headerSubText + metadata.contentDate}"/>
   </div>
 </div>
 <hr/>
@@ -155,7 +155,7 @@
   <div class="govuk-details__text">
     <p th:text="${i18n.infoSectionPara1}"/>
     <p
-      th:text="${i18n.infoSectionMiddlePara1 + location + i18n.infoSectionMiddlePara2  + venue.email + i18n.infoSectionMiddlePara3 + venue.telephone + i18n.infoSectionMiddlePara4}"/>
+      th:text="${i18n.infoSectionMiddlePara1 + metadata.location + i18n.infoSectionMiddlePara2  + venue.email + i18n.infoSectionMiddlePara3 + venue.telephone + i18n.infoSectionMiddlePara4}"/>
     <p th:text="${i18n.infoSectionPara3}"/>
   </div>
 
@@ -163,16 +163,29 @@
   <h3 class="overleaf" th:text="${i18n.hearingOverleaf}"/>
 </section>
 
-
-<section id="list-content-section">
-  <div th:each="courtList: ${jsonBody.get('courtLists')}">
-    <h2 th:text="${courtList.get('courtHouse').get('courtHouseName').asText()}"/>
-    <div th:each="courtRoom: ${jsonBody.get('courtLists').get('courtRoom')}">
-      <h3 th:text="${courtRoom.get('courtRoomName').asText()}"/>
+<section>
+  <div th:each="courtHouse: ${courtList}">
+    <h2 th:text="${courtHouse.name}"/>
+    <p th:text="${courtHouse.phone}"/>
+    <p th:text="${courtHouse.email}"/>
+    <hr/>
+    <div th:each="courtRoom: ${courtHouse.ListOfCourtRooms}">
+      <h3 th:text="${courtRoom.name}"/>
     </div>
   </div>
-
+  <h2></h2>
 </section>
+
+
+<!--<section id="list-content-section"A>-->
+<!--  <div th:each="courtList: ${jsonBody.get('courtLists')}">-->
+<!--    <h2 th:text="${courtList.get('courtHouse').get('courtHouseName').asText()}"/>-->
+<!--    <div th:each="courtRoom: ${jsonBody.get('courtLists').get('courtRoom')}">-->
+<!--      <h3 th:text="${courtRoom.get('courtRoomName').asText()}"/>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--</section>-->
 
 <p class="govuk-body govuk-font-14" th:text="${i18n.dataSource + provenance}"/>
 </body>

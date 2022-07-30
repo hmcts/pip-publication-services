@@ -7,15 +7,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SscsDailyList.CourtHouse;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SscsDailyList.CourtRoom;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SscsDailyListConverter implements Converter {
 
@@ -23,52 +24,63 @@ public class SscsDailyListConverter implements Converter {
     public String convert(JsonNode highestLevelNode, Map<String, String> metadata) throws IOException {
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         Context context = new Context();
-        Map<String, String> i18n = handleLanguages(metadata);
-        context.setVariable("i18n", i18n);
-        JsonNode testRemoveMe = formatListData(highestLevelNode);
-        context.setVariable("jsonBody", testRemoveMe);
-        context.setVariable("location", metadata.get("location"));
-        context.setVariable("provenance", metadata.get("provenance"));
+        context.setVariable("i18n", handleLanguages(metadata));
+        context.setVariable("metadata", metadata);
         context.setVariable("venue", getVenueInfo(highestLevelNode));
-
         context.setVariable("publishedDate", Helpers.formatTimestampToBst(highestLevelNode.get("document")
                                                                               .get("publicationDate").asText()));
-        context.setVariable("publicationTime", formatTimeStampToBst(highestLevelNode.get("document")
-                                                                        .get("publicationDate").asText(), true));
-        context.setVariable("contentDate", metadata.get("contentDate"));
-        context.setVariable(
-            "telephone",
-            highestLevelNode.get("venue").get("venueContact").get("venueTelephone").asText()
-        );
+        List<CourtHouse> listOfCourtHouses = new ArrayList<>();
+        for (JsonNode courtHouse : highestLevelNode.get("courtLists")) {
+            listOfCourtHouses.add(courtHouseBuilder(courtHouse));
+        }
+        context.setVariable("courtList", listOfCourtHouses);
+
+
+//        todo get rid of this nonsense:
+        JsonNode testRemoveMe = formatListData(highestLevelNode);
+        context.setVariable("jsonBody", testRemoveMe);
+
 
         return templateEngine.process("sscsDailyList.html", context);
     }
 
-    private Map<String, String> handleLanguages(Map<String, String> metadata) throws IOException {
-        String path;
-        switch (metadata.get("language")) {
-            case "ENGLISH": {
-                path = "templates/languages/sscs-english.json";
-                break;
-            }
-            case "WELSH":
-//                todo: replace with welsh file.
-                path = "templates/languages/sscs-english.json";
 
-                break;
-            case "BI_LINGUAL":
-//                todo: replace with bilingual file
-                path = "templates/languages/sscs-english.json";
-                break;
-            default:
-                throw new UnsupportedOperationException();
+    private CourtHouse courtHouseBuilder(JsonNode node) {
+        JsonNode thisCourtHouseNode = node.get("courtHouse");
+        CourtHouse thisCourtHouse = new CourtHouse();
+        Map<String, String> metadata = courtHouseInfoRetriever(thisCourtHouseNode);
+        thisCourtHouse.setName(metadata.get("name"));
+        thisCourtHouse.setPhone(metadata.get("phone"));
+        thisCourtHouse.setEmail(metadata.get("email"));
+        List<CourtRoom> courtRoomList = new ArrayList<>();
+        for(JsonNode courtRoom:  thisCourtHouseNode.get("courtRoom")) {
+            courtRoomList.add(courtRoomBuilder(courtRoom));
         }
-        try (InputStream languageFile = Thread.currentThread()
-            .getContextClassLoader().getResourceAsStream(path)) {
-            return new ObjectMapper().readValue(
-                languageFile.readAllBytes(), new TypeReference<Map<String, String>>() {});
-        }
+        thisCourtHouse.setListOfCourtRooms(courtRoomList);
+        return thisCourtHouse;
     }
+
+    private Map<String, String> courtHouseInfoRetriever(JsonNode node) {
+        return Map.of("name", node.get("courtHouseName").asText(),
+                      "phone", node.get("courtHouseContact").get("venueTelephone").asText(),
+                      "email", node.get("courtHouseContact").get("venueEmail").asText()
+        );
+    }
+
+    private CourtRoom courtRoomBuilder(JsonNode node) {
+        CourtRoom thisCourtRoom = new CourtRoom();
+        thisCourtRoom.setName(node.get("courtRoomName").asText());
+        for (final JsonNode session: node.get("session")) {
+            List<String> seshChannel = new ArrayList<>();
+            for (JsonNode sessionChannel : session.get("sessionChannel")) {
+               seshChannel.add(sessionChannel.asText());
+            }
+            System.out.println(seshChannel.stream().collect(Collectors.joining(", ")));
+        }
+        return thisCourtRoom;
+    }
+
+
 
     private Map<String, String> getVenueInfo(JsonNode node) {
         return Map.of(
@@ -115,6 +127,32 @@ public class SscsDailyListConverter implements Converter {
         return formattedJudiciaryBuilder.toString();
     }
 
+    private Map<String, String> handleLanguages(Map<String, String> metadata) throws IOException {
+        String path;
+        switch (metadata.get("language")) {
+            case "ENGLISH": {
+                path = "templates/languages/sscs-english.json";
+                break;
+            }
+            case "WELSH":
+//                todo: replace with welsh file or refactor to include it as an arg in converter interface.
+                path = "templates/languages/sscs-english.json";
+
+                break;
+            case "BI_LINGUAL":
+//                todo: replace with welsh file or refactor to include it as an arg in converter interface.
+                path = "templates/languages/sscs-english.json";
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream(path)) {
+            return new ObjectMapper().readValue(
+                languageFile.readAllBytes(), new TypeReference<Map<String, String>>() {
+                });
+        }
+    }
 
 //    private JsonNode formatSittings(JsonNode sittings) {
 //        sittings.forEach(sitting -> {
@@ -128,7 +166,7 @@ public class SscsDailyListConverter implements Converter {
 //                formatInformants(hearing);
 //            });
 //        });
-//        // Process the sitting then return the JsonNode to update the Session with the sitting???
+//        // Process the sitting then return the JsonNode to update the Sitting with the sitting???
 //    }
 
 
@@ -161,26 +199,6 @@ public class SscsDailyListConverter implements Converter {
     // add no border about hearing count
 
 
-    private String formatTimeStampToBst(String timestamp, Boolean isTimeOnly) {
-        Instant unZonedDateTime = Instant.parse(timestamp);
-        ZoneId zone = ZoneId.of("Europe/London");
-        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
-        String pattern = this.getDateTimeFormat(zonedDateTime, isTimeOnly);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
-        return dtf.format(zonedDateTime);
-    }
-
-    private String getDateTimeFormat(ZonedDateTime zonedDateTime, Boolean isTimeOnly) {
-        if (isTimeOnly) {
-            if (zonedDateTime.getMinute() == 0) {
-                return "HHa";
-            } else {
-                return "HH:mma";
-            }
-        } else {
-            return "dd MMMM yyyy";
-        }
-    }
 }
 
 
