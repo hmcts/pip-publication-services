@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
@@ -23,17 +25,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 public class SscsDailyListConverter implements Converter {
 
     @Override
     public String convert(JsonNode highestLevelNode, Map<String, String> metadata) throws IOException {
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         Context context = new Context();
+        String testString = safeGet("venue.venueContact.venueFax", highestLevelNode);
         context.setVariable("i18n", handleLanguages(metadata));
         context.setVariable("metadata", metadata);
-        context.setVariable("venue", getVenueInfo(highestLevelNode));
-        context.setVariable("publishedDate", Helpers.formatTimestampToBst(highestLevelNode.get("document")
-                                                                              .get("publicationDate").asText()));
+        context.setVariable("telephone", safeGet("venue.venueContact.venueTelephone", highestLevelNode));
+        context.setVariable("email", safeGet("venue.venueContact.venueEmail", highestLevelNode));
+        context.setVariable("publishedDate", Helpers.formatTimestampToBst(
+            safeGet("document.publicationDate", highestLevelNode)));
         List<CourtHouse> listOfCourtHouses = new ArrayList<>();
         for (JsonNode courtHouse : highestLevelNode.get("courtLists")) {
             listOfCourtHouses.add(courtHouseBuilder(courtHouse));
@@ -42,14 +47,52 @@ public class SscsDailyListConverter implements Converter {
         return templateEngine.process("sscsDailyList.html", context);
     }
 
+    private String safeGet(String jsonPath, JsonNode node) {
+        String[] stringArray = jsonPath.split("\\.");
+        JsonNode outputNode = node;
+        int index = -1;
+        try {
+            for (String arg : stringArray) {
+                if (NumberUtils.isCreatable(arg)) {
+                    outputNode = outputNode.get(Integer.parseInt(arg));
+                } else {
+                    outputNode = outputNode.get(arg);
+                }
+                index += 1;
+            }
+            return outputNode.asText();
+        } catch(NullPointerException e){
+            log.error("Parsing failed for path " + jsonPath + ", specifically " + stringArray[index]);
+            return "";
+        }
+    }
+
+    private JsonNode safeGetNode(String jsonPath, JsonNode node) {
+        String[] stringArray = jsonPath.split("\\.");
+        JsonNode outputNode = node;
+        int index = 0;
+        try {
+            for (String arg : stringArray) {
+                if (NumberUtils.isCreatable(arg)) {
+                    outputNode = outputNode.get(Integer.parseInt(arg));
+                } else {
+                    outputNode = outputNode.get(arg);
+                }
+                index += 1;
+            }
+            return outputNode;
+        } catch(NullPointerException e){
+            log.error("Parsing failed for path " + jsonPath + ", specifically " + stringArray[index]);
+            throw new NullPointerException();
+        }
+    }
 
     private CourtHouse courtHouseBuilder(JsonNode node) throws JsonProcessingException {
         JsonNode thisCourtHouseNode = node.get("courtHouse");
         CourtHouse thisCourtHouse = new CourtHouse();
-        Map<String, String> metadata = courtHouseInfoRetriever(thisCourtHouseNode);
-        thisCourtHouse.setName(metadata.get("name"));
-        thisCourtHouse.setPhone(metadata.get("phone"));
-        thisCourtHouse.setEmail(metadata.get("email"));
+        thisCourtHouse.setName(safeGet("courtHouseName", thisCourtHouseNode));
+        thisCourtHouse.setPhone(safeGet("courtHouseContact.venueTelephone", thisCourtHouseNode));
+        thisCourtHouse.setEmail(safeGet("courtHouseContact.venueEmail", thisCourtHouseNode));
         List<CourtRoom> courtRoomList = new ArrayList<>();
         for (JsonNode courtRoom : thisCourtHouseNode.get("courtRoom")) {
             courtRoomList.add(courtRoomBuilder(courtRoom));
@@ -58,16 +101,9 @@ public class SscsDailyListConverter implements Converter {
         return thisCourtHouse;
     }
 
-    private Map<String, String> courtHouseInfoRetriever(JsonNode node) {
-        return Map.of("name", node.get("courtHouseName").asText(),
-                      "phone", node.get("courtHouseContact").get("venueTelephone").asText(),
-                      "email", node.get("courtHouseContact").get("venueEmail").asText()
-        );
-    }
-
     private CourtRoom courtRoomBuilder(JsonNode node) throws JsonProcessingException {
         CourtRoom thisCourtRoom = new CourtRoom();
-        thisCourtRoom.setName(node.get("courtRoomName").asText());
+        thisCourtRoom.setName(safeGet("courtRoomName", node));
         List<Sitting> sittingList = new ArrayList<>();
         for (final JsonNode session : node.get("session")) {
             List<String> sessionChannel = new ObjectMapper().readValue(
@@ -87,12 +123,13 @@ public class SscsDailyListConverter implements Converter {
 
     private Sitting sittingBuilder(String sessionChannel, JsonNode node, String judiciary) throws JsonProcessingException {
         Sitting sitting = new Sitting();
-        String sittingStart = Helpers.timeStampToBstTime(node.get("sittingStart").asText());
+        String sittingStart = Helpers.timeStampToBstTime(safeGet("sittingStart", node));
         sitting.setJudiciary(judiciary);
         List<Hearing> listOfHearings = new ArrayList<>();
         if (node.has("channel")) {
             List<String> channelList = new ObjectMapper().readValue(
-                node.get("channel").toString(), new TypeReference<>() {});
+                node.get("channel").toString(), new TypeReference<>() {
+                });
             sitting.setChannel(String.join(", ", channelList));
         } else {
             sitting.setChannel(sessionChannel);
@@ -113,7 +150,7 @@ public class SscsDailyListConverter implements Converter {
         Hearing currentHearing = new Hearing();
         handleParties(hearingNode.get("party"), currentHearing);
         currentHearing.setRespondent(dealWithInformants(hearingNode));
-        currentHearing.setAppealRef(hearingNode.get("case").get(0).get("caseNumber").asText());
+        currentHearing.setAppealRef(safeGet("case.0.caseNumber", hearingNode));
         return currentHearing;
     }
 
@@ -143,7 +180,7 @@ public class SscsDailyListConverter implements Converter {
 
     private String dealWithInformants(JsonNode node) {
         List<String> informants = new ArrayList<>();
-        node.get("informant").get(0).get("prosecutionAuthorityRef").forEach(informant -> {
+        safeGetNode("informant.0.prosecutionAuthorityRef", node).forEach(informant -> {
             informants.add(informant.asText());
         });
         return String.join(", ", informants);
@@ -162,12 +199,6 @@ public class SscsDailyListConverter implements Converter {
         return String.join(" ", listOfRetrievedData);
     }
 
-    private Map<String, String> getVenueInfo(JsonNode node) {
-        return Map.of(
-            "telephone", node.get("venue").get("venueContact").get("venueTelephone").asText(),
-            "email", node.get("venue").get("venueContact").get("venueEmail").asText()
-        );
-    }
 
     /**
      * Format the judiciary into a comma seperated string.
@@ -181,11 +212,9 @@ public class SscsDailyListConverter implements Converter {
             if (formattedJudiciaryBuilder.length() > 0) {
                 formattedJudiciaryBuilder.append(", ");
             }
-
             formattedJudiciaryBuilder
-                .append(judiciary.get("johTitle").asText())
-                .append(" ")
-                .append(judiciary.get("johNameSurname").asText());
+                .append(safeGet("johTitle", judiciary))
+                .append(" ").append(safeGet("johNameSurname", judiciary));
         });
         return formattedJudiciaryBuilder.toString();
     }
