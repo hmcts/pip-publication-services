@@ -105,9 +105,29 @@
       font-size: 14px;
     }
 
+    th, td {
+      font-size: 14px;
+      text-align: center;
+    }
+
     .overleaf {
       page-break-after: always;
       text-align: center;
+    }
+
+    .courtHouseBlock h2 {
+      display: inline-block;
+    }
+
+    .courtHouseBlock{
+      page-break-after: always;
+    }
+
+    .courtHouseDescriptionText {
+      font-size: 12px;
+      margin: 0;
+      padding-left: 40px;
+      display: inline-block;
     }
 
   </style>
@@ -164,17 +184,35 @@
 </section>
 
 <section>
-  <div th:each="courtHouse: ${courtList}">
-    <h2 th:text="${courtHouse.name}"/>
-    <p th:text="${courtHouse.phone}"/>
-    <p th:text="${courtHouse.email}"/>
+  <div class="courtHouseBlock" th:each="courtHouse: ${courtList}">
     <hr/>
-    <div th:each="courtRoom: ${courtHouse.ListOfCourtRooms}">
+    <h2 style="vertical-align: middle;" th:text="${courtHouse.name}"/>
+    <div class="courtHouseDescriptionText">
+      <p class="courtHouseDescriptionText" th:text="${'Tel: ' + courtHouse.phone + ', Email: ' + courtHouse.email}"/>
+    </div>
+    <hr/>
+    <div th:each="courtRoom: ${courtHouse.listOfCourtRooms}">
       <h3 th:text="${courtRoom.name}"/>
-      <div th:each="sitting: ${courtRoom.ListOfSittings}">
-        <h4 th:text="${sitting.sittingStart}"/>
-          <p th:text="${sitting.channel}"/>
-      </div>
+      <hr style="border:0.2px solid #0b0c0c;"/>
+      <table>
+        <tr>
+          <th:block th:each="header: ${i18n.tableHeaders}">
+            <th th:text="${header}"/>
+          </th:block>
+        </tr>
+        <th:block th:each="sitting: ${courtRoom.listOfSittings}">
+          <th:block th:each="hearing: ${sitting.listOfHearings}">
+            <tr>
+              <td th:text="${hearing.hearingTime}"/>
+              <td th:text="${hearing.appealRef}"/>
+              <td th:text="${sitting.channel}"/>
+              <td th:text="${hearing.appellant}"/>
+              <td th:text="${hearing.respondent}"/>
+              <td th:text="${sitting.judiciary}"/>
+            </tr>
+          </th:block>
+        </th:block>
+      </table>
     </div>
   </div>
 </section>

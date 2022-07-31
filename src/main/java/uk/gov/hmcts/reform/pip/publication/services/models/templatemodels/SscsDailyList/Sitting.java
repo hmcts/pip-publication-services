@@ -10,4 +10,5 @@ public class Sitting
     String sittingStart;
     List<Hearing> listOfHearings;
     String channel;
+    String judiciary;
 }

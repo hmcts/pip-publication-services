@@ -3,7 +3,7 @@
   "logoText1": "HM Courts &",
   "logoText2": "Tribunals Service",
   "mainHeaderText": "Social Security and Child Support",
-  "headerSubText":  " hearings for ",
+  "headerSubText": " hearings for ",
   "infoSectionPara1": "Open justice is a fundamental principle in our courts and tribunals system, and will continue to be as we develop the use of audio and video technology.",
   "infoSectionMiddlePara1": "Requests from the media and others to observe a hearing remotely in ",
   "infoSectionMiddlePara2": " should be made direct to: ",
@@ -13,5 +13,13 @@
   "hearingOverleaf": "Hearing information appears overleaf",
   "dataSource": "Data Source: ",
   "serviceName": "Court and Tribunal Hearings Service - PDF/UA page ",
-  "of": " of "
+  "of": " of ",
+  "tableHeaders": [
+    "Hearing Time",
+    "Appeal Reference Number",
+    "Tribunal type",
+    "Appellant",
+    "FTA/Respondent",
+    "Panel"
+  ]
 }
