@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DataManipulation;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.GeneralHelper;
 
 @Service
 public class DailyCauseList {
@@ -33,26 +33,20 @@ public class DailyCauseList {
                     session.get("sittings").forEach(sitting -> {
                         sitting.get("hearing").forEach(hearing -> {
                             hearing.get("case").forEach(hearingCase -> {
-                                Helpers.appendToStringBuilder(output, "\n");
-                                Helpers.appendToStringBuilder(output, "\n");
-                                Helpers.appendToStringBuilder(output, "Name of Party(ies) - ");
-                                output.append(Helpers.findAndReturnNodeText(hearingCase, "caseName"));
-                                Helpers.appendToStringBuilder(output, "\n");
-                                Helpers.appendToStringBuilder(output, "Case ID - ");
-                                output.append(Helpers.findAndReturnNodeText(hearingCase, "caseNumber"));
-                                Helpers.appendToStringBuilder(output, "\n");
-                                Helpers.appendToStringBuilder(output, "\n");
-                                Helpers.appendToStringBuilder(output, "Hearing Type - ");
-                                output.append(Helpers.findAndReturnNodeText(hearing, "hearingType"));
-                                Helpers.appendToStringBuilder(output, "\n");
-                                Helpers.appendToStringBuilder(output, "Location - ");
-                                output.append(Helpers.findAndReturnNodeText(sitting, "caseHearingChannel"));
-                                Helpers.appendToStringBuilder(output, "\n");
-                                Helpers.appendToStringBuilder(output, "Duration - ");
-                                output.append(Helpers.findAndReturnNodeText(sitting, "formattedDuration"));
-                                Helpers.appendToStringBuilder(output, "\n");
-                                Helpers.appendToStringBuilder(output, "Judge - ");
-                                output.append(Helpers.findAndReturnNodeText(session, "formattedSessionCourtRoom"));
+                                output.append('\n');
+                                GeneralHelper.appendToStringBuilder(output, "Name of Party(ies) - ",
+                                                                    hearingCase, "caseName");
+                                GeneralHelper.appendToStringBuilder(output, "Case ID - ",
+                                                                    hearingCase, "caseNumber");
+                                output.append('\n');
+                                GeneralHelper.appendToStringBuilder(output, "Hearing Type - ",
+                                                                    hearing, "hearingType");
+                                GeneralHelper.appendToStringBuilder(output, "Location - ",
+                                                                    sitting, "caseHearingChannel");
+                                GeneralHelper.appendToStringBuilder(output, "Duration - ",
+                                                                    sitting, "formattedDuration");
+                                GeneralHelper.appendToStringBuilder(output, "Judge - ",
+                                                                    session,"formattedSessionCourtRoom");
                             });
                         });
                     });

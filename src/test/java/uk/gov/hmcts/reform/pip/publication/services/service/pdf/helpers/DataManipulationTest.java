@@ -158,7 +158,7 @@ class DataManipulationTest {
                        .get(HEARING).get(0)
                        .get("applicant").asText())
             .as("Unable to hearing applicant")
-            .contains("Surname, LEGALADVISOR: Mr Individual Forenames");
+            .contains("Surname, Legal Advisor: Mr Individual Forenames");
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
