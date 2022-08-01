@@ -6,7 +6,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
-import uk.gov.hmcts.reform.pip.publication.services.models.template.SjpPublicList;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SjpPublicList;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 
 import java.util.ArrayList;
