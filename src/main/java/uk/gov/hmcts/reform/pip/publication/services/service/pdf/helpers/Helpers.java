@@ -78,7 +78,7 @@ public final class Helpers {
         }
     }
 
-    public static void handlePartiesScss(JsonNode node, Hearing hearing) {
+    private static void handlePartiesScss(JsonNode node, Hearing hearing) {
         Map<String, String> parties = new ConcurrentHashMap<>();
         for (JsonNode party : node) {
             switch (party.get("partyRole").asText()) {
@@ -105,7 +105,7 @@ public final class Helpers {
     }
 
 
-    public static Hearing hearingBuilder(JsonNode hearingNode) {
+    private static Hearing hearingBuilder(JsonNode hearingNode) {
         Hearing currentHearing = new Hearing();
         handlePartiesScss(hearingNode.get("party"), currentHearing);
         currentHearing.setRespondent(dealWithInformants(hearingNode));
@@ -114,7 +114,7 @@ public final class Helpers {
     }
 
 
-    public static String dealWithInformants(JsonNode node) {
+    private static String dealWithInformants(JsonNode node) {
         List<String> informants = new ArrayList<>();
         safeGetNode("informant.0.prosecutionAuthorityRef", node).forEach(informant -> {
             informants.add(informant.asText());
@@ -123,7 +123,7 @@ public final class Helpers {
     }
 
 
-    public static String individualDetails(JsonNode node) {
+    private static String individualDetails(JsonNode node) {
         List<String> listOfRetrievedData = new ArrayList<>();
         String[] possibleFields = {"title", "individualForenames", "individualMiddleName", "individualSurname"};
         for (String field : possibleFields) {
@@ -156,7 +156,7 @@ public final class Helpers {
         }
     }
 
-    public static Sitting sscsSittingBuilder(String sessionChannel, JsonNode node, String judiciary)
+    private static Sitting sscsSittingBuilder(String sessionChannel, JsonNode node, String judiciary)
         throws JsonProcessingException {
         Sitting sitting = new Sitting();
         String sittingStart = Helpers.timeStampToBstTime(safeGet("sittingStart", node));
@@ -188,7 +188,7 @@ public final class Helpers {
      * @param session The session containing the judiciary.
      * @return A string of the formatted judiciary.
      */
-    public static String scssFormatJudiciary(JsonNode session) {
+    private static String scssFormatJudiciary(JsonNode session) {
         StringBuilder formattedJudiciaryBuilder = new StringBuilder();
         session.get("judiciary").forEach(judiciary -> {
             if (formattedJudiciaryBuilder.length() > 0) {
@@ -202,7 +202,7 @@ public final class Helpers {
     }
 
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-    public static CourtRoom scssCourtRoomBuilder(JsonNode node) throws JsonProcessingException {
+    private static CourtRoom scssCourtRoomBuilder(JsonNode node) throws JsonProcessingException {
         CourtRoom thisCourtRoom = new CourtRoom();
         thisCourtRoom.setName(safeGet("courtRoomName", node));
         List<Sitting> sittingList = new ArrayList<>();

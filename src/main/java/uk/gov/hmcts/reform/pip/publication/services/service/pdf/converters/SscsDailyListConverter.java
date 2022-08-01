@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
@@ -21,6 +22,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.H
 import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers.safeGet;
 
 @Slf4j
+@Service
 public class SscsDailyListConverter implements Converter {
 
     @Override
@@ -40,13 +42,6 @@ public class SscsDailyListConverter implements Converter {
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         return templateEngine.process("sscsDailyList.html", context);
     }
-
-
-
-
-
-
-
 
     private Map<String, Object> handleLanguages(Map<String, String> metadata) throws IOException {
         String path;
