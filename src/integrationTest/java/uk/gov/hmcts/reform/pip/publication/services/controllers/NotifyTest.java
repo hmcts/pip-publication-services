@@ -82,17 +82,16 @@ class NotifyTest {
             + "  \"subscriptions\": {\n\"CASE_URN\": [\n"
             + "      \"123\"\n]\n}\n}";
 
-    private static final String VALID_SJP_PUBLIC_SUBS_EMAIL =
-        "{\n  \"artefactId\": \"e61a7e34-f950-4a6c-9200-7b94745b5a7a\",\n"
-            + "  \"email\": \"kian.kwa@justice.gov.uk\",\n"
-            + "  \"subscriptions\": {\n\"LOCATION_ID\": [\n"
-            + "      \"9\"\n]\n}\n}";
+    private static final String VALID_SJP_PRESS_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
+        + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"CASE_URN\": [\n"
+        + "      \"123\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
 
-    private static final String VALID_SJP_PRESS_SUBS_EMAIL =
-        "{\n  \"\"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
-            + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
-            + "  \"subscriptions\": {\n \"CASE_URN\": [\n"
-            + "      \"123\"\n]\n}\n}";
 
     private static final String VALID_SCSS_DAILY_LIST_SUBS_EMAIL =
         "{\n  \"\"artefactId\": \"69745ab9-137b-4fd2-a15a-42cc85bf8d49\",\n"
