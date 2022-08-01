@@ -58,8 +58,8 @@ public class CivilDailyCauseList {
             JsonNode sessionChannelNode = thisCourtRoom.get(SESSION).get(0).path("sessionChannel");
             sessionChannel = mapper.convertValue(sessionChannelNode, typeReference);
             outputString.append("\n\nCourtroom: ").append(thisCourtRoom.get("courtRoomName").asText())
-                .append(processCivilDailySittings(thisCourtRoom, sessionChannel))
-                .append(processCivilDailyJudiciary(thisCourtRoom));
+                .append(processCivilDailyJudiciary(thisCourtRoom))
+                .append(processCivilDailySittings(thisCourtRoom, sessionChannel));
         }
         return outputString.toString();
     }
