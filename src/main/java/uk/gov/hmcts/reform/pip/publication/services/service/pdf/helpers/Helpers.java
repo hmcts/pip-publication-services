@@ -59,23 +59,7 @@ public final class Helpers {
 
     @SuppressWarnings("PMD.AvoidCatchingNPE")
     public static String safeGet(String jsonPath, JsonNode node) {
-        String[] stringArray = jsonPath.split("\\.");
-        JsonNode outputNode = node;
-        int index = -1;
-        try {
-            for (String arg : stringArray) {
-                if (NumberUtils.isCreatable(arg)) {
-                    outputNode = outputNode.get(Integer.parseInt(arg));
-                } else {
-                    outputNode = outputNode.get(arg);
-                }
-                index += 1;
-            }
-            return outputNode.asText();
-        } catch (NullPointerException e) {
-            log.error("Parsing failed for path " + jsonPath + ", specifically " + stringArray[index]);
-            return "";
-        }
+        return safeGetNode(jsonPath, node).asText();
     }
 
     private static void handlePartiesScss(JsonNode node, Hearing hearing) {
