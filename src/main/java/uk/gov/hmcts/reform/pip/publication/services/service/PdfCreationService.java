@@ -38,6 +38,7 @@ public class PdfCreationService {
 
     /**
      * Wrapper class for the entire json to pdf process.
+     *
      * @param inputPayloadUuid UUID representing a particular artefact ID.
      * @return byteArray representing the generated PDF.
      * @throws IOException - uses file streams so needs this.
@@ -48,14 +49,14 @@ public class PdfCreationService {
         Location location = dataManagementService.getLocation(artefact.getLocationId());
         String htmlFile;
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
-        Map<String, String> metadataMap = new HashMap<>();
-        metadataMap.put("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()));
-        metadataMap.put("provenance", artefact.getProvenance());
-        metadataMap.put("location", location.getName());
-        metadataMap.put("language", artefact.getLanguage().toString());
+        Map<String, String> metadataMap = Map.of(
+        "contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
+        "provenance", artefact.getProvenance(),
+        "location", location.getName(),
+        "language", artefact.getLanguage().toString());
 
         Converter converter = artefact.getListType().getConverter();
-        if(converter != null) {
+        if (converter != null) {
             htmlFile = converter.convert(topLevelNode, metadataMap);
         } else {
             htmlFile = parseThymeleafTemplate(rawJson);
@@ -67,6 +68,7 @@ public class PdfCreationService {
     /**
      * Class which takes in JSON input and uses it to inform a given template. Consider this a placeholder until we
      * have specific style guides created.
+     *
      * @param json - json string input representing a publication
      * @return formatted html string representing the input to the pdf reader
      */
@@ -79,6 +81,7 @@ public class PdfCreationService {
 
     /**
      * Class which takes in an HTML file and generates an accessible PDF file (as a byteArray).
+     *
      * @param html - string input representing a well-formed HTML file conforming to WCAG pdf accessibility guidance
      * @return a byte array representing the generated PDF.
      * @throws IOException - if errors appear during the process.

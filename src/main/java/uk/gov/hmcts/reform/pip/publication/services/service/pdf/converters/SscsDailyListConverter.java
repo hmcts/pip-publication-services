@@ -5,14 +5,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
-import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SscsDailyList.CourtHouse;
-import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SscsDailyList.CourtRoom;
-import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SscsDailyList.Hearing;
-import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SscsDailyList.Sitting;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.CourtHouse;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.CourtRoom;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.Hearing;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.Sitting;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 
 import java.io.IOException;
@@ -25,12 +24,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers.safeGet;
+import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers.safeGetNode;
+
 @Slf4j
 public class SscsDailyListConverter implements Converter {
 
     @Override
     public String convert(JsonNode highestLevelNode, Map<String, String> metadata) throws IOException {
-        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         Context context = new Context();
         String testString = safeGet("venue.venueContact.venueFax", highestLevelNode);
         context.setVariable("i18n", handleLanguages(metadata));
@@ -44,47 +45,8 @@ public class SscsDailyListConverter implements Converter {
             listOfCourtHouses.add(courtHouseBuilder(courtHouse));
         }
         context.setVariable("courtList", listOfCourtHouses);
+        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         return templateEngine.process("sscsDailyList.html", context);
-    }
-
-    private String safeGet(String jsonPath, JsonNode node) {
-        String[] stringArray = jsonPath.split("\\.");
-        JsonNode outputNode = node;
-        int index = -1;
-        try {
-            for (String arg : stringArray) {
-                if (NumberUtils.isCreatable(arg)) {
-                    outputNode = outputNode.get(Integer.parseInt(arg));
-                } else {
-                    outputNode = outputNode.get(arg);
-                }
-                index += 1;
-            }
-            return outputNode.asText();
-        } catch(NullPointerException e){
-            log.error("Parsing failed for path " + jsonPath + ", specifically " + stringArray[index]);
-            return "";
-        }
-    }
-
-    private JsonNode safeGetNode(String jsonPath, JsonNode node) {
-        String[] stringArray = jsonPath.split("\\.");
-        JsonNode outputNode = node;
-        int index = 0;
-        try {
-            for (String arg : stringArray) {
-                if (NumberUtils.isCreatable(arg)) {
-                    outputNode = outputNode.get(Integer.parseInt(arg));
-                } else {
-                    outputNode = outputNode.get(arg);
-                }
-                index += 1;
-            }
-            return outputNode;
-        } catch(NullPointerException e){
-            log.error("Parsing failed for path " + jsonPath + ", specifically " + stringArray[index]);
-            throw new NullPointerException();
-        }
     }
 
     private CourtHouse courtHouseBuilder(JsonNode node) throws JsonProcessingException {
@@ -121,7 +83,8 @@ public class SscsDailyListConverter implements Converter {
         return thisCourtRoom;
     }
 
-    private Sitting sittingBuilder(String sessionChannel, JsonNode node, String judiciary) throws JsonProcessingException {
+    private Sitting sittingBuilder(String sessionChannel, JsonNode node, String judiciary)
+        throws JsonProcessingException {
         Sitting sitting = new Sitting();
         String sittingStart = Helpers.timeStampToBstTime(safeGet("sittingStart", node));
         sitting.setJudiciary(judiciary);
@@ -169,6 +132,8 @@ public class SscsDailyListConverter implements Converter {
                     break;
                 case "RESPONDENT_REPRESENTATIVE":
                     parties.put("respondentRepresentative", individualDetails(party));
+                    break;
+                default:
                     break;
             }
             hearing.setAppellant(parties.get("applicant") + ", Legal Advisor: " + parties.get(
@@ -227,12 +192,12 @@ public class SscsDailyListConverter implements Converter {
                 break;
             }
             case "WELSH":
-//                todo: replace with welsh file or refactor to include it as an arg in converter interface.
+                // todo: replace with welsh file or refactor to include it as an arg in converter interface.
                 path = "templates/languages/sscs-english.json";
 
                 break;
             case "BI_LINGUAL":
-//                todo: replace with welsh file or refactor to include it as an arg in converter interface.
+                // todo: replace with welsh file or refactor to include it as an arg in converter interface.
                 path = "templates/languages/sscs-english.json";
                 break;
             default:
@@ -245,37 +210,6 @@ public class SscsDailyListConverter implements Converter {
                 });
         }
     }
-
-
-//
-//    /**
-//     * TODO
-//     * @param hearing
-//     * @return
-//     */
-//    private String formatInformants(JsonNode hearing) {
-//        StringBuilder formattedProscAuthRefBuilder = new StringBuilder();
-//        hearing.get("informant").forEach(informant -> informant.get("prosecutionAuthorityRef").forEach(proscAuthRef -> {
-//            if(formattedProscAuthRefBuilder.length() > 0) {
-//                formattedProscAuthRefBuilder.append(", ");
-//            }
-//            formattedProscAuthRefBuilder.append(proscAuthRef);
-//        }));
-//
-//        return formattedProscAuthRefBuilder.toString();
-//    }
-
-
-    // IN THE HTML:
-    // Go through court lists
-    // Go through court room in court house
-    // Go through sessions in court room
-    // Go through sittings in session
-    // Go through hearing in sitting
-    // Go through case in hearing
-    // add no border about hearing count
-
-
 }
 
 

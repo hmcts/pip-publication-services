@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SscsDailyList;
+package uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist;
 
 import lombok.Data;
 

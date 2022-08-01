@@ -12,7 +12,6 @@ public class SjpPublicListConverter implements Converter {
 
     @Override
     public String convert(JsonNode artefact,  Map<String, String> metadata) {
-        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         Context context = new Context();
         String date = artefact.get("document").get("publicationDate").asText();
 
@@ -27,6 +26,7 @@ public class SjpPublicListConverter implements Converter {
         cases.put("Chris", "hola");
         cases.put("Nigel", "bonjour");
         context.setVariable("cases", cases);
+        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         return templateEngine.process("sjpPublicList.html", context);
     }
 

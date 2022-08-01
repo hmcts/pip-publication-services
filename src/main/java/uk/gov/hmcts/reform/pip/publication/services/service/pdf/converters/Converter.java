@@ -8,9 +8,10 @@ import java.util.Map;
 public interface Converter {
 
     /**
-     * Interface method that captures the conversion of an artefact to a Html File
+     * Interface method that captures the conversion of an artefact to a Html File.
+     *
      * @return The converted HTML as a string;
      */
-     String convert(JsonNode artefact, Map<String, String> metadata) throws IOException;
+    String convert(JsonNode artefact, Map<String, String> metadata) throws IOException;
 
 }
