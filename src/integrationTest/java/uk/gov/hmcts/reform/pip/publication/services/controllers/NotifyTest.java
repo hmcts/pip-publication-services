@@ -80,6 +80,7 @@ class NotifyTest {
         + "    ]\n\n"
         + "  }\n\n"
         + "}\"";
+    private static final String EMAIL_SEND_MESSAGE = "Subscription email successfully sent to";
 
     private static final String NONEXISTENT_BLOB_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
@@ -100,7 +101,7 @@ class NotifyTest {
     private static final String VALID_SJP_PUBLIC_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"e61a7e34-f950-4a6c-9200-7b94745b5a7a\",\n"
         + "  \"email\": \"kian.kwa@justice.gov.uk\",\n"
-        + SUBSCRIPTION_REQUEST;;
+        + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
@@ -324,7 +325,7 @@ class NotifyTest {
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(VALID_SJP_PUBLIC_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString("Subscription email successfully sent to")));
+            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
     }
 
     @Test
@@ -332,7 +333,7 @@ class NotifyTest {
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(VALID_SJP_PRESS_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString("Subscription email successfully sent to")));
+            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
     }
 
     @Test
@@ -353,7 +354,7 @@ class NotifyTest {
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString("Subscription email successfully sent to")));
+            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
     }
 
     @Test
@@ -361,7 +362,7 @@ class NotifyTest {
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString("Subscription email successfully sent to")));
+            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
     }
 
     @Test
