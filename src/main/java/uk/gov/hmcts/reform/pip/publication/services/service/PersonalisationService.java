@@ -6,11 +6,15 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
+import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.ArrayList;
@@ -30,6 +34,12 @@ public class PersonalisationService {
     DataManagementService dataManagementService;
 
     @Autowired
+    ArtefactSummaryService artefactSummaryService;
+
+    @Autowired
+    PdfCreationService pdfCreationService;
+
+    @Autowired
     NotifyConfigProperties notifyConfigProperties;
 
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
@@ -41,6 +51,7 @@ public class PersonalisationService {
     private static final String LINK_TO_FILE = "link_to_file";
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
+    private static final String FULL_NAME = "full_name";
     private static final String CASE_NUMBERS = "case_num";
     private static final String DISPLAY_CASE_NUMBERS = "display_case_num";
     private static final String CASE_URN = "case_urn";
@@ -53,19 +64,22 @@ public class PersonalisationService {
 
     /**
      * Handles the personalisation for the Welcome email.
+     *
      * @return The personalisation map for the welcome email.
      */
-    public Map<String, Object> buildWelcomePersonalisation() {
+    public Map<String, Object> buildWelcomePersonalisation(WelcomeEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(FORGOT_PASSWORD_PROCESS_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
         personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
         personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
         personalisation.put(GOV_GUIDANCE_PAGE_LINK, notifyConfigProperties.getLinks().getGovGuidancePageLink());
+        personalisation.put(FULL_NAME, body.getFullName());
         return personalisation;
     }
 
     /**
      * Handles the personalisation for the admin account email.
+     *
      * @param body The body of the admin email.
      * @return The personalisation map for the admin account email.
      */
@@ -80,41 +94,66 @@ public class PersonalisationService {
 
     /**
      * Handles the personalisation for the raw data subscription email.
-     * @param body The body of the subscription.
+     *
+     * @param body     The body of the subscription.
      * @param artefact The artefact to send in the subscription.
      * @return The personalisation map for the raw data subscription email.
      */
     //TODO: This method is not used and will be updated once JSON file subscription tickets have been played, however
     //TODO: provided as a placeholder for now
     public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body,
-                                                                        Artefact artefact) {
-        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+                                                                       Artefact artefact) {
 
-        Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
+        try {
+            Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
-        populateGenericPersonalisation(personalisation, DISPLAY_CASE_NUMBERS, CASE_NUMBERS,
-                                        subscriptions.get(SubscriptionTypes.CASE_NUMBER));
+            Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
 
-        populateGenericPersonalisation(personalisation, DISPLAY_CASE_URN, CASE_URN,
-                                       subscriptions.get(SubscriptionTypes.CASE_URN));
+            populateGenericPersonalisation(personalisation, DISPLAY_CASE_NUMBERS, CASE_NUMBERS,
+                                           subscriptions.get(SubscriptionTypes.CASE_NUMBER)
+            );
 
-        populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
+            populateGenericPersonalisation(personalisation, DISPLAY_CASE_URN, CASE_URN,
+                                           subscriptions.get(SubscriptionTypes.CASE_URN)
+            );
 
-        personalisation.put("list_type", artefact.getListType());
-        personalisation.put("link_to_file", "<Placeholder>");
-        personalisation.put("testing_of_array", "<Placeholder>");
+            populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
-        return personalisation;
+            personalisation.put("list_type", artefact.getListType());
+            String html = pdfCreationService.jsonToHtml(artefact.getArtefactId());
+            byte[] artefactPdf = pdfCreationService.generatePdfFromHtml(html);
+            personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
+
+            String summary =
+                artefactSummaryService.artefactSummary(
+                    dataManagementService
+                        .getArtefactJsonBlob(artefact.getArtefactId()),
+                    artefact.getListType()
+                );
+
+            personalisation.put("testing_of_array", summary);
+
+            log.info("Personalisation map created");
+            return personalisation;
+        } catch (Exception e) {
+            log.warn("Error adding attachment to raw data email {}. Artefact ID: {}",
+                     EmailHelper.maskEmail(body.getEmail()),
+                     artefact.getArtefactId()
+            );
+            throw new NotifyException(e.getMessage());
+
+        }
     }
 
     /**
      * Handles the personalisation for the flat file subscription email.
-     * @param body The body of the subscription.
+     *
+     * @param body     The body of the subscription.
      * @param artefact The artefact to send in the subscription.
      * @return The personalisation map for the flat file subscription email.
      */
     public Map<String, Object> buildFlatFileSubscriptionPersonalisation(SubscriptionEmail body,
-                                                                         Artefact artefact) {
+                                                                        Artefact artefact) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             List<String> location = body.getSubscriptions().get(SubscriptionTypes.LOCATION_ID);
@@ -127,7 +166,9 @@ public class PersonalisationService {
 
             return personalisation;
         } catch (NotificationClientException e) {
-            log.warn("Error adding attachment to flat file email {}. Artefact ID: {}", body.getEmail(),
+
+            log.warn("Error adding attachment to flat file email {}. Artefact ID: {}",
+                     EmailHelper.maskEmail(body.getEmail()),
                      artefact.getArtefactId());
             throw new NotifyException(e.getMessage());
         }
@@ -135,6 +176,7 @@ public class PersonalisationService {
 
     /**
      * Handles the personalisation for the media reporting email.
+     *
      * @param csvMediaApplications The csv byte array containing the media applications.
      * @return The personalisation map for the media reporting email.
      */
@@ -152,6 +194,7 @@ public class PersonalisationService {
 
     /**
      * Handles the personalisation for the unidentified blob email.
+     *
      * @param locationMap A map of location Ids and provenances associated with unidentified blobs.
      * @return The personalisation map for the unidentified blob email.
      */
@@ -168,7 +211,7 @@ public class PersonalisationService {
     }
 
     private void populateGenericPersonalisation(Map<String, Object> personalisation, String display,
-                                         String displayValue, List<String> content) {
+                                                String displayValue, List<String> content) {
         if (content == null || content.isEmpty()) {
             personalisation.put(display, NO);
             personalisation.put(displayValue, "");
@@ -187,5 +230,18 @@ public class PersonalisationService {
             personalisation.put(DISPLAY_LOCATIONS, YES);
             personalisation.put(LOCATIONS, subLocation.getName());
         }
+    }
+
+    /**
+     * Handles the personalisation for the duplicate media account email.
+     *
+     * @param body The body of the admin email.
+     * @return The personalisation map for the duplicate media account email.
+     */
+    public Map<String, Object> buildDuplicateMediaAccountPersonalisation(DuplicatedMediaEmail body) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(FULL_NAME, body.getFullName());
+        personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadSignInPageLink());
+        return personalisation;
     }
 }
