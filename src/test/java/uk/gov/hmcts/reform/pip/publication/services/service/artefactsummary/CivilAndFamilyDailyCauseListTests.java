@@ -16,21 +16,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class FamilyDailyCauseListTests {
+class CivilAndFamilyDailyCauseListTests {
     @Autowired
-    DailyCauseList familyDailyCauseList;
+    DailyCauseList civilAndFamilyDailyCauseList;
 
     @Test
     void testFamilyCauseListTemplate() throws IOException {
         StringWriter writer = new StringWriter();
         IOUtils.copy(Files.newInputStream(Paths.get(
             "src/test/resources/mocks/",
-            "familyDailyCauseList.json"
+            "civilAndFamilyDailyCauseList.json"
                      )), writer,
                      Charset.defaultCharset()
         );
 
-        String emailOutput = familyDailyCauseList.artefactSummaryDailyCause(writer.toString());
+        String emailOutput = civilAndFamilyDailyCauseList
+            .artefactSummaryDailyCause(writer.toString());
 
         assertThat(emailOutput)
             .as("incorrect party name found")

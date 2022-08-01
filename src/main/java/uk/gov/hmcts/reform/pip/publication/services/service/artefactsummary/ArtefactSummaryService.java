@@ -17,7 +17,16 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 public class ArtefactSummaryService {
 
     @Autowired
-    FamilyDailyCauseList familyDailyCauseList;
+    DailyCauseList dailyCauseList;
+
+    @Autowired
+    SjpPublicList sjpPublicList;
+
+    @Autowired
+    SjpPressList sjpPressList;
+
+    @Autowired
+    CivilDailyCauseList civilDailyCauseList;
 
     /**
      * Parent class to route based on list types.
@@ -31,13 +40,14 @@ public class ArtefactSummaryService {
     public String artefactSummary(String payload, ListType listType) throws JsonProcessingException {
         switch (listType) {
             case SJP_PUBLIC_LIST:
-                return "SJP PUBLIC LIST";
+                return sjpPublicList.artefactSummarysjpPublic(payload);
             case SJP_PRESS_LIST:
-                return "SJP PRESS LIST";
+                return sjpPressList.artefactSummarysjpPress(payload);
             case CIVIL_DAILY_CAUSE_LIST:
-                return "CIVIL DAILY CAUSE LIST";
+                return civilDailyCauseList.artefactSummaryCivilDailyCause(payload);
             case FAMILY_DAILY_CAUSE_LIST:
-                return familyDailyCauseList.artefactSummaryFamilyDailyCause(payload);
+            case CIVIL_AND_FAMILY_DAILY_CAUSE_LIST:
+                return dailyCauseList.artefactSummaryDailyCause(payload);
             default:
                 return "";
         }

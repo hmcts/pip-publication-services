@@ -1,29 +1,17 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.lang3.StringUtils;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
-@SuppressWarnings("PMD.TooManyMethods")
-public final class Helpers {
+public final class DateHelper {
+
     private static final int ONE = 1;
 
-    private Helpers() {
+    private DateHelper() {
         throw new UnsupportedOperationException();
-    }
-
-    public static String formatTimeStampToBst(String timestamp, Boolean isTimeOnly,
-                                        Boolean isBothDateAndTime) {
-        ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
-        String pattern = getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern, Locale.UK);
-        return dtf.format(zonedDateTime);
     }
 
     public static String formatTimestampToBstForSjp(String timestamp) {
@@ -35,13 +23,16 @@ public final class Helpers {
         return dtf.format(zonedDateTime);
     }
 
-    public static String formatLocalDateTimeToBst(LocalDateTime date) {
-        return date.format(
-            DateTimeFormatter.ofPattern("dd MMMM yyyy"));
+    public static String formatTimeStampToBst(String timestamp, Boolean isTimeOnly,
+                                              Boolean isBothDateAndTime) {
+        ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
+        String pattern = DateHelper.getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+        return dtf.format(zonedDateTime);
     }
 
     private static String getDateTimeFormat(ZonedDateTime zonedDateTime, Boolean isTimeOnly,
-                                     Boolean isBothDateAndTime) {
+                                            Boolean isBothDateAndTime) {
         if (isTimeOnly) {
             if (zonedDateTime.getMinute() == 0) {
                 return "ha";
@@ -53,29 +44,19 @@ public final class Helpers {
         return "dd MMMM yyyy";
     }
 
+    public static String formatLocalDateTimeToBst(LocalDateTime date) {
+        return date.format(
+            DateTimeFormatter.ofPattern("dd MMMM yyyy"));
+    }
+
     public static ZonedDateTime convertStringToBst(String timestamp) {
         Instant unZonedDateTime = Instant.parse(timestamp);
         ZoneId zone = ZoneId.of("Europe/London");
         return unZonedDateTime.atZone(zone);
     }
 
-    public static String stringDelimiter(String text, String delimiter) {
-        return text.isEmpty() ? "" : delimiter;
-    }
-
-    public static String findAndReturnNodeText(JsonNode node, String nodeName) {
-        if (node.has(nodeName)) {
-            return node.get(nodeName).asText();
-        }
-        return "";
-    }
-
-    public static String trimAnyCharacterFromStringEnd(String text) {
-        return StringUtils.isBlank(text) ? "" : text.trim().replaceAll(",$", "");
-    }
-
     public static int convertTimeToMinutes(ZonedDateTime startDateTime,
-                                     ZonedDateTime endDateTime) {
+                                           ZonedDateTime endDateTime) {
         int diffHours = endDateTime.getHour() - startDateTime.getHour();
         int diffMinutes = endDateTime.getMinute() - startDateTime.getMinute();
 
@@ -101,18 +82,4 @@ public final class Helpers {
         return duration + " " + format;
     }
 
-    public static void appendToStringBuilder(StringBuilder builder, String text) {
-        builder.append(text);
-    }
-
-    public static void loopAndFormatString(JsonNode nodes, String nodeName,
-                                            StringBuilder builder, String delimiter) {
-        nodes.get(nodeName).forEach(node -> {
-            if (!node.asText().isEmpty()) {
-                builder
-                    .append(node.asText())
-                    .append(delimiter);
-            }
-        });
-    }
 }

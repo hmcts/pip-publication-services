@@ -28,7 +28,7 @@ public final class DataManipulation {
                 address.add(jsonNode.asText());
             }
         }
-        if (!Helpers.findAndReturnNodeText(artefact.get("venue").get("venueAddress"), POSTCODE).isEmpty()) {
+        if (!GeneralHelper.findAndReturnNodeText(artefact.get("venue").get("venueAddress"), POSTCODE).isEmpty()) {
             address.add(artefact.get("venue").get("venueAddress").get(POSTCODE).asText());
         }
         return address;
@@ -42,7 +42,7 @@ public final class DataManipulation {
             if (courtList.get(COURT_HOUSE).has("courtHouseAddress")) {
                 JsonNode courtHouseAddress = courtList.get(COURT_HOUSE).get("courtHouseAddress");
 
-                Helpers.loopAndFormatString(courtHouseAddress, "line",
+                GeneralHelper.loopAndFormatString(courtHouseAddress, "line",
                                             formattedCourtAddress, "|");
 
                 checkAndFormatAddress(courtHouseAddress, "town",
@@ -62,7 +62,7 @@ public final class DataManipulation {
 
     private static void checkAndFormatAddress(JsonNode node, String nodeName,
                                       StringBuilder builder, Character delimiter) {
-        if (!Helpers.findAndReturnNodeText(node, nodeName).isEmpty()) {
+        if (!GeneralHelper.findAndReturnNodeText(node, nodeName).isEmpty()) {
             builder
                 .append(node.get(nodeName).asText())
                 .append(delimiter);
@@ -98,9 +98,9 @@ public final class DataManipulation {
     }
 
     private static void manipulateCaseInformation(JsonNode hearingCase) {
-        if (!Helpers.findAndReturnNodeText(hearingCase, "caseSequenceIndicator").isEmpty()) {
+        if (!GeneralHelper.findAndReturnNodeText(hearingCase, "caseSequenceIndicator").isEmpty()) {
             ((ObjectNode)hearingCase).put("caseName",
-                Helpers.findAndReturnNodeText(hearingCase, "caseName")
+                GeneralHelper.findAndReturnNodeText(hearingCase, "caseName")
                     + " [" + hearingCase.get("caseSequenceIndicator").asText() + "]");
         }
 
@@ -114,7 +114,7 @@ public final class DataManipulation {
         StringBuilder respondent = new StringBuilder();
 
         hearing.get("party").forEach(party -> {
-            if (!Helpers.findAndReturnNodeText(party, "partyRole").isEmpty()) {
+            if (!GeneralHelper.findAndReturnNodeText(party, "partyRole").isEmpty()) {
                 switch (PartyRoleMapper.convertPartyRole(party.get("partyRole").asText())) {
                     case "APPLICANT_PETITIONER": {
                         formatPartyNonRepresentative(party, applicant);
@@ -123,7 +123,7 @@ public final class DataManipulation {
                     case "APPLICANT_PETITIONER_REPRESENTATIVE": {
                         final String applicantPetitionerDetails = createIndividualDetails(party);
                         if (!applicantPetitionerDetails.isEmpty()) {
-                            applicant.append("LEGALADVISOR: ");
+                            applicant.append("Legal Advisor: ");
                             applicant.append(applicantPetitionerDetails + ", ");
                         }
                         break;
@@ -135,7 +135,7 @@ public final class DataManipulation {
                     case "RESPONDENT_REPRESENTATIVE": {
                         final String respondentDetails = createIndividualDetails(party);
                         if (!respondentDetails.isEmpty()) {
-                            respondent.append("LEGALADVISOR: ");
+                            respondent.append("Legal Advisor: ");
                             respondent.append(respondentDetails + ", ");
                         }
                         break;
@@ -146,41 +146,41 @@ public final class DataManipulation {
             }
         });
 
-        ((ObjectNode)hearing).put("applicant", Helpers.trimAnyCharacterFromStringEnd(applicant.toString()));
-        ((ObjectNode)hearing).put("respondent", Helpers.trimAnyCharacterFromStringEnd(respondent.toString()));
+        ((ObjectNode)hearing).put("applicant", GeneralHelper.trimAnyCharacterFromStringEnd(applicant.toString()));
+        ((ObjectNode)hearing).put("respondent", GeneralHelper.trimAnyCharacterFromStringEnd(respondent.toString()));
     }
 
     private static void formatPartyNonRepresentative(JsonNode party, StringBuilder builder) {
         String respondentDetails = createIndividualDetails(party);
         respondentDetails = respondentDetails
-            + Helpers.stringDelimiter(respondentDetails, ", ");
+            + GeneralHelper.stringDelimiter(respondentDetails, ", ");
         builder.insert(0, respondentDetails);
     }
 
     private static String createIndividualDetails(JsonNode party) {
         if (party.has("individualDetails")) {
             JsonNode individualDetails = party.get("individualDetails");
-            return (Helpers.findAndReturnNodeText(individualDetails, "title") + " "
-                + Helpers.findAndReturnNodeText(individualDetails, "individualForenames") + " "
-                + Helpers.findAndReturnNodeText(individualDetails, "individualMiddleName") + " "
-                + Helpers.findAndReturnNodeText(individualDetails, "individualSurname")).trim();
+            return (GeneralHelper.findAndReturnNodeText(individualDetails, "title") + " "
+                + GeneralHelper.findAndReturnNodeText(individualDetails, "individualForenames") + " "
+                + GeneralHelper.findAndReturnNodeText(individualDetails, "individualMiddleName") + " "
+                + GeneralHelper.findAndReturnNodeText(individualDetails, "individualSurname")).trim();
         }
         return "";
     }
 
     private static void calculateDuration(JsonNode sitting) {
-        ZonedDateTime sittingStart = Helpers.convertStringToBst(sitting.get("sittingStart").asText());
-        ZonedDateTime sittingEnd = Helpers.convertStringToBst(sitting.get("sittingEnd").asText());
+        ZonedDateTime sittingStart = DateHelper.convertStringToBst(sitting.get("sittingStart").asText());
+        ZonedDateTime sittingEnd = DateHelper.convertStringToBst(sitting.get("sittingEnd").asText());
 
         double durationAsHours = 0;
-        double durationAsMinutes = Helpers.convertTimeToMinutes(sittingStart, sittingEnd);
+        double durationAsMinutes = DateHelper.convertTimeToMinutes(sittingStart, sittingEnd);
 
         if (durationAsMinutes >= MINUTES_PER_HOUR) {
             durationAsHours = Math.floor(durationAsMinutes / MINUTES_PER_HOUR);
             durationAsMinutes = durationAsMinutes - (durationAsHours * MINUTES_PER_HOUR);
         }
 
-        String formattedDuration = Helpers.formatDuration((int) durationAsHours,
+        String formattedDuration = DateHelper.formatDuration((int) durationAsHours,
             (int) durationAsMinutes);
 
         ((ObjectNode)sitting).put("formattedDuration", formattedDuration);
@@ -195,15 +195,15 @@ public final class DataManipulation {
         StringBuilder formattedHearingPlatform = new StringBuilder();
 
         if (sitting.has("channel")) {
-            Helpers.loopAndFormatString(sitting, "channel",
+            GeneralHelper.loopAndFormatString(sitting, "channel",
                                 formattedHearingPlatform, ", ");
         } else if (session.has("sessionChannel")) {
-            Helpers.loopAndFormatString(session, "sessionChannel",
+            GeneralHelper.loopAndFormatString(session, "sessionChannel",
                                 formattedHearingPlatform, ", ");
         }
 
         ((ObjectNode)sitting).put("caseHearingChannel",
-            Helpers.trimAnyCharacterFromStringEnd(formattedHearingPlatform.toString().trim()));
+            GeneralHelper.trimAnyCharacterFromStringEnd(formattedHearingPlatform.toString().trim()));
     }
 
     private static void formattedCourtRoomName(JsonNode courtRoom, JsonNode session,
@@ -215,7 +215,7 @@ public final class DataManipulation {
         }
 
         ((ObjectNode)session).put("formattedSessionCourtRoom",
-                                  Helpers.trimAnyCharacterFromStringEnd(formattedJudiciary.toString()));
+            GeneralHelper.trimAnyCharacterFromStringEnd(formattedJudiciary.toString()));
     }
 
     private static String findAndManipulateJudiciary(JsonNode session) {
@@ -224,12 +224,12 @@ public final class DataManipulation {
 
         if (session.has("judiciary")) {
             session.get("judiciary").forEach(judiciary -> {
-                if ("true".equals(Helpers.findAndReturnNodeText(judiciary, "isPresiding"))) {
+                if ("true".equals(GeneralHelper.findAndReturnNodeText(judiciary, "isPresiding"))) {
                     formattedJudiciary.set(new StringBuilder());
-                    formattedJudiciary.get().append(Helpers.findAndReturnNodeText(judiciary, "johKnownAs"));
+                    formattedJudiciary.get().append(GeneralHelper.findAndReturnNodeText(judiciary, "johKnownAs"));
                     foundPresiding.set(true);
                 } else if (!foundPresiding.get()) {
-                    String johKnownAs = Helpers.findAndReturnNodeText(judiciary, "johKnownAs");
+                    String johKnownAs = GeneralHelper.findAndReturnNodeText(judiciary, "johKnownAs");
                     if (StringUtils.isNotBlank(johKnownAs)) {
                         formattedJudiciary.get()
                             .append(johKnownAs)
@@ -238,11 +238,11 @@ public final class DataManipulation {
                 }
             });
 
-            if (!Helpers.trimAnyCharacterFromStringEnd(formattedJudiciary.toString()).isEmpty()) {
+            if (!GeneralHelper.trimAnyCharacterFromStringEnd(formattedJudiciary.toString()).isEmpty()) {
                 formattedJudiciary.get().insert(0, "Before: ");
             }
         }
 
-        return Helpers.trimAnyCharacterFromStringEnd(formattedJudiciary.toString());
+        return GeneralHelper.trimAnyCharacterFromStringEnd(formattedJudiciary.toString());
     }
 }

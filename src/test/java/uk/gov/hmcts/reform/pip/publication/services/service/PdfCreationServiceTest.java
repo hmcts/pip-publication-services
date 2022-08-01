@@ -76,15 +76,14 @@ class PdfCreationServiceTest {
         artefact.setLocationId("1");
         artefact.setProvenance("france");
         artefact.setListType(ListType.MAGS_STANDARD_LIST);
-
         Location location = new Location();
-        location.setName("Test Location");
+        location.setName("location");
 
         UUID uuid = UUID.randomUUID();
         String inputJson = "{\"document\":{\"value1\":\"x\",\"value2\":\"hiddenTestString\"}}";
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(inputJson);
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
-        when(dataManagementService.getLocation(artefact.getLocationId())).thenReturn(location);
+        when(dataManagementService.getLocation("1")).thenReturn(location);
 
         byte[] outputPdf = pdfCreationService.generatePdfFromHtml(pdfCreationService.jsonToHtml(uuid));
         try (PDDocument doc = PDDocument.load(outputPdf)) {
