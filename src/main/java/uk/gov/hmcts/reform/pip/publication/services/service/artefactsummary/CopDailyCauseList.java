@@ -17,7 +17,7 @@ public class CopDailyCauseList {
      * @return - The returned summary for the list.
      * @throws JsonProcessingException - Thrown if there has been an error while processing the JSON payload.
      */
-    public String createCopDailyCauseListSummary(String payload) throws JsonProcessingException {
+    public String artefactSummaryCopDailyCauseList(String payload) throws JsonProcessingException {
         JsonNode node = new ObjectMapper().readTree(payload);
 
         DataManipulation.manipulateCopListData(node);

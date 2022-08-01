@@ -23,6 +23,12 @@ public final class DateHelper {
         return dtf.format(zonedDateTime);
     }
 
+    public static String formatTimeStampToBst(String timestamp) {
+        ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm", Locale.UK);
+        return dtf.format(zonedDateTime);
+    }
+
     private static String getDateTimeFormat(ZonedDateTime zonedDateTime, Boolean isTimeOnly,
                                             Boolean isBothDateAndTime) {
         if (isTimeOnly) {

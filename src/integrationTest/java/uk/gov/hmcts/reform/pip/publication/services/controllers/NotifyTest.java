@@ -33,7 +33,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.TooManyMethods", "PMD.ImmutableField"})
+@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.TooManyMethods",
+    "PMD.ImmutableField", "PMD.AvoidDuplicateLiterals"})
 @SpringBootTest(classes = {Application.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -79,6 +80,16 @@ class NotifyTest {
         + "  \"subscriptions\": {\n"
         + "    \"CASE_URN\": [\n"
         + "      \"123\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
+
+    private static final String VALID_SJP_PUBLIC_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"e61a7e34-f950-4a6c-9200-7b94745b5a7a\",\n"
+        + "  \"email\": \"kian.kwa@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"LOCATION_ID\": [\n"
+        + "      \"9\"\n"
         + "    ]\n"
         + "  }\n"
         + "}";
@@ -313,6 +324,14 @@ class NotifyTest {
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(NONEXISTENT_BLOB_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadGateway());
+    }
+
+    @Test
+    void testValidPayloadForSubsSjpPublicListEmailReturnsOk() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(VALID_SJP_PUBLIC_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString("Subscription email successfully sent to")));
     }
 
     @Test

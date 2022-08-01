@@ -173,6 +173,7 @@ class PersonalisationServiceTest {
 
         byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("<Placeholder>");
         when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(pdfCreationService.generatePdfFromHtml(any())).thenReturn(testByteArray);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
@@ -303,6 +304,7 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
         when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
@@ -328,11 +330,14 @@ class PersonalisationServiceTest {
         subscriptionEmail.setArtefactId(uuid);
         subscriptionEmail.setSubscriptions(subscriptions);
 
+
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
         when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");

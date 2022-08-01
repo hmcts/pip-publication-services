@@ -18,6 +18,15 @@ public class ArtefactSummaryService {
     @Autowired
     CopDailyCauseList copDailyCauseList;
 
+    @Autowired
+    SjpPublicList sjpPublicList;
+
+    @Autowired
+    SjpPressList sjpPressList;
+
+    @Autowired
+    CivilDailyCauseList civilDailyCauseList;
+
     /**
      * Parent class to route based on list types.
      *
@@ -28,9 +37,19 @@ public class ArtefactSummaryService {
      * @throws JsonProcessingException - jackson prereq.
      */
     public String artefactSummary(String payload, ListType listType) throws JsonProcessingException {
-        if (listType == ListType.COP_DAILY_CAUSE_LIST) {
-            return copDailyCauseList.createCopDailyCauseListSummary(payload);
+        switch (listType) {
+            case SJP_PUBLIC_LIST:
+                return sjpPublicList.artefactSummarysjpPublic(payload);
+            case SJP_PRESS_LIST:
+                return sjpPressList.artefactSummarysjpPress(payload);
+            case CIVIL_DAILY_CAUSE_LIST:
+                return civilDailyCauseList.artefactSummaryCivilDailyCause(payload);
+            case FAMILY_DAILY_CAUSE_LIST:
+                return "fam_cause";
+            case COP_DAILY_CAUSE_LIST:
+                return copDailyCauseList.artefactSummaryCopDailyCauseList(payload);
+            default:
+                return "";
         }
-        return "";
     }
 }

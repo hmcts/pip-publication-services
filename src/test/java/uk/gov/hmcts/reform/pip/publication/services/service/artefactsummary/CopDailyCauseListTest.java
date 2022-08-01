@@ -29,7 +29,7 @@ class CopDailyCauseListTest {
                      )), writer, Charset.defaultCharset()
         );
 
-        String emailOutput = copDailyCauseList.createCopDailyCauseListSummary(writer.toString());
+        String emailOutput = copDailyCauseList.artefactSummaryCopDailyCauseList(writer.toString());
 
         assertThat(emailOutput)
             .as("incorrect case suppression name found")
