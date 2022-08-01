@@ -117,7 +117,7 @@ class DataManipulationTest {
     }
 
     @Test
-    void testformatRegionNameWhenNotPresent() throws IOException {
+    void testFormatRegionNameWhenNotPresent() throws IOException {
         StringWriter writer = new StringWriter();
         IOUtils.copy(Files.newInputStream(
             Paths.get("src/test/resources/mocks/copDailyCauseListMissingRegion.json")), writer,
