@@ -10,7 +10,6 @@ import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Service;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientConfigurationTest;
@@ -65,7 +64,6 @@ class SscsDailyListConverterTest {
             .hasSize(12)
             .extracting(Element::text)
             .containsSequence("Thank you for reading this document thoroughly.");
-
 
 
     }
