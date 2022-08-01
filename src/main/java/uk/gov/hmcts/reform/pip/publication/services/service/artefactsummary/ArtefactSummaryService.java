@@ -46,7 +46,6 @@ public class ArtefactSummaryService {
             case CIVIL_DAILY_CAUSE_LIST:
                 return civilDailyCauseList.artefactSummaryCivilDailyCause(payload);
             case FAMILY_DAILY_CAUSE_LIST:
-                return dailyCauseList.artefactSummaryDailyCause(payload);
             case CIVIL_AND_FAMILY_DAILY_CAUSE_LIST:
                 return dailyCauseList.artefactSummaryDailyCause(payload);
             default:
