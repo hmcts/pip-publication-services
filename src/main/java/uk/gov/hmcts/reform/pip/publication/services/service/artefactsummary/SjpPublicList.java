@@ -58,7 +58,7 @@ public class SjpPublicList {
                     String forenames = currentParty.get(INDIVIDUAL_DETAILS).get("individualForenames").asText();
                     String surname = currentParty.get(INDIVIDUAL_DETAILS).get("individualSurname").asText();
                     String postCode = currentParty.get(INDIVIDUAL_DETAILS).get("address").get("postCode").asText();
-                    outputString.append("Accused: ").append(forenames).append(' ').append(surname);
+                    outputString.append("Defendant: ").append(forenames).append(' ').append(surname);
                     outputString.append("\nPostcode: ").append(postCode).append('\n');
                     break;
                 case "PROSECUTOR":

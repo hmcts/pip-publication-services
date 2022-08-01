@@ -93,7 +93,7 @@ public class CivilDailyCauseList {
     /**
      * sitting iteration class - deals with hearing channel, start time and hearing data (e.g. case names, refs etc)
      *
-     * @param node - node of sittings.
+     * @param node           - node of sittings.
      * @param sessionChannel - session channel passed in from parent method - overridden if sitting level channel
      *                       exists.
      * @return string of these bits.
@@ -117,7 +117,7 @@ public class CivilDailyCauseList {
             String startTime =
                 outputfmt.format(LocalDateTime.from(inputfmt.parse(currentSitting.get("sittingStart").asText())));
             outputString.append(processCivilDailyHearings(currentSitting))
-                .append(": \nStart Time: ").append(startTime)
+                .append("\nStart Time: ").append(startTime)
                 .append(processCivilDailyChannels(sessionChannel, currentSitting.path("channel")));
         }
         return outputString.toString();
@@ -127,23 +127,24 @@ public class CivilDailyCauseList {
      * hearing channel handler. Sitting channel takes precedence over session channel if both exist (session channel
      * is mandatory, however).
      *
-     * @param sessionChannel - mentioned above.
+     * @param sessionChannel     - mentioned above.
      * @param currentSittingNode - node for getting current sitting channel data.
      * @return - string of correct channel.
      */
     private String processCivilDailyChannels(List<String> sessionChannel, JsonNode currentSittingNode) {
-        StringBuilder outputString = new StringBuilder();
+        StringBuilder outputString = new StringBuilder("\nHearing Channel: ");
         ObjectMapper mapper = new ObjectMapper();
-        if (currentSittingNode.isMissingNode()) {
+        if (currentSittingNode.isMissingNode() || currentSittingNode.isEmpty()) {
+            if (sessionChannel.isEmpty()) {
+                return "";
+            }
             for (String channel : sessionChannel) {
-                outputString.append('\n').append(channel);
+                outputString.append(channel);
             }
         } else {
             List<String> channelList = mapper.convertValue(currentSittingNode, new TypeReference<List<String>>() {
             });
-            for (String channel : channelList) {
-                outputString.append('\n').append(channel);
-            }
+            outputString.append(String.join(", ", channelList));
         }
         return outputString.toString();
     }
