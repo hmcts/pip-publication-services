@@ -84,7 +84,7 @@ class SjpPublicListConverterTest {
             .extracting(Element::text)
             .contains("Single Justice Procedure cases that are ready for hearing");
 
-        assertThat(doc.getElementsByTag("p"))
+        assertThat(doc.getElementsByClass("header").get(0).getElementsByTag("p"))
             .as("Incorrect p elements")
             .hasSize(2)
             .extracting(Element::text)
