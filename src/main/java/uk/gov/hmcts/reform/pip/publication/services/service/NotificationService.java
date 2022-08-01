@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
@@ -44,7 +45,8 @@ public class NotificationService {
      *             {email: 'example@email.com', isExisting: 'true'}
      */
     public String handleWelcomeEmailRequest(WelcomeEmail body) {
-        log.info(writeLog(String.format("Welcome email being processed for user %s", body.getEmail())));
+        log.info(writeLog(String.format("Welcome email being processed for user %s",
+                                        EmailHelper.maskEmail(body.getEmail()))));
 
         return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
             ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
@@ -59,7 +61,8 @@ public class NotificationService {
      */
     public String azureNewUserEmailRequest(CreatedAdminWelcomeEmail body) {
         log.info(writeLog(String.format("New User Welcome email "
-                                                   + "being processed for user %s", body.getEmail())));
+                                                   + "being processed for user %s",
+                                        EmailHelper.maskEmail(body.getEmail()))));
 
         EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body,
                                                                        Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
@@ -88,7 +91,8 @@ public class NotificationService {
      * @return The ID that references the subscription message.
      */
     public String subscriptionEmailRequest(SubscriptionEmail body) {
-        log.info(writeLog(String.format("Sending subscription email for user %s", body.getEmail())));
+        log.info(writeLog(String.format("Sending subscription email for user %s",
+                                        EmailHelper.maskEmail(body.getEmail()))));
 
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
         if (artefact.getIsFlatFile()) {
