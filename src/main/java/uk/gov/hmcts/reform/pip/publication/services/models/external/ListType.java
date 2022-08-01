@@ -8,7 +8,10 @@ import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Conve
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.FamilyDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPressListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPublicListConverter;
+<<<<<<< HEAD
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SscsDailyListConverter;
+=======
+>>>>>>> master
 
 /**
  * Enum that represents the different list types.
@@ -26,7 +29,13 @@ public enum ListType {
     MAGS_STANDARD_LIST,
     CIVIL_DAILY_CAUSE_LIST(new CivilDailyCauseListConverter()),
     FAMILY_DAILY_CAUSE_LIST(new FamilyDailyCauseListConverter()),
+<<<<<<< HEAD
     SSCS_DAILY_LIST(new SscsDailyListConverter());
+=======
+    CIVIL_AND_FAMILY_DAILY_CAUSE_LIST,
+    COP_DAILY_CAUSE_LIST,
+    SSCS_DAILY_LIST;
+>>>>>>> master
 
     private Converter converter;
 }

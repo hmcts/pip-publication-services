@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 
+=======
+>>>>>>> master
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -13,7 +16,10 @@ import java.time.format.DateTimeFormatter;
 /**
  * Class for static utility methods assisting with json->html->pdf issues.
  */
+<<<<<<< HEAD
 @Slf4j
+=======
+>>>>>>> master
 public final class Helpers {
 
     private Helpers() {
@@ -33,6 +39,7 @@ public final class Helpers {
         return date.format(
             DateTimeFormatter.ofPattern("dd MMMM yyyy"));
     }
+<<<<<<< HEAD
 
     public static String timeStampToBstTime(String timestamp) {
         Instant unZonedDateTime = Instant.parse(timestamp);
@@ -82,4 +89,6 @@ public final class Helpers {
             throw new NullPointerException();
         }
     }
+=======
+>>>>>>> master
 }

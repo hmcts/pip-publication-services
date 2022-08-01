@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,7 +41,7 @@ public class PdfCreationService {
      * @return byteArray representing the generated PDF.
      * @throws IOException - uses file streams so needs this.
      */
-    public byte[] jsonToPdf(UUID inputPayloadUuid) throws IOException {
+    public String jsonToHtml(UUID inputPayloadUuid) throws IOException {
         String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
         Location location = dataManagementService.getLocation(artefact.getLocationId());
@@ -62,7 +60,7 @@ public class PdfCreationService {
             htmlFile = parseThymeleafTemplate(rawJson);
         }
 
-        return generatePdfFromHtml(htmlFile);
+        return htmlFile;
     }
 
     /**
@@ -92,9 +90,15 @@ public class PdfCreationService {
             builder.useFastMode();
             builder.usePdfUaAccessbility(true);
             builder.usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_3_U);
-            File ourFont = new ClassPathResource(
-                "gdsFont.otf").getFile();
-            builder.useFont(ourFont, "GDS Transport");
+
+            File file = new File("/opt/app/gdsFont.otf");
+            if (file.exists()) {
+                builder.useFont(file, "GDS Transport");
+            } else {
+                builder.useFont(new File(Thread.currentThread().getContextClassLoader()
+                                             .getResource("gdsFont.otf").getFile()), "GDS Transport");
+            }
+
             builder.withHtmlContent(html, null);
             builder.toStream(baos);
             builder.run();
