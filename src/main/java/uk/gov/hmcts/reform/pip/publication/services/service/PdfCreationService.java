@@ -48,10 +48,11 @@ public class PdfCreationService {
         String htmlFile;
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
         Map<String, String> metadataMap = Map.of(
-        "contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
-        "provenance", artefact.getProvenance(),
-        "location", location.getName(),
-        "language", artefact.getLanguage().toString());
+            "contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
+            "provenance", artefact.getProvenance(),
+            "location", location.getName(),
+            "language", artefact.getLanguage().toString()
+        );
 
         Converter converter = artefact.getListType().getConverter();
         if (converter != null) {

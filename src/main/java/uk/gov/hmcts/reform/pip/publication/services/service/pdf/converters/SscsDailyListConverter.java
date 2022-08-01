@@ -17,12 +17,12 @@ import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers.safeGet;
 import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers.safeGetNode;
@@ -33,7 +33,6 @@ public class SscsDailyListConverter implements Converter {
     @Override
     public String convert(JsonNode highestLevelNode, Map<String, String> metadata) throws IOException {
         Context context = new Context();
-        String testString = safeGet("venue.venueContact.venueFax", highestLevelNode);
         context.setVariable("i18n", handleLanguages(metadata));
         context.setVariable("metadata", metadata);
         context.setVariable("telephone", safeGet("venue.venueContact.venueTelephone", highestLevelNode));
@@ -63,6 +62,7 @@ public class SscsDailyListConverter implements Converter {
         return thisCourtHouse;
     }
 
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     private CourtRoom courtRoomBuilder(JsonNode node) throws JsonProcessingException {
         CourtRoom thisCourtRoom = new CourtRoom();
         thisCourtRoom.setName(safeGet("courtRoomName", node));
@@ -118,7 +118,7 @@ public class SscsDailyListConverter implements Converter {
     }
 
     private void handleParties(JsonNode node, Hearing hearing) {
-        Map<String, String> parties = new HashMap<>();
+        Map<String, String> parties = new ConcurrentHashMap<>();
         for (JsonNode party : node) {
             switch (party.get("partyRole").asText()) {
                 case "APPLICANT_PETITIONER":
@@ -153,8 +153,7 @@ public class SscsDailyListConverter implements Converter {
 
     private String individualDetails(JsonNode node) {
         List<String> listOfRetrievedData = new ArrayList<>();
-        String[] possibleFields = new String[]{"title", "individualForenames", "individualMiddleName",
-            "individualSurname"};
+        String[] possibleFields = {"title", "individualForenames", "individualMiddleName", "individualSurname"};
         for (String field : possibleFields) {
             Optional<String> detail = Optional.ofNullable(node.get("individualDetails").findValue(field))
                 .map(JsonNode::asText)
@@ -179,7 +178,7 @@ public class SscsDailyListConverter implements Converter {
             }
             formattedJudiciaryBuilder
                 .append(safeGet("johTitle", judiciary))
-                .append(" ").append(safeGet("johNameSurname", judiciary));
+                .append(' ').append(safeGet("johNameSurname", judiciary));
         });
         return formattedJudiciaryBuilder.toString();
     }
