@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Class for static utility methods assisting with json->html->pdf issues.
  */
 @Slf4j
+@SuppressWarnings("PMD.TooManyMethods")
 public final class Helpers {
 
     private Helpers() {
@@ -96,9 +97,9 @@ public final class Helpers {
                 default:
                     break;
             }
-            hearing.setAppellant(parties.get("applicant") + ", Legal Advisor: " + parties.get(
+            hearing.setAppellant(parties.get("applicant") + ",\nLegal Advisor: " + parties.get(
                 "applicantRepresentative"));
-            hearing.setRespondent(parties.get("respondent") + ", Legal Advisor: " + parties.get(
+            hearing.setRespondent(parties.get("respondent") + ",\nLegal Advisor: " + parties.get(
                 "respondentRepresentative"));
         }
     }
