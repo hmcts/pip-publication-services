@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
+import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
@@ -132,7 +133,8 @@ public class PersonalisationService {
             log.info("Personalisation map created");
             return personalisation;
         } catch (Exception e) {
-            log.warn("Error adding attachment to raw data email {}. Artefact ID: {}", body.getEmail(),
+            log.warn("Error adding attachment to raw data email {}. Artefact ID: {}",
+                     EmailHelper.maskEmail(body.getEmail()),
                      artefact.getArtefactId()
             );
             throw new NotifyException(e.getMessage());
@@ -160,7 +162,8 @@ public class PersonalisationService {
 
             return personalisation;
         } catch (NotificationClientException e) {
-            log.warn("Error adding attachment to flat file email {}. Artefact ID: {}", body.getEmail(),
+            log.warn("Error adding attachment to flat file email {}. Artefact ID: {}",
+                     EmailHelper.maskEmail(body.getEmail()),
                      artefact.getArtefactId());
             throw new NotifyException(e.getMessage());
         }
