@@ -163,7 +163,6 @@ public class SscsDailyListConverter implements Converter {
         return String.join(" ", listOfRetrievedData);
     }
 
-
     /**
      * Format the judiciary into a comma seperated string.
      *

@@ -11,7 +11,9 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -74,11 +76,15 @@ class PdfCreationServiceTest {
         artefact.setContentDate(LocalDateTime.now());
         artefact.setLocationId("1");
         artefact.setProvenance("france");
+        artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.MAGS_STANDARD_LIST);
+        Location location = new Location();
+        location.setName("location");
         UUID uuid = UUID.randomUUID();
         String inputJson = "{\"document\":{\"value1\":\"x\",\"value2\":\"hiddenTestString\"}}";
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(inputJson);
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
+        when(dataManagementService.getLocation("1")).thenReturn(location);
 
         byte[] outputPdf = pdfCreationService.generatePdfFromHtml(pdfCreationService.jsonToHtml(uuid));
         try (PDDocument doc = PDDocument.load(outputPdf)) {

@@ -43,7 +43,7 @@ public final class Helpers {
         return dtf.format(zonedDateTime);
     }
 
-    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+    @SuppressWarnings("PMD.AvoidCatchingNPE")
     public static String safeGet(String jsonPath, JsonNode node) {
         String[] stringArray = jsonPath.split("\\.");
         JsonNode outputNode = node;
@@ -64,7 +64,7 @@ public final class Helpers {
         }
     }
 
-    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+    @SuppressWarnings("PMD.AvoidCatchingNPE")
     public static JsonNode safeGetNode(String jsonPath, JsonNode node) {
         String[] stringArray = jsonPath.split("\\.");
         JsonNode outputNode = node;
