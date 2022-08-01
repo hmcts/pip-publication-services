@@ -55,13 +55,10 @@ public class PdfCreationService {
         );
 
         Converter converter = artefact.getListType().getConverter();
-        if (converter != null) {
-            htmlFile = converter.convert(topLevelNode, metadataMap);
-        } else {
-            htmlFile = parseThymeleafTemplate(rawJson);
-        }
 
-        return htmlFile;
+        return (converter == null)
+            ? parseThymeleafTemplate(rawJson)
+            : converter.convert(topLevelNode, metadataMap);
     }
 
     /**
