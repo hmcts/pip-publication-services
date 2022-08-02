@@ -39,6 +39,7 @@ public class PdfCreationService {
     private DataManagementService dataManagementService;
 
     private static final String pathToLanguages = "templates/languages/";
+
     /**
      * Wrapper class for the entire json to pdf process.
      *
@@ -51,9 +52,10 @@ public class PdfCreationService {
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
         Map<String, String> metadataMap =
             Map.of("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
-                   "provenance", artefact.getProvenance(), "location", artefact.getLocationId());
+                   "provenance", artefact.getProvenance(), "location", artefact.getLocationId()
+            );
 
-        Map<Object, String> language = handleLanguages(artefact.getListType(), artefact.getLanguage());
+        Map<String, Object> language = handleLanguages(artefact.getListType(), artefact.getLanguage());
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
 
         Converter converter = artefact.getListType().getConverter();
@@ -62,7 +64,7 @@ public class PdfCreationService {
             : converter.convert(topLevelNode, metadataMap, language);
     }
 
-    private Map<Object, String> handleLanguages(ListType listType, Language language) throws IOException {
+    private Map<String, Object> handleLanguages(ListType listType, Language language) throws IOException {
         String path;
         String languageString = Helpers.listTypeToCamelCase(listType);
         if (language.equals(Language.ENGLISH)) {
@@ -74,7 +76,8 @@ public class PdfCreationService {
         try (InputStream languageFile = Thread.currentThread()
             .getContextClassLoader().getResourceAsStream(path)) {
             return new ObjectMapper().readValue(
-                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {});
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
         }
     }
 

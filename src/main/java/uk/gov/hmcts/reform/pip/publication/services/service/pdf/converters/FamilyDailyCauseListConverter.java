@@ -7,7 +7,7 @@ import java.util.Map;
 public class FamilyDailyCauseListConverter implements Converter {
 
     @Override
-    public String convert(JsonNode artefact, Map<String, String> metadata, Map<Object, String> language) {
+    public String convert(JsonNode artefact, Map<String, String> metadata, Map<String, Object> language) {
         return null;
     }
 
