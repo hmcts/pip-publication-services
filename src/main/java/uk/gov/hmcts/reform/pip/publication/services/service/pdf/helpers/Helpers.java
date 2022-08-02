@@ -30,6 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("PMD.TooManyMethods")
 public final class Helpers {
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
     private Helpers() {
         throw new UnsupportedOperationException();
     }
@@ -87,7 +89,6 @@ public final class Helpers {
                 "respondentRepresentative"));
         }
     }
-
 
     private static Hearing hearingBuilder(JsonNode hearingNode) {
         Hearing currentHearing = new Hearing();
@@ -147,7 +148,7 @@ public final class Helpers {
         sitting.setJudiciary(judiciary);
         List<Hearing> listOfHearings = new ArrayList<>();
         if (node.has("channel")) {
-            List<String> channelList = new ObjectMapper().readValue(
+            List<String> channelList = MAPPER.readValue(
                 node.get("channel").toString(), new TypeReference<>() {
                 });
             sitting.setChannel(String.join(", ", channelList));
@@ -185,16 +186,16 @@ public final class Helpers {
         return formattedJudiciaryBuilder.toString();
     }
 
-    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     private static CourtRoom scssCourtRoomBuilder(JsonNode node) throws JsonProcessingException {
         CourtRoom thisCourtRoom = new CourtRoom();
         thisCourtRoom.setName(safeGet("courtRoomName", node));
         List<Sitting> sittingList = new ArrayList<>();
+        List<String> sessionChannel;
+        TypeReference<List<String>> typeReference = new TypeReference<>() {};
         for (final JsonNode session : node.get("session")) {
-            List<String> sessionChannel = new ObjectMapper().readValue(
+            sessionChannel = MAPPER.readValue(
                 session.get("sessionChannel").toString(),
-                new TypeReference<>() {
-                }
+                typeReference
             );
             String judiciary = scssFormatJudiciary(session);
             String sessionChannelString = String.join(", ", sessionChannel);
@@ -205,8 +206,6 @@ public final class Helpers {
         thisCourtRoom.setListOfSittings(sittingList);
         return thisCourtRoom;
     }
-
-
 
     public static CourtHouse courtHouseBuilder(JsonNode node) throws JsonProcessingException {
         JsonNode thisCourtHouseNode = node.get("courtHouse");

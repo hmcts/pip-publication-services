@@ -19,12 +19,12 @@ public class SjpPublicListConverter implements Converter {
 
     /**
      * Convert SJP public cases into HMTL file for PDF generation.
+     *
      * @param artefact Tree object model for artefact
      * @param metadata Artefact metadata
      * @return the HTML representation of the SJP public cases
      */
     @Override
-
     public String convert(JsonNode artefact, Map<String, String> metadata) {
         Context context = new Context();
         String publicationDate = Helpers.formatTimestampToBst(
