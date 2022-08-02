@@ -124,9 +124,9 @@ class NotifyTest {
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
 
 
-    private static final Map<String, String> mapOfListData = Map.of("SSCS Daily List", VALID_SCSS_DAILY_LIST_SUBS_EMAIL,
-                                                                    "SJP Public List", VALID_SJP_PUBLIC_SUBS_EMAIL,
-                                                                    "SJP Press List", VALID_SJP_PRESS_SUBS_EMAIL
+    private static final Map<String, String> LIST_MAP = Map.of("SSCS Daily List", VALID_SCSS_DAILY_LIST_SUBS_EMAIL,
+                                                               "SJP Public List", VALID_SJP_PUBLIC_SUBS_EMAIL,
+                                                               "SJP Press List", VALID_SJP_PRESS_SUBS_EMAIL
     );
 
     private MockWebServer externalApiMockServer;
@@ -331,7 +331,7 @@ class NotifyTest {
     @ValueSource(strings = {"SSCS Daily List", "SJP Public List", "SJP Press List"})
     void testValidPayloadForAllSubsEmailTypesReturnsOk(String listType) throws Exception {
         MvcResult value = mockMvc.perform(post(SUBSCRIPTION_URL)
-                                              .content(mapOfListData.get(listType))
+                                              .content(LIST_MAP.get(listType))
                                               .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
             .andReturn();
         assertThat(value.getResponse().getContentAsString()).as("Failed - List type = " + listType)
