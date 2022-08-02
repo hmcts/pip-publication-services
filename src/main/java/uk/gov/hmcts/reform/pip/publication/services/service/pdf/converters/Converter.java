@@ -11,6 +11,6 @@ public interface Converter {
      *
      * @return The converted HTML as a string;
      */
-    String convert(JsonNode artefact, Map<String, String> metadata);
+    String convert(JsonNode artefact, Map<String, String> metadata, Map<Object, String> language);
 
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 public class CivilDailyCauseListConverter implements Converter {
 
     @Override
-    public String convert(JsonNode artefact, Map<String, String> metadata) {
+    public String convert(JsonNode artefact, Map<String, String> metadata, Map<Object, String> language) {
         return null;
     }
 

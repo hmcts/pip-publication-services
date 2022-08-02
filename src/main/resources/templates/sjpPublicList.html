@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <style>
+    <style th:inline="text">
       @page {
         margin: 30px 20px;
 
@@ -9,8 +9,7 @@
           font-family: 'GDS Transport';
           font-size: 16px;
           color: grey;
-          content: "Court and Tribunal Hearings Service - PDF/UA page " counter(page) " of " counter(pages) ".";
-        }
+          content: "[[${i18n.serviceName + i18n.pdfAccessibility}]]"  counter(page) "[[${i18n.of}]]" counter(pages) ".";        }
       }
       body {
         font-family: 'GDS Transport';
@@ -35,17 +34,16 @@
   <body>
     <div class = "header">
     <img src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png" alt="HMCTS Logo"/>
-    <h1>Court and Tribunal Hearings Service</h1>
-      <h2>Single Justice Procedure Public List</h2>
-      <p>List for <span th:text="${contentDate}"/></p>
-      <p>Published: <span th:text="${publicationDate}"/></p>
-      <h3>Single Justice Procedure cases that are ready for hearing</h3>
+    <h1 th:text="i18n.serviceName"/>
+      <h2 th:text="i18n.listTitle"/>
+      <p th:text="${i18n.listFor + contentDate}"/></p>
+      <p th:text="${i18n.published + publicationDate}"/>
+      <h3 th:text="${i18n.subHeader}"/>
       <table>
         <tr>
-          <th>Name</th>
-          <th>Postcode</th>
-          <th>Offence</th>
-          <th>Prosecutor</th>
+          <th:block th:each="heading: ${i18n.tableHeadings}">
+          <th th:text="${heading}"/>
+          </th:block>
         </tr>
         <tr th:each="case : ${cases}">
           <td th:text="${case.name}"/>

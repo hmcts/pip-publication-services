@@ -34,7 +34,7 @@ public class SjpPressListConverter implements Converter {
      * @return - html string of final output
      */
     @Override
-    public String convert(JsonNode jsonBody, Map<String, String> metadata) {
+    public String convert(JsonNode jsonBody, Map<String, String> metadata, Map<Object, String> language) {
         Context context = new Context();
         List<SjpPressList> caseList = new ArrayList<>();
         int count = 1;

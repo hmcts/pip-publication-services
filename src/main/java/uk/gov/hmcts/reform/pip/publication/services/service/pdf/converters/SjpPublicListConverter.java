@@ -24,7 +24,7 @@ public class SjpPublicListConverter implements Converter {
      * @return the HTML representation of the SJP public cases
      */
     @Override
-    public String convert(JsonNode artefact, Map<String, String> metadata) {
+    public String convert(JsonNode artefact, Map<String, String> metadata, Map<Object, String> language) {
         Context context = new Context();
         String publicationDate = Helpers.formatTimestampToBst(
             artefact.get("document").get("publicationDate").textValue()
@@ -40,6 +40,7 @@ public class SjpPublicListConverter implements Converter {
                 .get("sittings")
         );
         context.setVariable("cases", cases);
+        context.setVariable("i18n", language);
 
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         return templateEngine.process("sjpPublicList.html", context);

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
@@ -10,13 +11,17 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -33,6 +38,7 @@ public class PdfCreationService {
     @Autowired
     private DataManagementService dataManagementService;
 
+    private static final String pathToLanguages = "templates/languages/";
     /**
      * Wrapper class for the entire json to pdf process.
      *
@@ -47,12 +53,29 @@ public class PdfCreationService {
             Map.of("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
                    "provenance", artefact.getProvenance(), "location", artefact.getLocationId());
 
+        Map<Object, String> language = handleLanguages(artefact.getListType(), artefact.getLanguage());
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
 
         Converter converter = artefact.getListType().getConverter();
         return (converter == null)
             ? parseThymeleafTemplate(rawJson)
-            : converter.convert(topLevelNode, metadataMap);
+            : converter.convert(topLevelNode, metadataMap, language);
+    }
+
+    private Map<Object, String> handleLanguages(ListType listType, Language language) throws IOException {
+        String path;
+        String languageString = Helpers.listTypeToCamelCase(listType);
+        if (language.equals(Language.ENGLISH)) {
+            path = pathToLanguages + "en/" + languageString + ".json";
+        } else {
+            path = pathToLanguages + "cy/" + languageString + ".json";
+        }
+
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream(path)) {
+            return new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {});
+        }
     }
 
     /**
