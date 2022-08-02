@@ -9,6 +9,8 @@ import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -120,6 +122,12 @@ class NotifyTest {
     private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
+
+
+    private static final Map<String, String> mapOfListData = Map.of("SSCS Daily List", VALID_SCSS_DAILY_LIST_SUBS_EMAIL,
+                                                                    "SJP Public List", VALID_SJP_PUBLIC_SUBS_EMAIL,
+                                                                    "SJP Press List", VALID_SJP_PRESS_SUBS_EMAIL
+    );
 
     private MockWebServer externalApiMockServer;
 
@@ -319,46 +327,15 @@ class NotifyTest {
     }
 
 
-    @Test
-    void testValidPayloadForAllSubsEmailTypesReturnsOk() throws Exception {
-        Map<String, String> inputData = Map.of("SSCS Daily List", VALID_SCSS_DAILY_LIST_SUBS_EMAIL,
-                                               "SJP Public List", VALID_SJP_PUBLIC_SUBS_EMAIL,
-                                               "SJP Press List", VALID_SJP_PRESS_SUBS_EMAIL
-        );
-
-        for (String listType : inputData.keySet()) {
-            MvcResult value = mockMvc.perform(post(SUBSCRIPTION_URL)
-                                                  .content(inputData.get(listType))
-                                                  .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-                .andReturn();
-
-            assertThat(value.getResponse().getContentAsString()).as("Failed - List type = " + listType)
-                .contains(SUBS_EMAIL_SUCCESS);
-        }
-    }
-
-    @Test
-    void testValidPayloadForSubsSjpPublicListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_SJP_PUBLIC_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString(SUBS_EMAIL_SUCCESS)));
-    }
-
-    @Test
-    void testValidPayloadForSubsSjpPressListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_SJP_PRESS_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString(SUBS_EMAIL_SUCCESS)));
-    }
-
-    @Test
-    void testValidPayloadForSubsScssDailyListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_SCSS_DAILY_LIST_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString(SUBS_EMAIL_SUCCESS)));
+    @ParameterizedTest
+    @ValueSource(strings = {"SSCS Daily List", "SJP Public List", "SJP Press List"})
+    void testValidPayloadForAllSubsEmailTypesReturnsOk(String listType) throws Exception {
+        MvcResult value = mockMvc.perform(post(SUBSCRIPTION_URL)
+                                              .content(mapOfListData.get(listType))
+                                              .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andReturn();
+        assertThat(value.getResponse().getContentAsString()).as("Failed - List type = " + listType)
+            .contains(SUBS_EMAIL_SUCCESS);
     }
 
     @Test
