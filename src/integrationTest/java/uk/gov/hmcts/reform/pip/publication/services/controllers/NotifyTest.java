@@ -100,11 +100,11 @@ class NotifyTest {
         + "}";
 
     private static final String VALID_SCSS_DAILY_LIST_SUBS_EMAIL =
-        "{\n  \"\"artefactId\": \"69745ab9-137b-4fd2-a15a-42cc85bf8d49\",\n"
+        "{\n  \"artefactId\": \"69745ab9-137b-4fd2-a15a-42cc85bf8d49\",\n"
             + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
-            + "  \"subscriptions\": {\n\"LOCATION_ID\": [\n"
-            + "      \"9\"\n]\n}\n}";
-
+            + "  \"subscriptions\": {\n"
+            + "    \"CASE_URN\": [\n"
+            + "      \"123\"\n]\n}\n}";
 
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
@@ -328,8 +328,8 @@ class NotifyTest {
 
         for (String listType : inputData.keySet()) {
             MvcResult value = mockMvc.perform(post(SUBSCRIPTION_URL)
-                                               .content(inputData.get(listType))
-                                               .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                                                  .content(inputData.get(listType))
+                                                  .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
                 .andReturn();
 
             assertThat(value.getResponse().getContentAsString()).as("Failed - List type = " + listType)
