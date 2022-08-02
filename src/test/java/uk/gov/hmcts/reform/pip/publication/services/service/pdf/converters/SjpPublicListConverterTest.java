@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
@@ -13,16 +14,21 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SjpPublicListConverterTest {
     private final SjpPublicListConverter converter = new SjpPublicListConverter();
     private final Map<String, String> metaData = Collections.singletonMap("contentDate", "1 July 2022");
+    private final Map<String, Object> language = handleLanguage();
+
+    SjpPublicListConverterTest() throws IOException {
+    }
 
     @Test
     void testSuccessfulConversion() throws IOException {
-        String result = converter.convert(getInput("/mocks/sjpPublicList.json"), metaData);
+        String result = converter.convert(getInput("/mocks/sjpPublicList.json"), metaData, language);
         Document doc = Jsoup.parse(result);
         assertTitleAndDescription(doc);
 
@@ -42,7 +48,7 @@ class SjpPublicListConverterTest {
 
     @Test
     void testConversionWithMissingField() throws IOException {
-        String result = converter.convert(getInput("/mocks/sjpPublicListMissingPostcode.json"), metaData);
+        String result = converter.convert(getInput("/mocks/sjpPublicListMissingPostcode.json"), metaData, language);
         Document doc = Jsoup.parse(result);
         assertTitleAndDescription(doc);
 
@@ -61,6 +67,15 @@ class SjpPublicListConverterTest {
         try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
             String inputRaw = IOUtils.toString(inputStream, Charset.defaultCharset());
             return new ObjectMapper().readTree(inputRaw);
+        }
+    }
+
+    private Map<String, Object> handleLanguage () throws IOException {
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("templates/languages/en/sjpPublicList.json")) {
+            return new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
         }
     }
 

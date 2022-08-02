@@ -72,7 +72,6 @@ public class PdfCreationService {
         } else {
             path = pathToLanguages + "cy/" + languageString + ".json";
         }
-
         try (InputStream languageFile = Thread.currentThread()
             .getContextClassLoader().getResourceAsStream(path)) {
             return new ObjectMapper().readValue(

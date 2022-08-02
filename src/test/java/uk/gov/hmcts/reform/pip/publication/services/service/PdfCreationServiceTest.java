@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import com.openhtmltopdf.util.XRRuntimeException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.language.bm.Lang;
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 
 import java.io.IOException;
@@ -70,11 +72,13 @@ class PdfCreationServiceTest {
 
     @Test
     void testJsontoHtmltoPdf() throws IOException {
+//      todo remove this test or switch it for a better full PDF journey one once mags pubs are in.
         Artefact artefact = new Artefact();
         artefact.setContentDate(LocalDateTime.now());
         artefact.setLocationId("1");
         artefact.setProvenance("france");
-        artefact.setListType(ListType.MAGS_STANDARD_LIST);
+        artefact.setListType(ListType.MAGS_PUBLIC_LIST);
+        artefact.setLanguage(Language.ENGLISH);
         UUID uuid = UUID.randomUUID();
         String inputJson = "{\"document\":{\"value1\":\"x\",\"value2\":\"hiddenTestString\"}}";
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(inputJson);

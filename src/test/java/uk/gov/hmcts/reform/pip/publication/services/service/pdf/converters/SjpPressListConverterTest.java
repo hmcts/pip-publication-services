@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
@@ -13,12 +14,14 @@ import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientConfigurationTest;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,6 +34,14 @@ class SjpPressListConverterTest {
 
     @Test
     void testSjpPressListTemplate() throws IOException {
+        Map<String, Object> language;
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("templates/languages/en/sjpPressList.json")) {
+            language = new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
+        }
+
         StringWriter writer = new StringWriter();
         IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "sjpPressMockJul22.json")), writer,
                      Charset.defaultCharset()
@@ -41,7 +52,7 @@ class SjpPressListConverterTest {
         );
 
         JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
-        String outputHtml = sjpPressListConverter.convert(inputJson, metadataMap);
+        String outputHtml = sjpPressListConverter.convert(inputJson, metadataMap, language);
         Document document = Jsoup.parse(outputHtml);
         assertThat(outputHtml).as("No html found").isNotEmpty();
 
@@ -51,7 +62,7 @@ class SjpPressListConverterTest {
 
         assertThat(document.getElementsByClass("mainHeaderText")
                        .select(".mainHeaderText > h1:nth-child(1)").text())
-            .as("incorrect header text").isEqualTo("Single Justice Procedure Press List");
+            .as("incorrect header text").isEqualTo("Single Justice Procedure - Press List");
 
         assertThat(document.select(
             "div.pageSeparatedCase:nth-child(2) > table:nth-child(3) > tbody:nth-child(1) >"
