@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
@@ -28,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,27 +37,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = {Application.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@WithMockUser(username = "admin", authorities = { "APPROLE_api.request.admin" })
+@WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
+@ActiveProfiles("functional")
 class NotifyTest {
 
     private static final String VALID_WELCOME_REQUEST_BODY_EXISTING =
-        "{\"email\": \"test@email.com\", \"isExisting\": \"true\"}";
+        "{\"email\": \"test@email.com\", \"isExisting\": \"true\", \"fullName\": \"fullName\"}";
     private static final String VALID_WELCOME_REQUEST_BODY_NEW =
-        "{\"email\": \"test@email.com\", \"isExisting\": \"false\"}";
+        "{\"email\": \"test@email.com\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
     private static final String VALID_ADMIN_CREATION_REQUEST_BODY =
         "{\"email\": \"test@email.com\", \"surname\": \"surname\", \"forename\": \"forename\"}";
     private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
+    private static final String VALID_DUPLICATE_MEDIA_REQUEST_BODY =
+        "{\"email\": \"test@email.com\", \"fullName\": \"fullName\"}";
+    private static final String DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY =
+        "{\"email\": \"test@email.com\", \"fullName\":}";
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
+    private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
     private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY =
-        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"1d7cfeb3-3e4d-44f8-a185-80b9a8971676\"}";
+        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"70494df0-31c1-4290-bbd2-7bfe7acfeb81\"}";
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY =
         "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
     private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY =
         "{\"apiDestination\": \"http://localhost:4444\", \"artefactId\": \"1e565487-23e4-4a25-9364-43277a5180d4\"}";
     private static final String API_SUBSCRIPTION_URL = "/notify/api";
     private static final String EXTERNAL_PAYLOAD = "test";
-    private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
@@ -65,17 +72,49 @@ class NotifyTest {
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String IMAGE_NAME = "test-image.png";
+    private static final String VALID_API_DESTINATION = "https://localhost:4444";
+    private static final String NONEXISTENT_BLOB_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
+        + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"CASE_URN\": [\n"
+        + "      \"123\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
+
+    private static final String VALID_SJP_PUBLIC_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"e61a7e34-f950-4a6c-9200-7b94745b5a7a\",\n"
+        + "  \"email\": \"kian.kwa@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"LOCATION_ID\": [\n"
+        + "      \"9\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
+
+    private static final String VALID_SJP_PRESS_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
+        + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"CASE_URN\": [\n"
+        + "      \"123\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
 
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
-                                     ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME));
-
-    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
+                                     ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
+        ));
 
     String validMediaReportingJson;
+    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
+
     String validLocationsMapJson;
 
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
+    private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
 
@@ -130,6 +169,24 @@ class NotifyTest {
     }
 
     @Test
+    void testValidPayloadReturnsSuccessDuplicateMedia() throws Exception {
+        mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
+                            .content(VALID_DUPLICATE_MEDIA_REQUEST_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Duplicate media account email successfully sent")));
+    }
+
+    @Test
+    void testInvalidPayloadReturnsBadRequestDuplicateMedia() throws Exception {
+        mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
+                            .content(DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void testValidPayloadReturnsSuccessAdminCreation() throws Exception {
         mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
                             .content(VALID_ADMIN_CREATION_REQUEST_BODY)
@@ -148,7 +205,7 @@ class NotifyTest {
     }
 
     @Test
-    @WithMockUser(username = "unknown_user", authorities = { "APPROLE_api.request.unknown" })
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
     void testUnauthorizedRequestWelcomeEmail() throws Exception {
         mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(VALID_WELCOME_REQUEST_BODY_EXISTING)
@@ -157,7 +214,7 @@ class NotifyTest {
     }
 
     @Test
-    @WithMockUser(username = "unknown_user", authorities = { "APPROLE_api.request.unknown" })
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
     void testUnauthorizedRequestAdminEmail() throws Exception {
         mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
                             .content(VALID_ADMIN_CREATION_REQUEST_BODY)
@@ -168,23 +225,28 @@ class NotifyTest {
     @Test
     void testNotifyApiSubscribersJson() throws Exception {
         externalApiMockServer.enqueue(new MockResponse()
-                                          .addHeader("Content-Type",
-                                                     ContentType.APPLICATION_JSON)
+                                          .addHeader(
+                                              "Content-Type",
+                                              ContentType.APPLICATION_JSON
+                                          )
                                           .setBody(EXTERNAL_PAYLOAD)
                                           .setResponseCode(200));
 
         mockMvc.perform(post(API_SUBSCRIPTION_URL)
-                                                 .content(THIRD_PARTY_SUBSCRIPTION_JSON_BODY)
-                                                 .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andExpect(content().string(containsString(
+                            .content(THIRD_PARTY_SUBSCRIPTION_JSON_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
                 "Successfully sent list to https://localhost:4444")));
     }
 
     @Test
     void testNotifyApiSubscribersFile() throws Exception {
         externalApiMockServer.enqueue(new MockResponse()
-                                          .addHeader("Content-Type",
-                                                     ContentType.APPLICATION_JSON)
+                                          .addHeader(
+                                              "Content-Type",
+                                              ContentType.APPLICATION_JSON
+                                          )
                                           .setBody(EXTERNAL_PAYLOAD)
                                           .setResponseCode(200));
 
@@ -245,6 +307,30 @@ class NotifyTest {
             .andExpect(status().isBadRequest());
     }
 
+
+    @Test
+    void testValidPayloadForSubsEmailThrowsBadGateway() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(NONEXISTENT_BLOB_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadGateway());
+    }
+
+    @Test
+    void testValidPayloadForSubsSjpPublicListEmailReturnsOk() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(VALID_SJP_PUBLIC_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString("Subscription email successfully sent to")));
+    }
+
+    @Test
+    void testValidPayloadForSubsSjpPressListEmailReturnsOk() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(VALID_SJP_PRESS_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString("Subscription email successfully sent to")));
+    }
+
     @Test
     void testInvalidEmailForSubscriptionReturnsBadRequest() throws Exception {
 
@@ -293,6 +379,22 @@ class NotifyTest {
                             .content(validBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    void testDeletePayloadThirdParty() throws Exception {
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .addHeader(
+                                              "Content-Type",
+                                              ContentType.APPLICATION_JSON
+                                          )
+                                          .setResponseCode(200));
+
+        mockMvc.perform(put(API_SUBSCRIPTION_URL)
+                            .content(VALID_API_DESTINATION)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content()
+                           .string(containsString("Successfully sent empty list to https://localhost:4444")));
     }
 
     @Test

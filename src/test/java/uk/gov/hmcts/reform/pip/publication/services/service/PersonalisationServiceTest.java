@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
@@ -14,9 +15,13 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +31,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@SuppressWarnings({"PMD.TooManyMethods"})
 class PersonalisationServiceTest {
 
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
@@ -39,6 +47,7 @@ class PersonalisationServiceTest {
     private static final String LINK_TO_FILE = "link_to_file";
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
+    private static final String FULL_NAME = "FULL_NAME";
     private static final String CASE_NUMBERS = "case_num";
     private static final String DISPLAY_CASE_NUMBERS = "display_case_num";
     private static final String CASE_URN = "case_urn";
@@ -63,9 +72,16 @@ class PersonalisationServiceTest {
     @MockBean
     DataManagementService dataManagementService;
 
+    @MockBean
+    PdfCreationService pdfCreationService;
+
+    @MockBean
+    ArtefactSummaryService artefactSummaryService;
+
     private static Location location;
     private final UUID artefactId = UUID.randomUUID();
 
+    private static final String HELLO = "hello";
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
 
     @BeforeAll
@@ -78,23 +94,29 @@ class PersonalisationServiceTest {
 
     @Test
     void testBuildWelcomePersonalisation() {
+        WelcomeEmail welcomeEmail =
+            new WelcomeEmail(EMAIL, false, FULL_NAME);
+
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
-        Map<String, Object> personalisation = personalisationService.buildWelcomePersonalisation();
+        Map<String, Object> personalisation = personalisationService.buildWelcomePersonalisation(welcomeEmail);
 
         Object subscriptionPageLink = personalisation.get(SUBSCRIPTION_PAGE_LINK);
         assertNotNull(subscriptionPageLink, "No subscription page link key found");
         assertEquals(personalisationLinks.getSubscriptionPageLink(), subscriptionPageLink,
-                     "Subscription page link does not match expected link");
+                     "Subscription page link does not match expected link"
+        );
 
         Object startPageLink = personalisation.get(START_PAGE_LINK);
         assertNotNull(startPageLink, "No start page link key found");
         assertEquals(personalisationLinks.getStartPageLink(), startPageLink,
-                     "Start page link does not match expected link");
+                     "Start page link does not match expected link"
+        );
 
         Object govGuidencePageLink = personalisation.get(GOV_GUIDANCE_PAGE_LINK);
         assertNotNull(govGuidencePageLink, "No gov guidance page link key found");
         assertEquals(personalisationLinks.getGovGuidancePageLink(), govGuidencePageLink,
-                     "gov guidance page link does not match expected link");
+                     "gov guidance page link does not match expected link"
+        );
     }
 
     @Test
@@ -108,28 +130,32 @@ class PersonalisationServiceTest {
         Object surname = personalisation.get(SURNAME);
         assertNotNull(surname, "No surname key found");
         assertEquals(createdAdminWelcomeEmail.getSurname(), surname,
-                     "Surname does not match expected surname");
+                     "Surname does not match expected surname"
+        );
 
         Object forename = personalisation.get(FORENAME);
         assertNotNull(forename, "No forename key found");
         assertEquals(createdAdminWelcomeEmail.getForename(), forename,
-                     "Forename does not match expected forename");
+                     "Forename does not match expected forename"
+        );
 
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
 
         Object aadResetLink = personalisation.get(AAD_RESET_LINK);
         assertNotNull(aadResetLink, "No aad reset link key found");
         assertEquals(personalisationLinks.getAadPwResetLink(), aadResetLink,
-                     "aad reset link does not match expected link");
+                     "aad reset link does not match expected link"
+        );
 
         Object aadSignInLink = personalisation.get(AAD_SIGN_IN_LINK);
         assertNotNull(aadSignInLink, "No aad sign in link key found");
         assertEquals(personalisationLinks.getAadSignInPageLink(), aadSignInLink,
-                     "Aad Sign In link does not match expected link");
+                     "Aad Sign In link does not match expected link"
+        );
     }
 
     @Test
-    void buildRawDataWhenAllPresent() {
+    void buildRawDataWhenAllPresent() throws IOException {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
         subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
@@ -144,26 +170,62 @@ class PersonalisationServiceTest {
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
+
+        byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("<Placeholder>");
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(any())).thenReturn(testByteArray);
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
 
         assertEquals(YES, personalisation.get(DISPLAY_CASE_NUMBERS), "Display case numbers is not Yes");
         assertEquals(subscriptions.get(SubscriptionTypes.CASE_NUMBER), personalisation.get(CASE_NUMBERS),
-                     "Case number not as expected");
+                     "Case number not as expected"
+        );
         assertEquals(YES, personalisation.get(DISPLAY_CASE_URN), "Display case urn is not Yes");
         assertEquals(subscriptions.get(SubscriptionTypes.CASE_URN), personalisation.get(CASE_URN),
-                     "Case urn not as expected");
+                     "Case urn not as expected"
+        );
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
-                     "Location not as expected");
+                     "Location not as expected"
+        );
         assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
-                     "List type does not match expected list type");
-        assertEquals("<Placeholder>", personalisation.get("link_to_file"),
-                     "Link to file does not match expected value");
+                     "List type does not match expected list type"
+        );
+        assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get("link_to_file")).get("file"),
+                     "Link to file does not match expected value"
+        );
         assertEquals("<Placeholder>", personalisation.get("testing_of_array"),
-                     "testing_of_array does not match expected value");
+                     "testing_of_array does not match expected value"
+        );
+    }
+
+    @Test
+    void buildRawDataFileWhenUploadFails() throws IOException {
+        Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
+        subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
+        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
+        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
+
+        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail(EMAIL);
+        subscriptionEmail.setArtefactId(artefactId);
+        subscriptionEmail.setSubscriptions(subscriptions);
+
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(UUID.randomUUID());
+        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        byte[] overSizeArray = new byte[2_100_000];
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(overSizeArray);
+
+        assertThrows(NotifyException.class, () ->
+            personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact), "desired "
+                         + "exception was not thrown");
     }
 
     @Test
@@ -192,11 +254,14 @@ class PersonalisationServiceTest {
 
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
-                     "Location not as expected");
+                     "Location not as expected"
+        );
         assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
-                     "List type does not match expected list type");
-        assertEquals(Base64.encode(fileContents), ((JSONObject)personalisation.get("link_to_file")).get("file"),
-                     "Link to file does not match expected value");
+                     "List type does not match expected list type"
+        );
+        assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get("link_to_file")).get("file"),
+                     "Link to file does not match expected value"
+        );
     }
 
     @Test
@@ -225,7 +290,7 @@ class PersonalisationServiceTest {
     }
 
     @Test
-    void testLocationMissing() {
+    void testLocationMissing() throws IOException {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
         subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
@@ -238,38 +303,48 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
-
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
 
         assertEquals(NO, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not No");
         assertEquals("", personalisation.get(LOCATIONS),
-                     "Location not as expected");
+                     "Location not as expected"
+        );
     }
 
     @Test
-    void testNonLocationMissing() {
+    void testNonLocationMissing() throws IOException {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN));
         subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail(EMAIL);
-        subscriptionEmail.setArtefactId(UUID.randomUUID());
+        UUID uuid = UUID.randomUUID();
+        subscriptionEmail.setArtefactId(uuid);
         subscriptionEmail.setSubscriptions(subscriptions);
+
 
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
 
         assertEquals(NO, personalisation.get(DISPLAY_CASE_NUMBERS), "Display case numbers is not Yes");
         assertEquals("", personalisation.get(CASE_NUMBERS),
-                     "Case number not as expected");
+                     "Case number not as expected"
+        );
     }
 
     @Test
@@ -279,6 +354,27 @@ class PersonalisationServiceTest {
 
         Object csvFile = personalisation.get(LINK_TO_FILE);
         assertNotNull(csvFile, "No csvFile key was found");
+    }
+
+    @Test
+    void testBuildDuplicateMediaAccountPersonalisation() {
+        DuplicatedMediaEmail duplicatedMediaEmail = new DuplicatedMediaEmail();
+        duplicatedMediaEmail.setEmail(EMAIL);
+        duplicatedMediaEmail.setFullName(FULL_NAME);
+
+        Map<String, Object> personalisation = personalisationService
+            .buildDuplicateMediaAccountPersonalisation(duplicatedMediaEmail);
+
+        Object fullNameObject = personalisation.get("full_name");
+        assertNotNull(fullNameObject, "No full name found");
+        assertEquals(fullNameObject, FULL_NAME,
+                     "Full name does not match");
+
+        Object mediaSignInPageLink = personalisation.get(AAD_SIGN_IN_LINK);
+        assertNotNull(mediaSignInPageLink, "No media sign page link key found");
+        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+        assertEquals(personalisationLinks.getAadSignInPageLink(), mediaSignInPageLink,
+                     "Media Sign in page link does not match expected link");
     }
 
     @Test
