@@ -37,7 +37,7 @@ class ArtefactSummaryServiceTest {
             body,
             ListType.CIVIL_DAILY_CAUSE_LIST
         )).as(MISSING_DATA_RETURN).contains(
-            "Hearing Type: Interim Third Party Order");
+            "Hearing Type: FHDRA (First Hearing and Dispute Resolution Appointment)");
     }
 
     @Test
