@@ -16,7 +16,11 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 public class ArtefactSummaryService {
 
     @Autowired
+
     CopDailyCauseList copDailyCauseList;
+
+    @Autowired
+    DailyCauseList dailyCauseList;
 
     @Autowired
     SjpPublicList sjpPublicList;
@@ -44,10 +48,11 @@ public class ArtefactSummaryService {
                 return sjpPressList.artefactSummarysjpPress(payload);
             case CIVIL_DAILY_CAUSE_LIST:
                 return civilDailyCauseList.artefactSummaryCivilDailyCause(payload);
-            case FAMILY_DAILY_CAUSE_LIST:
-                return "fam_cause";
             case COP_DAILY_CAUSE_LIST:
                 return copDailyCauseList.artefactSummaryCopDailyCauseList(payload);
+            case FAMILY_DAILY_CAUSE_LIST:
+            case CIVIL_AND_FAMILY_DAILY_CAUSE_LIST:
+                return dailyCauseList.artefactSummaryDailyCause(payload);
             default:
                 return "";
         }

@@ -27,6 +27,13 @@ public final class GeneralHelper {
         return StringUtils.isBlank(text) ? "" : text.trim().replaceAll(",$", "");
     }
 
+    public static void appendToStringBuilder(StringBuilder builder, String text, JsonNode node,
+                                             String nodeName) {
+        builder.append('\n')
+            .append(text)
+            .append(GeneralHelper.findAndReturnNodeText(node, nodeName));
+    }
+
     public static void loopAndFormatString(JsonNode nodes, String nodeName,
                                            StringBuilder builder, String delimiter) {
         nodes.get(nodeName).forEach(node -> {
@@ -37,5 +44,4 @@ public final class GeneralHelper {
             }
         });
     }
-
 }

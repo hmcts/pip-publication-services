@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SuppressWarnings("PMD.TooManyMethods")
 @ActiveProfiles("test")
 class GeneralHelperTest {
     private static final String ERR_MSG = "Helper method doesn't seem to be working correctly";
@@ -25,7 +24,7 @@ class GeneralHelperTest {
     @BeforeAll
     public static void setup()  throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/copDailyCauseList.json")), writer,
+        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/familyDailyCauseList.json")), writer,
                      Charset.defaultCharset()
         );
 
@@ -50,7 +49,7 @@ class GeneralHelperTest {
     void testFindAndReturnNodeTextMethod() {
         assertThat(GeneralHelper.findAndReturnNodeText(inputJson.get("document"), "publicationDate"))
             .as(ERR_MSG)
-            .isEqualTo("2022-02-14T10:30:52.123Z");
+            .isEqualTo("2022-07-21T14:01:43Z");
     }
 
     @Test
@@ -75,14 +74,27 @@ class GeneralHelperTest {
     }
 
     @Test
-    void testLoopAndFormatString() {
+    void testAppendToStringBuilderMethod() {
         StringBuilder builder = new StringBuilder();
-        JsonNode node = inputJson.get("courtLists").get(0).get("courtHouse").get("courtRoom")
-            .get(0).get("session").get(0).get("sittings").get(0);
-        GeneralHelper.loopAndFormatString(node, "channel", builder, ",");
+        builder.append("Test1");
+        GeneralHelper.appendToStringBuilder(builder,"Test2", inputJson.get("venue"),
+                                            "venueName");
         assertThat(builder.toString())
             .as(ERR_MSG)
-            .isEqualTo("Teams,In-Person,");
+            .contains("Test2");
+
+        assertThat(builder.toString())
+            .as(ERR_MSG)
+            .contains("This is the venue name");
     }
 
+    @Test
+    void testLoopAndFormatString() {
+        StringBuilder builder = new StringBuilder();
+        JsonNode node = inputJson.get("venue").get("venueAddress");
+        GeneralHelper.loopAndFormatString(node, "line", builder, ",");
+        assertThat(builder.toString())
+            .as(ERR_MSG)
+            .isEqualTo("Address Line 1,");
+    }
 }

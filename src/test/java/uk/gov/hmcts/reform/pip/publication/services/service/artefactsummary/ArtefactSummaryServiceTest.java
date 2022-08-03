@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@SuppressWarnings("PMD.TooManyMethods")
 class ArtefactSummaryServiceTest {
 
     @Autowired
@@ -30,13 +31,6 @@ class ArtefactSummaryServiceTest {
     }
 
     @Test
-    void copDailyCauseListTest() throws IOException {
-        String body = readMockJsonFile("mocks/copDailyCauseList.json");
-        assertThat(artefactSummaryService.artefactSummary(body, ListType.COP_DAILY_CAUSE_LIST))
-            .as(MISSING_DATA_RETURN).contains("12341234");
-    }
-
-    @Test
     void notImplementedListTest() throws IOException {
         String body = readMockJsonFile("mocks/copDailyCauseList.json");
         assertThat(artefactSummaryService.artefactSummary(body, ListType.CROWN_DAILY_LIST))
@@ -44,45 +38,58 @@ class ArtefactSummaryServiceTest {
     }
 
     @Test
-    void civilDailyCauseList() throws IOException {
+    void civilDailyCauseListTest() throws IOException {
         String body = readMockJsonFile("mocks/civilDailyCauseList.json");
         assertThat(body).as(BODY_WRONG).contains("sitting");
-        assertThat(artefactSummaryService.artefactSummary(body, ListType.CIVIL_DAILY_CAUSE_LIST))
-            .as(MISSING_DATA_RETURN).contains("Hearing Type: Interim Third Party Order");
-
+        assertThat(artefactSummaryService.artefactSummary(
+            body,
+            ListType.CIVIL_DAILY_CAUSE_LIST
+        )).as(MISSING_DATA_RETURN).contains(
+            "Hearing Type: FHDRA (First Hearing and Dispute Resolution Appointment)");
     }
 
     @Test
-    void sjpPressList() throws IOException {
+    void sjpPressListTest() throws IOException {
         String body = readMockJsonFile("mocks/sjpPressList.json");
         assertThat(body).as(BODY_WRONG).contains("Grand Theft Auto");
-
         assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PRESS_LIST)).as(MISSING_DATA_RETURN)
-                .contains("Swampy Jorts");
-
+            .contains("Swampy Jorts");
     }
 
     @Test
-    void sjpPublicList() throws IOException {
+    void sjpPublicListTest() throws IOException {
         String body = readMockJsonFile("mocks/sjpPublicList.json");
         assertThat(body).as(BODY_WRONG).contains("This is a middle name2");
         assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PUBLIC_LIST)).as(MISSING_DATA_RETURN)
             .contains("This is an organisation2");
-
     }
 
     @Test
-    void familyDailyCauseList() throws IOException {
+    void familyDailyCauseListTest() throws IOException {
         String body = readMockJsonFile("mocks/familyDailyCauseList.json");
-
-        assertThat(body).as(BODY_WRONG).contains("Re: A Minor");
+        assertThat(body).as(BODY_WRONG).contains("AA1 AA1");
         assertThat(artefactSummaryService.artefactSummary(body, ListType.FAMILY_DAILY_CAUSE_LIST))
-                .as(MISSING_DATA_RETURN).contains("fam_cause");
-
+            .as(MISSING_DATA_RETURN).contains("12341234");
     }
 
     @Test
-    void magsPublicList() throws IOException {
+    void civilAndFamilyDailyCauseListTest() throws IOException {
+        String body = readMockJsonFile("mocks/civilAndFamilyDailyCauseList.json");
+        assertThat(body).as(BODY_WRONG).contains("AA1 AA1");
+        assertThat(artefactSummaryService.artefactSummary(body,
+                                                          ListType.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST))
+            .as(MISSING_DATA_RETURN).contains("12341234");
+    }
+
+    @Test
+    void copDailyCauseListTest() throws IOException {
+        String body = readMockJsonFile("mocks/copDailyCauseList.json");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.COP_DAILY_CAUSE_LIST))
+            .as(MISSING_DATA_RETURN).contains("12341234");
+    }
+
+    @Test
+    void magsPublicListTest() throws IOException {
         String body = readMockJsonFile("mocks/familyDailyCauseList.json");
         assertThat(artefactSummaryService.artefactSummary(body, ListType.MAGS_PUBLIC_LIST)).as(STRING_NOT_EMPTY)
             .hasSize(0);

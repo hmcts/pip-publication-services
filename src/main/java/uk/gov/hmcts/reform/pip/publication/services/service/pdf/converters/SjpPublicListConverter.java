@@ -26,7 +26,7 @@ public class SjpPublicListConverter implements Converter {
     @Override
     public String convert(JsonNode artefact, Map<String, String> metadata) {
         Context context = new Context();
-        String publicationDate = DateHelper.formatTimeStampToBst(
+        String publicationDate = DateHelper.formatTimestampToBstForSjp(
             artefact.get("document").get("publicationDate").textValue()
         );
         context.setVariable("publicationDate", publicationDate);

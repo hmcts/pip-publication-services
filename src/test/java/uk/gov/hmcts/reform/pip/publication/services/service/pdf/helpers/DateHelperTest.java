@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -8,6 +9,7 @@ import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("test")
 @SuppressWarnings("PMD.TooManyMethods")
 class DateHelperTest {
 
@@ -19,6 +21,13 @@ class DateHelperTest {
             LocalDateTime.of(1988, Month.SEPTEMBER, 29, 8, 30)))
             .as(ERR_MSG)
             .isEqualTo("29 September 1988");
+    }
+
+    @Test
+    void testZonedDateTimeForSjpMethod() {
+        assertThat(DateHelper.formatTimestampToBstForSjp("2022-07-26T16:04:43.416924Z"))
+            .as(ERR_MSG)
+            .isEqualTo("26 July 2022 at 17:04");
     }
 
     @Test
@@ -118,5 +127,4 @@ class DateHelperTest {
             .as(ERR_MSG)
             .isEmpty();
     }
-
 }

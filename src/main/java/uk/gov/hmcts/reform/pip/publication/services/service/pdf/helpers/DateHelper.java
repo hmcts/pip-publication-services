@@ -15,17 +15,20 @@ public final class DateHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static String formatTimeStampToBst(String timestamp, Boolean isTimeOnly,
-                                              Boolean isBothDateAndTime) {
-        ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
-        String pattern = getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern, Locale.UK);
+    public static String formatTimestampToBstForSjp(String timestamp) {
+        Instant unZonedDateTime = Instant.parse(timestamp);
+        ZoneId zone = ZoneId.of("Europe/London");
+        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
+        DateTimeFormatter dtf;
+        dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
         return dtf.format(zonedDateTime);
     }
 
-    public static String formatTimeStampToBst(String timestamp) {
+    public static String formatTimeStampToBst(String timestamp, Boolean isTimeOnly,
+                                              Boolean isBothDateAndTime) {
         ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm", Locale.UK);
+        String pattern = DateHelper.getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern, Locale.UK);
         return dtf.format(zonedDateTime);
     }
 
@@ -40,7 +43,6 @@ public final class DateHelper {
             return "dd MMMM yyyy HH:mm:ss";
         }
         return "dd MMMM yyyy";
-
     }
 
     public static String formatLocalDateTimeToBst(LocalDateTime date) {
@@ -71,9 +73,7 @@ public final class DateHelper {
         } else if (hours == 0 && minutes > 0) {
             return formatDurationTime(minutes, "min");
         }
-
         return "";
-
     }
 
     private static String formatDurationTime(int duration, String format) {
