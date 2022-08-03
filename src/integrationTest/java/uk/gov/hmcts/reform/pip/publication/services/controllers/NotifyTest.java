@@ -87,6 +87,16 @@ class NotifyTest {
         + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
+    private static final String VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"82c33285-ab4b-4c8e-8a80-b9ea7dc67db8\",\n"
+        + "  \"email\": \"kian.kwa@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"LOCATION_ID\": [\n"
+        + "      \"2\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
+
     private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"55b9e27b-d315-4c7e-9116-0b83939c03eb\",\n"
         + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
@@ -96,7 +106,6 @@ class NotifyTest {
         + "  \"artefactId\": \"af77ae82-b0c2-4515-8bc0-dc3fed1853d8\",\n"
         + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
-
 
     private static final String VALID_SJP_PUBLIC_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"e61a7e34-f950-4a6c-9200-7b94745b5a7a\",\n"
@@ -347,6 +356,14 @@ class NotifyTest {
                             .content(invalidEmailJsonBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidPayloadForSubsCivilDailyCauseListEmailReturnsOk() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString("Subscription email successfully sent to")));
     }
 
     @Test

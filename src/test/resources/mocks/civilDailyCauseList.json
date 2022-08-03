@@ -1,521 +1,265 @@
 {
   "document": {
-    "documentName": "Civil Daily Cause List Publish (SSRS)",
-    "publicationDate": "2022-07-15T14:49:45Z"
+    "version": "",
+    "publicationDate": "2022-04-20T14:36:28Z"
   },
   "venue": {
-    "venueCode": {
-      "venueId": "327"
+    "venueName": "Oxford Combined Court Centre",
+    "venueContact": {
+      "venueTelephone": "01772 844700",
+      "venueEmail": "court1@moj.gov.uk"
     },
-    "venueName": "Reading County Court and Family Court ",
     "venueAddress": {
       "line": [
-        "160-163 Friar Street, Reading"
+        "THE LAW COURTS"
       ],
-      "postCode": "RG1 1HE"
-    },
-    "venueContact": {
-      "venueTelephone": "0118 987 0500",
-      "venueEmail": "enquiries.reading.countycourt@justice.gov.uk"
+      "town": "town name",
+      "postCode": "PR1 2LL"
     }
   },
-  "courtLists": [
-    {
-      "courtHouse": {
-        "courtHouseCode": "327",
-        "courtHouseName": "Reading County Court and Family Court ",
-        "courtHouseAddress": {
-          "line": [
-            "160-163 Friar Street, Reading"
+  "@schemaLocation": "",
+  "courtLists": [{
+    "courtHouse": {
+      "courtHouseName": "Oxford Combined Court Centre, Oxford Combined",
+      "courtHouseAddress": {
+        "line": [
+          "Address Line 1"
+        ],
+        "postCode": "PR1 2LL"
+      },
+      "courtRoom": [{
+        "courtRoomName": "Courtroom 1",
+        "session": [{
+          "sessionStartTime":"",
+          "sessionChannel": [
+            "VIDEO HEARING",
+            ""
           ],
-          "postCode": "RG1 1HE"
+          "judiciary": [{
+              "johNameSurname": "SSCS Doctor",
+              "johKnownAs": "Doctor, SSCS",
+              "isPresiding": true
+            },
+            {
+              "johNameSurname": "Judge Jones",
+              "johKnownAs": "Judge Jones",
+              "isPresiding": false
+            }
+          ],
+          "sittings": [{
+            "sittingStart": "2022-01-27T09:30:17.496Z",
+            "sittingEnd": "2022-01-27T11:00:17.496Z",
+            "hearing": [{
+              "hearingType": "FHDRA (First Hearing and Dispute Resolution Appointment)",
+              "case": [{
+                "caseName": "Surname v Surname",
+                "caseNumber": "OX21P00298",
+                "caseSequenceIndicator": "2 of 3"
+              }]
+            }
+            ],
+            "channel": [
+              "Remote",
+              "Teams"
+            ]
+          },
+            {
+              "sittingStart": "2022-01-27T11:00:17.496Z",
+              "sittingEnd": "2022-01-27T12:00:17.496Z",
+              "hearing": [{
+                "hearingType": "FHDRA (First Hearing and Dispute Resolution Appointment)",
+                "case": [{
+                  "caseName": "Surname v Surname",
+                  "caseNumber": "OX21P00236"
+                }]
+              }
+              ],
+              "channel": [
+                "CVP"
+              ]
+            },
+            {
+              "sittingStart": "2022-01-27T12:00:17.496Z",
+              "sittingEnd": "2022-01-27T13:00:17.496Z",
+              "hearing": [{
+                "hearingType": "FHDRA (First Hearing and Dispute Resolution Appointment)",
+                "case": [{
+                  "caseName": "Surname v Surname",
+                  "caseNumber": "OX21P00290"
+                }]
+              }
+              ],
+              "channel": [
+                "In Person"
+              ]
+            },
+            {
+              "sittingStart": "2022-01-27T13:30:17.496Z",
+              "sittingEnd": "2022-01-27T16:00:17.496Z",
+              "hearing": [{
+                "hearingType": "FHDRA (First Hearing and Dispute Resolution Appointment)",
+                "case": [{
+                  "caseName": "Surname v Surname",
+                  "caseNumber": "OX21P00265"
+                }]
+              }
+              ],
+              "channel": [
+                "In Person"
+              ]
+            },
+            {
+              "sittingStart": "2022-01-27T15:00:17.496Z",
+              "sittingEnd": "2022-01-27T16:00:17.496Z",
+              "hearing": [{
+                "hearingType": "FHDRA (First Hearing and Dispute Resolution Appointment)",
+                "case": [{
+                  "caseName": "Surname v Surname",
+                  "caseNumber": "OX21P00420"
+                }]
+              }
+              ],
+              "channel": [
+                "CVP"
+              ]
+            }
+          ]
+        }]
+      },
+        {
+          "courtRoomName": "Courtroom 4",
+          "session": [{
+            "sessionStartTime":"",
+            "sessionChannel": [
+              "VIDEO HEARING",
+              ""
+            ],
+            "judiciary": [{
+              "johTitle": "District Judge",
+              "johNameSurname": "Devlin"
+            }],
+            "sittings": [{
+              "sittingStart": "2022-01-27T11:00:17.496Z",
+              "sittingEnd": "2022-01-27T11:15:17.496Z",
+              "hearing": [{
+                "hearingType": "Possession Substantive Hearing",
+                "case": [{
+                  "caseName": "Bank of Scotland PLC v Mohamad",
+                  "caseNumber": "H1PP2381"
+                }]
+              }
+              ],
+              "channel": [
+                "In Person"
+              ]
+            },
+              {
+                "sittingStart": "2022-01-27T11:15:17.496Z",
+                "sittingEnd": "2022-01-27T11:45:17.496Z",
+                "hearing": [{
+                  "hearingType": "Possession Substantive Hearing",
+                  "case": [{
+                    "caseName": "Oxford City Council v Mrs Ethel Hughes",
+                    "caseNumber": "H00OX285"
+                  }]
+                }
+                ],
+                "channel": [
+                  "CVP"
+                ]
+              },
+              {
+                "sittingStart": "2022-01-27T11:45:17.496Z",
+                "sittingEnd": "2022-01-27T12:00:17.496Z",
+                "hearing": [{
+                  "hearingType": "Possession Substantive Hearing",
+                  "case": [{
+                    "caseName": "Homeless Oxfordshire V Mr Williams",
+                    "caseNumber": "H00OX393"
+                  }]
+                }
+                ],
+                "channel": [
+                  "In Person"
+                ]
+              },
+              {
+                "sittingStart": "2022-01-27T12:05:17.496Z",
+                "sittingEnd": "2022-01-27T12:35:17.496Z",
+                "hearing": [{
+                  "hearingType": "Possession Substantive Hearing",
+                  "case": [{
+                    "caseName": "SOHA Housing Limited v Taylor",
+                    "caseNumber": "H00OX335"
+                  }]
+                }
+                ],
+                "channel": [
+                  "In Person"
+                ]
+              },
+              {
+                "sittingStart": "2022-01-27T12:35:17.496Z",
+                "sittingEnd": "2022-01-27T12:50:17.496Z",
+                "hearing": [{
+                  "hearingType": "Possession Substantive Hearing",
+                  "case": [{
+                    "caseName": "Coutts and Coutts V Shridi",
+                    "caseNumber": "H00OX346"
+                  }]
+                }
+                ],
+                "channel": [
+                  "CVP"
+                ]
+              }
+            ]
+          }]
         },
-        "courtHouseContact": {
-          "venueTelephone": "0118 987 0500",
-          "venueEmail": "enquiries.reading.countycourt@justice.gov.uk"
-        },
-        "courtRoom": [
-          {
-            "courtRoomName": "Reading County Chambers 01",
-            "venueContact": {
-              "venueTelephone": "0118 987 0500",
-              "venueEmail": "enquiries.reading.countycourt@justice.gov.uk"
+        {
+          "courtRoomName": "Courtroom 5",
+          "session": [{
+            "sessionStartTime": "",
+            "sessionChannel": [
+              "In Person"
+            ],
+            "judiciary": [{
+              "johTitle": "District Judge",
+              "johNameSurname": "Jenkins"
+            }],
+            "sittings": [{
+              "sittingStart": "2022-01-27T10:00:17.496Z",
+              "sittingEnd": "2022-01-27T16:00:17.496Z",
+              "hearing": [{
+                "hearingType": "Final Hearing (Private Law)",
+                "case": [{
+                  "caseName": "Surname v Surname",
+                  "caseNumber": "OX20P00765"
+                }]
+              }
+              ],
+              "channel": [
+                ""
+              ]
             },
-            "session": [
               {
-                "sessionId": "447026805",
-                "sessionChannel": [
-                  "In Person (Sub)",
-                  "Video - Teams"
+                "sittingStart": "2022-01-27T10:00:17.496Z",
+                "sittingEnd": "2022-01-27T10:30:17.496Z",
+                "hearing": [{
+                  "hearingType": "Application (Family Law)",
+                  "case": [{
+                    "caseName": "Smith v Braid",
+                    "caseNumber": "OX21F00502"
+                  }]
+                }
                 ],
-                "sessionStartTime": "2022-07-19T09:00:00Z",
-                "sessionSequenceNumber": 1,
-                "judiciary": [
-                  {
-                    "johNameSurname": "Dean Gallagher",
-                    "johKnownAs": "Dean G",
-                    "isPresiding": false
-                  }
-                ],
-                "sittings": [
-                  {
-                    "sittingSequence": 1,
-                    "sittingStart": "2022-07-19T09:00:00Z",
-                    "sittingEnd": "2022-07-19T10:00:00Z",
-                    "hearing": [
-                      {
-                        "hearingId": "447026811",
-                        "hearingType": "Directions Hearing (Family Law)",
-                        "hearingSequence": 1,
-                        "case": [
-                          {
-                            "caseName": "MA20P02715 Re: A Minor",
-                            "reportingRestriction": false,
-                            "caseJurisdictionET": "Family",
-                            "caseNumber": "447026795",
-                            "numberOfDefendants": 0,
-                            "youthCourt": false
-                          }
-                        ],
-                        "party": [],
-                        "offence": []
-                      }
-                    ],
-                    "judiciary": [
-                      {
-                        "johNameSurname": "Dean Gallagher",
-                        "johKnownAs": "Dean G",
-                        "isPresiding": false
-                      }
-                    ],
-                    "channel": [
-                      "In Person (Sub)",
-                      "Video - Teams"
-                    ]
-                  },
-                  {
-                    "sittingSequence": 2,
-                    "sittingStart": "2022-07-19T10:00:00Z",
-                    "sittingEnd": "2022-07-19T10:30:00Z",
-                    "hearing": [
-                      {
-                        "hearingId": "447026817",
-                        "hearingType": "Decree Absolute Hearing",
-                        "hearingSequence": 2,
-                        "case": [
-                          {
-                            "caseName": "MA44F70040 Taylor v Kitson",
-                            "reportingRestriction": false,
-                            "caseJurisdictionET": "Family",
-                            "caseNumber": "447026800",
-                            "numberOfDefendants": 0,
-                            "youthCourt": false
-                          }
-                        ],
-                        "party": [],
-                        "offence": []
-                      }
-                    ],
-                    "judiciary": [
-                      {
-                        "johNameSurname": "Dean Gallagher",
-                        "johKnownAs": "Dean G",
-                        "isPresiding": false
-                      }
-                    ],
-                    "channel": [
-                      "In Person (Sub)",
-                      "Video - Teams"
-                    ]
-                  }
+                "channel": [
+                  ""
                 ]
-              }
-            ]
-          },
-          {
-            "courtRoomName": "Reading County Chambers 02",
-            "venueContact": {
-              "venueTelephone": "0118 987 0500",
-              "venueEmail": "enquiries.reading.countycourt@justice.gov.uk"
-            },
-            "session": [
-              {
-                "sessionId": "447026841",
-                "sessionChannel": [],
-                "sessionStartTime": "2022-07-19T09:00:00Z",
-                "sessionSequenceNumber": 1,
-                "judiciary": [
-                  {
-                    "johNameSurname": "SSCS Doctor",
-                    "johKnownAs": "Doctor, SSCS",
-                    "isPresiding": true
-                  },
-                  {
-                    "johNameSurname": "Judge Jones",
-                    "johKnownAs": "Judge Jones",
-                    "isPresiding": false
-                  }
-                ],
-                "sittings": [
-                  {
-                    "sittingSequence": 1,
-                    "sittingStart": "2022-07-19T09:00:00Z",
-                    "sittingEnd": "2022-07-19T09:30:00Z",
-                    "hearing": [
-                      {
-                        "hearingId": "447026848",
-                        "hearingType": "Application to Set Aside a Statutory Demand (ASASD)",
-                        "hearingSequence": 1,
-                        "case": [
-                          {
-                            "caseName": "MA22P00125 Re: A Minor",
-                            "reportingRestriction": false,
-                            "caseJurisdictionET": "Family",
-                            "caseNumber": "447026823",
-                            "numberOfDefendants": 0,
-                            "youthCourt": false
-                          }
-                        ],
-                        "party": [],
-                        "offence": []
-                      }
-                    ],
-                    "judiciary": [
-                      {
-                        "johNameSurname": "SSCS Doctor",
-                        "johKnownAs": "Doctor, SSCS",
-                        "isPresiding": true
-                      },
-                      {
-                        "johNameSurname": "Judge Jones",
-                        "johKnownAs": "Judge Jones",
-                        "isPresiding": false
-                      }
-                    ],
-                    "channel": []
-                  },
-                  {
-                    "sittingSequence": 2,
-                    "sittingStart": "2022-07-19T09:30:00Z",
-                    "sittingEnd": "2022-07-19T09:45:00Z",
-                    "hearing": [
-                      {
-                        "hearingId": "447026853",
-                        "hearingType": "Family Law Injunction",
-                        "hearingSequence": 2,
-                        "case": [
-                          {
-                            "caseName": "ZZ40D44674 Robson v Kanu",
-                            "reportingRestriction": false,
-                            "caseJurisdictionET": "Family",
-                            "caseNumber": "447026828",
-                            "numberOfDefendants": 0,
-                            "youthCourt": false
-                          }
-                        ],
-                        "party": [
-                          {
-                            "friendlyRoleName": "Appellant",
-                            "individualDetails": {
-                              "individualForenames": "Taylor",
-                              "individualSurname": "Robson",
-                              "isMasked": false,
-                              "asns": []
-                            },
-                            "attendanceTime": "2022-07-19T11:35:00Z"
-                          },
-                          {
-                            "friendlyRoleName": "Respondent",
-                            "individualDetails": {
-                              "individualForenames": "Evie",
-                              "individualSurname": "Kanu",
-                              "isMasked": false,
-                              "asns": []
-                            },
-                            "attendanceTime": "2022-07-19T11:35:00Z"
-                          }
-                        ],
-                        "offence": []
-                      }
-                    ],
-                    "judiciary": [
-                      {
-                        "johNameSurname": "SSCS Doctor",
-                        "johKnownAs": "Doctor, SSCS",
-                        "isPresiding": true
-                      },
-                      {
-                        "johNameSurname": "Judge Jones",
-                        "johKnownAs": "Judge Jones",
-                        "isPresiding": false
-                      }
-                    ],
-                    "channel": [
-                      "In Person (Sub)",
-                      "Video - Teams"
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "courtRoomName": "Reading County Chambers 03",
-            "venueContact": {
-              "venueTelephone": "0118 987 0500",
-              "venueEmail": "enquiries.reading.countycourt@justice.gov.uk"
-            },
-            "session": [
-              {
-                "sessionId": "447027333",
-                "sessionChannel": [
-                  "In Person (Sub)"
-                ],
-                "sessionStartTime": "2022-07-19T09:00:00Z",
-                "sessionSequenceNumber": 1,
-                "judiciary": [],
-                "sittings": [
-                  {
-                    "sittingSequence": 1,
-                    "sittingStart": "2022-07-19T09:00:00Z",
-                    "sittingEnd": "2022-07-19T09:30:00Z",
-                    "hearing": [
-                      {
-                        "hearingId": "447027996",
-                        "hearingType": "Directions Hearing (Divorce)",
-                        "hearingSequence": 1,
-                        "case": [
-                          {
-                            "caseName": " MA44F70004 Fincher v Chung",
-                            "reportingRestriction": false,
-                            "caseJurisdictionET": "Family",
-                            "caseNumber": "447026862",
-                            "numberOfDefendants": 0,
-                            "youthCourt": false
-                          }
-                        ],
-                        "party": [
-                          {
-                            "friendlyRoleName": "Respondent's Representative",
-                            "individualDetails": {
-                              "individualForenames": "Bethan",
-                              "individualSurname": "Clarke",
-                              "isMasked": false,
-                              "asns": []
-                            },
-                            "attendanceTime": "2022-07-19T03:20:00Z"
-                          },
-                          {
-                            "friendlyRoleName": "Applicant's Representative",
-                            "individualDetails": {
-                              "individualForenames": "Tom",
-                              "individualSurname": "White",
-                              "isMasked": false,
-                              "asns": []
-                            },
-                            "attendanceTime": "2022-07-19T03:20:00Z"
-                          },
-                          {
-                            "friendlyRoleName": "Respondent",
-                            "individualDetails": {
-                              "individualForenames": "Fiona",
-                              "individualSurname": "Chung",
-                              "isMasked": false,
-                              "asns": []
-                            },
-                            "attendanceTime": "2022-07-19T02:15:00Z"
-                          },
-                          {
-                            "friendlyRoleName": "Applicant",
-                            "individualDetails": {
-                              "individualForenames": "Michael",
-                              "individualSurname": "Fincher",
-                              "isMasked": false,
-                              "asns": []
-                            },
-                            "attendanceTime": "2022-07-19T02:05:00Z"
-                          }
-                        ],
-                        "offence": []
-                      }
-                    ],
-                    "judiciary": [],
-                    "channel": [
-                      "In Person (Sub)"
-                    ]
-                  },
-                  {
-                    "sittingSequence": 2,
-                    "sittingStart": "2022-07-19T09:30:00Z",
-                    "sittingEnd": "2022-07-19T14:00:00Z",
-                    "hearing": [
-                      {
-                        "hearingId": "447028005",
-                        "hearingType": "Decree Nisi Hearing",
-                        "hearingSequence": 2,
-                        "case": [
-                          {
-                            "caseName": "EZ20D80878 Sutton v Harries",
-                            "reportingRestriction": false,
-                            "caseJurisdictionET": "Family",
-                            "caseNumber": "447026879",
-                            "numberOfDefendants": 0,
-                            "youthCourt": false
-                          }
-                        ],
-                        "party": [
-                          {
-                            "friendlyRoleName": "Defendant (Part 20)",
-                            "individualDetails": {
-                              "individualForenames": "Jacob",
-                              "individualSurname": "Harries",
-                              "isMasked": false,
-                              "asns": []
-                            },
-                            "attendanceTime": "2022-07-19T09:30:00Z"
-                          },
-                          {
-                            "friendlyRoleName": "Claimant",
-                            "individualDetails": {
-                              "individualForenames": "Georgia",
-                              "individualSurname": "Sutton",
-                              "isMasked": false,
-                              "asns": []
-                            },
-                            "attendanceTime": "2022-07-19T09:30:00Z"
-                          }
-                        ],
-                        "offence": []
-                      }
-                    ],
-                    "judiciary": [],
-                    "channel": [
-                      "In Person (Sub)"
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "courtRoomName": "Reading County Chambers 04",
-            "venueContact": {
-              "venueTelephone": "0118 987 0500",
-              "venueEmail": "enquiries.reading.countycourt@justice.gov.uk"
-            },
-            "session": [
-              {
-                "sessionId": "447028021",
-                "sessionChannel": [],
-                "sessionStartTime": "2022-07-19T09:00:00Z",
-                "sessionSequenceNumber": 1,
-                "judiciary": [],
-                "sittings": [
-                  {
-                    "sittingSequence": 1,
-                    "sittingStart": "2022-07-19T09:00:00Z",
-                    "sittingEnd": "2022-07-19T11:30:00Z",
-                    "hearing": [
-                      {
-                        "hearingId": "447028025",
-                        "hearingType": "Application (Family Law)",
-                        "hearingSequence": 1,
-                        "case": [
-                          {
-                            "caseName": "ZZ40D00469 Briggs v Armitage",
-                            "reportingRestriction": false,
-                            "caseJurisdictionET": "Family",
-                            "caseNumber": "447028011",
-                            "numberOfDefendants": 0,
-                            "youthCourt": false
-                          }
-                        ],
-                        "party": [],
-                        "offence": []
-                      }
-                    ],
-                    "judiciary": [],
-                    "channel": []
-                  },
-                  {
-                    "sittingSequence": 2,
-                    "sittingStart": "2022-07-19T11:30:00Z",
-                    "sittingEnd": "2022-07-19T14:00:00Z",
-                    "hearing": [
-                      {
-                        "hearingId": "447028030",
-                        "hearingType": "Interim Third Party Order",
-                        "hearingSequence": 2,
-                        "case": [
-                          {
-                            "caseName": "MA20P50205 Re: A Minor",
-                            "reportingRestriction": false,
-                            "caseJurisdictionET": "Family",
-                            "caseNumber": "447028016",
-                            "numberOfDefendants": 0,
-                            "youthCourt": false
-                          }
-                        ],
-                        "party": [],
-                        "offence": []
-                      }
-                    ],
-                    "judiciary": [],
-                    "channel": []
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "courtRoomName": "Reading County Chambers 05",
-            "venueContact": {
-              "venueTelephone": "0118 987 0500",
-              "venueEmail": "enquiries.reading.countycourt@justice.gov.uk"
-            },
-            "session": [
-              {
-                "sessionId": "447023404",
-                "sessionType": "Civil",
-                "sessionChannel": [],
-                "sessionStartTime": "2022-07-19T09:00:00Z",
-                "sessionSequenceNumber": 1,
-                "judiciary": [],
-                "sittings": [
-                  {
-                    "sittingSequence": 1,
-                    "sittingStart": "2022-07-19T09:00:00Z",
-                    "sittingEnd": "2022-07-19T15:00:00Z",
-                    "hearing": [
-                      {
-                        "hearingId": "447028040",
-                        "hearingType": "Case Management Hearing (Family Law)",
-                        "hearingSequence": 1,
-                        "case": [
-                          {
-                            "caseName": "MA20P02715 Re: A Minor",
-                            "reportingRestriction": false,
-                            "caseJurisdictionET": "Family",
-                            "caseNumber": "447026795",
-                            "numberOfDefendants": 0,
-                            "youthCourt": false
-                          }
-                        ],
-                        "party": [],
-                        "offence": []
-                      }
-                    ],
-                    "judiciary": [],
-                    "channel": [
-                      "In Person (Sub)"
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+              }]
+          }]
+        }
+      ]
     }
-  ]
+  }]
 }
