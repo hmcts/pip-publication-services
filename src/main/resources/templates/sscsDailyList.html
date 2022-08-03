@@ -123,13 +123,6 @@
       page-break-after: always;
     }
 
-    .courtHouseDescriptionText {
-      font-size: 12px;
-      margin: 0;
-      padding-left: 40px;
-      display: inline-block;
-    }
-
   </style>
   <meta charset="UTF-8"/>
   <meta name="subject" content="SSCS Daily list"/>
@@ -187,9 +180,6 @@
   <div class="courtHouseBlock" th:each="courtHouse: ${courtList}">
     <hr/>
     <h2 style="vertical-align: middle;" th:text="${courtHouse.name}"/>
-    <div class="courtHouseDescriptionText">
-      <p class="courtHouseDescriptionText" th:text="${'Tel: ' + courtHouse.phone + ', Email: ' + courtHouse.email}"/>
-    </div>
     <hr/>
     <div th:each="courtRoom: ${courtHouse.listOfCourtRooms}">
       <h3 th:text="${courtRoom.name}"/>
