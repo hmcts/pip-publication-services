@@ -9,13 +9,15 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 
 @Service
 @Slf4j
-@SuppressWarnings("PMD.TooManyMethods")
 /**
  * Service which extracts relevant summary data from each list type to be included in gov.notify emails. For the most
  * part, developing these is a very fiddly process and it doesn't seem like there's much of an easier way. Some
  * refactoring may be helpful as the iteration pattern on JsonNodes is used over and over again.
  */
 public class ArtefactSummaryService {
+
+    @Autowired
+    DailyCauseList dailyCauseList;
 
     @Autowired
     SjpPublicList sjpPublicList;
@@ -44,7 +46,8 @@ public class ArtefactSummaryService {
             case CIVIL_DAILY_CAUSE_LIST:
                 return civilDailyCauseList.artefactSummaryCivilDailyCause(payload);
             case FAMILY_DAILY_CAUSE_LIST:
-                return "fam_cause";
+            case CIVIL_AND_FAMILY_DAILY_CAUSE_LIST:
+                return dailyCauseList.artefactSummaryDailyCause(payload);
             default:
                 return "";
         }
