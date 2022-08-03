@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,6 +74,9 @@ class PersonalisationServiceTest {
 
     @MockBean
     PdfCreationService pdfCreationService;
+
+    @MockBean
+    ArtefactSummaryService artefactSummaryService;
 
     private static Location location;
     private final UUID artefactId = UUID.randomUUID();
@@ -169,6 +173,7 @@ class PersonalisationServiceTest {
 
         byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("<Placeholder>");
         when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(pdfCreationService.generatePdfFromHtml(any())).thenReturn(testByteArray);
 
@@ -298,6 +303,7 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
         when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
         Map<String, Object> personalisation =
@@ -321,11 +327,14 @@ class PersonalisationServiceTest {
         subscriptionEmail.setArtefactId(uuid);
         subscriptionEmail.setSubscriptions(subscriptions);
 
+
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
         when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
 
