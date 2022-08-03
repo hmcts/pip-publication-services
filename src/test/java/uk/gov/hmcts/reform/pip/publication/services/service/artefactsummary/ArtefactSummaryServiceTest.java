@@ -13,13 +13,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@SuppressWarnings("PMD.TooManyMethods")
 class ArtefactSummaryServiceTest {
 
     @Autowired
     ArtefactSummaryService artefactSummaryService;
 
-    private static final String BODY_WRONG = "Body is not as expected.";
     private static final String MISSING_DATA_RETURN = "Data expected in the returned summary data did not arrive.";
+    private static final String BODY_WRONG = "Body is not as expected.";
     private static final String STRING_NOT_EMPTY = "The returned string should trigger the default (i.e. empty string)";
 
     private String readMockJsonFile(String filePath)  throws IOException {
@@ -27,6 +28,13 @@ class ArtefactSummaryServiceTest {
             .getResourceAsStream(filePath)) {
             return new String(mockFile.readAllBytes());
         }
+    }
+
+    @Test
+    void notImplementedListTest() throws IOException {
+        String body = readMockJsonFile("mocks/copDailyCauseList.json");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.CROWN_DAILY_LIST))
+            .as(MISSING_DATA_RETURN).isEqualTo("");
     }
 
     @Test
@@ -70,6 +78,13 @@ class ArtefactSummaryServiceTest {
         assertThat(body).as(BODY_WRONG).contains("AA1 AA1");
         assertThat(artefactSummaryService.artefactSummary(body,
                                                           ListType.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST))
+            .as(MISSING_DATA_RETURN).contains("12341234");
+    }
+
+    @Test
+    void copDailyCauseListTest() throws IOException {
+        String body = readMockJsonFile("mocks/copDailyCauseList.json");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.COP_DAILY_CAUSE_LIST))
             .as(MISSING_DATA_RETURN).contains("12341234");
     }
 

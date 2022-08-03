@@ -17,8 +17,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SuppressWarnings("PMD")
 @ActiveProfiles("test")
+@SuppressWarnings("PMD.TooManyMethods")
 class DataManipulationTest {
     private static final String COURT_LISTS = "courtLists";
     private static final String COURT_HOUSE = "courtHouse";
@@ -29,19 +29,28 @@ class DataManipulationTest {
     private static final String CASE = "case";
     private static final String CASE_NAME = "caseName";
     private static final String CASE_TYPE = "caseType";
+    private static final String FORMATTED_COURT_HOUSE_ADDRESS = "formattedCourtHouseAddress";
 
     private static final String COURT_ADDRESS_ERROR = "Unable to get court address address";
 
     private static JsonNode inputJson;
+    private static JsonNode inputJsonCop;
 
     @BeforeAll
     public static void setup()  throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "familyDailyCauseList.json")), writer,
+        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/familyDailyCauseList.json")), writer,
                      Charset.defaultCharset()
         );
 
         inputJson = new ObjectMapper().readTree(writer.toString());
+
+        StringWriter copWriter = new StringWriter();
+        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/copDailyCauseList.json")), copWriter,
+                     Charset.defaultCharset()
+        );
+
+        inputJsonCop = new ObjectMapper().readTree(copWriter.toString());
     }
 
     @Test
@@ -61,17 +70,17 @@ class DataManipulationTest {
         DataManipulation.formatCourtAddress(inputJson);
 
         assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
-                       .has("formattedCourtHouseAddress"))
+                       .has(FORMATTED_COURT_HOUSE_ADDRESS))
             .as(COURT_ADDRESS_ERROR)
             .isTrue();
 
         assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
-                       .get("formattedCourtHouseAddress").asText())
+                       .get(FORMATTED_COURT_HOUSE_ADDRESS).asText())
             .as(COURT_ADDRESS_ERROR)
             .contains("Address Line 1");
 
         assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
-                       .get("formattedCourtHouseAddress").asText())
+                       .get(FORMATTED_COURT_HOUSE_ADDRESS).asText())
             .as("Unable to get court address postcode")
             .contains("AA1 AA1");
     }
@@ -81,12 +90,12 @@ class DataManipulationTest {
         DataManipulation.formatCourtAddress(inputJson);
 
         assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
-                       .has("formattedCourtHouseAddress"))
+                       .has(FORMATTED_COURT_HOUSE_ADDRESS))
             .as(COURT_ADDRESS_ERROR)
             .isTrue();
 
         assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
-                       .get("formattedCourtHouseAddress").asText())
+                       .get(FORMATTED_COURT_HOUSE_ADDRESS).asText())
             .as(COURT_ADDRESS_ERROR)
             .isEmpty();
     }
@@ -147,28 +156,83 @@ class DataManipulationTest {
     }
 
     @Test
-    void testFormatPartyInformation() {
-        DataManipulation.manipulatedDailyListData(inputJson);
+    void testFormatCaseIndicator() {
+        DataManipulation.manipulateCopListData(inputJsonCop);
 
-        assertThat(inputJson.get(COURT_LISTS).get(0)
+        assertThat(inputJsonCop.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
                        .get(COURT_ROOM).get(0)
                        .get(SESSION).get(0)
                        .get(SITTINGS).get(0)
                        .get(HEARING).get(0)
-                       .get("applicant").asText())
-            .as("Unable to hearing applicant")
-            .contains("Surname, Legal Advisor: Mr Individual Forenames");
+                       .get(CASE).get(0)
+                       .get("caseIndicator").asText())
+            .as("Unable to get case name")
+            .contains("[1 of 2]");
+    }
 
-        assertThat(inputJson.get(COURT_LISTS).get(0)
+    @Test
+    void testFindAndManipulateJudiciary() {
+        DataManipulation.manipulateCopListData(inputJsonCop);
+
+        assertThat(inputJsonCop.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
                        .get(COURT_ROOM).get(0)
                        .get(SESSION).get(0)
-                       .get(SITTINGS).get(0)
-                       .get(HEARING).get(0)
-                       .get("respondent").asText())
-            .as("Unable to get hearing respondent")
-            .contains("Surname");
+                       .get("formattedSessionJoh").asText())
+            .as("Unable to get session Joh")
+            .contains("Mrs Firstname Surname");
+
+        assertThat(inputJsonCop.get(COURT_LISTS).get(1)
+                       .get(COURT_HOUSE)
+                       .get(COURT_ROOM).get(0)
+                       .get(SESSION).get(0)
+                       .get("formattedSessionJoh").asText())
+            .as("Unable to get session Joh")
+            .contains("Mrs Firstname Surname, Mrs OtherFirstname OtherSurname");
+    }
+
+    @Test
+    void testFormatRegionNameWhenNotPresent() throws IOException {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(
+            Paths.get("src/test/resources/mocks/copDailyCauseListMissingRegion.json")), writer,
+                     Charset.defaultCharset()
+        );
+
+        JsonNode newInputJson = new ObjectMapper().readTree(writer.toString());
+
+        DataManipulation.manipulateCopListData(newInputJson);
+
+        assertThat(newInputJson.get("regionName").asText())
+            .as("Unable to get region name")
+            .isEqualTo("");
+    }
+
+    @Test
+    void testFormatRegionalJoh() {
+        DataManipulation.manipulateCopListData(inputJsonCop);
+
+        assertThat(inputJsonCop.get("regionalJoh").asText())
+            .as("Unable to get regional Joh")
+            .contains("Judge Firstname Surname");
+    }
+
+    @Test
+    void testMissingRegionalJoh() throws IOException {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(
+            Paths.get("src/test/resources/mocks/copDailyCauseListMissingRegionalJoh.json")), writer,
+                     Charset.defaultCharset()
+        );
+
+        JsonNode newInputJson = new ObjectMapper().readTree(writer.toString());
+
+        DataManipulation.manipulateCopListData(newInputJson);
+
+        assertThat(newInputJson.get("regionalJoh").asText())
+            .as("Unable to get regional Joh")
+            .isEqualTo("");
     }
 
     @Test
