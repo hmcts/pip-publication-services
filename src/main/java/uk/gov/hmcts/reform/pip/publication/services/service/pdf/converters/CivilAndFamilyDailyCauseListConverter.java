@@ -15,6 +15,6 @@ public class CivilAndFamilyDailyCauseListConverter implements Converter {
     public String convert(JsonNode artefact, Map<String, String> artefactValues, Map<String, Object> language) {
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         return templateEngine.process("civilAndFamilyDailyCauseList.html",
-                                      preprocessArtefactForThymeLeafConverter(artefact, artefactValues));
+                                      preprocessArtefactForThymeLeafConverter(artefact, artefactValues, language));
     }
 }

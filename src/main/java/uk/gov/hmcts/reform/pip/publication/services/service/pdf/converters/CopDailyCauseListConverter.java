@@ -33,5 +33,4 @@ public class CopDailyCauseListConverter implements Converter {
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         return templateEngine.process("copDailyCauseList.html", context);
     }
-
 }

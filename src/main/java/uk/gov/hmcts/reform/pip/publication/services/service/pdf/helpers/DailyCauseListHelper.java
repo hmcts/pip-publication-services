@@ -9,11 +9,12 @@ public final class DailyCauseListHelper {
     private DailyCauseListHelper() {
     }
 
-    public static Context preprocessArtefactForThymeLeafConverter(JsonNode artefact, Map<String, String> metadata) {
+    public static Context preprocessArtefactForThymeLeafConverter(JsonNode artefact, Map<String, String> metadata,
+                                                                  Map<String, Object> language) {
         Context context = new Context();
         String publicationDate = artefact.get("document").get("publicationDate").asText();
         DataManipulation.formatCourtAddress(artefact);
-
+        context.setVariable("i18n", language);
         context.setVariable("publicationDate", DateHelper.formatTimeStampToBst(publicationDate,
                                                                                false, false));
         context.setVariable("publicationTime", DateHelper.formatTimeStampToBst(publicationDate,
@@ -23,6 +24,8 @@ public final class DailyCauseListHelper {
         context.setVariable("provenance", metadata.get("provenance"));
         context.setVariable("venueAddress", DataManipulation.formatVenueAddress(artefact));
         context.setVariable("artefact", artefact);
+        context.setVariable("phone", artefact.get("venue").get("venueContact").get("venueTelephone").asText());
+        context.setVariable("email", artefact.get("venue").get("venueContact").get("venueEmail").asText());
 
         DataManipulation.manipulatedDailyListData(artefact);
         return context;
