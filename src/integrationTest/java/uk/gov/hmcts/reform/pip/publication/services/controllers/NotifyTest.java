@@ -107,7 +107,6 @@ class NotifyTest {
         + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
-
     private static final String VALID_SJP_PUBLIC_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"e61a7e34-f950-4a6c-9200-7b94745b5a7a\",\n"
         + "  \"email\": \"kian.kwa@justice.gov.uk\",\n"
@@ -269,7 +268,7 @@ class NotifyTest {
                             .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk()).andExpect(content().string(containsString(
-            "Successfully sent list to https://localhost:4444")));
+                "Successfully sent list to https://localhost:4444")));
     }
 
     @Test
@@ -291,7 +290,7 @@ class NotifyTest {
                             .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound()).andExpect(content().string(containsString(
-            THIRD_PARTY_FAIL_MESSAGE)));
+                THIRD_PARTY_FAIL_MESSAGE)));
     }
 
     @Test
@@ -442,7 +441,7 @@ class NotifyTest {
                             .content(validLocationsMapJson)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk()).andExpect(content().string(
-            containsString("Unidentified blob email successfully sent with reference id:")));
+                containsString("Unidentified blob email successfully sent with reference id:")));
     }
 
     @Test
