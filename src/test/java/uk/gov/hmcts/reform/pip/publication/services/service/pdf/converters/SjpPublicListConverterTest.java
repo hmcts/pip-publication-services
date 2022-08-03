@@ -24,6 +24,7 @@ class SjpPublicListConverterTest {
     private final Map<String, Object> language = handleLanguage();
 
     SjpPublicListConverterTest() throws IOException {
+        // deliberately empty constructor to handle IOException at class level.
     }
 
     @Test
@@ -36,14 +37,16 @@ class SjpPublicListConverterTest {
             .as("Incorrect table contents")
             .hasSize(8)
             .extracting(Element::text)
-            .containsExactly("This is a forename This is a surname",
-                             "AA1 AA1",
-                             "This is an offence title",
-                             "This is an organisation",
-                             "This is a forename2 This is a surname2",
-                             "AA2 AA2",
-                             "This is an offence title2",
-                             "This is an organisation2");
+            .containsExactly(
+                "This is a forename This is a surname",
+                "AA1 AA1",
+                "This is an offence title",
+                "This is an organisation",
+                "This is a forename2 This is a surname2",
+                "AA2 AA2",
+                "This is an offence title2",
+                "This is an organisation2"
+            );
     }
 
     @Test
@@ -57,10 +60,12 @@ class SjpPublicListConverterTest {
             .as("Incorrect table contents")
             .hasSize(4)
             .extracting(Element::text)
-            .containsExactly("This is a forename2 This is a surname2",
-                             "AA2 AA2",
-                             "This is an offence title2",
-                             "This is an organisation2");
+            .containsExactly(
+                "This is a forename2 This is a surname2",
+                "AA2 AA2",
+                "This is an offence title2",
+                "This is an organisation2"
+            );
     }
 
     private JsonNode getInput(String resourcePath) throws IOException {
@@ -70,7 +75,7 @@ class SjpPublicListConverterTest {
         }
     }
 
-    private Map<String, Object> handleLanguage () throws IOException {
+    private Map<String, Object> handleLanguage() throws IOException {
         try (InputStream languageFile = Thread.currentThread()
             .getContextClassLoader().getResourceAsStream("templates/languages/en/sjpPublicList.json")) {
             return new ObjectMapper().readValue(
@@ -103,8 +108,10 @@ class SjpPublicListConverterTest {
             .as("Incorrect p elements")
             .hasSize(2)
             .extracting(Element::text)
-            .containsExactly("List for 1 July 2022",
-                             "Published: 14 September 2016 at 00:30");
+            .containsExactly(
+                "List for 1 July 2022",
+                "Published: 14 September 2016 at 00:30"
+            );
 
         assertThat(doc.getElementsByTag("th"))
             .as("Incorrect table headers")

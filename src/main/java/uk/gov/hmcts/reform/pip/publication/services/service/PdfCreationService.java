@@ -13,8 +13,10 @@ import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguratio
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DateHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.GeneralHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,7 +40,7 @@ public class PdfCreationService {
     @Autowired
     private DataManagementService dataManagementService;
 
-    private static final String pathToLanguages = "templates/languages/";
+    private static final String PATH_TO_LANGUAGES = "templates/languages/";
 
     /**
      * Wrapper class for the entire json to pdf process.
@@ -50,10 +52,13 @@ public class PdfCreationService {
     public String jsonToHtml(UUID inputPayloadUuid) throws IOException {
         String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
+        Location location = dataManagementService.getLocation(artefact.getLocationId());
+
         Map<String, String> metadataMap =
-            Map.of("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
-                   "provenance", artefact.getProvenance(), "location", artefact.getLocationId()
-            );
+
+            Map.of("contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
+                   "provenance", artefact.getProvenance(),
+                   "locationName", location.getName());
 
         Map<String, Object> language = handleLanguages(artefact.getListType(), artefact.getLanguage());
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
@@ -66,11 +71,11 @@ public class PdfCreationService {
 
     private Map<String, Object> handleLanguages(ListType listType, Language language) throws IOException {
         String path;
-        String languageString = Helpers.listTypeToCamelCase(listType);
+        String languageString = GeneralHelper.listTypeToCamelCase(listType);
         if (language.equals(Language.ENGLISH)) {
-            path = pathToLanguages + "en/" + languageString + ".json";
+            path = PATH_TO_LANGUAGES + "en/" + languageString + ".json";
         } else {
-            path = pathToLanguages + "cy/" + languageString + ".json";
+            path = PATH_TO_LANGUAGES + "cy/" + languageString + ".json";
         }
         try (InputStream languageFile = Thread.currentThread()
             .getContextClassLoader().getResourceAsStream(path)) {
