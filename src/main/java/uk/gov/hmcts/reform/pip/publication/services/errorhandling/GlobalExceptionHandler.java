@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Thi
 
 import java.time.LocalDateTime;
 
+import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
+
 /**
  * Global exception handler, that captures exceptions thrown by the controllers, and encapsulates
  * the logic to handle them and return a standardised response to the user.
@@ -31,6 +33,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PublicationNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handle(PublicationNotFoundException ex) {
 
+        log.error(writeLog("404, publication has not been found when trying to send subscription"));
+
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
         exceptionResponse.setTimestamp(LocalDateTime.now());
@@ -41,7 +45,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotifyException.class)
     public ResponseEntity<ExceptionResponse> handle(NotifyException ex) {
 
-        log.error("NotifyException was thrown with the init cause: {}", ex.getMessage());
+        log.error(writeLog(String.format(
+            "400, Error while communicating with the notify service with reason %s", ex.getMessage())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
@@ -53,7 +58,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handle(MethodArgumentNotValidException ex) {
 
-        log.error(String.format("MethodArgumentNotValidException was thrown with the init cause: %s", ex.getCause()));
+        log.error(writeLog(String.format(
+            "400, Method argument is not valid. Details: %s", ex.getCause())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getAllErrors().get(0).getDefaultMessage());
@@ -65,7 +71,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadPayloadException.class)
     public ResponseEntity<ExceptionResponse> handle(BadPayloadException ex) {
 
-        log.error(String.format("BadPayloadException was thrown with the init cause: %s", ex.getCause()));
+        log.error(writeLog(
+            String.format("400, invalid payload sent to publication service. Cause: %s", ex.getCause())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
@@ -77,7 +84,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnsupportedOperationException.class)
     public ResponseEntity<ExceptionResponse> handle(UnsupportedOperationException ex) {
 
-        log.error(String.format("UnsupportedOperationException was thrown with the init cause: %s", ex.getCause()));
+        log.error(writeLog(String.format(
+            "400, unsupported REST operation send to publication service. Cause: %s", ex.getCause())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
@@ -110,7 +118,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CsvCreationException.class)
     public ResponseEntity<ExceptionResponse> handle(CsvCreationException ex) {
-        log.error(String.format("CsvCreationException was thrown with the init cause: %s", ex.getCause()));
+        log.error(writeLog(String.format("CsvCreationException was thrown with the init cause: %s", ex.getCause())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
@@ -118,5 +126,4 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
-
 }
