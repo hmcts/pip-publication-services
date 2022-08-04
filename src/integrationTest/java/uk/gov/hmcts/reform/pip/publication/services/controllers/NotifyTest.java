@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import okhttp3.tls.HandshakeCertificates;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
@@ -310,6 +311,15 @@ class NotifyTest {
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk()).andExpect(content().string(containsString(
                 "Successfully sent list to https://localhost:4444")));
+
+        // Assert request body sent to third party api
+        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+        String requestBody = recordedRequest.getBody().readUtf8();
+        assertThat(requestBody)
+            .isNotNull()
+            .isNotEmpty()
+            .contains("\"publicationDate\": \"2022-04-12T09:30:52.123Z\"");
+        assertThat(isValidJson(requestBody)).isTrue();
     }
 
     @Test
@@ -486,5 +496,15 @@ class NotifyTest {
                             .content("invalid content")
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+    private boolean isValidJson(String jsonString) {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.readTree(jsonString);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 }
