@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers.courtHouseBuilder;
+import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DataManipulation.courtHouseBuilder;
 
 @Service
 public class ScssDailyList {

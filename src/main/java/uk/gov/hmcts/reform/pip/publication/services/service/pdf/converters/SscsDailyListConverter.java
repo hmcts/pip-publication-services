@@ -9,7 +9,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.CourtHouse;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DateHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers.courtHouseBuilder;
-import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers.safeGet;
+import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DataManipulation.courtHouseBuilder;
+import static uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.GeneralHelper.safeGet;
 
 @Slf4j
 @Service
@@ -32,7 +32,7 @@ public class SscsDailyListConverter implements Converter {
         context.setVariable("metadata", metadata);
         context.setVariable("telephone", safeGet("venue.venueContact.venueTelephone", highestLevelNode));
         context.setVariable("email", safeGet("venue.venueContact.venueEmail", highestLevelNode));
-        context.setVariable("publishedDate", Helpers.formatTimestampToBst(
+        context.setVariable("publishedDate", DateHelper.formatTimestampToBst(
             safeGet("document.publicationDate", highestLevelNode)));
         List<CourtHouse> listOfCourtHouses = new ArrayList<>();
         for (JsonNode courtHouse : highestLevelNode.get("courtLists")) {

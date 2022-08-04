@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguratio
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DateHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,7 +26,6 @@ import java.util.UUID;
  * possible level of PDF accessibility, which means that when developing new templates, we must listen carefully to the
  * warnings output by the compiler.
  */
-
 @Slf4j
 @Service
 public class PdfCreationService {
@@ -45,9 +44,10 @@ public class PdfCreationService {
         String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
         Location location = dataManagementService.getLocation(artefact.getLocationId());
+
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
         Map<String, String> metadataMap = Map.of(
-            "contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
+            "contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
             "provenance", artefact.getProvenance(),
             "location", location.getName(),
             "language", artefact.getLanguage().toString()

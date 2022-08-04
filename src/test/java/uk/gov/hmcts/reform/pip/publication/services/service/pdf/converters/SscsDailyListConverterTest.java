@@ -61,7 +61,7 @@ class SscsDailyListConverterTest {
 
         assertThat(document.getElementsByTag("p"))
             .as("data is missing")
-            .hasSize(12)
+            .hasSize(9)
             .extracting(Element::text)
             .containsSequence("Thank you for reading this document thoroughly.");
 

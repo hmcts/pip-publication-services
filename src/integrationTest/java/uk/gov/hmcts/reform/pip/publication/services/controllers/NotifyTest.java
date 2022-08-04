@@ -37,7 +37,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.TooManyMethods", "PMD.ImmutableField"})
+@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.TooManyMethods",
+    "PMD.ImmutableField", "PMD.AvoidDuplicateLiterals"})
 @SpringBootTest(classes = {Application.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -78,22 +79,54 @@ class NotifyTest {
     private static final String IMAGE_NAME = "test-image.png";
     private static final String VALID_API_DESTINATION = "https://localhost:4444";
     public static final String SUBS_EMAIL_SUCCESS = "Subscription email successfully sent to";
-    private static final String NONEXISTENT_BLOB_SUBS_EMAIL =
-        "{\n  \"artefactId\": "
-            + "\"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
-            + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
-            + "  \"subscriptions\": {\n\"CASE_URN\": [\n"
-            + "      \"123\"\n]\n}\n}";
 
-    private static final String VALID_SJP_PUBLIC_SUBS_EMAIL =
-        "{\n  \"artefactId\": \"e61a7e34-f950-4a6c-9200-7b94745b5a7a\",\n"
-            + "  \"email\": \"kian.kwa@justice.gov.uk\",\n"
-            + "  \"subscriptions\": {\n\"LOCATION_ID\": [\n"
-            + "      \"9\"\n]\n}\n}";
+    private static final String NEW_LINE_WITH_BRACKET = "{\n";
+    private static final String SUBSCRIPTION_REQUEST = "\"subscriptions\": {\n\n"
+        + "    \"CASE_URN\": [\n\n"
+        + "      \"123\"\n\n"
+        + "    ]\n\n"
+        + "  }\n\n"
+        + "}\"";
+    private static final String EMAIL_SEND_MESSAGE = "Subscription email successfully sent to";
 
-    private static final String VALID_SJP_PRESS_SUBS_EMAIL = "{\n"
+    private static final String NONEXISTENT_BLOB_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
+        + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
+        + SUBSCRIPTION_REQUEST;
+
+    private static final String VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"82c33285-ab4b-4c8e-8a80-b9ea7dc67db8\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"LOCATION_ID\": [\n"
+        + "      \"2\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
+
+    private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
+        + "  \"artefactId\": \"55b9e27b-d315-4c7e-9116-0b83939c03eb\",\n"
+        + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
+        + SUBSCRIPTION_REQUEST;
+
+    private static final String VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
+        + "  \"artefactId\": \"af77ae82-b0c2-4515-8bc0-dc3fed1853d8\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
+        + SUBSCRIPTION_REQUEST;
+
+    private static final String VALID_SJP_PUBLIC_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
+        + "  \"artefactId\": \"e61a7e34-f950-4a6c-9200-7b94745b5a7a\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
+        + SUBSCRIPTION_REQUEST;
+
+    private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
         + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        + SUBSCRIPTION_REQUEST;
+
+    private static final String VALID_COP_CAUSE_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"887d58b1-c177-4564-b6b2-da47bf899747\",\n"
+        + "  \"email\": \"test_account_verified@hmcts.net\",\n"
         + "  \"subscriptions\": {\n"
         + "    \"CASE_URN\": [\n"
         + "      \"123\"\n"
@@ -124,9 +157,20 @@ class NotifyTest {
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
 
 
-    private static final Map<String, String> LIST_MAP = Map.of("SSCS Daily List", VALID_SCSS_DAILY_LIST_SUBS_EMAIL,
-                                                               "SJP Public List", VALID_SJP_PUBLIC_SUBS_EMAIL,
-                                                               "SJP Press List", VALID_SJP_PRESS_SUBS_EMAIL
+    private static final Map<String, String> LIST_MAP = Map.of("SSCS Daily List",
+                                                               VALID_SCSS_DAILY_LIST_SUBS_EMAIL,
+                                                               "SJP Public List",
+                                                               VALID_SJP_PUBLIC_SUBS_EMAIL,
+                                                               "SJP Press List",
+                                                               VALID_SJP_PRESS_SUBS_EMAIL,
+                                                               "COP Daily List",
+                                                               VALID_COP_CAUSE_SUBS_EMAIL,
+                                                               "Family Daily Cause List",
+                                                               VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL,
+                                                               "Civil and Family Daily Cause List",
+                                                               VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL,
+                                                               "Civil Daily Cause List",
+                                                               VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL
     );
 
     private MockWebServer externalApiMockServer;
@@ -326,9 +370,8 @@ class NotifyTest {
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadGateway());
     }
 
-
     @ParameterizedTest
-    @ValueSource(strings = {"SSCS Daily List", "SJP Public List", "SJP Press List"})
+    @ValueSource(strings = {"SSCS Daily List", "SJP Public List", "SJP Press List", "COP Daily List"})
     void testValidPayloadForAllSubsEmailTypesReturnsOk(String listType) throws Exception {
         MvcResult value = mockMvc.perform(post(SUBSCRIPTION_URL)
                                               .content(LIST_MAP.get(listType))
@@ -349,6 +392,30 @@ class NotifyTest {
                             .content(invalidEmailJsonBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidPayloadForSubsCivilDailyCauseListEmailReturnsOk() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString("Subscription email successfully sent to")));
+    }
+
+    @Test
+    void testValidPayloadForSubsFamilyCauseListListEmailReturnsOk() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
+    }
+
+    @Test
+    void testValidPayloadForSubsCivilAndFamilyCauseListEmailReturnsOk() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
     }
 
     @Test
