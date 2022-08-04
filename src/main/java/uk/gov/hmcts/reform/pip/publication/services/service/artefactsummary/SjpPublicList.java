@@ -45,6 +45,7 @@ public class SjpPublicList {
 
     /**
      * handle sjp public roles iteration.
+     *
      * @param hearing - node of a given hearing.
      * @return string of roles.
      */
