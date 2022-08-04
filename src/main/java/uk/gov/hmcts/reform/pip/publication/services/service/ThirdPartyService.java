@@ -26,15 +26,24 @@ public class ThirdPartyService {
     private int backoff;
 
     private static final String SUCCESS_MESSAGE = "Successfully sent list to %s at: %s";
+    private static final String SUCCESS_DELETE_MESSAGE = "Successfully sent deleted notification to %s at: %s";
     private static final String COURTEL = "Courtel";
 
     @Autowired
     private WebClient.Builder webClient;
 
-    public String handleThirdPartyCall(String api, Object payload,
+    /**
+     * Third party call for Flat File publications.
+     * @param api The API to send the publciation to.
+     * @param payload The payload to send.
+     * @param artefact The artefact to publish.
+     * @param location The location to publish.
+     * @return A message representing the response.
+     */
+    public String handleFlatFileThirdPartyCall(String api, Object payload,
                                        Artefact artefact, Location location) {
         webClient.build().post().uri(api)
-            .headers(this.getHttpHeadersFromExchange(artefact, location))
+            .headers(this.getHttpHeadersFromArtefact(artefact, location))
             .bodyValue(payload)
             .retrieve()
             .bodyToMono(Void.class)
@@ -49,7 +58,57 @@ public class ThirdPartyService {
         return String.format(SUCCESS_MESSAGE, COURTEL, api);
     }
 
-    private Consumer<HttpHeaders> getHttpHeadersFromExchange(Artefact artefact,
+    /**
+     * Third party call for JSON.
+     * @param api The API to send the publication to.
+     * @param payload The payload to send.
+     * @param artefact The artefact to publish.
+     * @param location The location to publish.
+     * @return A message representing the response.
+     */
+    public String handleJsonThirdPartyCall(String api, Object payload,
+                                               Artefact artefact, Location location) {
+        webClient.build().post().uri(api)
+            .headers(this.getHttpHeadersFromArtefact(artefact, location))
+            .header(HttpHeaders.CONTENT_TYPE, "application/json")
+            .bodyValue(payload)
+            .retrieve()
+            .bodyToMono(Void.class)
+            .retryWhen(Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
+                           .doAfterRetry(signal -> log.info(
+                               "Request failed, retrying {}/" + numOfRetries,
+                               signal.totalRetries() + 1
+                           ))
+                           .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
+                                                      new ThirdPartyServiceException(retrySignal.failure(), api)))
+            .block();
+        return String.format(SUCCESS_MESSAGE, COURTEL, api);
+    }
+
+    /**
+     * Third party call for Deletion.
+     * @param api The API to send the deleted publication to.
+     * @param artefact The artefact to publish.
+     * @param location The location to publish.
+     * @return A message representing the response.
+     */
+    public String handleDeleteThirdPartyCall(String api, Artefact artefact, Location location) {
+        webClient.build().post().uri(api)
+            .headers(this.getHttpHeadersFromArtefact(artefact, location))
+            .retrieve()
+            .bodyToMono(Void.class)
+            .retryWhen(Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
+                           .doAfterRetry(signal -> log.info(
+                               "Request failed, retrying {}/" + numOfRetries,
+                               signal.totalRetries() + 1
+                           ))
+                           .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
+                                                      new ThirdPartyServiceException(retrySignal.failure(), api)))
+            .block();
+        return String.format(SUCCESS_DELETE_MESSAGE, COURTEL, api);
+    }
+
+    private Consumer<HttpHeaders> getHttpHeadersFromArtefact(Artefact artefact,
                                                              Location location) {
         if (artefact == null || location == null) {
             return httpHeaders -> { };
