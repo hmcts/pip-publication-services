@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Not
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.when;
 class EmailServiceTest {
 
     private static final String EMAIL = "test@email.com";
+    private static final String FULL_NAME = "fullName";
 
     @Autowired
     private EmailService emailService;
@@ -55,7 +57,6 @@ class EmailServiceTest {
     private static final String REFERENCE_ID_MESSAGE = "Reference ID is present";
     private static final String TEMPLATE_MESSAGE = "Template does not match";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
-
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
 
     @BeforeEach
@@ -85,9 +86,10 @@ class EmailServiceTest {
 
     @Test
     void existingUserWelcomeValidEmailReturnsSuccess() {
-        WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true);
+        WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true, FULL_NAME);
 
-        when(personalisationService.buildWelcomePersonalisation()).thenReturn(personalisation);
+        when(personalisationService.buildWelcomePersonalisation(createdWelcomeEmail))
+            .thenReturn(personalisation);
 
         EmailToSend aadEmail = emailService.buildWelcomeEmail(
             createdWelcomeEmail, Templates.EXISTING_USER_WELCOME_EMAIL.template);
@@ -101,9 +103,10 @@ class EmailServiceTest {
 
     @Test
     void newUserWelcomeValidEmailReturnsSuccess() {
-        WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true);
+        WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true, FULL_NAME);
 
-        when(personalisationService.buildWelcomePersonalisation()).thenReturn(personalisation);
+        when(personalisationService.buildWelcomePersonalisation(createdWelcomeEmail))
+            .thenReturn(personalisation);
 
         EmailToSend aadEmail = emailService.buildWelcomeEmail(
             createdWelcomeEmail, Templates.NEW_USER_WELCOME_EMAIL.template);
@@ -205,6 +208,25 @@ class EmailServiceTest {
     }
 
     @Test
+    void duplicateMediaUserValidEmailReturnsSuccess() {
+        DuplicatedMediaEmail duplicateMediaSetupEmail = new DuplicatedMediaEmail();
+        duplicateMediaSetupEmail.setFullName("testname");
+        duplicateMediaSetupEmail.setEmail(EMAIL);
+
+        when(personalisationService.buildDuplicateMediaAccountPersonalisation(duplicateMediaSetupEmail))
+            .thenReturn(personalisation);
+
+        EmailToSend aadEmail = emailService.buildDuplicateMediaSetupEmail(
+            duplicateMediaSetupEmail, Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template);
+
+        assertEquals(EMAIL, aadEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, aadEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
+        assertNotNull(aadEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
+        assertEquals(Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template, aadEmail.getTemplate(),
+                     TEMPLATE_MESSAGE);
+    }
+
+    @Test
     void testMediaApplicationReportingEmailReturnsSuccess() {
 
         when(personalisationService.buildMediaApplicationsReportingPersonalisation(TEST_BYTE))
@@ -213,7 +235,6 @@ class EmailServiceTest {
         EmailToSend mediaReportingEmail = emailService
             .buildMediaApplicationReportingEmail(TEST_BYTE,
                                                  Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template);
-
         assertEquals(EMAIL, mediaReportingEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
         assertEquals(personalisation, mediaReportingEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
         assertEquals(Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template, mediaReportingEmail.getTemplate(),

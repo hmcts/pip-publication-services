@@ -20,7 +20,7 @@ It contains:
  * Jenkins deployment.
 
 The application exposes health endpoint (http://localhost:8081/health) and metrics endpoint
-(http://localhost:8081/metrics).
+(http://localhost:8081/metrics)
 
 ## Plugins
 
