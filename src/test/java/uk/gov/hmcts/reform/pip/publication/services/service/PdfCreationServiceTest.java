@@ -79,7 +79,7 @@ class PdfCreationServiceTest {
         artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.MAGS_STANDARD_LIST);
         Location location = new Location();
-        location.setName("location");
+        location.setName("locationName");
         UUID uuid = UUID.randomUUID();
         String inputJson = "{\"document\":{\"value1\":\"x\",\"value2\":\"hiddenTestString\"}}";
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(inputJson);

@@ -39,7 +39,7 @@ class SscsDailyListConverterTest {
         );
         Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
                                                  "provenance", "provenance",
-                                                 "location", "Livingston",
+                                                 "locationName", "Livingston",
                                                  "language", "ENGLISH"
         );
         JsonNode inputJson = new ObjectMapper().readTree(writer.toString());

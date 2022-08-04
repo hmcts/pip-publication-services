@@ -49,7 +49,7 @@ public class PdfCreationService {
         Map<String, String> metadataMap = Map.of(
             "contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
             "provenance", artefact.getProvenance(),
-            "location", location.getName(),
+            "locationName", location.getName(),
             "language", artefact.getLanguage().toString()
         );
 

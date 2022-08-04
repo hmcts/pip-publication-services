@@ -128,7 +128,7 @@
   <meta name="subject" content="SSCS Daily list"/>
   <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
   <meta name="description" content="SSCS Daily List PDF File"/>
-  <title th:text="${i18n.title1 + metadata.location + ' - ' + metadata.contentDate}"/>
+  <title th:text="${i18n.title1 + metadata.locationName + ' - ' + metadata.contentDate}"/>
 </head>
 
 
@@ -159,7 +159,7 @@
   </div>
   <div class="mainHeaderText">
     <h1 th:text="${i18n.mainHeaderText}"/>
-    <h2 th:text="${metadata.location + i18n.headerSubText + metadata.contentDate}"/>
+    <h2 th:text="${metadata.locationName + i18n.headerSubText + metadata.contentDate}"/>
   </div>
 </div>
 <hr/>
@@ -168,7 +168,7 @@
   <div class="govuk-details__text">
     <p th:text="${i18n.infoSectionPara1}"/>
     <p
-      th:text="${i18n.infoSectionMiddlePara1 + metadata.location + i18n.infoSectionMiddlePara2  + email + i18n.infoSectionMiddlePara3 + telephone + i18n.infoSectionMiddlePara4}"/>
+      th:text="${i18n.infoSectionMiddlePara1 + metadata.locationName + i18n.infoSectionMiddlePara2  + email + i18n.infoSectionMiddlePara3 + telephone + i18n.infoSectionMiddlePara4}"/>
     <p th:text="${i18n.infoSectionPara3}"/>
   </div>
 

@@ -16,15 +16,6 @@ public final class DateHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static String formatTimestampToBstForSjp(String timestamp) {
-        Instant unZonedDateTime = Instant.parse(timestamp);
-        ZoneId zone = ZoneId.of(EUROPE_LONDON);
-        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
-        DateTimeFormatter dtf;
-        dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
-        return dtf.format(zonedDateTime);
-    }
-
     public static String formatTimeStampToBst(String timestamp, Boolean isTimeOnly,
                                               Boolean isBothDateAndTime) {
         ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
@@ -41,7 +32,7 @@ public final class DateHelper {
             }
             return "h:mma";
         } else if (isBothDateAndTime) {
-            return "dd MMMM yyyy HH:mm:ss";
+            return "dd MMMM yyyy 'at' HH:mm";
         }
         return "dd MMMM yyyy";
     }
