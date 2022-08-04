@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
@@ -14,8 +15,11 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,9 +31,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@SuppressWarnings({"PMD.TooManyMethods"})
 class PersonalisationServiceTest {
 
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
@@ -40,6 +47,7 @@ class PersonalisationServiceTest {
     private static final String LINK_TO_FILE = "link_to_file";
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
+    private static final String FULL_NAME = "FULL_NAME";
     private static final String CASE_NUMBERS = "case_num";
     private static final String DISPLAY_CASE_NUMBERS = "display_case_num";
     private static final String CASE_URN = "case_urn";
@@ -67,9 +75,13 @@ class PersonalisationServiceTest {
     @MockBean
     PdfCreationService pdfCreationService;
 
+    @MockBean
+    ArtefactSummaryService artefactSummaryService;
+
     private static Location location;
     private final UUID artefactId = UUID.randomUUID();
 
+    private static final String HELLO = "hello";
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
 
     @BeforeAll
@@ -82,8 +94,11 @@ class PersonalisationServiceTest {
 
     @Test
     void testBuildWelcomePersonalisation() {
+        WelcomeEmail welcomeEmail =
+            new WelcomeEmail(EMAIL, false, FULL_NAME);
+
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
-        Map<String, Object> personalisation = personalisationService.buildWelcomePersonalisation();
+        Map<String, Object> personalisation = personalisationService.buildWelcomePersonalisation(welcomeEmail);
 
         Object subscriptionPageLink = personalisation.get(SUBSCRIPTION_PAGE_LINK);
         assertNotNull(subscriptionPageLink, "No subscription page link key found");
@@ -156,9 +171,12 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
 
-        byte[] testByteArray = "hello".getBytes();
+        byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(pdfCreationService.jsonToPdf(artefactId)).thenReturn(testByteArray);
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("<Placeholder>");
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(any())).thenReturn(testByteArray);
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
@@ -181,7 +199,7 @@ class PersonalisationServiceTest {
         assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get("link_to_file")).get("file"),
                      "Link to file does not match expected value"
         );
-        assertEquals("<Placeholder>", personalisation.get("testing_of_array"),
+        assertEquals("hi", personalisation.get("testing_of_array"),
                      "testing_of_array does not match expected value"
         );
     }
@@ -203,7 +221,8 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         byte[] overSizeArray = new byte[2_100_000];
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(pdfCreationService.jsonToPdf(artefactId)).thenReturn(overSizeArray);
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(overSizeArray);
 
         assertThrows(NotifyException.class, () ->
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact), "desired "
@@ -285,7 +304,11 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
-        when(pdfCreationService.jsonToPdf(subscriptionEmail.getArtefactId())).thenReturn("hello".getBytes());
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
+
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
 
@@ -307,12 +330,18 @@ class PersonalisationServiceTest {
         subscriptionEmail.setArtefactId(uuid);
         subscriptionEmail.setSubscriptions(subscriptions);
 
+
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(pdfCreationService.jsonToPdf(uuid)).thenReturn("hello".getBytes());
+        when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
+        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
@@ -330,6 +359,27 @@ class PersonalisationServiceTest {
 
         Object csvFile = personalisation.get(LINK_TO_FILE);
         assertNotNull(csvFile, "No csvFile key was found");
+    }
+
+    @Test
+    void testBuildDuplicateMediaAccountPersonalisation() {
+        DuplicatedMediaEmail duplicatedMediaEmail = new DuplicatedMediaEmail();
+        duplicatedMediaEmail.setEmail(EMAIL);
+        duplicatedMediaEmail.setFullName(FULL_NAME);
+
+        Map<String, Object> personalisation = personalisationService
+            .buildDuplicateMediaAccountPersonalisation(duplicatedMediaEmail);
+
+        Object fullNameObject = personalisation.get("full_name");
+        assertNotNull(fullNameObject, "No full name found");
+        assertEquals(fullNameObject, FULL_NAME,
+                     "Full name does not match");
+
+        Object mediaSignInPageLink = personalisation.get(AAD_SIGN_IN_LINK);
+        assertNotNull(mediaSignInPageLink, "No media sign page link key found");
+        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+        assertEquals(personalisationLinks.getAadSignInPageLink(), mediaSignInPageLink,
+                     "Media Sign in page link does not match expected link");
     }
 
     @Test

@@ -9,12 +9,18 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 @Slf4j
 @SpringBootTest
+@ActiveProfiles("test")
 class PdfCreationServiceTest {
 
     @Mock
@@ -65,11 +72,21 @@ class PdfCreationServiceTest {
 
     @Test
     void testJsontoHtmltoPdf() throws IOException {
+        Artefact artefact = new Artefact();
+        artefact.setContentDate(LocalDateTime.now());
+        artefact.setLocationId("1");
+        artefact.setProvenance("france");
+        artefact.setLanguage(Language.ENGLISH);
+        artefact.setListType(ListType.MAGS_STANDARD_LIST);
+        Location location = new Location();
+        location.setName("locationName");
         UUID uuid = UUID.randomUUID();
         String inputJson = "{\"document\":{\"value1\":\"x\",\"value2\":\"hiddenTestString\"}}";
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(inputJson);
+        when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
+        when(dataManagementService.getLocation("1")).thenReturn(location);
 
-        byte[] outputPdf = pdfCreationService.jsonToPdf(uuid);
+        byte[] outputPdf = pdfCreationService.generatePdfFromHtml(pdfCreationService.jsonToHtml(uuid));
         try (PDDocument doc = PDDocument.load(outputPdf)) {
             assertEquals(doc.getNumberOfPages(), 1, "pages not correct");
             PDFTextStripper stripper = new PDFTextStripper();
