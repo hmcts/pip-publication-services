@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -172,4 +173,17 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.handleThirdParty(apiDestination));
     }
 
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Media user verification email successfully sent with referenceId: {Id}"),
+        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR_MESSAGE),
+        @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    })
+    @ApiOperation("Send a media user a verification email")
+    @PostMapping("/media/verification")
+    public ResponseEntity<String> sendMediaUserVerificationEmail(@RequestBody MediaVerificationEmail body) {
+        return ResponseEntity.ok(String.format(
+            "Media user verification email successfully sent with referenceId: %s",
+            notificationService.mediaUserVerificationEmailRequest(body)
+        ));
+    }
 }

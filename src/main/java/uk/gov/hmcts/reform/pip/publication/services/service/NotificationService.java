@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -163,5 +164,18 @@ public class NotificationService {
         log.info(writeLog(thirdPartyService.handleDeleteThirdPartyCall(apiDestination, null, null)));
 
         return String.format(EMPTY_SUCCESS_MESSAGE, apiDestination);
+    }
+
+    /**
+     * This method handles the sending of the media user verification email.
+     *
+     * @param body The body of the media verification email.
+     * @return The ID that references the media user verification email.
+     */
+    public String mediaUserVerificationEmailRequest(MediaVerificationEmail body) {
+        EmailToSend email = emailService
+            .buildMediaUserVerificationEmail(body, Templates.MEDIA_USER_VERIFICATION_EMAIL.template);
+
+        return emailService.sendEmail(email).getReference().orElse(null);
     }
 }
