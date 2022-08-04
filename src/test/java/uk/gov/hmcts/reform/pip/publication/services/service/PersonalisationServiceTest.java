@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -62,6 +63,7 @@ class PersonalisationServiceTest {
     private static final String LOCATION_ID = "12345";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
     private static final String ARRAY_OF_IDS = "array_of_ids";
+    private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -391,5 +393,20 @@ class PersonalisationServiceTest {
 
         assertEquals(expectedData, personalisation.get(ARRAY_OF_IDS),
                      "Locations map not as expected");
+    }
+
+    @Test
+    void testBuildMediaVerificationPersonalisation() {
+        MediaVerificationEmail mediaVerificationEmail = new MediaVerificationEmail(FULL_NAME, EMAIL);
+
+        Map<String, Object> personalisation = personalisationService
+            .buildMediaVerificationPersonalisation(mediaVerificationEmail);
+
+        Object fullNameObject = personalisation.get("full_name");
+        assertNotNull(fullNameObject, "No full name found");
+        assertEquals(fullNameObject, FULL_NAME, "Full name does not match");
+
+        Object mediaVerificationLink = personalisation.get(VERIFICATION_PAGE_LINK);
+        assertNotNull(mediaVerificationLink, "No media verification link key found");
     }
 }
