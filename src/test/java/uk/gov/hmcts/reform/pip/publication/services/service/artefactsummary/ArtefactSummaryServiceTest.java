@@ -22,6 +22,7 @@ class ArtefactSummaryServiceTest {
     private static final String MISSING_DATA_RETURN = "Data expected in the returned summary data did not arrive.";
     private static final String BODY_WRONG = "Body is not as expected.";
     private static final String STRING_NOT_EMPTY = "The returned string should trigger the default (i.e. empty string)";
+    private static final String NULL_FILE = "Mock file is null - are you sure it's still there?";
 
     private String readMockJsonFile(String filePath)  throws IOException {
         try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
@@ -38,31 +39,56 @@ class ArtefactSummaryServiceTest {
     }
 
     @Test
-    void civilDailyCauseListTest() throws IOException {
-        String body = readMockJsonFile("mocks/civilDailyCauseList.json");
-        assertThat(body).as(BODY_WRONG).contains("sitting");
-        assertThat(artefactSummaryService.artefactSummary(
-            body,
-            ListType.CIVIL_DAILY_CAUSE_LIST
-        )).as(MISSING_DATA_RETURN).contains(
-            "Hearing Type: FHDRA (First Hearing and Dispute Resolution Appointment)");
+    void civilDailyCauseList() throws IOException {
+        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream("mocks/civilDailyCauseList.json")) {
+            assertThat(mockFile).as(NULL_FILE).isNotNull();
+            String body = new String(mockFile.readAllBytes());
+            assertThat(body).as(BODY_WRONG).contains("sitting");
+            assertThat(artefactSummaryService.artefactSummary(
+                body,
+                ListType.CIVIL_DAILY_CAUSE_LIST
+            )).as(MISSING_DATA_RETURN).contains(
+                "Hearing Type: FHDRA (First Hearing and Dispute Resolution Appointment)");
+        }
     }
 
     @Test
-    void sjpPressListTest() throws IOException {
-        String body = readMockJsonFile("mocks/sjpPressList.json");
-        assertThat(body).as(BODY_WRONG).contains("Grand Theft Auto");
-        assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PRESS_LIST)).as(MISSING_DATA_RETURN)
-            .contains("Swampy Jorts");
+    void sjpPressList() throws IOException {
+        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream("mocks/sjpPressList.json")) {
+            assertThat(mockFile).as(NULL_FILE).isNotNull();
+            String body = new String(mockFile.readAllBytes());
+            assertThat(body).as(BODY_WRONG).contains("Grand Theft Auto");
+            assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PRESS_LIST)).as(MISSING_DATA_RETURN)
+                .contains("Swampy Jorts");
+        }
     }
 
     @Test
-    void sjpPublicListTest() throws IOException {
-        String body = readMockJsonFile("mocks/sjpPublicList.json");
-        assertThat(body).as(BODY_WRONG).contains("This is a middle name2");
-        assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PUBLIC_LIST)).as(MISSING_DATA_RETURN)
-            .contains("This is an organisation2");
+    void sjpPublicList() throws IOException {
+        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream("mocks/sjpPublicList.json")) {
+            assertThat(mockFile).as(NULL_FILE).isNotNull();
+            String body = new String(mockFile.readAllBytes());
+            assertThat(body).as(BODY_WRONG).contains("This is a middle name2");
+            assertThat(artefactSummaryService.artefactSummary(body, ListType.SJP_PUBLIC_LIST)).as(MISSING_DATA_RETURN)
+                .contains("This is an organisation2");
+        }
     }
+
+    @Test
+    void sscsDailyList() throws IOException {
+        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream("mocks/sscsDailyList.json")) {
+            assertThat(mockFile).as(NULL_FILE).isNotNull();
+            String body = new String(mockFile.readAllBytes());
+            assertThat(body).as(BODY_WRONG).contains("Aguilera");
+            assertThat(artefactSummaryService.artefactSummary(body, ListType.SSCS_DAILY_LIST)).as(MISSING_DATA_RETURN)
+                .contains("Troy F McClure");
+        }
+    }
+
 
     @Test
     void familyDailyCauseListTest() throws IOException {
@@ -93,5 +119,16 @@ class ArtefactSummaryServiceTest {
         String body = readMockJsonFile("mocks/familyDailyCauseList.json");
         assertThat(artefactSummaryService.artefactSummary(body, ListType.MAGS_PUBLIC_LIST)).as(STRING_NOT_EMPTY)
             .hasSize(0);
+    }
+
+    @Test
+    void magsPublicList() throws IOException {
+        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream("mocks/familyDailyCauseList.json")) {
+            assertThat(mockFile).as(NULL_FILE).isNotNull();
+            String body = new String(mockFile.readAllBytes());
+            assertThat(artefactSummaryService.artefactSummary(body, ListType.MAGS_PUBLIC_LIST)).as(STRING_NOT_EMPTY)
+                .hasSize(0);
+        }
     }
 }

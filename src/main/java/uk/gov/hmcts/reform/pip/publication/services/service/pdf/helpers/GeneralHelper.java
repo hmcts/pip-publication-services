@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 /**
  * Class for static utility methods assisting with json->html->pdf issues.
  */
+@Slf4j
 public final class GeneralHelper {
 
     private GeneralHelper() {
@@ -43,5 +46,31 @@ public final class GeneralHelper {
                     .append(delimiter);
             }
         });
+    }
+
+    @SuppressWarnings("PMD.AvoidCatchingNPE")
+    public static String safeGet(String jsonPath, JsonNode node) {
+        return safeGetNode(jsonPath, node).asText();
+    }
+
+    @SuppressWarnings("PMD.AvoidCatchingNPE")
+    public static JsonNode safeGetNode(String jsonPath, JsonNode node) {
+        String[] stringArray = jsonPath.split("\\.");
+        JsonNode outputNode = node;
+        int index = -1;
+        try {
+            for (String arg : stringArray) {
+                if (NumberUtils.isCreatable(arg)) {
+                    outputNode = outputNode.get(Integer.parseInt(arg));
+                } else {
+                    outputNode = outputNode.get(arg);
+                }
+                index += 1;
+            }
+            return outputNode;
+        } catch (NullPointerException e) {
+            log.error("Parsing failed for path " + jsonPath + ", specifically " + stringArray[index]);
+            return node;
+        }
     }
 }
