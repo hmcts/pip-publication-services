@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CivilAndFamilyDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CivilDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CopDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.FamilyDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPressListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPublicListConverter;
@@ -27,7 +28,7 @@ public enum ListType {
     CIVIL_DAILY_CAUSE_LIST(new CivilDailyCauseListConverter()),
     FAMILY_DAILY_CAUSE_LIST(new FamilyDailyCauseListConverter()),
     CIVIL_AND_FAMILY_DAILY_CAUSE_LIST(new CivilAndFamilyDailyCauseListConverter()),
-    COP_DAILY_CAUSE_LIST,
+    COP_DAILY_CAUSE_LIST(new CopDailyCauseListConverter()),
     SSCS_DAILY_LIST;
 
     private Converter converter;

@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @SuppressWarnings("PMD.TooManyMethods")
 class DateHelperTest {
+
     private static final String ERR_MSG = "Helper method doesn't seem to be working correctly";
 
     @Test

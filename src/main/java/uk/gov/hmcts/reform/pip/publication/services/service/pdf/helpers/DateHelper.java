@@ -47,7 +47,7 @@ public final class DateHelper {
 
     public static String formatLocalDateTimeToBst(LocalDateTime date) {
         return date.format(
-            DateTimeFormatter.ofPattern("dd MMMM yyyy"));
+            DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.UK));
     }
 
     public static ZonedDateTime convertStringToBst(String timestamp) {
@@ -80,7 +80,14 @@ public final class DateHelper {
         if (duration > ONE) {
             return duration + " " + format + "s";
         }
+
         return duration + " " + format;
+    }
+
+    public static ZonedDateTime convertStringToUtc(String timestamp) {
+        Instant unZonedDateTime = Instant.parse(timestamp);
+        ZoneId zone = ZoneId.of("Europe/London");
+        return unZonedDateTime.atZone(zone);
     }
 
 }

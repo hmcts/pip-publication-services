@@ -176,6 +176,7 @@ class PersonalisationServiceTest {
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("<Placeholder>");
         when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(pdfCreationService.generatePdfFromHtml(any())).thenReturn(testByteArray);
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
@@ -198,7 +199,7 @@ class PersonalisationServiceTest {
         assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get("link_to_file")).get("file"),
                      "Link to file does not match expected value"
         );
-        assertEquals("<Placeholder>", personalisation.get("testing_of_array"),
+        assertEquals("hi", personalisation.get("testing_of_array"),
                      "testing_of_array does not match expected value"
         );
     }
@@ -306,6 +307,8 @@ class PersonalisationServiceTest {
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
         when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
+
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
 
@@ -337,6 +340,8 @@ class PersonalisationServiceTest {
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
         when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
+        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);

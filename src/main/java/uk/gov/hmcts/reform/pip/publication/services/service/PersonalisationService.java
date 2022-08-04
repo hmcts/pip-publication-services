@@ -99,8 +99,6 @@ public class PersonalisationService {
      * @param artefact The artefact to send in the subscription.
      * @return The personalisation map for the raw data subscription email.
      */
-    //TODO: This method is not used and will be updated once JSON file subscription tickets have been played, however
-    //TODO: provided as a placeholder for now
     public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body,
                                                                        Artefact artefact) {
 

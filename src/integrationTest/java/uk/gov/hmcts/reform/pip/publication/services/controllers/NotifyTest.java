@@ -33,7 +33,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.TooManyMethods", "PMD.ImmutableField"})
+@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.TooManyMethods",
+    "PMD.ImmutableField", "PMD.AvoidDuplicateLiterals"})
 @SpringBootTest(classes = {Application.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -116,6 +117,16 @@ class NotifyTest {
         + "  \"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
         + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
+
+    private static final String VALID_COP_CAUSE_SUBS_EMAIL = "{\n"
+        + "  \"artefactId\": \"887d58b1-c177-4564-b6b2-da47bf899747\",\n"
+        + "  \"email\": \"test_account_verified@hmcts.net\",\n"
+        + "  \"subscriptions\": {\n"
+        + "    \"CASE_URN\": [\n"
+        + "      \"123\"\n"
+        + "    ]\n"
+        + "  }\n"
+        + "}";
 
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
@@ -343,6 +354,14 @@ class NotifyTest {
                             .content(VALID_SJP_PRESS_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
             .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
+    }
+
+    @Test
+    void testValidPayloadForSubsCopCauseListEmailReturnsOk() throws Exception {
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(VALID_COP_CAUSE_SUBS_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(content().string(containsString("Subscription email successfully sent to")));
     }
 
     @Test
