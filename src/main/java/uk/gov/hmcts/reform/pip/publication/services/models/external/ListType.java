@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CopDa
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.FamilyDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPressListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPublicListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SscsDailyListConverter;
 
 /**
  * Enum that represents the different list types.
@@ -29,7 +30,6 @@ public enum ListType {
     FAMILY_DAILY_CAUSE_LIST(new FamilyDailyCauseListConverter()),
     CIVIL_AND_FAMILY_DAILY_CAUSE_LIST(new CivilAndFamilyDailyCauseListConverter()),
     COP_DAILY_CAUSE_LIST(new CopDailyCauseListConverter()),
-    SSCS_DAILY_LIST;
-
+    SSCS_DAILY_LIST(new SscsDailyListConverter());
     private Converter converter;
 }

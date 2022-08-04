@@ -1,21 +1,37 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.micrometer.core.instrument.util.StringUtils;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.CourtHouse;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.CourtRoom;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.Hearing;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.Sitting;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-@SuppressWarnings("PMD.TooManyMethods")
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.GodClass"})
 public final class DataManipulation {
     private static final String POSTCODE = "postCode";
     private static final String COURT_HOUSE = "courtHouse";
     private static final int MINUTES_PER_HOUR = 60;
     private static final String CASE_SEQUENCE_INDICATOR = "caseSequenceIndicator";
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    public static final String APPLICANT = "applicant";
+    public static final String RESPONDENT = "respondent";
+    public static final String CHANNEL = "channel";
+    public static final String JUDICIARY = "judiciary";
 
     private DataManipulation() {
         throw new UnsupportedOperationException();
@@ -113,12 +129,10 @@ public final class DataManipulation {
                             if (hearing.has("party")) {
                                 findAndManipulatePartyInformation(hearing);
                             } else {
-                                ((ObjectNode)hearing).put("applicant", "");
-                                ((ObjectNode)hearing).put("respondent", "");
+                                ((ObjectNode)hearing).put(APPLICANT, "");
+                                ((ObjectNode)hearing).put(RESPONDENT, "");
                             }
-                            hearing.get("case").forEach(hearingCase -> {
-                                manipulateCaseInformation(hearingCase);
-                            });
+                            hearing.get("case").forEach(DataManipulation::manipulateCaseInformation);
                         });
                     });
                     formattedCourtRoomName(courtRoom, session, formattedJudiciary);
@@ -177,11 +191,11 @@ public final class DataManipulation {
                         final String applicantPetitionerDetails = createIndividualDetails(party);
                         if (!applicantPetitionerDetails.isEmpty()) {
                             applicant.append("Legal Advisor: ");
-                            applicant.append(applicantPetitionerDetails + ", ");
+                            applicant.append(applicantPetitionerDetails).append(", ");
                         }
                         break;
                     }
-                    case "RESPONDENT": {
+                    case RESPONDENT: {
                         formatPartyNonRepresentative(party, respondent);
                         break;
                     }
@@ -189,7 +203,7 @@ public final class DataManipulation {
                         final String respondentDetails = createIndividualDetails(party);
                         if (!respondentDetails.isEmpty()) {
                             respondent.append("Legal Advisor: ");
-                            respondent.append(respondentDetails + ", ");
+                            respondent.append(respondentDetails).append(", ");
                         }
                         break;
                     }
@@ -199,8 +213,8 @@ public final class DataManipulation {
             }
         });
 
-        ((ObjectNode)hearing).put("applicant", GeneralHelper.trimAnyCharacterFromStringEnd(applicant.toString()));
-        ((ObjectNode)hearing).put("respondent", GeneralHelper.trimAnyCharacterFromStringEnd(respondent.toString()));
+        ((ObjectNode)hearing).put(APPLICANT, GeneralHelper.trimAnyCharacterFromStringEnd(applicant.toString()));
+        ((ObjectNode)hearing).put(RESPONDENT, GeneralHelper.trimAnyCharacterFromStringEnd(respondent.toString()));
     }
 
     private static void formatPartyNonRepresentative(JsonNode party, StringBuilder builder) {
@@ -224,8 +238,8 @@ public final class DataManipulation {
     private static void findAndConcatenateHearingPlatform(JsonNode sitting, JsonNode session) {
         StringBuilder formattedHearingPlatform = new StringBuilder();
 
-        if (sitting.has("channel")) {
-            GeneralHelper.loopAndFormatString(sitting, "channel",
+        if (sitting.has(CHANNEL)) {
+            GeneralHelper.loopAndFormatString(sitting, CHANNEL,
                                               formattedHearingPlatform, ", ");
         } else if (session.has("sessionChannel")) {
             GeneralHelper.loopAndFormatString(session, "sessionChannel",
@@ -240,7 +254,7 @@ public final class DataManipulation {
         StringBuilder formattedJudiciary = new StringBuilder();
 
         try {
-            session.get("judiciary").forEach(judiciary -> {
+            session.get(JUDICIARY).forEach(judiciary -> {
                 if (formattedJudiciary.length() != 0) {
                     formattedJudiciary.append(", ");
                 }
@@ -301,8 +315,8 @@ public final class DataManipulation {
         AtomicReference<StringBuilder> formattedJudiciary = new AtomicReference<>(new StringBuilder());
         AtomicReference<Boolean> foundPresiding = new AtomicReference<>(false);
 
-        if (session.has("judiciary")) {
-            session.get("judiciary").forEach(judiciary -> {
+        if (session.has(JUDICIARY)) {
+            session.get(JUDICIARY).forEach(judiciary -> {
                 if ("true".equals(GeneralHelper.findAndReturnNodeText(judiciary, "isPresiding"))) {
                     formattedJudiciary.set(new StringBuilder());
                     formattedJudiciary.get().append(GeneralHelper.findAndReturnNodeText(judiciary, "johKnownAs"));
@@ -323,5 +337,139 @@ public final class DataManipulation {
         }
 
         return GeneralHelper.trimAnyCharacterFromStringEnd(formattedJudiciary.toString());
+    }
+
+    private static void handlePartiesScss(JsonNode node, Hearing hearing) {
+        Map<String, String> parties = new ConcurrentHashMap<>();
+        for (JsonNode party : node) {
+            switch (party.get("partyRole").asText()) {
+                case "APPLICANT_PETITIONER":
+                    parties.put(APPLICANT, individualDetails(party));
+                    break;
+                case "APPLICANT_PETITIONER_REPRESENTATIVE":
+                    parties.put("applicantRepresentative", individualDetails(party));
+                    break;
+                case RESPONDENT:
+                    parties.put(RESPONDENT, individualDetails(party));
+                    break;
+                case "RESPONDENT_REPRESENTATIVE":
+                    parties.put("respondentRepresentative", individualDetails(party));
+                    break;
+                default:
+                    break;
+            }
+            hearing.setAppellant(parties.get(APPLICANT) + ",\nLegal Advisor: " + parties.get(
+                "applicantRepresentative"));
+            hearing.setRespondent(parties.get(RESPONDENT) + ",\nLegal Advisor: " + parties.get(
+                "respondentRepresentative"));
+        }
+    }
+
+    private static Hearing hearingBuilder(JsonNode hearingNode) {
+        Hearing currentHearing = new Hearing();
+        handlePartiesScss(hearingNode.get("party"), currentHearing);
+        currentHearing.setRespondent(dealWithInformants(hearingNode));
+        currentHearing.setAppealRef(GeneralHelper.safeGet("case.0.caseNumber", hearingNode));
+        return currentHearing;
+    }
+
+    private static String dealWithInformants(JsonNode node) {
+        List<String> informants = new ArrayList<>();
+        GeneralHelper.safeGetNode("informant.0.prosecutionAuthorityRef", node).forEach(informant -> {
+            informants.add(informant.asText());
+        });
+        return String.join(", ", informants);
+    }
+
+    private static String individualDetails(JsonNode node) {
+        List<String> listOfRetrievedData = new ArrayList<>();
+        String[] possibleFields = {"title", "individualForenames", "individualMiddleName", "individualSurname"};
+        for (String field : possibleFields) {
+            Optional<String> detail = Optional.ofNullable(node.get("individualDetails").findValue(field))
+                .map(JsonNode::asText)
+                .filter(s -> !s.isEmpty());
+            detail.ifPresent(listOfRetrievedData::add);
+        }
+        return String.join(" ", listOfRetrievedData);
+    }
+
+    private static Sitting sscsSittingBuilder(String sessionChannel, JsonNode node, String judiciary)
+        throws JsonProcessingException {
+        Sitting sitting = new Sitting();
+        String sittingStart = DateHelper.timeStampToBstTime(GeneralHelper.safeGet("sittingStart", node));
+        sitting.setJudiciary(judiciary);
+        List<Hearing> listOfHearings = new ArrayList<>();
+        if (node.has(CHANNEL)) {
+            List<String> channelList = MAPPER.readValue(
+                node.get(CHANNEL).toString(), new TypeReference<>() {
+                });
+            sitting.setChannel(String.join(", ", channelList));
+        } else {
+            sitting.setChannel(sessionChannel);
+        }
+        Iterator<JsonNode> nodeIterator = node.get("hearing").elements();
+        while (nodeIterator.hasNext()) {
+            JsonNode currentHearingNode = nodeIterator.next();
+            Hearing currentHearing = hearingBuilder(currentHearingNode);
+            currentHearing.setHearingTime(sittingStart);
+            listOfHearings.add(currentHearing);
+            currentHearing.setJudiciary(sitting.getJudiciary());
+        }
+        sitting.setListOfHearings(listOfHearings);
+        return sitting;
+    }
+
+    /**
+     * Format the judiciary into a comma seperated string.
+     *
+     * @param session The session containing the judiciary.
+     * @return A string of the formatted judiciary.
+     */
+    private static String scssFormatJudiciary(JsonNode session) {
+        StringBuilder formattedJudiciaryBuilder = new StringBuilder();
+        session.get(JUDICIARY).forEach(judiciary -> {
+            if (formattedJudiciaryBuilder.length() > 0) {
+                formattedJudiciaryBuilder.append(", ");
+            }
+            formattedJudiciaryBuilder
+                .append(GeneralHelper.safeGet("johTitle", judiciary))
+                .append(' ').append(GeneralHelper.safeGet("johNameSurname", judiciary));
+        });
+        return formattedJudiciaryBuilder.toString();
+    }
+
+    private static CourtRoom scssCourtRoomBuilder(JsonNode node) throws JsonProcessingException {
+        CourtRoom thisCourtRoom = new CourtRoom();
+        thisCourtRoom.setName(GeneralHelper.safeGet("courtRoomName", node));
+        List<Sitting> sittingList = new ArrayList<>();
+        List<String> sessionChannel;
+        TypeReference<List<String>> typeReference = new TypeReference<>() {};
+        for (final JsonNode session : node.get("session")) {
+            sessionChannel = MAPPER.readValue(
+                session.get("sessionChannel").toString(),
+                typeReference
+            );
+            String judiciary = scssFormatJudiciary(session);
+            String sessionChannelString = String.join(", ", sessionChannel);
+            for (JsonNode sitting : session.get("sittings")) {
+                sittingList.add(sscsSittingBuilder(sessionChannelString, sitting, judiciary));
+            }
+        }
+        thisCourtRoom.setListOfSittings(sittingList);
+        return thisCourtRoom;
+    }
+
+    public static CourtHouse courtHouseBuilder(JsonNode node) throws JsonProcessingException {
+        JsonNode thisCourtHouseNode = node.get("courtHouse");
+        CourtHouse thisCourtHouse = new CourtHouse();
+        thisCourtHouse.setName(GeneralHelper.safeGet("courtHouseName", thisCourtHouseNode));
+        thisCourtHouse.setPhone(GeneralHelper.safeGet("courtHouseContact.venueTelephone", thisCourtHouseNode));
+        thisCourtHouse.setEmail(GeneralHelper.safeGet("courtHouseContact.venueEmail", thisCourtHouseNode));
+        List<CourtRoom> courtRoomList = new ArrayList<>();
+        for (JsonNode courtRoom : thisCourtHouseNode.get("courtRoom")) {
+            courtRoomList.add(scssCourtRoomBuilder(courtRoom));
+        }
+        thisCourtHouse.setListOfCourtRooms(courtRoomList);
+        return thisCourtHouse;
     }
 }

@@ -9,6 +9,8 @@ import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 
@@ -27,6 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -74,6 +78,8 @@ class NotifyTest {
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String IMAGE_NAME = "test-image.png";
     private static final String VALID_API_DESTINATION = "https://localhost:4444";
+    public static final String SUBS_EMAIL_SUCCESS = "Subscription email successfully sent to";
+
     private static final String NEW_LINE_WITH_BRACKET = "{\n";
     private static final String SUBSCRIPTION_REQUEST = "\"subscriptions\": {\n\n"
         + "    \"CASE_URN\": [\n\n"
@@ -85,12 +91,12 @@ class NotifyTest {
 
     private static final String NONEXISTENT_BLOB_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
-        + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL = "{\n"
         + "  \"artefactId\": \"82c33285-ab4b-4c8e-8a80-b9ea7dc67db8\",\n"
-        + "  \"email\": \"kian.kwa@justice.gov.uk\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + "  \"subscriptions\": {\n"
         + "    \"LOCATION_ID\": [\n"
         + "      \"2\"\n"
@@ -105,12 +111,12 @@ class NotifyTest {
 
     private static final String VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"af77ae82-b0c2-4515-8bc0-dc3fed1853d8\",\n"
-        + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PUBLIC_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"e61a7e34-f950-4a6c-9200-7b94745b5a7a\",\n"
-        + "  \"email\": \"kian.kwa@justice.gov.uk\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
@@ -128,6 +134,13 @@ class NotifyTest {
         + "  }\n"
         + "}";
 
+    private static final String VALID_SCSS_DAILY_LIST_SUBS_EMAIL =
+        "{\n  \"artefactId\": \"69745ab9-137b-4fd2-a15a-42cc85bf8d49\",\n"
+            + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+            + "  \"subscriptions\": {\n"
+            + "    \"CASE_URN\": [\n"
+            + "      \"123\"\n]\n}\n}";
+
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
@@ -142,6 +155,23 @@ class NotifyTest {
     private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
+
+
+    private static final Map<String, String> LIST_MAP = Map.of("SSCS Daily List",
+                                                               VALID_SCSS_DAILY_LIST_SUBS_EMAIL,
+                                                               "SJP Public List",
+                                                               VALID_SJP_PUBLIC_SUBS_EMAIL,
+                                                               "SJP Press List",
+                                                               VALID_SJP_PRESS_SUBS_EMAIL,
+                                                               "COP Daily List",
+                                                               VALID_COP_CAUSE_SUBS_EMAIL,
+                                                               "Family Daily Cause List",
+                                                               VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL,
+                                                               "Civil and Family Daily Cause List",
+                                                               VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL,
+                                                               "Civil Daily Cause List",
+                                                               VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL
+    );
 
     private MockWebServer externalApiMockServer;
 
@@ -340,28 +370,15 @@ class NotifyTest {
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadGateway());
     }
 
-    @Test
-    void testValidPayloadForSubsSjpPublicListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_SJP_PUBLIC_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
-    }
-
-    @Test
-    void testValidPayloadForSubsSjpPressListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_SJP_PRESS_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
-    }
-
-    @Test
-    void testValidPayloadForSubsCopCauseListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_COP_CAUSE_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString("Subscription email successfully sent to")));
+    @ParameterizedTest
+    @ValueSource(strings = {"SSCS Daily List", "SJP Public List", "SJP Press List", "COP Daily List"})
+    void testValidPayloadForAllSubsEmailTypesReturnsOk(String listType) throws Exception {
+        MvcResult value = mockMvc.perform(post(SUBSCRIPTION_URL)
+                                              .content(LIST_MAP.get(listType))
+                                              .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andReturn();
+        assertThat(value.getResponse().getContentAsString()).as("Failed - List type = " + listType)
+            .contains(SUBS_EMAIL_SUCCESS);
     }
 
     @Test

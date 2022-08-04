@@ -24,13 +24,6 @@ class DateHelperTest {
     }
 
     @Test
-    void testZonedDateTimeForSjpMethod() {
-        assertThat(DateHelper.formatTimestampToBstForSjp("2022-07-26T16:04:43.416924Z"))
-            .as(ERR_MSG)
-            .isEqualTo("26 July 2022 at 17:04");
-    }
-
-    @Test
     void testZonedDateMethod() {
         assertThat(DateHelper.formatTimeStampToBst(
             "2022-07-26T16:04:43.416924Z", false, false))
@@ -59,7 +52,7 @@ class DateHelperTest {
         assertThat(DateHelper.formatTimeStampToBst(
             "2022-07-26T16:04:43.416924Z", false, true))
             .as(ERR_MSG)
-            .isEqualTo("26 July 2022 17:04:43");
+            .isEqualTo("26 July 2022 at 17:04");
     }
 
     @Test

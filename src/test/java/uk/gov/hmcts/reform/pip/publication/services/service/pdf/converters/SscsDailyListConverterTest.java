@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters;
 
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,38 +26,47 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
-class SjpPressListConverterTest {
+class SscsDailyListConverterTest {
 
     @Autowired
-    SjpPressListConverter sjpPressListConverter;
+    SscsDailyListConverter sscsDailyListConverter;
 
     @Test
-    void testSjpPressListTemplate() throws IOException {
+    void testSscsDailyList() throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "sjpPressMockJul22.json")), writer,
+        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "sscsDailyList.json")), writer,
                      Charset.defaultCharset()
         );
         Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
                                                  "provenance", "provenance",
-                                                 "locationName", "location"
+                                                 "locationName", "Livingston",
+                                                 "language", "ENGLISH"
         );
-
         JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
-        String outputHtml = sjpPressListConverter.convert(inputJson, metadataMap);
+        String outputHtml = sscsDailyListConverter.convert(inputJson, metadataMap);
         Document document = Jsoup.parse(outputHtml);
-        assertThat(outputHtml).as("No html found").isNotEmpty();
+        assertThat(outputHtml).as("no HTML found").isNotEmpty();
 
         assertThat(document.title()).as("incorrect title found.")
-            .isEqualTo("Single Justice Procedure - Press List "
+            .isEqualTo("SSCS Daily List for Livingston - "
                            + metadataMap.get("contentDate"));
 
         assertThat(document.getElementsByClass("mainHeaderText")
                        .select(".mainHeaderText > h1:nth-child(1)").text())
-            .as("incorrect header text").isEqualTo("Single Justice Procedure Press List");
+            .as("incorrect header text").isEqualTo("Social Security and Child Support");
 
-        assertThat(document.select(
-            "div.pageSeparatedCase:nth-child(2) > table:nth-child(3) > tbody:nth-child(1) >"
-                + " tr:nth-child(7) > td:nth-child(2)").text())
-            .as("incorrect value found").isEqualTo("Hampshire Police");
+        assertThat(document.getElementsByTag("h2").get(3).text())
+            .as("Header seems to be missing.")
+            .isEqualTo("Slough County Court");
+
+        assertThat(document.getElementsByTag("p"))
+            .as("data is missing")
+            .hasSize(9)
+            .extracting(Element::text)
+            .containsSequence("Thank you for reading this document thoroughly.");
+
+
     }
+
+
 }
