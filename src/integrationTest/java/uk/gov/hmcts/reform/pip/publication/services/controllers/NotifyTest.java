@@ -314,12 +314,15 @@ class NotifyTest {
 
         // Assert request body sent to third party api
         RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
-        String requestBody = recordedRequest.getBody().readUtf8();
-        assertThat(requestBody)
+        assertThat(recordedRequest.getHeader("Content-Type"))
+            .as("Incorrect content type in request header")
+            .contains(MediaType.MULTIPART_FORM_DATA_VALUE);
+
+        assertThat(recordedRequest.getBody().readUtf8())
+            .as("Expected data missing in request body")
             .isNotNull()
             .isNotEmpty()
             .contains("\"publicationDate\": \"2022-04-12T09:30:52.123Z\"");
-        assertThat(isValidJson(requestBody)).isTrue();
     }
 
     @Test
@@ -496,15 +499,5 @@ class NotifyTest {
                             .content("invalid content")
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
-    }
-
-    private boolean isValidJson(String jsonString) {
-        try {
-            final ObjectMapper mapper = new ObjectMapper();
-            mapper.readTree(jsonString);
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
     }
 }

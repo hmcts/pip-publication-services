@@ -24,10 +24,12 @@ class MultiPartHelperTest {
         assertThat(output).hasSize(1);
         HttpEntity<?> result = output.get("file").get(0);
         assertThat(result.getHeaders().get("Content-Disposition"))
+            .as("Incorrect content disposition")
             .hasSize(1)
             .first()
             .isEqualTo("form-data; name=\"file\"; filename=\"filename.pdf\"");
         assertThat(((ByteArrayResource) result.getBody()).getByteArray())
+            .as("Incorrect byte array data")
             .isEqualTo(data);
     }
 
@@ -46,14 +48,17 @@ class MultiPartHelperTest {
         HttpEntity<?> file1 = output.get("file1").get(0);
         assertThat(file1.getHeaders()).isEmpty();
         assertThat(((ByteArrayResource) file1.getBody()).getByteArray())
+            .as("Incorrect byte array data")
             .isEqualTo(data1);
 
         HttpEntity<?> file2 = output.get("file2").get(0);
         assertThat(file2.getHeaders().get("Content-Disposition"))
+            .as("Incorrect content disposition")
             .hasSize(1)
             .first()
             .isEqualTo("form-data; name=\"file2\"; filename=\"file2.pdf\"");
         assertThat(((ByteArrayResource) file2.getBody()).getByteArray())
+            .as("Incorrect byte array data")
             .isEqualTo(data2);
     }
 }
