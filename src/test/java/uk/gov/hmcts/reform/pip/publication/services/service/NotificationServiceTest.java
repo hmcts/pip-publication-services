@@ -240,7 +240,7 @@ class NotificationServiceTest {
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
         when(dataManagementService.getArtefactFlatFile(RAND_UUID)).thenReturn(file);
-        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, file, artefact, location))
+        when(thirdPartyService.handleFlatFileThirdPartyCall(API_DESTINATION, file, artefact, location))
             .thenReturn(SUCCESS_REF_ID);
 
         ThirdPartySubscription subscription = new ThirdPartySubscription();
@@ -260,7 +260,7 @@ class NotificationServiceTest {
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
-        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, jsonPayload, artefact, location))
+        when(thirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, artefact, location))
             .thenReturn(SUCCESS_REF_ID);
 
         ThirdPartySubscription subscription = new ThirdPartySubscription();
@@ -273,7 +273,7 @@ class NotificationServiceTest {
 
     @Test
     void testHandleThirdPartyEmpty() {
-        when(thirdPartyService.handleThirdPartyCall(API_DESTINATION, "", artefact, location))
+        when(thirdPartyService.handleDeleteThirdPartyCall(API_DESTINATION, artefact, location))
             .thenReturn(SUCCESS_REF_ID);
 
         assertEquals(EMPTY_API_SENT, notificationService.handleThirdParty(API_DESTINATION),
