@@ -65,6 +65,7 @@ class NotifyTest {
     private static final String API_SUBSCRIPTION_URL = "/notify/api";
     private static final String EXTERNAL_PAYLOAD = "test";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
+    private static final String MEDIA_VERIFICATION_EMAIL_URL = "/notify/media/verification";
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
     private static final String FULL_NAME = "Test user";
@@ -127,6 +128,9 @@ class NotifyTest {
         + "    ]\n"
         + "  }\n"
         + "}";
+
+    private static final String VALID_MEDIA_VERIFICATION_EMAIL_BODY =
+        "{\"fullName\": \"fullName\", \"email\": \"test@email.com\"}";
 
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
@@ -466,6 +470,24 @@ class NotifyTest {
     @Test
     void testInvalidPayloadUnidentifiedBlobEmail() throws Exception {
         mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
+                            .content("invalid content")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidPayloadMediaVerificationEmail() throws Exception {
+        mockMvc.perform(post(MEDIA_VERIFICATION_EMAIL_URL)
+                            .content(VALID_MEDIA_VERIFICATION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Media user verification email successfully sent with referenceId")));
+    }
+
+    @Test
+    void testInvalidPayloadMediaVerificationEmail() throws Exception {
+        mockMvc.perform(post(MEDIA_VERIFICATION_EMAIL_URL)
                             .content("invalid content")
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
