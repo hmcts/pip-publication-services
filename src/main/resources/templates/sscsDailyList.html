@@ -153,8 +153,8 @@
       </div>
     </div>
     <div class="dateContainer">
-      <h4 th:text="${'List for ' + metadata.contentDate}"/>
-      <h5 th:text="${'Published: ' + publishedDate}"/>
+      <h4 th:text="${i18n.listFor + metadata.contentDate}"/>
+      <h5 th:text="${i18n.published + publishedDate}"/>
     </div>
   </div>
   <div class="mainHeaderText">
@@ -167,8 +167,8 @@
 <section id="information-section">
   <div class="govuk-details__text">
     <p th:text="${i18n.infoSectionPara1}"/>
-    <p
-      th:text="${i18n.infoSectionMiddlePara1 + metadata.locationName + i18n.infoSectionMiddlePara2  + email + i18n.infoSectionMiddlePara3 + telephone + i18n.infoSectionMiddlePara4}"/>
+    <p th:text="${i18n.infoSectionMiddlePara1 + metadata.locationName +
+      i18n.infoSectionMiddlePara2  + email + i18n.infoSectionMiddlePara3 + telephone + i18n.infoSectionMiddlePara4}"/>
     <p th:text="${i18n.infoSectionPara3}"/>
   </div>
 

@@ -27,6 +27,7 @@ public class CopDailyCauseListConverter implements Converter {
         context.setVariable("locationDetails", artefact.get("locationDetails"));
         context.setVariable("provenance", metadata.get("provenance"));
         context.setVariable("artefact", artefact);
+        context.setVariable("i18n", language);
 
         DataManipulation.manipulateCopListData(artefact);
 
