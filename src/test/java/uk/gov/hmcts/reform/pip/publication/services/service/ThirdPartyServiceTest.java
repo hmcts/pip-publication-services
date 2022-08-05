@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
@@ -40,6 +41,8 @@ class ThirdPartyServiceTest {
 
     private static final String API = "localhost:4444";
     private static final String PAYLOAD = "test payload";
+    private static final String SUCCESS_NOTIFICATION = "Successfully sent list to Courtel at: %s";
+    private static final String RETURN_MATCH = "Returned messages should match";
     private static MockWebServer mockPublicationServicesEndpoint;
 
     private final Artefact artefact = new Artefact();
@@ -72,41 +75,119 @@ class ThirdPartyServiceTest {
     }
 
     @Test
-    void testHandleCourtelCallReturnsOk() {
+    void testHandleCourtelCallReturnsOkWithJson() {
         mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                    .addHeader("Content-Type",
-                                                               ContentType.APPLICATION_JSON)
+                                                    .addHeader(
+                                                        HttpHeaders.CONTENT_TYPE,
+                                                        ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
-        String response = thirdPartyService.handleThirdPartyCall(API, PAYLOAD, artefact, location);
-        assertEquals(String.format("Successfully sent list to Courtel at: %s", API), response,
-                     "Returned messages should match");
+        String response = thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, artefact, location);
+        assertEquals(String.format(SUCCESS_NOTIFICATION, API), response,
+                     RETURN_MATCH);
     }
 
     @Test
-    void testHandleCourtelCallReturnsFailed() {
+    void testHandleCourtelCallReturnsOkWithFlatFile() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                    .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+                                                    .setBody(PAYLOAD)
+                                                    .setResponseCode(200));
+        String response = thirdPartyService.handleFlatFileThirdPartyCall(API, PAYLOAD, artefact, location);
+        assertEquals(String.format(SUCCESS_NOTIFICATION, API), response,
+                     RETURN_MATCH);
+    }
+
+    @Test
+    void testHandleCourtelCallReturnsOkWithDelete() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                    .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+                                                    .setBody(PAYLOAD)
+                                                    .setResponseCode(200));
+        String response = thirdPartyService.handleDeleteThirdPartyCall(API, artefact, location);
+        assertEquals(String.format("Successfully sent deleted notification to Courtel at: %s", API), response,
+                     RETURN_MATCH);
+    }
+
+    @Test
+    void testHandleCourtelCallReturnsFailedWithJson() {
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
-            thirdPartyService.handleThirdPartyCall(API, PAYLOAD, null, null),
+            thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, null, null),
                                                      "Should throw ThirdPartyException");
         assertTrue(ex.getMessage().contains(String.format("Third party request to: %s failed", API)),
-                   "Messages should match");
+                   RETURN_MATCH);
     }
 
     @Test
-    void testHandleCourtelCallReturnsOkAfterRetry() {
+    void testHandleCourtelCallReturnsFailedWithFlatFile() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+        ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
+                                                         thirdPartyService.handleFlatFileThirdPartyCall(
+                                                             API, PAYLOAD, null, null),
+                                                     "Should throw ThirdPartyException");
+        assertTrue(ex.getMessage().contains(String.format("Third party request to: %s failed", API)),
+                   RETURN_MATCH);
+    }
+
+    @Test
+    void testHandleCourtelCallReturnsFailedWithDelete() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+        ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
+                                                         thirdPartyService.handleDeleteThirdPartyCall(API, null, null),
+                                                     "Should throw ThirdPartyException");
+        assertTrue(ex.getMessage().contains(String.format("Third party request to: %s failed", API)),
+                   RETURN_MATCH);
+    }
+
+    @Test
+    void testHandleCourtelCallReturnsOkAfterRetryWithJson() {
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
         mockPublicationServicesEndpoint.enqueue(new MockResponse()
                                                     .setResponseCode(200)
-                                                    .addHeader("Content-Type", ContentType.APPLICATION_JSON)
+                                                    .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD));
 
-        String response = thirdPartyService.handleThirdPartyCall(API, PAYLOAD, artefact, location);
+        String response = thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, artefact, location);
         assertEquals(String.format("Successfully sent list to Courtel at: %s", API), response,
-                     "Returned messages should match");
+                     RETURN_MATCH);
+    }
+
+    @Test
+    void testHandleCourtelCallReturnsOkAfterRetryWithFlatFile() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                    .setResponseCode(200)
+                                                    .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+                                                    .setBody(PAYLOAD));
+
+        String response = thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, artefact, location);
+        assertEquals(String.format("Successfully sent list to Courtel at: %s", API), response,
+                     RETURN_MATCH);
+    }
+
+    @Test
+    void testHandleCourtelCallReturnsOkAfterRetryWithDelete() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                    .setResponseCode(200)
+                                                    .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+                                                    .setBody(PAYLOAD));
+
+        String response = thirdPartyService.handleDeleteThirdPartyCall(API, artefact, location);
+        assertEquals(String.format("Successfully sent deleted notification to Courtel at: %s", API), response,
+                     RETURN_MATCH);
     }
 }

@@ -144,11 +144,11 @@ public class NotificationService {
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
         Location location = dataManagementService.getLocation(artefact.getLocationId());
         if (artefact.getIsFlatFile()) {
-            log.info(thirdPartyService.handleThirdPartyCall(body.getApiDestination(),
+            log.info(thirdPartyService.handleFlatFileThirdPartyCall(body.getApiDestination(),
                                                             dataManagementService.getArtefactFlatFile(
                                                                 artefact.getArtefactId()), artefact, location));
         } else {
-            log.info(thirdPartyService.handleThirdPartyCall(
+            log.info(thirdPartyService.handleJsonThirdPartyCall(
                 body.getApiDestination(),
                 dataManagementService.getArtefactJsonBlob(
                     artefact.getArtefactId()), artefact, location
@@ -160,7 +160,7 @@ public class NotificationService {
     public String handleThirdParty(String apiDestination) {
 
         log.info(writeLog("Sending blank payload to third party"));
-        log.info(writeLog(thirdPartyService.handleThirdPartyCall(apiDestination, "", null, null)));
+        log.info(writeLog(thirdPartyService.handleDeleteThirdPartyCall(apiDestination, null, null)));
 
         return String.format(EMPTY_SUCCESS_MESSAGE, apiDestination);
     }

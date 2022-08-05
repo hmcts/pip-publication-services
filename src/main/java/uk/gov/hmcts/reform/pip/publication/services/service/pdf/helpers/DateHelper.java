@@ -10,20 +10,11 @@ import java.util.Locale;
 public final class DateHelper {
 
     private static final int ONE = 1;
+    public static final String EUROPE_LONDON = "Europe/London";
 
     private DateHelper() {
         throw new UnsupportedOperationException();
     }
-
-    public static String formatTimestampToBstForSjp(String timestamp) {
-        Instant unZonedDateTime = Instant.parse(timestamp);
-        ZoneId zone = ZoneId.of("Europe/London");
-        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
-        DateTimeFormatter dtf;
-        dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
-        return dtf.format(zonedDateTime);
-    }
-
 
     public static String formatTimeStampToBst(String timestamp, Boolean isTimeOnly,
                                               Boolean isBothDateAndTime) {
@@ -41,7 +32,7 @@ public final class DateHelper {
             }
             return "h:mma";
         } else if (isBothDateAndTime) {
-            return "dd MMMM yyyy HH:mm:ss";
+            return "dd MMMM yyyy 'at' HH:mm";
         }
         return "dd MMMM yyyy";
     }
@@ -53,7 +44,7 @@ public final class DateHelper {
 
     public static ZonedDateTime convertStringToBst(String timestamp) {
         Instant unZonedDateTime = Instant.parse(timestamp);
-        ZoneId zone = ZoneId.of("Europe/London");
+        ZoneId zone = ZoneId.of(EUROPE_LONDON);
         return unZonedDateTime.atZone(zone);
     }
 
@@ -87,8 +78,25 @@ public final class DateHelper {
 
     public static ZonedDateTime convertStringToUtc(String timestamp) {
         Instant unZonedDateTime = Instant.parse(timestamp);
-        ZoneId zone = ZoneId.of("Europe/London");
+        ZoneId zone = ZoneId.of(EUROPE_LONDON);
         return unZonedDateTime.atZone(zone);
     }
 
+    public static String timeStampToBstTime(String timestamp) {
+        Instant unZonedDateTime = Instant.parse(timestamp);
+        ZoneId zone = ZoneId.of(EUROPE_LONDON);
+        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
+        DateTimeFormatter dtf;
+        dtf = DateTimeFormatter.ofPattern("HH:mm");
+        return dtf.format(zonedDateTime);
+    }
+
+    public static String formatTimestampToBst(String timestamp) {
+        Instant unZonedDateTime = Instant.parse(timestamp);
+        ZoneId zone = ZoneId.of(EUROPE_LONDON);
+        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
+        DateTimeFormatter dtf;
+        dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
+        return dtf.format(zonedDateTime);
+    }
 }

@@ -32,7 +32,6 @@ import java.util.UUID;
  * possible level of PDF accessibility, which means that when developing new templates, we must listen carefully to the
  * warnings output by the compiler.
  */
-
 @Slf4j
 @Service
 public class PdfCreationService {
@@ -54,16 +53,18 @@ public class PdfCreationService {
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
         Location location = dataManagementService.getLocation(artefact.getLocationId());
 
-        Map<String, String> metadataMap =
-
-            Map.of("contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
-                   "provenance", artefact.getProvenance(),
-                   "locationName", location.getName());
-
         Map<String, Object> language = handleLanguages(artefact.getListType(), artefact.getLanguage());
+
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
+        Map<String, String> metadataMap = Map.of(
+            "contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
+            "provenance", artefact.getProvenance(),
+            "locationName", location.getName(),
+            "language", artefact.getLanguage().toString()
+        );
 
         Converter converter = artefact.getListType().getConverter();
+
         return (converter == null)
             ? parseThymeleafTemplate(rawJson)
             : converter.convert(topLevelNode, metadataMap, language);

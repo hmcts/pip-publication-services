@@ -48,7 +48,7 @@ class SjpPressListConverterTest {
         );
         Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
                                                  "provenance", "provenance",
-                                                 "location", "location"
+                                                 "locationName", "location"
         );
 
         JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
