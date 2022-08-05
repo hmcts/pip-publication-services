@@ -408,5 +408,8 @@ class PersonalisationServiceTest {
 
         Object mediaVerificationLink = personalisation.get(VERIFICATION_PAGE_LINK);
         assertNotNull(mediaVerificationLink, "No media verification link key found");
+        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+        assertEquals(personalisationLinks.getMediaVerificationPageLink(), mediaVerificationLink,
+                     "Media verification link does not match expected link");
     }
 }

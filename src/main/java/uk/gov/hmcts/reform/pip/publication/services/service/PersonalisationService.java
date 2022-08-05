@@ -219,7 +219,7 @@ public class PersonalisationService {
     public Map<String, Object> buildMediaVerificationPersonalisation(MediaVerificationEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(FULL_NAME, body.getFullName());
-        personalisation.put(VERIFICATION_PAGE_LINK, "https://placeholder-link.com");
+        personalisation.put(VERIFICATION_PAGE_LINK, notifyConfigProperties.getLinks().getMediaVerificationPageLink());
         return personalisation;
     }
 
