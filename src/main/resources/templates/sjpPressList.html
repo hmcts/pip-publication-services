@@ -86,12 +86,6 @@
       vertical-align: top;
     }
 
-    .caseHeader {
-      text-align: center;
-      font-size: 24px;
-      text-decoration: underline;
-    }
-
     h1 {
       padding: 0;
       font-size: 28px;
@@ -164,12 +158,12 @@
       </div>
     </div>
     <div class="dateContainer">
-      <h4 th:text="${'List for ' + contentDate}"/>
-      <h5 th:text="${'Published: ' + publishedDate}"/>
+      <h4 th:text="${i18n.listFor + contentDate}"/>
+      <h5 th:text="${i18n.published + publishedDate}"/>
     </div>
   </div>
   <div class="mainHeaderText">
-    <h1 th:text="${i18n.titleText}">Single Justice Procedure Press List</h1>
+    <h1 th:text="${i18n.titleText}"/>
     <h3 th:text="${i18n.subHeader}"/>
   </div>
 </div>

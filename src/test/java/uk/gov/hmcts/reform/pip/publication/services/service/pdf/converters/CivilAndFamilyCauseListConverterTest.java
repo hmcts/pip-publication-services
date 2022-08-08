@@ -33,7 +33,7 @@ class CivilAndFamilyCauseListConverterTest {
     void testFamilyCauseListTemplate() throws IOException {
         Map<String, Object> language;
         try (InputStream languageFile = Thread.currentThread()
-            .getContextClassLoader().getResourceAsStream("templates/languages/en/civilAndFamilyDailyCauseList.json")) {
+            .getContextClassLoader().getResourceAsStream("templates/languages/cy/civilAndFamilyDailyCauseList.json")) {
             language = new ObjectMapper().readValue(
                 Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
                 });
