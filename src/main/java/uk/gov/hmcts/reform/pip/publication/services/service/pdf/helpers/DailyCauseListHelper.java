@@ -12,7 +12,7 @@ public final class DailyCauseListHelper {
     public static Context preprocessArtefactForThymeLeafConverter(JsonNode artefact, Map<String, String> metadata,
                                                                   Map<String, Object> language) {
         Context context = new Context();
-        DataManipulation.formatCourtAddress(artefact);
+        LocationHelper.formatCourtAddress(artefact);
         context.setVariable("metadata", metadata);
         context.setVariable("i18n", language);
         String publicationDate = artefact.get("document").get("publicationDate").asText();
@@ -23,7 +23,7 @@ public final class DailyCauseListHelper {
         context.setVariable("contentDate", metadata.get("contentDate"));
         context.setVariable("locationName", metadata.get("locationName"));
         context.setVariable("provenance", metadata.get("provenance"));
-        context.setVariable("venueAddress", DataManipulation.formatVenueAddress(artefact));
+        context.setVariable("venueAddress", LocationHelper.formatVenueAddress(artefact));
         context.setVariable("artefact", artefact);
         context.setVariable("phone", artefact.get("venue").get("venueContact").get("venueTelephone").asText());
         context.setVariable("email", artefact.get("venue").get("venueContact").get("venueEmail").asText());

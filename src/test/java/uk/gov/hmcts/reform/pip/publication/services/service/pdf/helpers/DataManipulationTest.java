@@ -55,7 +55,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatVenueAddressMethod() {
-        List<String> venueAddress = DataManipulation.formatVenueAddress(inputJson);
+        List<String> venueAddress = LocationHelper.formatVenueAddress(inputJson);
 
         assertEquals(venueAddress.get(0), "Address Line 1",
                      "Unable to get address for venue");
@@ -67,7 +67,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatCourtAddressMethod() {
-        DataManipulation.formatCourtAddress(inputJson);
+        LocationHelper.formatCourtAddress(inputJson);
 
         assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
                        .has(FORMATTED_COURT_HOUSE_ADDRESS))
@@ -87,7 +87,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatWithNoCourtAddressMethod() {
-        DataManipulation.formatCourtAddress(inputJson);
+        LocationHelper.formatCourtAddress(inputJson);
 
         assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
                        .has(FORMATTED_COURT_HOUSE_ADDRESS))

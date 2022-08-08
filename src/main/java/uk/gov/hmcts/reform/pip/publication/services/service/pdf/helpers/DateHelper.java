@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -11,6 +14,7 @@ public final class DateHelper {
 
     private static final int ONE = 1;
     public static final String EUROPE_LONDON = "Europe/London";
+    private static final int MINUTES_PER_HOUR = 60;
 
     private DateHelper() {
         throw new UnsupportedOperationException();
@@ -98,5 +102,28 @@ public final class DateHelper {
         DateTimeFormatter dtf;
         dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
         return dtf.format(zonedDateTime);
+    }
+
+    public static void calculateDuration(JsonNode sitting) {
+        ZonedDateTime sittingStart = convertStringToUtc(sitting.get("sittingStart").asText());
+        ZonedDateTime sittingEnd = convertStringToUtc(sitting.get("sittingEnd").asText());
+
+        double durationAsHours = 0;
+        double durationAsMinutes = convertTimeToMinutes(sittingStart, sittingEnd);
+
+        if (durationAsMinutes >= MINUTES_PER_HOUR) {
+            durationAsHours = Math.floor(durationAsMinutes / MINUTES_PER_HOUR);
+            durationAsMinutes = durationAsMinutes - (durationAsHours * MINUTES_PER_HOUR);
+        }
+
+        String formattedDuration = formatDuration((int) durationAsHours,
+                                                  (int) durationAsMinutes);
+
+        ((ObjectNode)sitting).put("formattedDuration", formattedDuration);
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
+        String time = dtf.format(sittingStart);
+
+        ((ObjectNode)sitting).put("time", time);
     }
 }
