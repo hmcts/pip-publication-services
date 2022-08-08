@@ -106,7 +106,7 @@ class NotifyTest {
 
     private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"55b9e27b-d315-4c7e-9116-0b83939c03eb\",\n"
-        + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
+        + "  \"email\": \"test_account_verified@hmcts.net\",\n"
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
@@ -121,7 +121,7 @@ class NotifyTest {
 
     private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
-        + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        + "  \"email\": \"test_account_verified@hmcts.net\",\n"
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_COP_CAUSE_SUBS_EMAIL = "{\n"
@@ -136,7 +136,7 @@ class NotifyTest {
 
     private static final String VALID_SCSS_DAILY_LIST_SUBS_EMAIL =
         "{\n  \"artefactId\": \"69745ab9-137b-4fd2-a15a-42cc85bf8d49\",\n"
-            + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+            + "  \"email\": \"test_account_verified@hmcts.net\",\n"
             + "  \"subscriptions\": {\n"
             + "    \"CASE_URN\": [\n"
             + "      \"123\"\n]\n}\n}";
