@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import okhttp3.tls.HandshakeCertificates;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
@@ -38,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.TooManyMethods",
-    "PMD.ImmutableField", "PMD.AvoidDuplicateLiterals"})
+    "PMD.ImmutableField", "PMD.AvoidDuplicateLiterals", "PMD.ExcessiveImports"})
 @SpringBootTest(classes = {Application.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -310,6 +311,18 @@ class NotifyTest {
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk()).andExpect(content().string(containsString(
                 "Successfully sent list to https://localhost:4444")));
+
+        // Assert request body sent to third party api
+        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+        assertThat(recordedRequest.getHeader("Content-Type"))
+            .as("Incorrect content type in request header")
+            .contains(MediaType.MULTIPART_FORM_DATA_VALUE);
+
+        assertThat(recordedRequest.getBody().readUtf8())
+            .as("Expected data missing in request body")
+            .isNotNull()
+            .isNotEmpty()
+            .contains("\"publicationDate\": \"2022-04-12T09:30:52.123Z\"");
     }
 
     @Test
