@@ -371,7 +371,8 @@ class NotifyTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"SSCS Daily List", "SJP Public List", "SJP Press List", "COP Daily List"})
+    @ValueSource(strings = {"SSCS Daily List", "SJP Public List", "SJP Press List", "COP Daily List", "Civil Daily "
+        + "Cause List", "Civil and Family Daily Cause List", "Family Daily Cause List"})
     void testValidPayloadForAllSubsEmailTypesReturnsOk(String listType) throws Exception {
         MvcResult value = mockMvc.perform(post(SUBSCRIPTION_URL)
                                               .content(LIST_MAP.get(listType))
@@ -392,30 +393,6 @@ class NotifyTest {
                             .content(invalidEmailJsonBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testValidPayloadForSubsCivilDailyCauseListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString("Subscription email successfully sent to")));
-    }
-
-    @Test
-    void testValidPayloadForSubsFamilyCauseListListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
-    }
-
-    @Test
-    void testValidPayloadForSubsCivilAndFamilyCauseListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
     }
 
     @Test
