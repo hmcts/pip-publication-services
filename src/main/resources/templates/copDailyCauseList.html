@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <style th:inline="text">
+    <style th:inline="text">
     @page {
       margin: 30px 20px;
 
       @bottom-center {
         font-family: 'GDS Transport';
         font-size: 16px;
-        color: gray;
+        color: grey;
         content: "[[${i18n.serviceName + i18n.pdfAccessibility}]]" counter(page) "[[${i18n.of}]]" counter(pages) ".";
       }
     }
@@ -133,12 +133,12 @@
     .govuk-table__header {
       font-weight: 700;
     }
-  </style>
+    </style>
   <meta charset="UTF-8"/>
   <meta name="subject" content="Accessible PDF template"/>
   <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
   <meta name="description" content="Document description - vital for compliance."/>
-  <title>COP Daily Cause List</title>
+  <title th:text="i18n.listName"/>
 </head>
 <body>
 <div class="header">
@@ -156,14 +156,10 @@
       <p th:text="${i18n.importantInfo}" class="govuk-details__summary-text"/>
     </summary>
     <div class="govuk-details__text">
-      <p>Open justice is a fundamental principle in our courts and tribunals system, and will continue to be as we
-        increase the use of audio and video technology.</p>
-      <p>Dispute Resolution Hearings are not attended hearings for the purpose of Practice Direction 4C. Requests to
-        observe any other hearing should be made to:</p>
-      <p
-        th:text="${artefact.get('venue').get('venueContact').get('venueEmail').asText() + ' ' +  artefact.get('venue').get('venueContact').get('venueTelephone').asText()}"/>
-      <p>Judges will have regard to the principles of open justice when considering the use of telephone and video
-        technology. Observers may be excluded where necessary to secure the proper administration of justice</p>
+      <p th:text="${i18n.legal1}"/>
+      <p th:text="${i18n.legal2}"/>
+      <p th:text="${artefact.get('venue').get('venueContact').get('venueEmail').asText() + ' ' +  artefact.get('venue').get('venueContact').get('venueTelephone').asText()}"/>
+      <p th:text="${i18n.legal3}"/>
     </div>
   </details>
 
@@ -177,19 +173,16 @@
         <div th:each="session : ${courtRoom.get('session')}">
           <div class="govuk-accordion__section-header">
             <h2 class="govuk-accordion__section-heading"
-                th:text="${'Before Hon ' + session.get('formattedSessionJoh').asText()}"/>
+                th:text="${i18n.beforeHon + session.get('formattedSessionJoh').asText()}"/>
           </div>
           <div class="govuk-accordion__section-content">
             <div class="parent-box overflow-table">
               <table class="govuk-table">
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
-                  <th scope="col" class="govuk-table__header no-wrap">Start Time</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Case ref</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Case Details</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Hearing type</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Time Estimate</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Hearing Channel</th>
+                  <th:block th:each="header: ${i18n.headerValuesWrap}">
+                    <th scope="col" class="govuk-table__header no-wrap" th:text="${header}"/>
+                  </th:block>
                 </tr>
                 </thead>
                 <tbody class="govuk-table__body">
@@ -214,20 +207,15 @@
       </div>
     </div>
   </div>
-  <div>
-    <p class="govuk-body govuk-!-font-size-14" th:text="${'Data Source: ' + provenance}"/>
+  <section>
+    <p class="govuk-body govuk-font-14" th:text="${i18n.dataSource + provenance}"/>
     <hr/>
-    <p class="govuk-body govuk-!-font-size-14">Note this document contains Special Category Data as
-      defined by Data Protection Act 2018, formally known as Sensitive Personal Data, and should be handled
-      appropriately.</p>
-    <p class="govuk-body govuk-!-font-size-14">This document contains information intended to assist the
-      accurate reporting of court proceedings. It is vital you ensure that you safeguard the Special Category Data
-      included and abide by reporting restrictions (for example on victims and children). HMCTS will stop sending the
-      data if there is concern about how it will be used.</p>
+    <p th:text="${i18n.bottomLegal1}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
+    <p th:text="${i18n.bottomLegal2}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
     <hr/>
-    <p style="text-align: center;" class="govuk-body govuk-!-font-size-14">Thank you for reading this document
-      thoroughly.</p>
-  </div>
+    <p th:text="${i18n.thanks}" style="text-align: center;"/>
+  </section>
+
 </div>
 </body>
 </html>
