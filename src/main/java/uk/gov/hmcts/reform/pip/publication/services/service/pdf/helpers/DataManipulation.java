@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.GodClass"})
+@SuppressWarnings({"PMD.TooManyMethods"})
 public final class DataManipulation {
     private static final String POSTCODE = "postCode";
     private static final String COURT_HOUSE = "courtHouse";
