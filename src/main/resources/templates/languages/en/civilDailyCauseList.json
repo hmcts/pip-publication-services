@@ -17,9 +17,9 @@
   "headerValuesWrap": [
     "Time",
     "Case ID",
-    "Case Name",
-    "Case Type",
-    "Hearing Type",
+    "Name of party or parties involved",
+    "Hearing type",
+    "Location",
     "Duration"
   ],
   "dataSource": "Data Source: ",

@@ -29,6 +29,9 @@ class FamilyCauseListConverterTest {
     @Autowired
     FamilyDailyCauseListConverter familyDailyCauseListConverter;
 
+    public static final String HEADER_TEXT = "Incorrect header text";
+    public static final String PROVENANCE = "provenance";
+
     @Test
     void testFamilyCauseListTemplate() throws IOException {
         Map<String, Object> language;
@@ -44,7 +47,7 @@ class FamilyCauseListConverterTest {
                      Charset.defaultCharset()
         );
         Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
-                                                 "provenance", "provenance",
+                                                 PROVENANCE, PROVENANCE,
                                                  "locationName", "location"
         );
 
@@ -58,10 +61,47 @@ class FamilyCauseListConverterTest {
 
         assertThat(document.getElementsByClass("govuk-heading-l")
             .get(0).text())
-            .as("incorrect header text").isEqualTo("Family Daily Cause List:");
+            .as(HEADER_TEXT).isEqualTo("Family Daily Cause List:");
 
         assertThat(document.getElementsByClass("govuk-body")
                        .get(2).text())
-            .as("incorrect header text").contains("Last Updated 21 July 2022");
+            .as(HEADER_TEXT).contains("Last Updated 21 July 2022");
+    }
+
+
+    @Test
+    void testFamilyCauseListTemplateWelsh() throws IOException {
+        Map<String, Object> language;
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("templates/languages/cy/familyDailyCauseList.json")) {
+            language = new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
+        }
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/",
+                                                    "familyDailyCauseList.json")), writer,
+                     Charset.defaultCharset()
+        );
+        Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
+                                                 PROVENANCE, PROVENANCE,
+                                                 "locationName", "location"
+        );
+
+        JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
+        String outputHtml = familyDailyCauseListConverter.convert(inputJson, metadataMap, language);
+        Document document = Jsoup.parse(outputHtml);
+        assertThat(outputHtml).as("No html found").isNotEmpty();
+
+        assertThat(document.title()).as("incorrect title found.")
+            .isEqualTo("Rhestr Ddyddiol o Achosion Teulu");
+
+        assertThat(document.getElementsByClass("govuk-heading-l")
+                       .get(0).text())
+            .as(HEADER_TEXT).isEqualTo("Rhestr Ddyddiol o Achosion Teulu:");
+
+        assertThat(document.getElementsByClass("govuk-body")
+                       .get(2).text())
+            .as(HEADER_TEXT).contains("Diweddarwyd ddiwethaf 21 July 2022 yn 3:01pm");
     }
 }

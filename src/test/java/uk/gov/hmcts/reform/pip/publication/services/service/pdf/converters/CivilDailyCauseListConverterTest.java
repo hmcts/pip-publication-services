@@ -60,6 +60,29 @@ class CivilDailyCauseListConverterTest {
         assertDataSource(document);
     }
 
+
+    @Test
+    void testSuccessfulConversionWelsh() throws IOException {
+        Map<String, Object> language;
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("templates/languages/cy/civilDailyCauseList.json")) {
+            language = new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
+        }
+        String result = converter.convert(getInput("/mocks/civilDailyCauseList.json"), METADATA, language);
+        Document document = Jsoup.parse(result);
+
+        assertThat(result)
+            .as("No html found")
+            .isNotEmpty();
+
+        assertThat(document.title())
+            .as("incorrect document title")
+            .isEqualTo("Rhestr Ddyddiol o Achosion Sifil");
+
+    }
+
     private void assertFirstPageContent(Element element) {
         assertThat(element.getElementsByTag("h1"))
             .as("Incorrect first page h1 element")
@@ -77,7 +100,7 @@ class CivilDailyCauseListConverterTest {
 
         assertThat(element.getElementsByTag("p"))
             .as("Incorrect first page p elements")
-            .hasSize(6)
+            .hasSize(7)
             .extracting(Element::text)
             .contains("THE LAW COURTS PR1 2LL",
                       "List for 1 July 2022",
@@ -144,7 +167,7 @@ class CivilDailyCauseListConverterTest {
 
     private void assertDataSource(Document document) {
         Elements elements = document.getElementsByTag("p");
-        assertThat(elements.get(8))
+        assertThat(elements.get(9))
             .as("Incorrect data source")
             .extracting(Element::text)
             .isEqualTo("Data Source: " + MANUAL_UPLOAD);

@@ -29,11 +29,15 @@ class CivilAndFamilyCauseListConverterTest {
     @Autowired
     CivilAndFamilyDailyCauseListConverter civilAndFamilyDailyCauseListConverter;
 
+    public static final String PROVENANCE = "provenance";
+    public static final String HEADER_TEXT = "Incorrect Header Text";
+
+
     @Test
     void testFamilyCauseListTemplate() throws IOException {
         Map<String, Object> language;
         try (InputStream languageFile = Thread.currentThread()
-            .getContextClassLoader().getResourceAsStream("templates/languages/cy/civilAndFamilyDailyCauseList.json")) {
+            .getContextClassLoader().getResourceAsStream("templates/languages/en/civilAndFamilyDailyCauseList.json")) {
             language = new ObjectMapper().readValue(
                 Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
                 });
@@ -44,7 +48,7 @@ class CivilAndFamilyCauseListConverterTest {
                      Charset.defaultCharset()
         );
         Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
-                                                 "provenance", "provenance",
+                                                 PROVENANCE, PROVENANCE,
                                                  "locationName", "location"
         );
 
@@ -58,10 +62,46 @@ class CivilAndFamilyCauseListConverterTest {
 
         assertThat(document.getElementsByClass("govuk-heading-l")
                        .get(0).text())
-            .as("incorrect header text").isEqualTo("Civil and Family Daily Cause List:");
+            .as(HEADER_TEXT).isEqualTo("Civil and Family Daily Cause List:");
 
         assertThat(document.getElementsByClass("govuk-body")
                        .get(2).text())
-            .as("incorrect header text").contains("Last Updated 21 July 2022");
+            .as(HEADER_TEXT).contains("Last Updated 21 July 2022");
+    }
+
+    @Test
+    void testFamilyCauseListTemplateWelsh() throws IOException {
+        Map<String, Object> language;
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("templates/languages/cy/civilAndFamilyDailyCauseList.json")) {
+            language = new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
+        }
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/",
+                                                    "civilAndFamilyDailyCauseList.json")), writer,
+                     Charset.defaultCharset()
+        );
+        Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
+                                                 PROVENANCE, PROVENANCE,
+                                                 "locationName", "location"
+        );
+
+        JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
+        String outputHtml = civilAndFamilyDailyCauseListConverter.convert(inputJson, metadataMap, language);
+        Document document = Jsoup.parse(outputHtml);
+        assertThat(outputHtml).as("No html found").isNotEmpty();
+
+        assertThat(document.title()).as("incorrect title found.")
+            .isEqualTo("Rhestr Achosion Dyddiol Sifil a Theuluolt");
+
+        assertThat(document.getElementsByClass("govuk-heading-l")
+                       .get(0).text())
+            .as(HEADER_TEXT).isEqualTo("Rhestr Achosion Dyddiol Sifil a Theuluolt:");
+
+        assertThat(document.getElementsByClass("govuk-body")
+                       .get(2).text())
+            .as(HEADER_TEXT).contains("Diweddarwyd ddiwethaf 21 July 2022 yn 3:01pm");
     }
 }

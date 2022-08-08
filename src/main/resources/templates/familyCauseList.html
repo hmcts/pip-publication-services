@@ -139,7 +139,8 @@
   <meta name="subject" content="Accessible PDF template"/>
   <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
   <meta name="description" content="Document description - vital for compliance."/>
-  <title th:text="i18n.listName"/>
+  <title th:text="${i18n.listName}"/>
+
 </head>
 <body>
 <div class = "header">
@@ -152,8 +153,8 @@
       <td th:text="${address}"/>
     </span>
   </p>
-  <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1" th:text="${'List for ' + contentDate}" />
-  <p class="govuk-body" th:text="${'Last Updated ' + publicationDate + ' at ' + publicationTime}" />
+  <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1" th:text="${i18n.listFor + contentDate}" />
+  <p class="govuk-body" th:text="${i18n.lastUpdated + publicationDate + i18n.at + publicationTime}" />
   <details class="govuk-details" data-module="govuk-details" open="">
     <summary class="govuk-details__summary">
       <p th:text="${i18n.importantInfo}" class="govuk-details__summary-text"/>

@@ -34,6 +34,9 @@ class SscsDailyListConverterTest {
     @Autowired
     SscsDailyListConverter sscsDailyListConverter;
 
+    public static final String PROVENANCE = "provenance";
+    public static final String CONTENT_DATE = "contentDate";
+
     @Test
     void testSscsDailyList() throws IOException {
         Map<String, Object> language;
@@ -47,8 +50,8 @@ class SscsDailyListConverterTest {
         IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "sscsDailyList.json")), writer,
                      Charset.defaultCharset()
         );
-        Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
-                                                 "provenance", "provenance",
+        Map<String, String> metadataMap = Map.of(CONTENT_DATE, Instant.now().toString(),
+                                                 PROVENANCE, PROVENANCE,
                                                  "locationName", "Livingston"
         );
         JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
@@ -58,7 +61,7 @@ class SscsDailyListConverterTest {
 
         assertThat(document.title()).as("incorrect title found.")
             .isEqualTo("SSCS Daily List for Livingston - "
-                           + metadataMap.get("contentDate"));
+                           + metadataMap.get(CONTENT_DATE));
 
         assertThat(document.getElementsByClass("mainHeaderText")
                        .select(".mainHeaderText > h1:nth-child(1)").text())
@@ -74,6 +77,48 @@ class SscsDailyListConverterTest {
             .extracting(Element::text)
             .containsSequence("Thank you for reading this document thoroughly.");
 
+
+    }
+
+    @Test
+    void testSscsDailyListWelsh() throws IOException {
+        Map<String, Object> language;
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("templates/languages/cy/sscsDailyList.json")) {
+            language = new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
+        }
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "sscsDailyList.json")), writer,
+                     Charset.defaultCharset()
+        );
+        Map<String, String> metadataMap = Map.of(CONTENT_DATE, Instant.now().toString(),
+                                                 PROVENANCE, PROVENANCE,
+                                                 "locationName", "Livingston"
+        );
+        JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
+        String outputHtml = sscsDailyListConverter.convert(inputJson, metadataMap, language);
+        Document document = Jsoup.parse(outputHtml);
+        assertThat(outputHtml).as("no HTML found").isNotEmpty();
+
+        assertThat(document.title()).as("incorrect title found.")
+            .isEqualTo("<missing>Livingston - "
+                           + metadataMap.get(CONTENT_DATE));
+
+        assertThat(document.getElementsByClass("mainHeaderText")
+                       .select(".mainHeaderText > h1:nth-child(1)").text())
+            .as("incorrect header text").isEqualTo("<missing>");
+
+        assertThat(document.getElementsByTag("h2").get(3).text())
+            .as("Header seems to be missing.")
+            .isEqualTo("Slough County Court");
+
+        assertThat(document.getElementsByTag("p"))
+            .as("data is missing")
+            .hasSize(9)
+            .extracting(Element::text)
+            .containsSequence("<missing>");
 
     }
 

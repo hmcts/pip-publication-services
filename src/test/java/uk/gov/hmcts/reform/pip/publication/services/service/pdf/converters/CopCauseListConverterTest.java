@@ -30,6 +30,9 @@ class CopCauseListConverterTest {
     @Autowired
     CopDailyCauseListConverter copDailyCauseListConverter;
 
+    public static final String PROVENANCE = "provenance";
+    public static final String HEADER_TEXT = "incorrect header text";
+
     @Test
     void testCopCauseListTemplate() throws IOException {
         Map<String, Object> language;
@@ -45,7 +48,7 @@ class CopCauseListConverterTest {
         );
 
         Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
-                                                 "provenance", "provenance",
+                                                 PROVENANCE, PROVENANCE,
                                                  "locationName", "location"
         );
 
@@ -55,20 +58,59 @@ class CopCauseListConverterTest {
         assertThat(outputHtml).as("No html found").isNotEmpty();
 
         assertThat(document.title()).as("incorrect title found.")
-            .isEqualTo("COP Daily Cause List");
+            .isEqualTo("Court of Protection Daily Cause List");
 
         assertThat(document.getElementsByClass("govuk-heading-l")
                        .get(0).text())
-            .as("incorrect header text").isEqualTo("In the court of Protection: Regional COP Court");
+            .as(HEADER_TEXT).isEqualTo("In the court of Protection Regional COP Court");
 
         assertThat(document.getElementsByClass("govuk-body")
                        .get(1).text())
-            .as("incorrect header text").contains("Last Updated 14 February 2022 at 10:30am");
+            .as(HEADER_TEXT).contains("Last Updated 14 February 2022 at 10:30am");
 
         assertThat(document.getElementsByClass("govuk-accordion__section-heading")
                        .get(0).text())
-            .as("incorrect header text").contains("Before Hon Mrs Firstname Surname");
+            .as(HEADER_TEXT).contains("Before Hon Mrs Firstname Surname");
 
     }
 
+    @Test
+    void testCopCauseListTemplateWelsh() throws IOException {
+        Map<String, Object> language;
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("templates/languages/cy/copDailyCauseList.json")) {
+            language = new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
+        }
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/copDailyCauseList.json")), writer,
+                     Charset.defaultCharset()
+        );
+
+        Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
+                                                 PROVENANCE, PROVENANCE,
+                                                 "locationName", "location"
+        );
+
+        JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
+        String outputHtml = copDailyCauseListConverter.convert(inputJson, metadataMap, language);
+        Document document = Jsoup.parse(outputHtml);
+        assertThat(outputHtml).as("No html found").isNotEmpty();
+
+        assertThat(document.title()).as("incorrect title found.")
+            .isEqualTo("<missing>");
+
+        assertThat(document.getElementsByClass("govuk-heading-l")
+                       .get(0).text())
+            .as(HEADER_TEXT).isEqualTo("Yn y llys Gwarchod Regional COP Court");
+
+        assertThat(document.getElementsByClass("govuk-body")
+                       .get(1).text())
+            .as(HEADER_TEXT).contains("Diweddarwyd ddiwethaf 14 February 2022 yn 10:30am");
+
+        assertThat(document.getElementsByClass("govuk-accordion__section-heading")
+                       .get(0).text())
+            .as(HEADER_TEXT).contains("<missing>Mrs Firstname Surname");
+    }
 }

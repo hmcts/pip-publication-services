@@ -32,6 +32,8 @@ class SjpPressListConverterTest {
     @Autowired
     SjpPressListConverter sjpPressListConverter;
 
+    public static final String PROVENANCE = "provenance";
+
     @Test
     void testSjpPressListTemplate() throws IOException {
         Map<String, Object> language;
@@ -46,8 +48,49 @@ class SjpPressListConverterTest {
         IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "sjpPressMockJul22.json")), writer,
                      Charset.defaultCharset()
         );
-        Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
-                                                 "provenance", "provenance",
+        Map<String, String> metadataMap = Map.of("contentDate",
+                                                 Instant.now().toString(),
+                                                 PROVENANCE,
+                                                 PROVENANCE,
+                                                 "locationName",
+                                                 "location"
+        );
+
+        JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
+        String outputHtml = sjpPressListConverter.convert(inputJson, metadataMap, language);
+        Document document = Jsoup.parse(outputHtml);
+        assertThat(outputHtml).as("No html found").isNotEmpty();
+
+        assertThat(document.title()).as("incorrect title found.")
+            .contains("Single Justice Procedure - Press List");
+
+        assertThat(document.getElementsByClass("mainHeaderText")
+                       .select(".mainHeaderText > h1:nth-child(1)").text())
+            .as("incorrect header text").isEqualTo("Single Justice Procedure - Press List");
+
+        assertThat(document.select(
+            "div.pageSeparatedCase:nth-child(2) > table:nth-child(3) > tbody:nth-child(1) >"
+                + " tr:nth-child(7) > td:nth-child(2)").text())
+            .as("incorrect value found").isEqualTo("Hampshire Police");
+    }
+
+    @Test
+    void testSjpPressListTemplateWelsh() throws IOException {
+        Map<String, Object> language;
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("templates/languages/cy/sjpPressList.json")) {
+            language = new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
+        }
+
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "sjpPressMockJul22.json")), writer,
+                     Charset.defaultCharset()
+        );
+        Map<String, String> metadataMap = Map.of("contentDate",
+                                                Instant.now().toString(),
+                                                 PROVENANCE, PROVENANCE,
                                                  "locationName", "location"
         );
 
@@ -57,12 +100,11 @@ class SjpPressListConverterTest {
         assertThat(outputHtml).as("No html found").isNotEmpty();
 
         assertThat(document.title()).as("incorrect title found.")
-            .isEqualTo("Single Justice Procedure - Press List "
-                           + metadataMap.get("contentDate"));
+            .contains("Gweithdrefn Un Ynad - Rhestr Wasg ");
 
         assertThat(document.getElementsByClass("mainHeaderText")
                        .select(".mainHeaderText > h1:nth-child(1)").text())
-            .as("incorrect header text").isEqualTo("Single Justice Procedure - Press List");
+            .as("incorrect header text").isEqualTo("Gweithdrefn Un Ynad - Rhestr Wasg");
 
         assertThat(document.select(
             "div.pageSeparatedCase:nth-child(2) > table:nth-child(3) > tbody:nth-child(1) >"
