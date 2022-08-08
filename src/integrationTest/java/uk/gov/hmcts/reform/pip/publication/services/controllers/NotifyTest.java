@@ -88,7 +88,6 @@ class NotifyTest {
         + "    ]\n\n"
         + "  }\n\n"
         + "}\"";
-    private static final String EMAIL_SEND_MESSAGE = "Subscription email successfully sent to";
 
     private static final String NONEXISTENT_BLOB_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
