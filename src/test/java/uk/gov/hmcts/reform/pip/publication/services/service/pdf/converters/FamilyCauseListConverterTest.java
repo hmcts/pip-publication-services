@@ -48,7 +48,8 @@ class FamilyCauseListConverterTest {
         );
         Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
                                                  PROVENANCE, PROVENANCE,
-                                                 "locationName", "location"
+                                                 "locationName", "location",
+                                                 "language", "ENGLISH"
         );
 
         JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
@@ -85,7 +86,8 @@ class FamilyCauseListConverterTest {
         );
         Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
                                                  PROVENANCE, PROVENANCE,
-                                                 "locationName", "location"
+                                                 "locationName", "location",
+                                                 "language", "WELSH"
         );
 
         JsonNode inputJson = new ObjectMapper().readTree(writer.toString());

@@ -48,12 +48,10 @@ class SjpPressListConverterTest {
         IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "sjpPressMockJul22.json")), writer,
                      Charset.defaultCharset()
         );
-        Map<String, String> metadataMap = Map.of("contentDate",
-                                                 Instant.now().toString(),
-                                                 PROVENANCE,
-                                                 PROVENANCE,
-                                                 "locationName",
-                                                 "location"
+        Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
+                                                 PROVENANCE, PROVENANCE,
+                                                 "locationName", "location",
+                                                 "language", "ENGLISH"
         );
 
         JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
@@ -89,9 +87,10 @@ class SjpPressListConverterTest {
                      Charset.defaultCharset()
         );
         Map<String, String> metadataMap = Map.of("contentDate",
-                                                Instant.now().toString(),
+                                                 Instant.now().toString(),
                                                  PROVENANCE, PROVENANCE,
-                                                 "locationName", "location"
+                                                 "locationName", "location",
+                                                 "language", "WELSH"
         );
 
         JsonNode inputJson = new ObjectMapper().readTree(writer.toString());

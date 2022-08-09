@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.CourtHouse;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DateHelper;
 
@@ -30,7 +31,7 @@ public class SscsDailyListConverter implements Converter {
         context.setVariable("telephone", safeGet("venue.venueContact.venueTelephone", highestLevelNode));
         context.setVariable("email", safeGet("venue.venueContact.venueEmail", highestLevelNode));
         context.setVariable("publishedDate", DateHelper.formatTimestampToBst(
-            safeGet("document.publicationDate", highestLevelNode)));
+            safeGet("document.publicationDate", highestLevelNode), Language.valueOf(metadata.get("language"))));
         List<CourtHouse> listOfCourtHouses = new ArrayList<>();
         for (JsonNode courtHouse : highestLevelNode.get("courtLists")) {
             listOfCourtHouses.add(courtHouseBuilder(courtHouse));

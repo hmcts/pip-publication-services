@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SjpPressList;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DateHelper;
 
@@ -54,7 +55,9 @@ public class SjpPressListConverter implements Converter {
         }
 
         String publishedDate = DateHelper.formatTimeStampToBst(
-            jsonBody.get("document").get("publicationDate").asText(), false, true
+            jsonBody.get("document").get("publicationDate").asText(), Language.valueOf(metadata.get("language")),
+            false,
+            true
         );
         context.setVariable(
             "contentDate",

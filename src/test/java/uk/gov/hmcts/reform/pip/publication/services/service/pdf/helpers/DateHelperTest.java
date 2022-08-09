@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -26,7 +27,7 @@ class DateHelperTest {
     @Test
     void testZonedDateMethod() {
         assertThat(DateHelper.formatTimeStampToBst(
-            "2022-07-26T16:04:43.416924Z", false, false))
+            "2022-07-26T16:04:43.416924Z", Language.ENGLISH, false, false))
             .as(ERR_MSG)
             .isEqualTo("26 July 2022");
     }
@@ -34,7 +35,7 @@ class DateHelperTest {
     @Test
     void testZonedTimeOnlyHoursMethod() {
         assertThat(DateHelper.formatTimeStampToBst(
-            "2022-07-26T16:00:00.416924Z", true, false))
+            "2022-07-26T16:00:00.416924Z", Language.ENGLISH, true, false))
             .as(ERR_MSG)
             .contains("5");
     }
@@ -42,7 +43,7 @@ class DateHelperTest {
     @Test
     void testZonedTimeOnlyTwoDigitsHoursMethod() {
         assertThat(DateHelper.formatTimeStampToBst(
-            "2022-07-26T22:00:00.416924Z", true, false))
+            "2022-07-26T22:00:00.416924Z", Language.ENGLISH, true, false))
             .as(ERR_MSG)
             .contains("11");
     }
@@ -50,7 +51,7 @@ class DateHelperTest {
     @Test
     void testZonedDateTimeMethod() {
         assertThat(DateHelper.formatTimeStampToBst(
-            "2022-07-26T16:04:43.416924Z", false, true))
+            "2022-07-26T16:04:43.416924Z",Language.ENGLISH, false, true))
             .as(ERR_MSG)
             .isEqualTo("26 July 2022 at 17:04");
     }
@@ -74,49 +75,49 @@ class DateHelperTest {
 
     @Test
     void testFormatDurationMethod() {
-        assertThat(DateHelper.formatDuration(3, 10))
+        assertThat(DateHelper.formatDuration(3, 10, Language.ENGLISH))
             .as(ERR_MSG)
             .isEqualTo("3 hours 10 mins");
     }
 
     @Test
     void testFormatDurationWithNoMinutesMethod() {
-        assertThat(DateHelper.formatDuration(3, 0))
+        assertThat(DateHelper.formatDuration(3, 0, Language.ENGLISH))
             .as(ERR_MSG)
             .isEqualTo("3 hours");
     }
 
     @Test
     void testFormatDurationWithSingleHourNoMinutesMethod() {
-        assertThat(DateHelper.formatDuration(1, 0))
+        assertThat(DateHelper.formatDuration(1, 0, Language.ENGLISH))
             .as(ERR_MSG)
             .isEqualTo("1 hour");
     }
 
     @Test
     void testFormatDurationWithNoHourMethod() {
-        assertThat(DateHelper.formatDuration(0, 30))
+        assertThat(DateHelper.formatDuration(0, 30, Language.ENGLISH))
             .as(ERR_MSG)
             .isEqualTo("30 mins");
     }
 
     @Test
     void testFormatDurationWithNoHourAndOneMinuteMethod() {
-        assertThat(DateHelper.formatDuration(0, 1))
+        assertThat(DateHelper.formatDuration(0, 1, Language.ENGLISH))
             .as(ERR_MSG)
             .isEqualTo("1 min");
     }
 
     @Test
     void testFormatDurationWithSingleMinuteNoHourMethod() {
-        assertThat(DateHelper.formatDuration(0, 1))
+        assertThat(DateHelper.formatDuration(0, 1, Language.ENGLISH))
             .as(ERR_MSG)
             .isEqualTo("1 min");
     }
 
     @Test
     void testFormatDurationWithNoMinuteNoHourMethod() {
-        assertThat(DateHelper.formatDuration(0, 0))
+        assertThat(DateHelper.formatDuration(0, 0, Language.ENGLISH))
             .as(ERR_MSG)
             .isEmpty();
     }

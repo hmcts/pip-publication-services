@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
@@ -20,7 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SjpPublicListConverterTest {
     private final SjpPublicListConverter converter = new SjpPublicListConverter();
-    private final Map<String, String> metaData = Collections.singletonMap("contentDate", "1 July 2022");
+    private final Map<String, String> metaData = Map.of("contentDate", "1 July 2022",
+                                                        "language", "ENGLISH");
     private final Map<String, Object> language = handleLanguage();
 
     SjpPublicListConverterTest() throws IOException {

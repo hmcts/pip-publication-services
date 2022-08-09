@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SjpPublicList;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DateHelper;
 
@@ -28,7 +29,9 @@ public class SjpPublicListConverter implements Converter {
     public String convert(JsonNode artefact, Map<String, String> metadata, Map<String,Object> language) {
         Context context = new Context();
         String publicationDate = DateHelper.formatTimeStampToBst(
-            artefact.get("document").get("publicationDate").textValue(), false, true
+            artefact.get("document").get("publicationDate").textValue(), Language.valueOf(metadata.get("language")),
+            false,
+            true
         );
         context.setVariable("publicationDate", publicationDate);
         context.setVariable("contentDate", metadata.get("contentDate"));

@@ -52,7 +52,8 @@ class SscsDailyListConverterTest {
         );
         Map<String, String> metadataMap = Map.of(CONTENT_DATE, Instant.now().toString(),
                                                  PROVENANCE, PROVENANCE,
-                                                 "locationName", "Livingston"
+                                                 "locationName", "Livingston",
+                                                 "language", "ENGLISH"
         );
         JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
         String outputHtml = sscsDailyListConverter.convert(inputJson, metadataMap, language);
@@ -95,7 +96,8 @@ class SscsDailyListConverterTest {
         );
         Map<String, String> metadataMap = Map.of(CONTENT_DATE, Instant.now().toString(),
                                                  PROVENANCE, PROVENANCE,
-                                                 "locationName", "Livingston"
+                                                 "locationName", "Livingston",
+                                                 "language", "ENGLISH"
         );
         JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
         String outputHtml = sscsDailyListConverter.convert(inputJson, metadataMap, language);

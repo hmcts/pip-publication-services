@@ -28,7 +28,8 @@ class CivilDailyCauseListConverterTest {
     private static final Map<String, String> METADATA = Map.of(
         "contentDate", "1 July 2022",
         "locationName", OXFORD_COURT,
-        "provenance", MANUAL_UPLOAD
+        "provenance", MANUAL_UPLOAD,
+        "language", "ENGLISH"
     );
     private static final int NUMBER_OF_TABLES = 3;
 

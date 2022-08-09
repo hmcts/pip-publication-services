@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+@SuppressWarnings("PMD.TooManyMethods")
 public final class DateHelper {
 
     private static final int ONE = 1;
@@ -20,23 +22,23 @@ public final class DateHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static String formatTimeStampToBst(String timestamp, Boolean isTimeOnly,
+    public static String formatTimeStampToBst(String timestamp, Language language, Boolean isTimeOnly,
                                               Boolean isBothDateAndTime) {
         ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
-        String pattern = DateHelper.getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime);
+        String pattern = DateHelper.getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime, language);
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern, Locale.UK);
         return dtf.format(zonedDateTime);
     }
 
     private static String getDateTimeFormat(ZonedDateTime zonedDateTime, Boolean isTimeOnly,
-                                            Boolean isBothDateAndTime) {
+                                            Boolean isBothDateAndTime, Language language) {
         if (isTimeOnly) {
             if (zonedDateTime.getMinute() == 0) {
                 return "ha";
             }
             return "h:mma";
         } else if (isBothDateAndTime) {
-            return "dd MMMM yyyy 'at' HH:mm";
+            return (language == Language.ENGLISH) ? "dd MMMM yyyy 'at' HH:mm" : "dd MMMM yyyy 'yn' HH:mm";
         }
         return "dd MMMM yyyy";
     }
@@ -60,16 +62,31 @@ public final class DateHelper {
         return diffHours * 60 + diffMinutes;
     }
 
-    public static String formatDuration(int hours, int minutes) {
+    public static String formatDuration(int hours, int minutes, Language language) {
         if (hours > 0 && minutes > 0) {
-            return formatDurationTime(hours, "hour")
-                + " " + formatDurationTime(minutes, "min");
+            return hoursAndMins(hours, minutes, language);
         } else if (hours > 0 && minutes == 0) {
-            return formatDurationTime(hours, "hour");
+            return hoursOnly(hours, language);
         } else if (hours == 0 && minutes > 0) {
-            return formatDurationTime(minutes, "min");
+            return minsOnly(minutes, language);
         }
         return "";
+    }
+
+    private static String hoursAndMins(int hours, int minutes, Language language) {
+        return (language == Language.ENGLISH)
+            ? formatDurationTime(hours, "hour") + " " + formatDurationTime(minutes, "min") :
+            formatDurationTime(hours, "awr") + " " + formatDurationTime(minutes, "munud");
+    }
+
+    private static String hoursOnly(int hours, Language language) {
+        return (language == Language.ENGLISH) ? formatDurationTime(hours, "hour") : formatDurationTime(
+            hours, "awr");
+    }
+
+    private static String minsOnly(int mins, Language language) {
+        return (language == Language.ENGLISH) ? formatDurationTime(mins, "min") : formatDurationTime(
+            mins, "munud");
     }
 
     private static String formatDurationTime(int duration, String format) {
@@ -95,16 +112,18 @@ public final class DateHelper {
         return dtf.format(zonedDateTime);
     }
 
-    public static String formatTimestampToBst(String timestamp) {
+    public static String formatTimestampToBst(String timestamp, Language language) {
         Instant unZonedDateTime = Instant.parse(timestamp);
         ZoneId zone = ZoneId.of(EUROPE_LONDON);
         ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
         DateTimeFormatter dtf;
-        dtf = DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm");
+        dtf = (language == Language.ENGLISH)
+            ? DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' HH:mm") :
+            DateTimeFormatter.ofPattern("dd MMMM yyyy 'yn' HH:mm");
         return dtf.format(zonedDateTime);
     }
 
-    public static void calculateDuration(JsonNode sitting) {
+    public static void calculateDuration(JsonNode sitting, Language language) {
         ZonedDateTime sittingStart = convertStringToUtc(sitting.get("sittingStart").asText());
         ZonedDateTime sittingEnd = convertStringToUtc(sitting.get("sittingEnd").asText());
 
@@ -116,14 +135,16 @@ public final class DateHelper {
             durationAsMinutes = durationAsMinutes - (durationAsHours * MINUTES_PER_HOUR);
         }
 
-        String formattedDuration = formatDuration((int) durationAsHours,
-                                                  (int) durationAsMinutes);
+        String formattedDuration = formatDuration(
+            (int) durationAsHours,
+            (int) durationAsMinutes, language
+        );
 
-        ((ObjectNode)sitting).put("formattedDuration", formattedDuration);
+        ((ObjectNode) sitting).put("formattedDuration", formattedDuration);
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
         String time = dtf.format(sittingStart);
 
-        ((ObjectNode)sitting).put("time", time);
+        ((ObjectNode) sitting).put("time", time);
     }
 }

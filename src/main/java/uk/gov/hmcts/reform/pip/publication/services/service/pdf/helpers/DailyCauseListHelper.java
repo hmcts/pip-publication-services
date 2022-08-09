@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.thymeleaf.context.Context;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 
 import java.util.Map;
 
@@ -17,8 +18,12 @@ public final class DailyCauseListHelper {
         context.setVariable("i18n", language);
         String publicationDate = artefact.get("document").get("publicationDate").asText();
         context.setVariable("publicationDate", DateHelper.formatTimeStampToBst(publicationDate,
+                                                                               Language.valueOf(metadata.get(
+                                                                                   "language")),
                                                                                false, false));
         context.setVariable("publicationTime", DateHelper.formatTimeStampToBst(publicationDate,
+                                                                               Language.valueOf(metadata.get(
+                                                                                   "language")),
                                                                                true, false));
         context.setVariable("contentDate", metadata.get("contentDate"));
         context.setVariable("locationName", metadata.get("locationName"));
@@ -28,7 +33,7 @@ public final class DailyCauseListHelper {
         context.setVariable("phone", artefact.get("venue").get("venueContact").get("venueTelephone").asText());
         context.setVariable("email", artefact.get("venue").get("venueContact").get("venueEmail").asText());
 
-        DataManipulation.manipulatedDailyListData(artefact);
+        DataManipulation.manipulatedDailyListData(artefact, Language.valueOf(metadata.get("language")));
         return context;
     }
 }

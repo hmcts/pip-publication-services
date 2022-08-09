@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DataManipulation;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DateHelper;
 
@@ -19,8 +20,12 @@ public class CopDailyCauseListConverter implements Converter {
         String publicationDate = artefact.get("document").get("publicationDate").asText();
 
         context.setVariable("publicationDate", DateHelper.formatTimeStampToBst(publicationDate,
+                                                                               Language.valueOf(metadata.get(
+                                                                                   "language")),
                                                                                false, false));
         context.setVariable("publicationTime", DateHelper.formatTimeStampToBst(publicationDate,
+                                                                               Language.valueOf(metadata.get(
+                                                                                   "language")),
                                                                                true, false));
         context.setVariable("contentDate", metadata.get("contentDate"));
         context.setVariable("locationName", metadata.get("locationName"));
@@ -29,7 +34,7 @@ public class CopDailyCauseListConverter implements Converter {
         context.setVariable("artefact", artefact);
         context.setVariable("i18n", language);
 
-        DataManipulation.manipulateCopListData(artefact);
+        DataManipulation.manipulateCopListData(artefact, Language.valueOf(metadata.get("language")));
 
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         return templateEngine.process("copDailyCauseList.html", context);

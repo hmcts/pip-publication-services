@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DataManipulation;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.GeneralHelper;
 
@@ -20,7 +21,7 @@ public class DailyCauseList {
     public String artefactSummaryDailyCause(String payload) throws JsonProcessingException {
         JsonNode node = new ObjectMapper().readTree(payload);
 
-        DataManipulation.manipulatedDailyListData(node);
+        DataManipulation.manipulatedDailyListData(node, Language.ENGLISH);
 
         return this.processDailyCauseList(node);
     }
