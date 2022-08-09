@@ -58,7 +58,7 @@ public class SjpPressListConverter implements Converter {
         );
         context.setVariable(
             "contentDate",
-            DateHelper.formatTimeStampToBst(metadata.get("contentDate"), true, false)
+            metadata.get("contentDate")
         );
         context.setVariable("i18n", language);
         context.setVariable("publishedDate", publishedDate);
