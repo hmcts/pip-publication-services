@@ -56,11 +56,13 @@ public class PdfCreationService {
         Map<String, Object> language = handleLanguages(artefact.getListType(), artefact.getLanguage());
 
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
+        Language languageEntry = artefact.getLanguage();
+        String locationName = (languageEntry == Language.ENGLISH) ? location.getName() : location.getWelshName();
         Map<String, String> metadataMap = Map.of(
             "contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
             "provenance", artefact.getProvenance(),
-            "locationName", location.getName(),
-            "language", artefact.getLanguage().toString()
+            "locationName", locationName,
+            "language", languageEntry.toString()
         );
 
         Converter converter = artefact.getListType().getConverter();
