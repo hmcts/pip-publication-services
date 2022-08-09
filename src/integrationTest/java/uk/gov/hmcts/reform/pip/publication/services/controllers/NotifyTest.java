@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -499,22 +498,21 @@ class NotifyTest {
             .andExpect(content()
                            .string(containsString("Successfully sent empty list to https://localhost:4444")));
 
-
         // Assert expected request headers sent to third party api
         RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
-        Map<String, String> headers = ImmutableMap.<String, String>builder()
-            .put("x-provenance", "MANUAL_UPLOAD")
-            .put("x-type", "LIST")
-            .put("x-list-type", "CIVIL_DAILY_CAUSE_LIST")
-            .put("x-content-date", "2022-06-09T07:36:35")
-            .put("x-sensitivity", "PUBLIC")
-            .put("x-language", "ENGLISH")
-            .put("x-display-from", "2022-02-16T07:36:35")
-            .put("x-display-to", "2099-06-02T07:36:35")
-            .put("x-location-name", "Reading County Court and Family Court")
-            .put("x-location-jurisdiction", "Family,Civil")
-            .put("x-location-region", "South East")
-            .build();
+        Map<String, String> headers = Map.ofEntries(
+            Map.entry("x-provenance", "MANUAL_UPLOAD"),
+            Map.entry("x-type", "LIST"),
+            Map.entry("x-list-type", "CIVIL_DAILY_CAUSE_LIST"),
+            Map.entry("x-content-date", "2022-06-09T07:36:35"),
+            Map.entry("x-sensitivity", "PUBLIC"),
+            Map.entry("x-language", "ENGLISH"),
+            Map.entry("x-display-from", "2022-02-16T07:36:35"),
+            Map.entry("x-display-to", "2099-06-02T07:36:35"),
+            Map.entry("x-location-name", "Reading County Court and Family Court"),
+            Map.entry("x-location-jurisdiction", "Family,Civil"),
+            Map.entry("x-location-region", "South East")
+        );
 
         headers.entrySet().stream().forEach(e -> {
             assertThat(recordedRequest.getHeader(e.getKey()))
