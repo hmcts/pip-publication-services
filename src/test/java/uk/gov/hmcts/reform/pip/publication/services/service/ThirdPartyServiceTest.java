@@ -41,6 +41,7 @@ class ThirdPartyServiceTest {
 
     private static final String API = "localhost:4444";
     private static final String PAYLOAD = "test payload";
+    private static final byte[] BYTE_ARRAY_PAYLOAD = {1, 2, 3};
     private static final String SUCCESS_NOTIFICATION = "Successfully sent list to Courtel at: %s";
     private static final String RETURN_MATCH = "Returned messages should match";
     private static MockWebServer mockPublicationServicesEndpoint;
@@ -93,7 +94,7 @@ class ThirdPartyServiceTest {
                                                     .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
-        String response = thirdPartyService.handleFlatFileThirdPartyCall(API, PAYLOAD, artefact, location);
+        String response = thirdPartyService.handleFlatFileThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
         assertEquals(String.format(SUCCESS_NOTIFICATION, API), response,
                      RETURN_MATCH);
     }
@@ -132,7 +133,7 @@ class ThirdPartyServiceTest {
 
         ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
                                                          thirdPartyService.handleFlatFileThirdPartyCall(
-                                                             API, PAYLOAD, null, null),
+                                                             API, BYTE_ARRAY_PAYLOAD, artefact, null),
                                                      "Should throw ThirdPartyException");
         assertTrue(ex.getMessage().contains(String.format("Third party request to: %s failed", API)),
                    RETURN_MATCH);
@@ -173,7 +174,7 @@ class ThirdPartyServiceTest {
                                                     .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD));
 
-        String response = thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, artefact, location);
+        String response = thirdPartyService.handleFlatFileThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
         assertEquals(String.format("Successfully sent list to Courtel at: %s", API), response,
                      RETURN_MATCH);
     }
