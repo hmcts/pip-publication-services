@@ -71,6 +71,7 @@ class NotifyTest {
     private static final String EXTERNAL_PAYLOAD = "test";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
     private static final String MEDIA_VERIFICATION_EMAIL_URL = "/notify/media/verification";
+    private static final String INACTIVE_USER_NOTIFICATION_EMAIL_URL = "/notify/user/sign-in";
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
     private static final String FULL_NAME = "Test user";
@@ -146,6 +147,9 @@ class NotifyTest {
     private static final String VALID_MEDIA_VERIFICATION_EMAIL_BODY =
         "{\"fullName\": \"fullName\", \"email\": \"test@email.com\"}";
 
+    private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY =
+        "{\"email\": \"test@test.com\", \"fullName\": \"testName\", \"lastSignedInDate\": \"01 May 2022\"}";
+
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
@@ -160,7 +164,6 @@ class NotifyTest {
     private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
-
 
     private static final Map<String, String> LIST_MAP = Map.of("SSCS Daily List",
                                                                VALID_SCSS_DAILY_LIST_SUBS_EMAIL,
@@ -379,7 +382,6 @@ class NotifyTest {
             .andExpect(status().isBadRequest());
     }
 
-
     @Test
     void testValidPayloadForSubsEmailThrowsBadGateway() throws Exception {
         mockMvc.perform(post(SUBSCRIPTION_URL)
@@ -518,6 +520,24 @@ class NotifyTest {
     @Test
     void testInvalidPayloadMediaVerificationEmail() throws Exception {
         mockMvc.perform(post(MEDIA_VERIFICATION_EMAIL_URL)
+                            .content("invalid content")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidPayloadInactiveUserNotificationEmail() throws Exception {
+        mockMvc.perform(post(INACTIVE_USER_NOTIFICATION_EMAIL_URL)
+                            .content(VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Inactive user sign-in notification email successfully sent with referenceId")));
+    }
+
+    @Test
+    void testInvalidPayloadMInactiveUserNotificationEmail() throws Exception {
+        mockMvc.perform(post(INACTIVE_USER_NOTIFICATION_EMAIL_URL)
                             .content("invalid content")
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());

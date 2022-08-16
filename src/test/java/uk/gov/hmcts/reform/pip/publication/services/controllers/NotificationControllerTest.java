@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
@@ -25,6 +26,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -43,6 +45,7 @@ class NotificationControllerTest {
     private static final String EMPLOYER = "Test employer";
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
+    private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
     private static final String IMAGE_NAME = "test-image.png";
     private static final String SUCCESS_ID = "SuccessId";
     private static final String MESSAGES_MATCH = "Messages should match";
@@ -56,6 +59,7 @@ class NotificationControllerTest {
     private DuplicatedMediaEmail createMediaSetupEmail;
     private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
     private MediaVerificationEmail mediaVerificationEmail;
+    private InactiveUserNotificationEmail inactiveUserNotificationEmail;
 
     @Mock
     private NotificationService notificationService;
@@ -74,6 +78,7 @@ class NotificationControllerTest {
                                                                  ID_STRING, IMAGE_NAME,
                                                                  DATE_TIME, STATUS, DATE_TIME));
         mediaVerificationEmail = new MediaVerificationEmail(FULL_NAME, VALID_EMAIL);
+        inactiveUserNotificationEmail = new InactiveUserNotificationEmail(FULL_NAME, VALID_EMAIL, LAST_SIGNED_IN_DATE);
 
         subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
@@ -102,6 +107,8 @@ class NotificationControllerTest {
         when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
             .thenReturn(SUCCESS_ID);
         when(notificationService.mediaUserVerificationEmailRequest(mediaVerificationEmail))
+            .thenReturn(SUCCESS_ID);
+        when(notificationService.inactiveUserNotificationEmailRequest(inactiveUserNotificationEmail))
             .thenReturn(SUCCESS_ID);
     }
 
@@ -212,5 +219,20 @@ class NotificationControllerTest {
         assertEquals(HttpStatus.OK, notificationController
                          .sendMediaUserVerificationEmail(mediaVerificationEmail).getStatusCode(),
                      STATUS_CODES_MATCH);
+    }
+
+    @Test
+    @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
+    void testSendInactiveUserNotificationEmailReturnsOk() {
+        assertThat(notificationController.sendNotificationToInactiveUsers(inactiveUserNotificationEmail))
+            .as("Response does not match")
+            .extracting(
+                ResponseEntity::getStatusCode,
+                ResponseEntity::getBody
+            )
+            .contains(
+                HttpStatus.OK,
+                "Inactive user sign-in notification email successfully sent with referenceId: SuccessId"
+            );
     }
 }

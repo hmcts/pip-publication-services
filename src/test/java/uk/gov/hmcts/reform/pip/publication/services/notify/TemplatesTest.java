@@ -13,7 +13,7 @@ class TemplatesTest {
     private static final String MEDIA_APPLICATION_REPORTING_EMAIL = "c59c90a3-1806-4649-b4b5-b6bce8f8f72c";
     private static final String BAD_BLOB_EMAIL = "0fbd150f-ff5b-49f0-aa34-6a6273901ceb";
     private static final String MEDIA_VERIFICATION_EMAIL = "1dea6b4b-48b6-4eb1-8b86-7031de5502d9";
-
+    private static final String INACTIVE_USER_NOTIFICATION_EMAIL = "8f1e82a9-7016-4b28-8473-20c70f9f11ba";
 
     @Test
     void testGetNewUserWelcomeEmailTemplate() {
@@ -42,6 +42,12 @@ class TemplatesTest {
     @Test
     void testGetMediaVerificationTemplate() {
         assertEquals(MEDIA_VERIFICATION_EMAIL, Templates.MEDIA_USER_VERIFICATION_EMAIL.template,
+                     SHOULD_MATCH_MESSAGE);
+    }
+
+    @Test
+    void testGetInactiveUserNotificationTemplate() {
+        assertEquals(INACTIVE_USER_NOTIFICATION_EMAIL, Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template,
                      SHOULD_MATCH_MESSAGE);
     }
 }
