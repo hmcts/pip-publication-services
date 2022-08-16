@@ -300,7 +300,7 @@ class NotificationServiceTest {
     }
 
     @Test
-    void testValidPayloadReturnsSuccessInvalidUserNotification() {
+    void testValidPayloadReturnsSuccessInactiveUserNotification() {
         when(emailService.buildInactiveUserNotificationEmail(INACTIVE_USER_NOTIFICATION_EMAIL,
                                                              Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template))
             .thenReturn(validEmailBodyForEmailClient);
