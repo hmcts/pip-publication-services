@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
+import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.ArrayList;
@@ -165,7 +166,8 @@ public class PersonalisationService {
 
             String sourceArtefactId = artefact.getSourceArtefactId();
             JSONObject uploadedFile = !Strings.isNullOrEmpty(sourceArtefactId) && sourceArtefactId.contains(".csv")
-                ? EmailClient.prepareUpload(artefactData, true) : EmailClient.prepareUpload(artefactData);
+                ? NotificationClient.prepareUpload(artefactData, true)
+                : NotificationClient.prepareUpload(artefactData);
 
             personalisation.put("link_to_file", uploadedFile);
 
