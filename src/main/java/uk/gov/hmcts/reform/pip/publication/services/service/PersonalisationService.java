@@ -165,7 +165,7 @@ public class PersonalisationService {
             byte[] artefactData = dataManagementService.getArtefactFlatFile(body.getArtefactId());
 
             String sourceArtefactId = artefact.getSourceArtefactId();
-            JSONObject uploadedFile = !Strings.isNullOrEmpty(sourceArtefactId) && sourceArtefactId.contains(".csv")
+            JSONObject uploadedFile = !Strings.isNullOrEmpty(sourceArtefactId) && sourceArtefactId.endsWith(".csv")
                 ? NotificationClient.prepareUpload(artefactData, true)
                 : NotificationClient.prepareUpload(artefactData);
 
