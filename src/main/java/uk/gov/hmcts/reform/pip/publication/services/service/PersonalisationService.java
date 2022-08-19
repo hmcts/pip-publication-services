@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
@@ -160,7 +162,12 @@ public class PersonalisationService {
             personalisation.put("list_type", artefact.getListType());
 
             byte[] artefactData = dataManagementService.getArtefactFlatFile(body.getArtefactId());
-            personalisation.put("link_to_file", EmailClient.prepareUpload(artefactData));
+
+            String sourceArtefactId = artefact.getSourceArtefactId();
+            JSONObject uploadedFile = !Strings.isNullOrEmpty(sourceArtefactId) && sourceArtefactId.contains(".csv")
+                ? EmailClient.prepareUpload(artefactData, true) : EmailClient.prepareUpload(artefactData);
+
+            personalisation.put("link_to_file", uploadedFile);
 
             return personalisation;
         } catch (NotificationClientException e) {
