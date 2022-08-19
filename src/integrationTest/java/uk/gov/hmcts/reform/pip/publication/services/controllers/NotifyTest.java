@@ -136,7 +136,7 @@ class NotifyTest {
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
+        + "  \"artefactId\": \"41ab3903-c87c-42b5-994f-9b55f6dcad48\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
@@ -151,7 +151,7 @@ class NotifyTest {
         + "}";
 
     private static final String VALID_SCSS_DAILY_LIST_SUBS_EMAIL =
-        "{\n  \"artefactId\": \"69745ab9-137b-4fd2-a15a-42cc85bf8d49\",\n"
+        "{\n  \"artefactId\": \"468ff616-449a-4fed-bc77-62f6640c2067\",\n"
             + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
             + "  \"subscriptions\": {\n"
             + "    \"CASE_URN\": [\n"
