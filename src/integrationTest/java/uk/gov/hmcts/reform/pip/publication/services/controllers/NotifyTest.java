@@ -122,7 +122,7 @@ class NotifyTest {
 
     private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"55b9e27b-d315-4c7e-9116-0b83939c03eb\",\n"
-        + "  \"email\": \"junaid.iqbal@justice.gov.uk\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
@@ -136,8 +136,8 @@ class NotifyTest {
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"8cd9b0ad-0c5a-4220-9305-137d2d4862ef\",\n"
-        + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        + "  \"artefactId\": \"41ab3903-c87c-42b5-994f-9b55f6dcad48\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_COP_CAUSE_SUBS_EMAIL = "{\n"
@@ -151,8 +151,8 @@ class NotifyTest {
         + "}";
 
     private static final String VALID_SCSS_DAILY_LIST_SUBS_EMAIL =
-        "{\n  \"artefactId\": \"69745ab9-137b-4fd2-a15a-42cc85bf8d49\",\n"
-            + "  \"email\": \"daniel.furnivall1@justice.gov.uk\",\n"
+        "{\n  \"artefactId\": \"468ff616-449a-4fed-bc77-62f6640c2067\",\n"
+            + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
             + "  \"subscriptions\": {\n"
             + "    \"CASE_URN\": [\n"
             + "      \"123\"\n]\n}\n}";
@@ -340,6 +340,7 @@ class NotifyTest {
             .contains("\"publicationDate\": \"2022-04-12T09:30:52.123Z\"");
     }
 
+
     @Test
     void testNotifyApiSubscribersThrowsBadGateway() throws Exception {
         mockMvc.perform(post(API_SUBSCRIPTION_URL)
@@ -450,7 +451,7 @@ class NotifyTest {
     void testMissingArtefactIdForSubscriptionReturnsBadRequest() throws Exception {
 
         String missingArtefactIdJsonBody =
-            "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}}";
+            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(missingArtefactIdJsonBody)
@@ -462,7 +463,7 @@ class NotifyTest {
     void testInvalidSubscriptionCriteriaForSubscriptionReturnsBadRequest() throws Exception {
 
         String invalidSubscriptionJsonBody =
-            "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[]},"
+            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[]},"
                 + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
@@ -474,8 +475,20 @@ class NotifyTest {
     @Test
     void testValidFlatFileRequest() throws Exception {
         String validBody =
-            "{\"email\":\"a@b.com\",\"subscriptions\": {\"LOCATION_ID\":[\"9\"]},"
+            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"9\"]},"
                 + "\"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(validBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void testValidFlatFileRequestCsv() throws Exception {
+        String validBody =
+            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"4\"]},"
+                + "\"artefactId\": \"8545507a-e985-4931-bba2-76be0e6ac396\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(validBody)
