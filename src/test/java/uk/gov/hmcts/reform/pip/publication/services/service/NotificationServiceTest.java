@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
@@ -280,7 +281,11 @@ class NotificationServiceTest {
         when(thirdPartyService.handleDeleteThirdPartyCall(API_DESTINATION, artefact, location))
             .thenReturn(SUCCESS_REF_ID);
 
-        assertEquals(EMPTY_API_SENT, notificationService.handleThirdParty(API_DESTINATION),
+        ThirdPartySubscriptionArtefact subscription = new ThirdPartySubscriptionArtefact();
+        subscription.setArtefact(artefact);
+        subscription.setApiDestination(API_DESTINATION);
+
+        assertEquals(EMPTY_API_SENT, notificationService.handleThirdParty(subscription),
                      MESSAGES_MATCH);
     }
 

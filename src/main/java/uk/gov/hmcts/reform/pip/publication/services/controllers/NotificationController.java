@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
@@ -169,8 +170,8 @@ public class NotificationController {
     })
     @ApiOperation("Send empty list to third party after being deleted from P&I")
     @PutMapping("/api")
-    public ResponseEntity<String> sendThirdPartySubscription(@RequestBody String apiDestination) {
-        return ResponseEntity.ok(notificationService.handleThirdParty(apiDestination));
+    public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscriptionArtefact body) {
+        return ResponseEntity.ok(notificationService.handleThirdParty(body));
     }
 
     @ApiResponses({

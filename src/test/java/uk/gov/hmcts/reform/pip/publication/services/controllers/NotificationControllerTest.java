@@ -9,11 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
@@ -56,6 +58,7 @@ class NotificationControllerTest {
     private DuplicatedMediaEmail createMediaSetupEmail;
     private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
     private MediaVerificationEmail mediaVerificationEmail;
+    private ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
 
     @Mock
     private NotificationService notificationService;
@@ -69,6 +72,8 @@ class NotificationControllerTest {
         createdAdminWelcomeEmailValidBody = new CreatedAdminWelcomeEmail(VALID_EMAIL, TEST, TEST);
         thirdPartySubscription.setApiDestination(TEST);
         thirdPartySubscription.setArtefactId(ID);
+        thirdPartySubscriptionArtefact.setApiDestination(TEST);
+        thirdPartySubscriptionArtefact.setArtefact(new Artefact());
         validMediaApplicationList = List.of(new MediaApplication(ID, FULL_NAME,
                                                                  VALID_EMAIL, EMPLOYER,
                                                                  ID_STRING, IMAGE_NAME,
@@ -96,7 +101,7 @@ class NotificationControllerTest {
         when(notificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody)).thenReturn(SUCCESS_ID);
         when(notificationService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
         when(notificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);
-        when(notificationService.handleThirdParty(TEST)).thenReturn(SUCCESS_ID);
+        when(notificationService.handleThirdParty(thirdPartySubscriptionArtefact)).thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
         when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
@@ -197,14 +202,15 @@ class NotificationControllerTest {
 
     @Test
     void testSendThirdPartySubscriptionEmptyListReturnsOk() {
-        assertEquals(HttpStatus.OK, notificationController.sendThirdPartySubscription(TEST).getStatusCode(),
+        assertEquals(HttpStatus.OK,
+                     notificationController.sendThirdPartySubscription(thirdPartySubscriptionArtefact).getStatusCode(),
                      STATUS_CODES_MATCH);
     }
 
     @Test
     void testSendThirdPartySubscriptionEmptyList() {
-        assertTrue(notificationController.sendThirdPartySubscription(TEST).getBody().contains(SUCCESS_ID),
-                   MESSAGES_MATCH);
+        assertTrue(notificationController.sendThirdPartySubscription(thirdPartySubscriptionArtefact).getBody()
+                       .contains(SUCCESS_ID), MESSAGES_MATCH);
     }
 
     @Test

@@ -67,6 +67,22 @@ class NotifyTest {
         "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
     private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY =
         "{\"apiDestination\": \"http://localhost:4444\", \"artefactId\": \"1e565487-23e4-4a25-9364-43277a5180d4\"}";
+    private static final String THIRD_PARTY_SUBSCRIPTION_ARTEFACT_BODY = "{\n"
+        + "  \"apiDestination\": \"https://localhost:4444\",\n"
+        + "  \"artefact\": {\n"
+        + "    \"artefactId\": \"70494df0-31c1-4290-bbd2-7bfe7acfeb81\",\n"
+        + "    \"listType\": \"CIVIL_DAILY_CAUSE_LIST\",\n"
+        + "    \"locationId\": \"2\",\n"
+        + "    \"provenance\": \"MANUAL_UPLOAD\",\n"
+        + "    \"type\": \"LIST\",\n"
+        + "    \"contentDate\": \"2022-06-09T07:36:35\",\n"
+        + "    \"sensitivity\": \"PUBLIC\",\n"
+        + "    \"language\": \"ENGLISH\",\n"
+        + "    \"displayFrom\": \"2022-02-16T07:36:35\",\n"
+        + "    \"displayTo\": \"2099-06-02T07:36:35\"\n"
+        + "  }\n"
+        + "}";
+
     private static final String API_SUBSCRIPTION_URL = "/notify/api";
     private static final String EXTERNAL_PAYLOAD = "test";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
@@ -79,7 +95,6 @@ class NotifyTest {
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String IMAGE_NAME = "test-image.png";
-    private static final String VALID_API_DESTINATION = "https://localhost:4444";
     public static final String SUBS_EMAIL_SUCCESS = "Subscription email successfully sent to";
 
     private static final String NEW_LINE_WITH_BRACKET = "{\n";
@@ -482,10 +497,32 @@ class NotifyTest {
                                           .setResponseCode(200));
 
         mockMvc.perform(put(API_SUBSCRIPTION_URL)
-                            .content(VALID_API_DESTINATION)
+                            .content(THIRD_PARTY_SUBSCRIPTION_ARTEFACT_BODY)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
             .andExpect(content()
                            .string(containsString("Successfully sent empty list to https://localhost:4444")));
+
+        // Assert expected request headers sent to third party api
+        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+        Map<String, String> headers = Map.ofEntries(
+            Map.entry("x-provenance", "MANUAL_UPLOAD"),
+            Map.entry("x-type", "LIST"),
+            Map.entry("x-list-type", "CIVIL_DAILY_CAUSE_LIST"),
+            Map.entry("x-content-date", "2022-06-09T07:36:35"),
+            Map.entry("x-sensitivity", "PUBLIC"),
+            Map.entry("x-language", "ENGLISH"),
+            Map.entry("x-display-from", "2022-02-16T07:36:35"),
+            Map.entry("x-display-to", "2099-06-02T07:36:35"),
+            Map.entry("x-location-name", "Reading County Court and Family Court"),
+            Map.entry("x-location-jurisdiction", "Family,Civil"),
+            Map.entry("x-location-region", "South East")
+        );
+
+        headers.entrySet().stream().forEach(e -> {
+            assertThat(recordedRequest.getHeader(e.getKey()))
+                .as("Incorrect header " + e.getKey())
+                .isEqualTo(e.getValue());
+        });
     }
 
     @Test
