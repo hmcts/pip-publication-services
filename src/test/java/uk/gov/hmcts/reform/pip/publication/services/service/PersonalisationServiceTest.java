@@ -46,6 +46,8 @@ class PersonalisationServiceTest {
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String LINK_TO_FILE = "link_to_file";
+    private static final String FILE = "file";
+    private static final String IS_CSV = "is_csv";
     private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
     private static final String FULL_NAME = "FULL_NAME";
@@ -63,6 +65,7 @@ class PersonalisationServiceTest {
     private static final String LOCATION_ID = "12345";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
     private static final String ARRAY_OF_IDS = "array_of_ids";
+    private static final String LINK_TO_FILE_MESSAGE = "Link to file does not match expected value";
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
 
     @Autowired
@@ -81,10 +84,13 @@ class PersonalisationServiceTest {
     ArtefactSummaryService artefactSummaryService;
 
     private static Location location;
-    private final UUID artefactId = UUID.randomUUID();
+    private static final UUID ARTEFACT_ID = UUID.randomUUID();
 
     private static final String HELLO = "hello";
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
+
+    private static final Map<SubscriptionTypes, List<String>> SUBSCRIPTIONS = new ConcurrentHashMap<>();
+    private static final SubscriptionEmail SUBSCRIPTIONS_EMAIL = new SubscriptionEmail();
 
     @BeforeAll
     public static void setup() {
@@ -92,6 +98,14 @@ class PersonalisationServiceTest {
 
         location = new Location();
         location.setName("Location Name");
+
+        SUBSCRIPTIONS.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
+        SUBSCRIPTIONS.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
+        SUBSCRIPTIONS.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
+
+        SUBSCRIPTIONS_EMAIL.setEmail(EMAIL);
+        SUBSCRIPTIONS_EMAIL.setArtefactId(ARTEFACT_ID);
+        SUBSCRIPTIONS_EMAIL.setSubscriptions(SUBSCRIPTIONS);
     }
 
     @Test
@@ -158,20 +172,9 @@ class PersonalisationServiceTest {
 
     @Test
     void buildRawDataWhenAllPresent() throws IOException {
-        Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
-        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
-        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
-
-        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-        subscriptionEmail.setEmail(EMAIL);
-        subscriptionEmail.setArtefactId(artefactId);
-        subscriptionEmail.setSubscriptions(subscriptions);
-
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
-
 
         byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
@@ -181,14 +184,14 @@ class PersonalisationServiceTest {
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
-            personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
+            personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
 
         assertEquals(YES, personalisation.get(DISPLAY_CASE_NUMBERS), "Display case numbers is not Yes");
-        assertEquals(subscriptions.get(SubscriptionTypes.CASE_NUMBER), personalisation.get(CASE_NUMBERS),
+        assertEquals(SUBSCRIPTIONS.get(SubscriptionTypes.CASE_NUMBER), personalisation.get(CASE_NUMBERS),
                      "Case number not as expected"
         );
         assertEquals(YES, personalisation.get(DISPLAY_CASE_URN), "Display case urn is not Yes");
-        assertEquals(subscriptions.get(SubscriptionTypes.CASE_URN), personalisation.get(CASE_URN),
+        assertEquals(SUBSCRIPTIONS.get(SubscriptionTypes.CASE_URN), personalisation.get(CASE_URN),
                      "Case urn not as expected"
         );
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
@@ -198,8 +201,8 @@ class PersonalisationServiceTest {
         assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
                      "List type does not match expected list type"
         );
-        assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get("link_to_file")).get("file"),
-                     "Link to file does not match expected value"
+        assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
+                     LINK_TO_FILE_MESSAGE
         );
         assertEquals("hi", personalisation.get("testing_of_array"),
                      "testing_of_array does not match expected value"
@@ -208,16 +211,6 @@ class PersonalisationServiceTest {
 
     @Test
     void buildRawDataFileWhenUploadFails() throws IOException {
-        Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
-        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
-        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
-
-        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-        subscriptionEmail.setEmail(EMAIL);
-        subscriptionEmail.setArtefactId(artefactId);
-        subscriptionEmail.setSubscriptions(subscriptions);
-
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
@@ -227,33 +220,24 @@ class PersonalisationServiceTest {
         when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(overSizeArray);
 
         assertThrows(NotifyException.class, () ->
-            personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact), "desired "
+            personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact), "desired "
                          + "exception was not thrown");
     }
 
     @Test
-    void buildFlatFileWhenAllPresent() {
-        Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
-        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
-        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
-
-        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-        subscriptionEmail.setEmail(EMAIL);
-        subscriptionEmail.setArtefactId(artefactId);
-        subscriptionEmail.setSubscriptions(subscriptions);
-
+    void buildFlatFileWhenAllPresentAndNotCsv() {
         Artefact artefact = new Artefact();
-        artefact.setArtefactId(artefactId);
+        artefact.setArtefactId(ARTEFACT_ID);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setSourceArtefactId("sourceArtefact.pdf");
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
         byte[] fileContents = "Contents".getBytes();
-        when(dataManagementService.getArtefactFlatFile(artefactId)).thenReturn(fileContents);
+        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
 
         Map<String, Object> personalisation =
-            personalisationService.buildFlatFileSubscriptionPersonalisation(subscriptionEmail, artefact);
+            personalisationService.buildFlatFileSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
 
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
@@ -262,34 +246,76 @@ class PersonalisationServiceTest {
         assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
                      "List type does not match expected list type"
         );
-        assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get("link_to_file")).get("file"),
-                     "Link to file does not match expected value"
+        assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
+                     LINK_TO_FILE_MESSAGE
+        );
+        assertEquals(false, ((JSONObject) personalisation.get(LINK_TO_FILE)).get(IS_CSV),
+                     "File has been marked as a CSV when it's not"
+        );
+    }
+
+    @Test
+    void buildFlatFileWhenAllPresentAndCsv() {
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(ARTEFACT_ID);
+        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setSourceArtefactId("sourceArtefact.csv");
+
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+
+        byte[] fileContents = "Contents".getBytes();
+        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
+
+        Map<String, Object> personalisation =
+            personalisationService.buildFlatFileSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
+
+        assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
+                     LINK_TO_FILE_MESSAGE
+        );
+
+        assertEquals(true, ((JSONObject) personalisation.get(LINK_TO_FILE)).get(IS_CSV),
+                     "File has not been marked as a CSV when it is"
+        );
+    }
+
+    @Test
+    void buildFlatFileWhenAllBlankSourceArtefactId() {
+
+
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(ARTEFACT_ID);
+        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+
+        byte[] fileContents = "Contents".getBytes();
+        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
+
+        Map<String, Object> personalisation =
+            personalisationService.buildFlatFileSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
+
+        assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
+                     LINK_TO_FILE_MESSAGE
+        );
+
+        assertEquals(false, ((JSONObject) personalisation.get(LINK_TO_FILE)).get(IS_CSV),
+                     "File has been marked as a CSV when it's not"
         );
     }
 
     @Test
     void buildFlatFileWhenUploadCreationFailed() {
-        Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
-        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
-        subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
-
-        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-        subscriptionEmail.setEmail(EMAIL);
-        subscriptionEmail.setArtefactId(artefactId);
-        subscriptionEmail.setSubscriptions(subscriptions);
-
         Artefact artefact = new Artefact();
-        artefact.setArtefactId(artefactId);
+        artefact.setArtefactId(ARTEFACT_ID);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
         byte[] overSizeArray = new byte[2_100_000];
-        when(dataManagementService.getArtefactFlatFile(artefactId)).thenReturn(overSizeArray);
+        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(overSizeArray);
 
         assertThrows(NotifyException.class, () ->
-            personalisationService.buildFlatFileSubscriptionPersonalisation(subscriptionEmail, artefact));
+            personalisationService.buildFlatFileSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact));
     }
 
     @Test
