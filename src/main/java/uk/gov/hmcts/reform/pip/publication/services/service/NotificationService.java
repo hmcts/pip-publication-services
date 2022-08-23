@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserN
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
@@ -34,6 +35,7 @@ public class NotificationService {
 
     @Autowired
     private CsvCreationService csvCreationService;
+
     @Autowired
     private DataManagementService dataManagementService;
 
@@ -89,6 +91,7 @@ public class NotificationService {
 
     /**
      * This method handles the sending of the subscription email, and forwarding on to the relevant email client.
+     *
      * @param body The subscription message that is to be fulfilled.
      * @return The ID that references the subscription message.
      */
@@ -139,6 +142,7 @@ public class NotificationService {
     /**
      * Handles the incoming request for sending lists out to third party publishers, uses the artefact id from body
      * to retrieve Artefact from Data Management and then gets the file or json payload to then send out.
+     *
      * @param body Request body of ThirdParty subscription containing artefact id and the destination api.
      * @return String of successful POST.
      */
@@ -159,10 +163,23 @@ public class NotificationService {
         return String.format(SUCCESS_MESSAGE, body.getApiDestination());
     }
 
-    public String handleThirdParty(String apiDestination) {
+    /**
+     * Handles the incoming request for sending out an empty list to third party API with the deleted artefact
+     * information in the request headers.
+     *
+     * @param body Request body of ThirdParty subscription containing the deleted artefact and the destination api.
+     * @return String of successful PUT.
+     */
+    public String handleThirdParty(ThirdPartySubscriptionArtefact body) {
+        Artefact artefact = body.getArtefact();
+        Location location = dataManagementService.getLocation(artefact.getLocationId());
 
         log.info(writeLog("Sending blank payload to third party"));
-        log.info(writeLog(thirdPartyService.handleDeleteThirdPartyCall(apiDestination, null, null)));
+        log.info(writeLog(thirdPartyService.handleDeleteThirdPartyCall(body.getApiDestination(),
+                                                                       artefact,
+                                                                       location)));
+        return String.format(EMPTY_SUCCESS_MESSAGE, body.getApiDestination());
+    }
 
         return String.format(EMPTY_SUCCESS_MESSAGE, apiDestination);
     }

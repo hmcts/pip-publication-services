@@ -59,13 +59,7 @@ public class ThirdPartyService {
             .body(BodyInserters.fromMultipartData(multiPartValues))
             .retrieve()
             .bodyToMono(Void.class)
-            .retryWhen(Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
-                           .doAfterRetry(signal -> log.info(
-                               "Request failed, retrying {}/" + numOfRetries,
-                               signal.totalRetries() + 1
-                           ))
-                           .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
-                                                      new ThirdPartyServiceException(retrySignal.failure(), api)))
+            .retryWhen(handleRetry(api))
             .block();
         return String.format(SUCCESS_MESSAGE, COURTEL, api);
     }
@@ -86,13 +80,7 @@ public class ThirdPartyService {
             .bodyValue(payload)
             .retrieve()
             .bodyToMono(Void.class)
-            .retryWhen(Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
-                           .doAfterRetry(signal -> log.info(
-                               "Request failed, retrying {}/" + numOfRetries,
-                               signal.totalRetries() + 1
-                           ))
-                           .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
-                                                      new ThirdPartyServiceException(retrySignal.failure(), api)))
+            .retryWhen(handleRetry(api))
             .block();
         return String.format(SUCCESS_MESSAGE, COURTEL, api);
     }
@@ -109,13 +97,7 @@ public class ThirdPartyService {
             .headers(this.getHttpHeadersFromArtefact(artefact, location))
             .retrieve()
             .bodyToMono(Void.class)
-            .retryWhen(Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
-                           .doAfterRetry(signal -> log.info(
-                               "Request failed, retrying {}/" + numOfRetries,
-                               signal.totalRetries() + 1
-                           ))
-                           .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
-                                                      new ThirdPartyServiceException(retrySignal.failure(), api)))
+            .retryWhen(handleRetry(api))
             .block();
         return String.format(SUCCESS_DELETE_MESSAGE, COURTEL, api);
     }
@@ -144,5 +126,15 @@ public class ThirdPartyService {
             httpHeaders.add("x-location-jurisdiction", String.join(",", location.getJurisdiction()));
             httpHeaders.add("x-location-region", String.join(",", location.getRegion()));
         };
+    }
+
+    private Retry handleRetry(String api) {
+        return Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
+            .doAfterRetry(signal -> log.info(
+                "Request failed, retrying {}/" + numOfRetries,
+                signal.totalRetries() + 1
+            ))
+            .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
+                                       new ThirdPartyServiceException(retrySignal.failure(), api));
     }
 }
