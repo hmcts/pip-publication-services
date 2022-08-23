@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -32,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings({"PMD.TooManyMethods"})
 @SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
 @ActiveProfiles("test")
 class EmailServiceTest {
@@ -255,6 +257,23 @@ class EmailServiceTest {
         assertEquals(personalisation, unidentifiedBlobEmail.getPersonalisation(),
                      PERSONALISATION_MESSAGE);
         assertEquals(Templates.BAD_BLOB_EMAIL.template, unidentifiedBlobEmail.getTemplate(),
+                     TEMPLATE_MESSAGE);
+    }
+
+    @Test
+    void testMediaVerificationEmailReturnsSuccess() {
+        MediaVerificationEmail mediaVerificationEmailData = new MediaVerificationEmail(FULL_NAME, EMAIL);
+        when(personalisationService.buildMediaVerificationPersonalisation(mediaVerificationEmailData))
+            .thenReturn(personalisation);
+
+        EmailToSend mediaVerificationEmail = emailService.buildMediaUserVerificationEmail(
+            mediaVerificationEmailData, Templates.MEDIA_USER_VERIFICATION_EMAIL.template);
+
+        assertEquals(EMAIL, mediaVerificationEmail.getEmailAddress(),
+                     GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, mediaVerificationEmail.getPersonalisation(),
+                     PERSONALISATION_MESSAGE);
+        assertEquals(Templates.MEDIA_USER_VERIFICATION_EMAIL.template, mediaVerificationEmail.getTemplate(),
                      TEMPLATE_MESSAGE);
     }
 }
