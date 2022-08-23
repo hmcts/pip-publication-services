@@ -181,9 +181,6 @@ public class NotificationService {
         return String.format(EMPTY_SUCCESS_MESSAGE, body.getApiDestination());
     }
 
-        return String.format(EMPTY_SUCCESS_MESSAGE, apiDestination);
-    }
-
     /**
      * This method handles the sending of the media user verification email.
      *

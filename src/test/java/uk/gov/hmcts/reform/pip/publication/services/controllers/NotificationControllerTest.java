@@ -10,11 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.*;
-import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -214,13 +218,6 @@ class NotificationControllerTest {
     void testSendThirdPartySubscriptionEmptyList() {
         assertTrue(notificationController.sendThirdPartySubscription(thirdPartySubscriptionArtefact).getBody()
                        .contains(SUCCESS_ID), MESSAGES_MATCH);
-    }
-
-    @Test
-    void testSendMediaVerificationEmailReturnsOk() {
-        assertEquals(HttpStatus.OK, notificationController
-                         .sendMediaUserVerificationEmail(mediaVerificationEmail).getStatusCode(),
-                     STATUS_CODES_MATCH);
     }
 
     @Test
