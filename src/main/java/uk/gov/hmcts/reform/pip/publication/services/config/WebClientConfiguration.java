@@ -10,6 +10,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
@@ -35,7 +36,10 @@ public class WebClientConfiguration {
             new ServletOAuth2AuthorizedClientExchangeFilterFunction(
                 clientRegistrations, authorizedClients);
         oauth2.setDefaultClientRegistrationId("dataManagementApi");
-        return WebClient.builder().apply(oauth2.oauth2Configuration()).build();
+        return WebClient.builder().exchangeStrategies(
+            ExchangeStrategies.builder().codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
+                                                                  .maxInMemorySize(2 * 1024 * 1024)).build())
+            .apply(oauth2.oauth2Configuration()).build();
     }
 
     @Bean
