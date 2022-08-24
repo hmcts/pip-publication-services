@@ -53,7 +53,7 @@ public class CopDailyCauseList {
                                     .append(GeneralHelper.findAndReturnNodeText(sitting, "formattedDuration"))
                                     .append(' ')
                                     .append(GeneralHelper.findAndReturnNodeText(hearingCase, "caseIndicator"))
-                                    .append("\nBefore Hon - ")
+                                    .append("\nBefore - ")
                                     .append(GeneralHelper.findAndReturnNodeText(session, "formattedSessionJoh"));
                             });
                         });

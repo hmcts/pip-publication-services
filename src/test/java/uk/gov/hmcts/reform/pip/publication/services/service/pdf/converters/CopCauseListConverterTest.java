@@ -71,7 +71,7 @@ class CopCauseListConverterTest {
 
         assertThat(document.getElementsByClass("govuk-accordion__section-heading")
                        .get(0).text())
-            .as(HEADER_TEXT).contains("Before Hon Mrs Firstname Surname");
+            .as(HEADER_TEXT).contains("Before Mrs Firstname Surname");
 
     }
 
@@ -101,7 +101,7 @@ class CopCauseListConverterTest {
         assertThat(outputHtml).as("No html found").isNotEmpty();
 
         assertThat(document.title()).as("incorrect title found.")
-            .isEqualTo("<missing>");
+            .isEqualTo("Rhestr Achosion Ddyddiol y Llys Gwarchod");
 
         assertThat(document.getElementsByClass("govuk-heading-l")
                        .get(0).text())

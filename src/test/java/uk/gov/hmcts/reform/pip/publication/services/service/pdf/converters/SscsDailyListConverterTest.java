@@ -105,12 +105,12 @@ class SscsDailyListConverterTest {
         assertThat(outputHtml).as("no HTML found").isNotEmpty();
 
         assertThat(document.title()).as("incorrect title found.")
-            .isEqualTo("<missing>Livingston - "
+            .isEqualTo("Rhestr Ddyddiol SSCS ar gyfer Livingston - "
                            + metadataMap.get(CONTENT_DATE));
 
         assertThat(document.getElementsByClass("mainHeaderText")
                        .select(".mainHeaderText > h1:nth-child(1)").text())
-            .as("incorrect header text").isEqualTo("<missing>");
+            .as("incorrect header text").isEqualTo("Nawdd Cymdeithasol a Chynnal Plant");
 
         assertThat(document.getElementsByTag("h2").get(3).text())
             .as("Header seems to be missing.")
@@ -120,7 +120,7 @@ class SscsDailyListConverterTest {
             .as("data is missing")
             .hasSize(9)
             .extracting(Element::text)
-            .containsSequence("<missing>");
+            .containsSequence("Ffynhonnell y Data: provenance");
 
     }
 
