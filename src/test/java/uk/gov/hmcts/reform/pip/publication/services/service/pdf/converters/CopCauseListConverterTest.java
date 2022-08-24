@@ -113,6 +113,6 @@ class CopCauseListConverterTest {
 
         assertThat(document.getElementsByClass("govuk-accordion__section-heading")
                        .get(0).text())
-            .as(HEADER_TEXT).contains("<missing>Mrs Firstname Surname");
+            .as(HEADER_TEXT).contains("Cyn Mrs Firstname Surname");
     }
 }
