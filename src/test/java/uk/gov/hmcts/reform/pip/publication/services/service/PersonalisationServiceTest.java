@@ -43,12 +43,12 @@ class PersonalisationServiceTest {
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
+    private static final String ADMIN_DASHBOARD_LINK = "admin_dashboard_link";
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String LINK_TO_FILE = "link_to_file";
     private static final String FILE = "file";
     private static final String IS_CSV = "is_csv";
-    private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
     private static final String FULL_NAME = "FULL_NAME";
     private static final String CASE_NUMBERS = "case_num";
@@ -143,12 +143,6 @@ class PersonalisationServiceTest {
         Map<String, Object> personalisation =
             personalisationService.buildAdminAccountPersonalisation(createdAdminWelcomeEmail);
 
-        Object surname = personalisation.get(SURNAME);
-        assertNotNull(surname, "No surname key found");
-        assertEquals(createdAdminWelcomeEmail.getSurname(), surname,
-                     "Surname does not match expected surname"
-        );
-
         Object forename = personalisation.get(FORENAME);
         assertNotNull(forename, "No forename key found");
         assertEquals(createdAdminWelcomeEmail.getForename(), forename,
@@ -163,10 +157,10 @@ class PersonalisationServiceTest {
                      "aad reset link does not match expected link"
         );
 
-        Object aadSignInLink = personalisation.get(AAD_SIGN_IN_LINK);
-        assertNotNull(aadSignInLink, "No aad sign in link key found");
-        assertEquals(personalisationLinks.getAadSignInPageLink(), aadSignInLink,
-                     "Aad Sign In link does not match expected link"
+        Object aadSignInLink = personalisation.get(ADMIN_DASHBOARD_LINK);
+        assertNotNull(aadSignInLink, "No admin dashboard link found");
+        assertEquals(personalisationLinks.getAdminDashboardLink(), aadSignInLink,
+                     "Admin dashboard link does not match expected link"
         );
     }
 

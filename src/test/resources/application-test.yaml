@@ -2,11 +2,13 @@ notify:
   api:
     key: mockTestKeyFoundInKeyVault
   links:
-    subscription-page-link: https://pip-frontend.staging.platform.hmcts.net/otp-login-testing
-    start-page-link: https://pip-frontend.staging.platform.hmcts.net
-    gov-guidance-page-link: https://www.gov.uk
-    aad-pw-reset-link: https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_ResetTest&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn&scope=openid&response_type=id_token&prompt=login
-    aad-sign-in-page-link: https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignInUserFlow&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331&nonce=defau&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn&scope=openid&response_type=id_token&prompt=login
+    subscription-page-link: ${NOTIFY_LINK_SUBSCRIPTION_PAGE:https://pip-frontend.staging.platform.hmcts.net/otp-login-testing}
+    start-page-link: ${NOTIFY_LINK_START_PAGE:https://pip-frontend.staging.platform.hmcts.net}
+    aad-sign-in-page-link: ${NOTIFY_LINK_AAD_SIGNIN_LINK:https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignInUserFlow&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331&nonce=defau&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn&scope=openid&response_type=id_token&prompt=login}
+    gov-guidance-page-link: ${NOTIFY_LINK_GOV_GUIDANCE:https://www.gov.uk}
+    aad-pw-reset-link: ${NOTIFY_LINK_AAD_RESET_PW_LINK:https://pib2csbox.b2clogin.com/pib2csbox.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_initial_user_set_pwd&client_id=c7e6e2c6-c23c-48e8-b9f4-6bad25a95331&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fpip-frontend.staging.platform.hmcts.net%2Flogin%2Freturn&scope=openid&response_type=id_token&prompt=login}
+    media-verification-page-link: ${MEDIA_VERIFICATION_PAGE_LINK:https://pip-frontend.staging.platform.hmcts.net/media-verification?p=B2C_1_SignInMediaVerification}
+    admin-dashboard-link: ${ADMIN_DASHBOARD_LINK:https://pip-frontend.staging.platform.hmcts.net/admin-dashboard}
   pi-team-email: test@email.com
 service-to-service:
   data-management: localhost:8081
