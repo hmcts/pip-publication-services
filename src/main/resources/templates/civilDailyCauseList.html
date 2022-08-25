@@ -118,6 +118,10 @@
       text-align: left;
       vertical-align: top;
     }
+    th {
+      max-width: 150px;
+      word-wrap: break-word;
+    }
     .govuk-table__header {
       font-weight: 700;
     }
@@ -169,7 +173,7 @@
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                   <th:block th:each="header:${i18n.headerValuesWrap}">
-                    <th th:text="${header}" scope="col" class="govuk-table__header no-wrap"/>
+                    <th th:text="${header}" scope="col" class="govuk-table__header"/>
                   </th:block>
                 </tr>
                 </thead>
