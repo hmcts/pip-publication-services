@@ -110,10 +110,11 @@ class PersonalisationServiceTest {
 
     @Test
     void testBuildWelcomePersonalisation() {
+        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+
         WelcomeEmail welcomeEmail =
             new WelcomeEmail(EMAIL, false, FULL_NAME);
 
-        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
         Map<String, Object> personalisation = personalisationService.buildWelcomePersonalisation(welcomeEmail);
 
         Object subscriptionPageLink = personalisation.get(SUBSCRIPTION_PAGE_LINK);
@@ -201,6 +202,13 @@ class PersonalisationServiceTest {
         assertEquals("hi", personalisation.get("testing_of_array"),
                      "testing_of_array does not match expected value"
         );
+
+        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+        Object startPageLink = personalisation.get(START_PAGE_LINK);
+        assertNotNull(startPageLink, "No start page link key found");
+        assertEquals(personalisationLinks.getStartPageLink(), startPageLink,
+                     "Start page link does not match expected link"
+        );
     }
 
     @Test
@@ -246,6 +254,13 @@ class PersonalisationServiceTest {
         assertEquals(false, ((JSONObject) personalisation.get(LINK_TO_FILE)).get(IS_CSV),
                      "File has been marked as a CSV when it's not"
         );
+
+        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+        Object startPageLink = personalisation.get(START_PAGE_LINK);
+        assertNotNull(startPageLink, "No start page link key found");
+        assertEquals(personalisationLinks.getStartPageLink(), startPageLink,
+                     "Start page link does not match expected link"
+        );
     }
 
     @Test
@@ -274,8 +289,6 @@ class PersonalisationServiceTest {
 
     @Test
     void buildFlatFileWhenAllBlankSourceArtefactId() {
-
-
         Artefact artefact = new Artefact();
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
