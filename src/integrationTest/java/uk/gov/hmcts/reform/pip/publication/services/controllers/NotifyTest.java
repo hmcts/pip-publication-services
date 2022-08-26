@@ -132,7 +132,7 @@ class NotifyTest {
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PUBLIC_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"7d6bb7ae-1723-42eb-9661-9562edb6d180\",\n"
+        + "  \"artefactId\": \"210c4598-7ec3-4a59-9b9a-d7ecf2197a40\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
