@@ -252,7 +252,7 @@ public class PersonalisationService {
         } else {
             Location subLocation = dataManagementService.getLocation(content.get(0));
             // Do not display the word 'hearing' in subscription e-mail if not a hearing list
-            personalisation.put(DISPLAY_LOCATIONS, isHearingList ? YES: NO);
+            personalisation.put(DISPLAY_LOCATIONS, isHearingList ? YES : NO);
             personalisation.put(LOCATIONS, subLocation.getName());
         }
     }
