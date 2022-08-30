@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SscsD
 public enum ListType {
     SJP_PUBLIC_LIST(new SjpPublicListConverter()),
     SJP_PRESS_LIST(new SjpPressListConverter()),
-    SJP_PRESS_REGISTER,
+    SJP_PRESS_REGISTER(false),
     CROWN_DAILY_LIST,
     CROWN_FIRM_LIST,
     CROWN_WARNED_LIST,
@@ -32,5 +32,15 @@ public enum ListType {
     CIVIL_AND_FAMILY_DAILY_CAUSE_LIST(new CivilAndFamilyDailyCauseListConverter()),
     COP_DAILY_CAUSE_LIST(new CopDailyCauseListConverter()),
     SSCS_DAILY_LIST(new SscsDailyListConverter());
+
     private Converter converter;
+    private boolean isHearingList = true;
+
+    ListType(boolean isHearingList) {
+        this.isHearingList = isHearingList;
+    }
+
+    ListType(Converter converter) {
+        this.converter = converter;
+    }
 }

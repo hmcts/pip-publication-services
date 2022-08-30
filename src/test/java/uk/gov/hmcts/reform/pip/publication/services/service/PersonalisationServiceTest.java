@@ -66,7 +66,10 @@ class PersonalisationServiceTest {
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
     private static final String ARRAY_OF_IDS = "array_of_ids";
     private static final String LINK_TO_FILE_MESSAGE = "Link to file does not match expected value";
+    private static final String LIST_TYPE_MESSAGE = "List type does not match expected list type";
+    private static final String LOCATION_MESSAGE = "Location not as expected";
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
+    private static final String CONTENTS = "Contents";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -196,10 +199,10 @@ class PersonalisationServiceTest {
         );
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
-                     "Location not as expected"
+                     LOCATION_MESSAGE
         );
         assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
-                     "List type does not match expected list type"
+                     LIST_TYPE_MESSAGE
         );
         assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
                      LINK_TO_FILE_MESSAGE
@@ -233,7 +236,7 @@ class PersonalisationServiceTest {
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
-        byte[] fileContents = "Contents".getBytes();
+        byte[] fileContents = CONTENTS.getBytes();
         when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
 
         Map<String, Object> personalisation =
@@ -241,10 +244,10 @@ class PersonalisationServiceTest {
 
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
-                     "Location not as expected"
+                     LOCATION_MESSAGE
         );
         assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
-                     "List type does not match expected list type"
+                     LIST_TYPE_MESSAGE
         );
         assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
                      LINK_TO_FILE_MESSAGE
@@ -263,7 +266,7 @@ class PersonalisationServiceTest {
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
-        byte[] fileContents = "Contents".getBytes();
+        byte[] fileContents = CONTENTS.getBytes();
         when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
 
         Map<String, Object> personalisation =
@@ -279,6 +282,32 @@ class PersonalisationServiceTest {
     }
 
     @Test
+    void buildFlatFileForSjpPressRegister() {
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(ARTEFACT_ID);
+        artefact.setListType(ListType.SJP_PRESS_REGISTER);
+        artefact.setSourceArtefactId("sourceArtefact.pdf");
+
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+
+        byte[] fileContents = CONTENTS.getBytes();
+        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
+
+        Map<String, Object> personalisation =
+            personalisationService.buildFlatFileSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
+
+        assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
+                     LINK_TO_FILE_MESSAGE
+        );
+        assertEquals(ListType.SJP_PRESS_REGISTER, personalisation.get("list_type"),
+                     LIST_TYPE_MESSAGE
+        );
+        assertEquals(NO, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not No");
+        assertEquals(location.getName(), personalisation.get(LOCATIONS),
+                     LOCATION_MESSAGE);
+    }
+
+    @Test
     void buildFlatFileWhenAllBlankSourceArtefactId() {
 
 
@@ -288,7 +317,7 @@ class PersonalisationServiceTest {
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
-        byte[] fileContents = "Contents".getBytes();
+        byte[] fileContents = CONTENTS.getBytes();
         when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
 
         Map<String, Object> personalisation =
@@ -342,7 +371,7 @@ class PersonalisationServiceTest {
 
         assertEquals(NO, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not No");
         assertEquals("", personalisation.get(LOCATIONS),
-                     "Location not as expected"
+                     LOCATION_MESSAGE
         );
     }
 
