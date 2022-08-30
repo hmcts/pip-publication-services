@@ -120,8 +120,7 @@ public class PersonalisationService {
                                            subscriptions.get(SubscriptionTypes.CASE_URN)
             );
 
-            populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID),
-                                            artefact.getListType().isHearingList());
+            populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
             personalisation.put("list_type", artefact.getListType());
             String html = pdfCreationService.jsonToHtml(artefact.getArtefactId());
@@ -161,7 +160,7 @@ public class PersonalisationService {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             List<String> location = body.getSubscriptions().get(SubscriptionTypes.LOCATION_ID);
-            populateLocationPersonalisation(personalisation, location, artefact.getListType().isHearingList());
+            populateLocationPersonalisation(personalisation, location);
 
             personalisation.put("list_type", artefact.getListType());
 
@@ -244,15 +243,13 @@ public class PersonalisationService {
         }
     }
 
-    private void populateLocationPersonalisation(Map<String, Object> personalisation, List<String> content,
-                                                 boolean isHearingList) {
+    private void populateLocationPersonalisation(Map<String, Object> personalisation, List<String> content) {
         if (content == null || content.isEmpty()) {
             personalisation.put(DISPLAY_LOCATIONS, NO);
             personalisation.put(LOCATIONS, "");
         } else {
             Location subLocation = dataManagementService.getLocation(content.get(0));
-            // Do not display the word 'hearing' in subscription e-mail if not a hearing list
-            personalisation.put(DISPLAY_LOCATIONS, isHearingList ? YES : NO);
+            personalisation.put(DISPLAY_LOCATIONS, YES);
             personalisation.put(LOCATIONS, subLocation.getName());
         }
     }

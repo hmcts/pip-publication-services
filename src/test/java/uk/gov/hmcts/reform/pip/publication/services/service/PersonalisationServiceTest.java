@@ -282,32 +282,6 @@ class PersonalisationServiceTest {
     }
 
     @Test
-    void buildFlatFileForSjpPressRegister() {
-        Artefact artefact = new Artefact();
-        artefact.setArtefactId(ARTEFACT_ID);
-        artefact.setListType(ListType.SJP_PRESS_REGISTER);
-        artefact.setSourceArtefactId("sourceArtefact.pdf");
-
-        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-
-        byte[] fileContents = CONTENTS.getBytes();
-        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
-
-        Map<String, Object> personalisation =
-            personalisationService.buildFlatFileSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
-
-        assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
-                     LINK_TO_FILE_MESSAGE
-        );
-        assertEquals(ListType.SJP_PRESS_REGISTER, personalisation.get("list_type"),
-                     LIST_TYPE_MESSAGE
-        );
-        assertEquals(NO, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not No");
-        assertEquals(location.getName(), personalisation.get(LOCATIONS),
-                     LOCATION_MESSAGE);
-    }
-
-    @Test
     void buildFlatFileWhenAllBlankSourceArtefactId() {
 
 
