@@ -188,6 +188,11 @@ dependencies {
   implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.5.2'
 
+  // Force upgrade snakeyaml version for CVE-2022-25857
+  implementation( group: 'org.yaml', name: 'snakeyaml').version {
+    strictly("1.31")
+  }
+
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
