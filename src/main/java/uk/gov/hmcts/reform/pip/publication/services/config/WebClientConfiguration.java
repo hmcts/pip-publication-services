@@ -59,7 +59,7 @@ public class WebClientConfiguration {
         return WebClient.builder().exchangeStrategies(
             ExchangeStrategies.builder().codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
                                                                   .maxInMemorySize(2 * 1024 * 1024)).build())
-            .apply(oauth2.oauth2Configuration()).build();
+            .apply(oauth2Client.oauth2Configuration()).build();
     }
 
     @Bean
