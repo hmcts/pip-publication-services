@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -64,6 +65,7 @@ public class PersonalisationService {
     private static final String YES = "Yes";
     private static final String NO = "No";
     private static final String ARRAY_OF_IDS = "array_of_ids";
+    private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
 
     /**
      * Handles the personalisation for the Welcome email.
@@ -214,6 +216,19 @@ public class PersonalisationService {
 
 
         personalisation.put(ARRAY_OF_IDS, listOfUnmatched);
+        return personalisation;
+    }
+
+    /**
+     * Handles the personalisation for the media verification email.
+     *
+     * @param body The body of the media verification email.
+     * @return The personalisation map for the media verification email.
+     */
+    public Map<String, Object> buildMediaVerificationPersonalisation(MediaVerificationEmail body) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(FULL_NAME, body.getFullName());
+        personalisation.put(VERIFICATION_PAGE_LINK, notifyConfigProperties.getLinks().getMediaVerificationPageLink());
         return personalisation;
     }
 

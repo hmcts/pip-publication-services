@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
@@ -56,6 +57,7 @@ class NotificationControllerTest {
     private CreatedAdminWelcomeEmail createdAdminWelcomeEmailValidBody;
     private DuplicatedMediaEmail createMediaSetupEmail;
     private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
+    private MediaVerificationEmail mediaVerificationEmail;
     private ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
 
     @Mock
@@ -76,6 +78,7 @@ class NotificationControllerTest {
                                                                  VALID_EMAIL, EMPLOYER,
                                                                  ID_STRING, IMAGE_NAME,
                                                                  DATE_TIME, STATUS, DATE_TIME));
+        mediaVerificationEmail = new MediaVerificationEmail(FULL_NAME, VALID_EMAIL);
 
         subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
@@ -102,6 +105,8 @@ class NotificationControllerTest {
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
         when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
+            .thenReturn(SUCCESS_ID);
+        when(notificationService.mediaUserVerificationEmailRequest(mediaVerificationEmail))
             .thenReturn(SUCCESS_ID);
     }
 
@@ -206,5 +211,12 @@ class NotificationControllerTest {
     void testSendThirdPartySubscriptionEmptyList() {
         assertTrue(notificationController.sendThirdPartySubscription(thirdPartySubscriptionArtefact).getBody()
                        .contains(SUCCESS_ID), MESSAGES_MATCH);
+    }
+
+    @Test
+    void testSendMediaVerificationEmailReturnsOk() {
+        assertEquals(HttpStatus.OK, notificationController
+                         .sendMediaUserVerificationEmail(mediaVerificationEmail).getStatusCode(),
+                     STATUS_CODES_MATCH);
     }
 }
