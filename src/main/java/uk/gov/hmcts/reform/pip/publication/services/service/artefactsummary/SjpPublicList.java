@@ -19,7 +19,6 @@ public class SjpPublicList {
     private static final String SESSION = "session";
     private static final String SITTINGS = "sittings";
 
-
     /**
      * parent method for sjp public lists. iterates on sittings.
      *
@@ -27,7 +26,7 @@ public class SjpPublicList {
      * @return string of data.
      * @throws JsonProcessingException - jackson prereq.
      */
-    public String artefactSummarysjpPublic(String payload) throws JsonProcessingException {
+    public String artefactSummarySjpPublic(String payload) throws JsonProcessingException {
         StringBuilder output = new StringBuilder();
         JsonNode node = new ObjectMapper().readTree(payload);
         Iterator<JsonNode> sittings =
