@@ -112,7 +112,7 @@ class NotifyTest {
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL = "{\n"
-        + "  \"artefactId\": \"82c33285-ab4b-4c8e-8a80-b9ea7dc67db8\",\n"
+        + "  \"artefactId\": \"4d1e88f5-8457-4d93-8d11-1744a4bc16bd\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + "  \"subscriptions\": {\n"
         + "    \"LOCATION_ID\": [\n"
@@ -122,7 +122,7 @@ class NotifyTest {
         + "}";
 
     private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"55b9e27b-d315-4c7e-9116-0b83939c03eb\",\n"
+        + "  \"artefactId\": \"f94f0d2d-27e6-46f1-8528-e33eeac5728d\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
@@ -137,7 +137,7 @@ class NotifyTest {
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"41ab3903-c87c-42b5-994f-9b55f6dcad48\",\n"
+        + "  \"artefactId\": \"8a0ca51e-847e-4c6d-ad0f-a3f104f27845\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
