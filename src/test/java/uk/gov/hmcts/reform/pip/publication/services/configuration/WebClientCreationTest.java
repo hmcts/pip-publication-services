@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.WebClientConfiguration;
 
@@ -15,17 +14,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class WebClientCreationTest {
 
     @Mock
-    ClientRegistrationRepository clientRegistrationRepository;
-
-    @Mock
-    OAuth2AuthorizedClientRepository clientRepository;
+    OAuth2AuthorizedClientManager authorizedClientManager;
 
     @Test
     void createWebClient() {
 
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
         WebClient webClient =
-            webClientConfiguration.webClient(clientRegistrationRepository, clientRepository);
+            webClientConfiguration.webClient(authorizedClientManager);
 
         assertNotNull(webClient, "WebClient has not been created successfully");
     }

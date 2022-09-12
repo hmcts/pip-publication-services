@@ -133,12 +133,12 @@ class NotifyTest {
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PUBLIC_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"210c4598-7ec3-4a59-9b9a-d7ecf2197a40\",\n"
+        + "  \"artefactId\": \"31889528-ad90-4535-a02d-b7dcc9de1102\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"41ab3903-c87c-42b5-994f-9b55f6dcad48\",\n"
+        + "  \"artefactId\": \"8a0ca51e-847e-4c6d-ad0f-a3f104f27845\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
