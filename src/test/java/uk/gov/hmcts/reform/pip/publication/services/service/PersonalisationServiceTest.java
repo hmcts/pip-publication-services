@@ -78,7 +78,7 @@ class PersonalisationServiceTest {
     DataManagementService dataManagementService;
 
     @MockBean
-    PdfCreationService pdfCreationService;
+    FileCreationService fileCreationService;
 
     @MockBean
     ArtefactSummaryService artefactSummaryService;
@@ -179,8 +179,9 @@ class PersonalisationServiceTest {
         byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("<Placeholder>");
-        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(pdfCreationService.generatePdfFromHtml(any())).thenReturn(testByteArray);
+        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(new byte[0]);
+        when(fileCreationService.generatePdfFromHtml(any())).thenReturn(testByteArray);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
@@ -216,8 +217,8 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         byte[] overSizeArray = new byte[2_100_000];
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(overSizeArray);
+        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(fileCreationService.generatePdfFromHtml(HELLO)).thenReturn(overSizeArray);
 
         assertThrows(NotifyException.class, () ->
             personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact), "desired "
@@ -333,8 +334,9 @@ class PersonalisationServiceTest {
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
-        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(fileCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(new byte[0]);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
@@ -366,8 +368,9 @@ class PersonalisationServiceTest {
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
-        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(fileCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(new byte[0]);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 

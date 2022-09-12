@@ -187,6 +187,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '2.6.7'
   implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.5.2'
+  implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.2'
 
   // Force upgrade snakeyaml version for CVE-2022-25857
   implementation( group: 'org.yaml', name: 'snakeyaml').version {

@@ -3,14 +3,14 @@ package uk.gov.hmcts.reform.pip.publication.services.models.external;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CivilAndFamilyDailyCauseListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CivilDailyCauseListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CopDailyCauseListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.FamilyDailyCauseListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPressListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPublicListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SscsDailyListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CivilAndFamilyDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CivilDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.Converter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CopDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.FamilyDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.SjpPressListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.SjpPublicListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.SscsDailyListConverter;
 
 /**
  * Enum that represents the different list types.

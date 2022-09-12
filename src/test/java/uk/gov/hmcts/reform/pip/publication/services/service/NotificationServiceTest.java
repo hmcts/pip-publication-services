@@ -98,7 +98,7 @@ class NotificationServiceTest {
     private NotificationService notificationService;
 
     @MockBean
-    private CsvCreationService csvCreationService;
+    private FileCreationService fileCreationService;
 
     @MockBean
     private EmailService emailService;
@@ -155,7 +155,7 @@ class NotificationServiceTest {
             UUID.randomUUID().toString(), "test-image.png", LocalDateTime.now(),
             "REJECTED", LocalDateTime.now()));
 
-        when(csvCreationService.createMediaApplicationReportingCsv(mediaApplicationList)).thenReturn(TEST_BYTE);
+        when(fileCreationService.createMediaApplicationReportingCsv(mediaApplicationList)).thenReturn(TEST_BYTE);
 
         when(emailService.buildMediaApplicationReportingEmail(TEST_BYTE,
                                                               Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template))

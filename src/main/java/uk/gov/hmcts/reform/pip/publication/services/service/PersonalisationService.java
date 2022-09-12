@@ -41,7 +41,7 @@ public class PersonalisationService {
     ArtefactSummaryService artefactSummaryService;
 
     @Autowired
-    PdfCreationService pdfCreationService;
+    FileCreationService fileCreationService;
 
     @Autowired
     NotifyConfigProperties notifyConfigProperties;
@@ -123,9 +123,15 @@ public class PersonalisationService {
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
             personalisation.put("list_type", artefact.getListType());
-            String html = pdfCreationService.jsonToHtml(artefact.getArtefactId());
-            byte[] artefactPdf = pdfCreationService.generatePdfFromHtml(html);
+            String html = fileCreationService.jsonToHtml(artefact.getArtefactId());
+
+            byte[] artefactPdf = fileCreationService.generatePdfFromHtml(html);
             personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
+
+            byte[] artefactExcel = fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId());
+            personalisation.put("display_excel", artefactExcel.length > 0);
+            personalisation.put("excel_link_to_file", artefactExcel.length > 0
+                ? EmailClient.prepareUpload(artefactExcel) : "");
 
             String summary =
                 artefactSummaryService.artefactSummary(
@@ -133,7 +139,6 @@ public class PersonalisationService {
                         .getArtefactJsonBlob(artefact.getArtefactId()),
                     artefact.getListType()
                 );
-
             personalisation.put("testing_of_array", summary);
 
             log.info("Personalisation map created");
