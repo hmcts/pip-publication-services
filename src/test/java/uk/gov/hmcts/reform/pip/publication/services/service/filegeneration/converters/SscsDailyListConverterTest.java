@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
@@ -23,6 +24,7 @@ import java.time.Instant;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
@@ -66,6 +68,15 @@ class SscsDailyListConverterTest {
             .containsSequence("Thank you for reading this document thoroughly.");
 
 
+    }
+
+    @Test
+    void testConvertToExcelReturnsDefault() throws IOException {
+        StringWriter writer = new StringWriter();
+        JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
+
+        assertEquals(0, sscsDailyListConverter.convertToExcel(inputJson).length,
+                     "byte array wasn't empty");
     }
 
 

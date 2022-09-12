@@ -46,6 +46,7 @@ class PersonalisationServiceTest {
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String LINK_TO_FILE = "link_to_file";
+    private static final String EXCEL_LINK_TO_FILE = "excel_link_to_file";
     private static final String FILE = "file";
     private static final String IS_CSV = "is_csv";
     private static final String SURNAME = "surname";
@@ -174,13 +175,13 @@ class PersonalisationServiceTest {
     void buildRawDataWhenAllPresent() throws IOException {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
-        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
 
         byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("<Placeholder>");
         when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(new byte[0]);
+        when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(testByteArray);
         when(fileCreationService.generatePdfFromHtml(any())).thenReturn(testByteArray);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
@@ -199,12 +200,14 @@ class PersonalisationServiceTest {
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
                      "Location not as expected"
         );
-        assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
+        assertEquals(ListType.SJP_PUBLIC_LIST, personalisation.get("list_type"),
                      "List type does not match expected list type"
         );
         assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
                      LINK_TO_FILE_MESSAGE
         );
+        assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get(EXCEL_LINK_TO_FILE)).get(FILE),
+                     LINK_TO_FILE_MESSAGE);
         assertEquals("hi", personalisation.get("testing_of_array"),
                      "testing_of_array does not match expected value"
         );
