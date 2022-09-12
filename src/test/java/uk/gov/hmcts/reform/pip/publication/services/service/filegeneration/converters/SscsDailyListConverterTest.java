@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
