@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
@@ -185,6 +186,21 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "Media user verification email successfully sent with referenceId: %s",
             notificationService.mediaUserVerificationEmailRequest(body)
+        ));
+    }
+
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Inactive user sign-in notification email successfully sent with "
+            + "referenceId: {Id}"),
+        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR_MESSAGE),
+        @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    })
+    @ApiOperation("Send notification email to inactive users to remind them to sign in")
+    @PostMapping("/user/sign-in")
+    public ResponseEntity<String> sendNotificationToInactiveUsers(@RequestBody InactiveUserNotificationEmail body) {
+        return ResponseEntity.ok(String.format(
+            "Inactive user sign-in notification email successfully sent with referenceId: %s",
+            notificationService.inactiveUserNotificationEmailRequest(body)
         ));
     }
 }

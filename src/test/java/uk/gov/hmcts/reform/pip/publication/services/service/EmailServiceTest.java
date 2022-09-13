@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,6 +42,7 @@ class EmailServiceTest {
 
     private static final String EMAIL = "test@email.com";
     private static final String FULL_NAME = "fullName";
+    private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
 
     @Autowired
     private EmailService emailService;
@@ -258,5 +261,30 @@ class EmailServiceTest {
                      PERSONALISATION_MESSAGE);
         assertEquals(Templates.MEDIA_USER_VERIFICATION_EMAIL.template, mediaVerificationEmail.getTemplate(),
                      TEMPLATE_MESSAGE);
+    }
+
+    @Test
+    void testInactiveUserNotificationEmailReturnsSuccess() {
+        InactiveUserNotificationEmail inactiveUserNotificationEmail = new InactiveUserNotificationEmail(
+            EMAIL, FULL_NAME, LAST_SIGNED_IN_DATE
+        );
+        when(personalisationService.buildInactiveUserNotificationPersonalisation(inactiveUserNotificationEmail))
+            .thenReturn(personalisation);
+
+        EmailToSend email = emailService.buildInactiveUserNotificationEmail(
+            inactiveUserNotificationEmail, Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template);
+
+        assertThat(email)
+            .extracting(
+                EmailToSend::getEmailAddress,
+                EmailToSend::getPersonalisation,
+                EmailToSend::getTemplate
+            )
+            .containsExactly(
+                EMAIL,
+                personalisation,
+                Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template
+            );
+
     }
 }
