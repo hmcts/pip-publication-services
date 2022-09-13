@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
@@ -22,7 +24,7 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Component
 @Slf4j
-@SuppressWarnings("PMD.PreserveStackTrace")
+@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods"})
 public class EmailService {
     @Autowired
     EmailClient emailClient;
@@ -71,7 +73,17 @@ public class EmailService {
                                 .buildUnidentifiedBlobsPersonalisation(locationMap));
     }
 
-    public EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {
+    protected EmailToSend buildMediaUserVerificationEmail(MediaVerificationEmail body, String template) {
+        return generateEmail(body.getEmail(), template,
+                             personalisationService.buildMediaVerificationPersonalisation(body));
+    }
+
+    protected EmailToSend buildInactiveUserNotificationEmail(InactiveUserNotificationEmail body, String template) {
+        return generateEmail(body.getEmail(), template,
+                             personalisationService.buildInactiveUserNotificationPersonalisation(body));
+    }
+
+    private EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {
         String referenceId = UUID.randomUUID().toString();
         return new EmailToSend(email, template, personalisation, referenceId);
     }
@@ -79,7 +91,7 @@ public class EmailService {
     public SendEmailResponse sendEmail(EmailToSend emailToSend) {
         try {
             log.info(writeLog(String.format("Sending email success. Reference ID: %s",
-                                                   emailToSend.getReferenceId())));
+                                            emailToSend.getReferenceId())));
             return emailClient.sendEmail(emailToSend.getTemplate(), emailToSend.getEmailAddress(),
                                          emailToSend.getPersonalisation(), emailToSend.getReferenceId()
             );

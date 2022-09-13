@@ -6,7 +6,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SjpPressList;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DateHelper;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,9 +28,10 @@ public class SjpPressListConverter implements Converter {
 
     /**
      * parent method for the process.
+     *
      * @param jsonBody - JsonNode representing the data within our jsonBody.
      * @param metadata - immutable map containing relevant data from request headers (i.e. not within json body) used
-     *                to inform the template
+     *                 to inform the template
      * @return - html string of final output
      */
     @Override
@@ -52,10 +53,11 @@ public class SjpPressListConverter implements Converter {
             count += 1;
         }
 
-        String publishedDate = Helpers.formatTimestampToBst(
-            jsonBody.get("document").get("publicationDate").asText()
+        String publishedDate = DateHelper.formatTimeStampToBst(
+            jsonBody.get("document").get("publicationDate").asText(), false, true
         );
-        context.setVariable("contentDate",
+        context.setVariable(
+            "contentDate",
             metadata.get("contentDate")
         );
         context.setVariable("publishedDate", publishedDate);
@@ -69,8 +71,9 @@ public class SjpPressListConverter implements Converter {
 
     /**
      * method for handling roles - sorts out accused and prosecutor roles and grabs relevant data from the json body.
+     *
      * @param thisCase - case model which is updated by the method.
-     * @param party - node to be parsed.
+     * @param party    - node to be parsed.
      */
     void processRoles(SjpPressList thisCase, JsonNode party) {
         Iterator<JsonNode> partyNode = party.get("party").elements();
@@ -79,7 +82,7 @@ public class SjpPressListConverter implements Converter {
             if ("accused".equals(currentParty.get("partyRole").asText().toLowerCase(Locale.ROOT))) {
                 JsonNode individualDetailsNode = currentParty.get(INDIVIDUAL_DETAILS);
                 thisCase.setName(individualDetailsNode.get("individualForenames").asText() + " "
-                                        + individualDetailsNode.get("individualSurname").asText());
+                                     + individualDetailsNode.get("individualSurname").asText());
                 processAddress(thisCase, individualDetailsNode.get("address"));
                 thisCase.setDateOfBirth(individualDetailsNode.get("dateOfBirth").asText());
                 thisCase.setAge(individualDetailsNode.get("age").asText());
@@ -93,6 +96,7 @@ public class SjpPressListConverter implements Converter {
      * case URN processing method. Takes in a case and a case node and grabs all case urns. It is worth mentioning
      * that currently the case Urn field cannot safely be linked to offences where there are more
      * than one as they are on a different level of the json hierarchy.
+     *
      * @param thisCase - model representing case data.
      * @param caseNode - json node containing cases on given case.
      */
@@ -107,7 +111,8 @@ public class SjpPressListConverter implements Converter {
 
     /**
      * Handling address lines for the model.
-     * @param thisCase - our case model.
+     *
+     * @param thisCase    - our case model.
      * @param addressNode - our node containing address data.
      */
     void processAddress(SjpPressList thisCase, JsonNode addressNode) {
@@ -130,7 +135,8 @@ public class SjpPressListConverter implements Converter {
 
     /**
      * Method which populates the offence list in our case model.
-     * @param currentCase - case model.
+     *
+     * @param currentCase  - case model.
      * @param offencesNode - node containing our offence data.
      */
     void processOffences(SjpPressList currentCase, JsonNode offencesNode) {
@@ -138,12 +144,14 @@ public class SjpPressListConverter implements Converter {
         Iterator<JsonNode> offences = offencesNode.elements();
         while (offences.hasNext()) {
             JsonNode thisOffence = offences.next();
-            Map<String, String> thisOffenceMap = Map.of("offence",
-                                                        thisOffence.get("offenceTitle").asText(),
-                                                        "reportingRestriction",
-                                                        processReportingRestrictionsjpPress(thisOffence),
-                                                        "wording",
-                                                        thisOffence.get("offenceWording").asText());
+            Map<String, String> thisOffenceMap = Map.of(
+                "offence",
+                thisOffence.get("offenceTitle").asText(),
+                "reportingRestriction",
+                processReportingRestrictionsjpPress(thisOffence),
+                "wording",
+                thisOffence.get("offenceWording").asText()
+            );
             listOfOffences.add(thisOffenceMap);
         }
         currentCase.setOffences(listOfOffences);
@@ -151,6 +159,7 @@ public class SjpPressListConverter implements Converter {
 
     /**
      * Method to apply reporting restriction text to our model.
+     *
      * @param node - json node representing an offence.
      * @return a String containing the relevant text based on reporting restriction.
      */
