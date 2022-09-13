@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -26,18 +28,21 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings({"PMD.TooManyMethods"})
 @SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
 @ActiveProfiles("test")
 class EmailServiceTest {
 
     private static final String EMAIL = "test@email.com";
     private static final String FULL_NAME = "fullName";
+    private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
 
     @Autowired
     private EmailService emailService;
@@ -98,23 +103,6 @@ class EmailServiceTest {
         assertEquals(personalisation, aadEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
         assertNotNull(aadEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
         assertEquals(Templates.EXISTING_USER_WELCOME_EMAIL.template, aadEmail.getTemplate(),
-                     TEMPLATE_MESSAGE);
-    }
-
-    @Test
-    void newUserWelcomeValidEmailReturnsSuccess() {
-        WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true, FULL_NAME);
-
-        when(personalisationService.buildWelcomePersonalisation(createdWelcomeEmail))
-            .thenReturn(personalisation);
-
-        EmailToSend aadEmail = emailService.buildWelcomeEmail(
-            createdWelcomeEmail, Templates.NEW_USER_WELCOME_EMAIL.template);
-
-        assertEquals(EMAIL, aadEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
-        assertEquals(personalisation, aadEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
-        assertNotNull(aadEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
-        assertEquals(Templates.NEW_USER_WELCOME_EMAIL.template, aadEmail.getTemplate(),
                      TEMPLATE_MESSAGE);
     }
 
@@ -256,5 +244,47 @@ class EmailServiceTest {
                      PERSONALISATION_MESSAGE);
         assertEquals(Templates.BAD_BLOB_EMAIL.template, unidentifiedBlobEmail.getTemplate(),
                      TEMPLATE_MESSAGE);
+    }
+
+    @Test
+    void testMediaVerificationEmailReturnsSuccess() {
+        MediaVerificationEmail mediaVerificationEmailData = new MediaVerificationEmail(FULL_NAME, EMAIL);
+        when(personalisationService.buildMediaVerificationPersonalisation(mediaVerificationEmailData))
+            .thenReturn(personalisation);
+
+        EmailToSend mediaVerificationEmail = emailService.buildMediaUserVerificationEmail(
+            mediaVerificationEmailData, Templates.MEDIA_USER_VERIFICATION_EMAIL.template);
+
+        assertEquals(EMAIL, mediaVerificationEmail.getEmailAddress(),
+                     GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, mediaVerificationEmail.getPersonalisation(),
+                     PERSONALISATION_MESSAGE);
+        assertEquals(Templates.MEDIA_USER_VERIFICATION_EMAIL.template, mediaVerificationEmail.getTemplate(),
+                     TEMPLATE_MESSAGE);
+    }
+
+    @Test
+    void testInactiveUserNotificationEmailReturnsSuccess() {
+        InactiveUserNotificationEmail inactiveUserNotificationEmail = new InactiveUserNotificationEmail(
+            EMAIL, FULL_NAME, LAST_SIGNED_IN_DATE
+        );
+        when(personalisationService.buildInactiveUserNotificationPersonalisation(inactiveUserNotificationEmail))
+            .thenReturn(personalisation);
+
+        EmailToSend email = emailService.buildInactiveUserNotificationEmail(
+            inactiveUserNotificationEmail, Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template);
+
+        assertThat(email)
+            .extracting(
+                EmailToSend::getEmailAddress,
+                EmailToSend::getPersonalisation,
+                EmailToSend::getTemplate
+            )
+            .containsExactly(
+                EMAIL,
+                personalisation,
+                Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template
+            );
+
     }
 }

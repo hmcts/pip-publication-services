@@ -10,8 +10,9 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.Helpers;
+import uk.gov.hmcts.reform.pip.publication.services.service.pdf.helpers.DateHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,7 +26,6 @@ import java.util.UUID;
  * possible level of PDF accessibility, which means that when developing new templates, we must listen carefully to the
  * warnings output by the compiler.
  */
-
 @Slf4j
 @Service
 public class PdfCreationService {
@@ -43,20 +43,21 @@ public class PdfCreationService {
     public String jsonToHtml(UUID inputPayloadUuid) throws IOException {
         String rawJson = dataManagementService.getArtefactJsonBlob(inputPayloadUuid);
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
-        String htmlFile;
-        Map<String, String> metadataMap =
-            Map.of("contentDate", Helpers.formatLocalDateTimeToBst(artefact.getContentDate()),
-                   "provenance", artefact.getProvenance(), "location", artefact.getLocationId());
+        Location location = dataManagementService.getLocation(artefact.getLocationId());
 
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
+        Map<String, String> metadataMap = Map.of(
+            "contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
+            "provenance", artefact.getProvenance(),
+            "locationName", location.getName(),
+            "language", artefact.getLanguage().toString()
+        );
 
         Converter converter = artefact.getListType().getConverter();
-        if (converter != null) {
-            htmlFile = converter.convert(topLevelNode, metadataMap);
-        } else {
-            htmlFile = parseThymeleafTemplate(rawJson);
-        }
-        return htmlFile;
+
+        return (converter == null)
+            ? parseThymeleafTemplate(rawJson)
+            : converter.convert(topLevelNode, metadataMap);
     }
 
     /**

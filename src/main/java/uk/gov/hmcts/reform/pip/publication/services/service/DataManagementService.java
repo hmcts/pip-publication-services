@@ -19,7 +19,7 @@ import java.util.UUID;
 public class DataManagementService {
 
     private static final String SERVICE = "Data Management";
-    private static final String VERIFICATION_HEADER = "verification";
+    private static final String ADMIN_HEADER = "x-admin";
     private static final String TRUE = "true";
 
     @Value("${service-to-service.data-management}")
@@ -31,7 +31,7 @@ public class DataManagementService {
     public Artefact getArtefact(UUID artefactId) {
         try {
             return webClient.get().uri(String.format("%s/publication/%s", url, artefactId))
-                .header("x-admin", TRUE)
+                .header(ADMIN_HEADER, TRUE)
                 .retrieve()
                 .bodyToMono(Artefact.class).block();
         } catch (WebClientResponseException ex) {
@@ -52,7 +52,7 @@ public class DataManagementService {
     public byte[] getArtefactFlatFile(UUID artefactId) {
         try {
             return webClient.get().uri(String.format("%s/publication/%s/file", url, artefactId))
-                .header("x-admin", TRUE)
+                .header(ADMIN_HEADER, TRUE)
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .retrieve()
                 .bodyToMono(byte[].class).block();
@@ -64,7 +64,7 @@ public class DataManagementService {
     public String getArtefactJsonBlob(UUID artefactId) {
         try {
             return webClient.get().uri(String.format("%s/publication/%s/payload", url, artefactId))
-                .header(VERIFICATION_HEADER, TRUE)
+                .header(ADMIN_HEADER, TRUE)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve().bodyToMono(String.class).block();
         } catch (WebClientResponseException ex) {
