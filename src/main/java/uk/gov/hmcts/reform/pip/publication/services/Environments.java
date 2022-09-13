@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Getter
@@ -20,8 +21,10 @@ public enum Environments {
     private String formattedName;
 
     public static String convertEnvironmentName(String input) {
-        return Arrays.stream(Environments.values())
+        Optional<Environments> matchedEnvironment = Arrays.stream(Environments.values())
             .filter(env -> env.originalName.equals(input))
-            .findFirst().get().getFormattedName();
+            .findFirst();
+
+        return matchedEnvironment.isPresent() ? matchedEnvironment.get().getFormattedName() : input;
     }
 }
