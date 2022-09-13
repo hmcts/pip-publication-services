@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    @page {
+      margin: 30px 20px;
+
+      @top-center {
+        font-family: 'GDS Transport';
+        font-size: 16px;
+        color: blue;
+        content: "This is PDF/UA page " counter(page) " of " counter(pages) ".";
+      }
+    }
+    body {
+      font-family: 'GDS Transport';
+      color: darkblue;
+      padding: 2px;
+      font-size: 105%;
+    }
+    h1, h4 {
+      font-family: "GDS Transport";
+      color: black;
+    }
+    pre p {
+      font-family: 'GDS Transport';
+      color: darkblue;
+      background-color: #f1f1f1;
+      padding: 2px;
+      font-size: 105%;
+    }
+  </style>
+  <meta charset="UTF-8"/>
+  <meta name="subject" content="Accessible PDF template"/>
+  <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
+  <meta name="description" content="Document description - vital for compliance."/>
+  <title>This is a file for testing JSON to PDF creation</title>
+</head>
+<body>
+<div class = "header">
+  <img src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png" alt="HMCTS Logo"/>
+  <h1>Court and Tribunal Hearings Service </h1>
+  <h2>Sample PDF Template</h2>
+  <h3>An example file for the creation of PDF lists from our JSON artefact payloads.</h3>
+</div>
+
+<h4>Currently, this is basically just a pretty-printed JSON file with a logo, but can be built on very easily using <a href="https://www.thymeleaf.org/" title="Thymeleaf Website">Thymeleaf templating</a></h4>
+
+<pre><p id="code">{
+  &quot;document&quot; : {
+    &quot;version&quot; : &quot;&quot;,
+    &quot;publicationDate&quot; : &quot;2020-09-13T23:30:52.123Z&quot;
+  },
+  &quot;venue&quot; : {
+    &quot;venueName&quot; : &quot;GLASGOW&quot;,
+    &quot;venueContact&quot; : {
+      &quot;venueTelephone&quot; : &quot;01772 844700&quot;,
+      &quot;venueEmail&quot; : &quot;court1@moj.gov.u&quot;
+    },
+    &quot;venueAddress&quot; : {
+      &quot;line&quot; : [ &quot;Glasgow High Court&quot; ],
+      &quot;postCode&quot; : &quot;G1 91X&quot;
+    }
+  },
+  &quot;@schemaLocation&quot; : &quot;&quot;,
+  &quot;courtLists&quot; : [ {
+    &quot;courtHouse&quot; : {
+      &quot;courtHouseName&quot; : &quot;Court A&quot;,
+      &quot;courtHouseAddress&quot; : {
+        &quot;line&quot; : [ &quot;Room 10&quot;, &quot;Glasgow High Court&quot; ],
+        &quot;town&quot; : &quot;Glasgow&quot;,
+        &quot;county&quot; : &quot;Greater Glasgow&quot;,
+        &quot;postCode&quot; : &quot;G1 91X&quot;
+      },
+      &quot;courtRoom&quot; : [ {
+        &quot;courtRoomName&quot; : &quot;1&quot;,
+        &quot;session&quot; : [ {
+          &quot;sessionStartTime&quot; : &quot;&quot;,
+          &quot;sessionChannel&quot; : [ &quot;VIDEO HEARING&quot; ],
+          &quot;judiciary&quot; : [ {
+            &quot;johTitle&quot; : &quot;Cardinal&quot;,
+            &quot;johNameSurname&quot; : &quot;Robert Cox&quot;
+          }, {
+            &quot;johTitle&quot; : &quot;Judge&quot;,
+            &quot;johNameSurname&quot; : &quot;Presiding&quot;,
+            &quot;isPresiding&quot; : true
+          } ],
+          &quot;sittings&quot; : [ {
+            &quot;sittingStart&quot; : &quot;2022-01-27T09:40:17.496185&quot;,
+            &quot;sittingEnd&quot; : &quot;2022-01-27T12:45:17.496185&quot;,
+            &quot;hearing&quot; : [ {
+              &quot;hearingType&quot; : &quot;FMPO&quot;,
+              &quot;case&quot; : [ {
+                &quot;caseName&quot; : &quot;Times Vs Stamp&quot;,
+                &quot;caseNumber&quot; : &quot;123445678&quot;,
+                &quot;caseJurisdictionET&quot; : &quot;type&quot;
+              } ],
+              &quot;party&quot; : [ {
+                &quot;partyRole&quot; : &quot;APPLICANT_PETITIONER&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualSurname&quot; : &quot;Sausage&quot;
+                }
+              }, {
+                &quot;partyRole&quot; : &quot;RESPONDENT&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualSurname&quot; : &quot;McQueen&quot;
+                }
+              }, {
+                &quot;partyRole&quot; : &quot;APPLICANT_PETITIONER_REPRESENTATIVE&quot;,
+                &quot;friendlyRoleName&quot; : &quot;Legal Advisor&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualForenames&quot; : &quot;Ralph&quot;,
+                  &quot;individualMiddleName&quot; : &quot;Marvolo&quot;,
+                  &quot;individualSurname&quot; : &quot;Quirke&quot;,
+                  &quot;title&quot; : &quot;Mr&quot;
+                }
+              }, {
+                &quot;partyRole&quot; : &quot;RESPONDENT_REPRESENTATIVE&quot;,
+                &quot;friendlyRoleName&quot; : &quot;Legal Advisor&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualForenames&quot; : &quot;Timothy&quot;,
+                  &quot;individualMiddleName&quot; : &quot;Salamander&quot;,
+                  &quot;individualSurname&quot; : &quot;Reynolds&quot;,
+                  &quot;title&quot; : &quot;Mr&quot;
+                }
+              } ]
+            }, {
+              &quot;hearingType&quot; : &quot;FHDRA1 (First Hearing and Dispute Resolution Appointment)&quot;,
+              &quot;case&quot; : [ {
+                &quot;caseName&quot; : &quot;Quirke vs Strange&quot;,
+                &quot;caseNumber&quot; : &quot;112233445&quot;
+              } ],
+              &quot;party&quot; : [ {
+                &quot;partyRole&quot; : &quot;APPLICANT_PETITIONER&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualSurname&quot; : &quot;Surname&quot;
+                }
+              }, {
+                &quot;partyRole&quot; : &quot;RESPONDENT&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualSurname&quot; : &quot;Surname&quot;
+                }
+              }, {
+                &quot;partyRole&quot; : &quot;APPLICANT_PETITIONER_REPRESENTATIVE&quot;,
+                &quot;friendlyRoleName&quot; : &quot;Legal Advisor&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualForenames&quot; : &quot;Individual Forenames&quot;,
+                  &quot;individualMiddleName&quot; : &quot;Individual Middlename&quot;,
+                  &quot;individualSurname&quot; : &quot;Individual Surname&quot;,
+                  &quot;title&quot; : &quot;Mr&quot;
+                }
+              }, {
+                &quot;partyRole&quot; : &quot;RESPONDENT_REPRESENTATIVE&quot;,
+                &quot;friendlyRoleName&quot; : &quot;Legal Advisor&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualForenames&quot; : &quot;Individual Forenames&quot;,
+                  &quot;individualMiddleName&quot; : &quot;Individual Middlename&quot;,
+                  &quot;individualSurname&quot; : &quot;Individual Surname&quot;,
+                  &quot;title&quot; : &quot;Mr&quot;
+                }
+              } ]
+            } ],
+            &quot;channel&quot; : [ &quot;In Person Hearing&quot; ],
+            &quot;duration&quot; : &quot;&quot;,
+            &quot;startTime&quot; : &quot;9.40am&quot;,
+            &quot;durationAsHours&quot; : 1,
+            &quot;durationAsMinutes&quot; : 5
+          } ]
+        } ],
+        &quot;totalHearing&quot; : 2
+      } ]
+    }
+  }, {
+    &quot;courtHouse&quot; : {
+      &quot;courtHouseName&quot; : &quot;Court B&quot;,
+      &quot;courtHouseAddress&quot; : {
+        &quot;line&quot; : [ &quot;Glasgow Sheriff Court&quot;, &quot;Ingram Street&quot; ],
+        &quot;town&quot; : &quot;Glasgow&quot;,
+        &quot;county&quot; : &quot;Greater Glasgow&quot;,
+        &quot;postCode&quot; : &quot;G1 1BX&quot;
+      },
+      &quot;courtRoom&quot; : [ {
+        &quot;courtRoomName&quot; : &quot;1&quot;,
+        &quot;session&quot; : [ {
+          &quot;sessionStartTime&quot; : &quot;&quot;,
+          &quot;sessionChannel&quot; : [ &quot;VIDEO HEARING&quot; ],
+          &quot;judiciary&quot; : [ {
+            &quot;johTitle&quot; : &quot;Dame&quot;,
+            &quot;johNameSurname&quot; : &quot;Esmerelda Butterworth&quot;
+          }, {
+            &quot;johTitle&quot; : &quot;Judge&quot;,
+            &quot;johNameSurname&quot; : &quot;Presiding&quot;,
+            &quot;isPresiding&quot; : true
+          } ],
+          &quot;sittings&quot; : [ {
+            &quot;sittingStart&quot; : &quot;2022-01-27T09:40:17.496185&quot;,
+            &quot;sittingEnd&quot; : &quot;2022-01-27T10:55:17.496185&quot;,
+            &quot;hearing&quot; : [ {
+              &quot;hearingType&quot; : &quot;FMPO&quot;,
+              &quot;case&quot; : [ {
+                &quot;caseName&quot; : &quot;BAE Engineering Vs Film Industries&quot;,
+                &quot;caseNumber&quot; : &quot;123452345&quot;,
+                &quot;caseJurisdictionET&quot; : &quot;type&quot;
+              } ],
+              &quot;party&quot; : [ {
+                &quot;partyRole&quot; : &quot;APPLICANT_PETITIONER&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualSurname&quot; : &quot;Surname&quot;
+                }
+              }, {
+                &quot;partyRole&quot; : &quot;RESPONDENT&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualSurname&quot; : &quot;Surname&quot;
+                }
+              }, {
+                &quot;partyRole&quot; : &quot;APPLICANT_PETITIONER_REPRESENTATIVE&quot;,
+                &quot;friendlyRoleName&quot; : &quot;Legal Advisor&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualForenames&quot; : &quot;Individual Forenames&quot;,
+                  &quot;individualMiddleName&quot; : &quot;Individual Middlename&quot;,
+                  &quot;individualSurname&quot; : &quot;Individual Surname&quot;,
+                  &quot;title&quot; : &quot;Mr&quot;
+                }
+              }, {
+                &quot;partyRole&quot; : &quot;RESPONDENT_REPRESENTATIVE&quot;,
+                &quot;friendlyRoleName&quot; : &quot;Legal Advisor&quot;,
+                &quot;individualDetails&quot; : {
+                  &quot;individualForenames&quot; : &quot;Individual Forenames&quot;,
+                  &quot;individualMiddleName&quot; : &quot;Individual Middlename&quot;,
+                  &quot;individualSurname&quot; : &quot;Individual Surname&quot;,
+                  &quot;title&quot; : &quot;Mr&quot;
+                }
+              } ]
+            } ],
+            &quot;channel&quot; : [ &quot;In Person / Video Hearing&quot; ],
+            &quot;duration&quot; : &quot;&quot;,
+            &quot;startTime&quot; : &quot;9.40am&quot;,
+            &quot;durationAsHours&quot; : 1,
+            &quot;durationAsMinutes&quot; : 5
+          } ]
+        } ],
+        &quot;totalHearing&quot; : 2
+      } ]
+    }
+  } ]
+}</p></pre>
+</body>
+</html>

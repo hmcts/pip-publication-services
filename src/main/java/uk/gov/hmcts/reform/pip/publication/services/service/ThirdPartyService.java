@@ -1,14 +1,26 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.helpers.MultiPartHelper;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Sensitivity;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.function.Consumer;
 
 @Service
 @Slf4j
@@ -21,24 +33,108 @@ public class ThirdPartyService {
     private int backoff;
 
     private static final String SUCCESS_MESSAGE = "Successfully sent list to %s at: %s";
+    private static final String SUCCESS_DELETE_MESSAGE = "Successfully sent deleted notification to %s at: %s";
     private static final String COURTEL = "Courtel";
 
     @Autowired
     private WebClient.Builder webClient;
 
-    public String handleThirdPartyCall(String api, Object payload) {
+    /**
+     * Third party call for Flat File publications.
+     * @param api The API to send the publciation to.
+     * @param payload The payload to send.
+     * @param artefact The artefact to publish.
+     * @param location The location to publish.
+     * @return A message representing the response.
+     */
+    public String handleFlatFileThirdPartyCall(String api, byte[] payload,
+                                       Artefact artefact, Location location) {
+        MultiValueMap<String, HttpEntity<?>> multiPartValues = MultiPartHelper.createMultiPartByteArrayBody(
+            Collections.singletonList(Triple.of("file", payload, artefact.getSourceArtefactId()))
+        );
+
         webClient.build().post().uri(api)
+            .headers(this.getHttpHeadersFromArtefact(artefact, location))
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .body(BodyInserters.fromMultipartData(multiPartValues))
+            .retrieve()
+            .bodyToMono(Void.class)
+            .retryWhen(handleRetry(api))
+            .block();
+        return String.format(SUCCESS_MESSAGE, COURTEL, api);
+    }
+
+    /**
+     * Third party call for JSON.
+     * @param api The API to send the publication to.
+     * @param payload The payload to send.
+     * @param artefact The artefact to publish.
+     * @param location The location to publish.
+     * @return A message representing the response.
+     */
+    public String handleJsonThirdPartyCall(String api, Object payload,
+                                               Artefact artefact, Location location) {
+        webClient.build().post().uri(api)
+            .headers(this.getHttpHeadersFromArtefact(artefact, location))
+            .header(HttpHeaders.CONTENT_TYPE, "application/json")
             .bodyValue(payload)
             .retrieve()
             .bodyToMono(Void.class)
-            .retryWhen(Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
-                           .doAfterRetry(signal -> log.info(
-                               "Request failed, retrying {}/" + numOfRetries,
-                               signal.totalRetries() + 1
-                           ))
-                           .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
-                                                      new ThirdPartyServiceException(retrySignal.failure(), api)))
+            .retryWhen(handleRetry(api))
             .block();
         return String.format(SUCCESS_MESSAGE, COURTEL, api);
+    }
+
+    /**
+     * Third party call for Deletion.
+     * @param api The API to send the deleted publication to.
+     * @param artefact The artefact to publish.
+     * @param location The location to publish.
+     * @return A message representing the response.
+     */
+    public String handleDeleteThirdPartyCall(String api, Artefact artefact, Location location) {
+        webClient.build().post().uri(api)
+            .headers(this.getHttpHeadersFromArtefact(artefact, location))
+            .retrieve()
+            .bodyToMono(Void.class)
+            .retryWhen(handleRetry(api))
+            .block();
+        return String.format(SUCCESS_DELETE_MESSAGE, COURTEL, api);
+    }
+
+    private Consumer<HttpHeaders> getHttpHeadersFromArtefact(Artefact artefact,
+                                                             Location location) {
+        if (artefact == null || location == null) {
+            return httpHeaders -> { };
+        }
+
+        return httpHeaders -> {
+            httpHeaders.add("x-provenance", artefact.getProvenance());
+            httpHeaders.add("x-source-artefact-id", artefact.getSourceArtefactId());
+            httpHeaders.add("x-type", artefact.getType().toString());
+            httpHeaders.add("x-list-type", artefact.getListType().toString());
+            httpHeaders.add("x-content-date", artefact.getContentDate().toString());
+
+            httpHeaders.add("x-sensitivity",
+                artefact.getSensitivity() != null ? artefact.getSensitivity().toString() :
+                    Sensitivity.PUBLIC.toString());
+
+            httpHeaders.add("x-language", artefact.getLanguage().toString());
+            httpHeaders.add("x-display-from", artefact.getDisplayFrom().toString());
+            httpHeaders.add("x-display-to", artefact.getDisplayTo().toString());
+            httpHeaders.add("x-location-name", location.getName());
+            httpHeaders.add("x-location-jurisdiction", String.join(",", location.getJurisdiction()));
+            httpHeaders.add("x-location-region", String.join(",", location.getRegion()));
+        };
+    }
+
+    private Retry handleRetry(String api) {
+        return Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
+            .doAfterRetry(signal -> log.info(
+                "Request failed, retrying {}/" + numOfRetries,
+                signal.totalRetries() + 1
+            ))
+            .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
+                                       new ThirdPartyServiceException(retrySignal.failure(), api));
     }
 }
