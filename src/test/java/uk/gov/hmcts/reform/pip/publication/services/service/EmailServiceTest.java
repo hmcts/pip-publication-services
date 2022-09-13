@@ -238,7 +238,7 @@ class EmailServiceTest {
             .buildUnidentifiedBlobsEmail(LOCATIONS_MAP,
                                          Templates.BAD_BLOB_EMAIL.template);
 
-        assertEquals("joshua.blackmoor@justice.gov.uk", unidentifiedBlobEmail.getEmailAddress(),
+        assertEquals(EMAIL, unidentifiedBlobEmail.getEmailAddress(),
                      GENERATED_EMAIL_MESSAGE);
         assertEquals(personalisation, unidentifiedBlobEmail.getPersonalisation(),
                      PERSONALISATION_MESSAGE);
