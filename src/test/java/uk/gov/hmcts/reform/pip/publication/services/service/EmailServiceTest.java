@@ -107,23 +107,6 @@ class EmailServiceTest {
     }
 
     @Test
-    void newUserWelcomeValidEmailReturnsSuccess() {
-        WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true, FULL_NAME);
-
-        when(personalisationService.buildWelcomePersonalisation(createdWelcomeEmail))
-            .thenReturn(personalisation);
-
-        EmailToSend aadEmail = emailService.buildWelcomeEmail(
-            createdWelcomeEmail, Templates.NEW_USER_WELCOME_EMAIL.template);
-
-        assertEquals(EMAIL, aadEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
-        assertEquals(personalisation, aadEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
-        assertNotNull(aadEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
-        assertEquals(Templates.NEW_USER_WELCOME_EMAIL.template, aadEmail.getTemplate(),
-                     TEMPLATE_MESSAGE);
-    }
-
-    @Test
     void flatFileSubscriptionEmailReturnsSuccess() {
         UUID artefactId = UUID.randomUUID();
 
