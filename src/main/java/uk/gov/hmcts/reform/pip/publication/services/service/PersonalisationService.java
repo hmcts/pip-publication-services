@@ -50,10 +50,10 @@ public class PersonalisationService {
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
+    private static final String ADMIN_DASHBOARD_LINK = "admin_dashboard_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String FORGOT_PASSWORD_PROCESS_LINK = "forgot_password_process_link";
     private static final String LINK_TO_FILE = "link_to_file";
-    private static final String SURNAME = "surname";
     private static final String FORENAME = "first_name";
     private static final String FULL_NAME = "full_name";
     private static final String CASE_NUMBERS = "case_num";
@@ -90,10 +90,9 @@ public class PersonalisationService {
      */
     public Map<String, Object> buildAdminAccountPersonalisation(CreatedAdminWelcomeEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(SURNAME, body.getSurname());
         personalisation.put(FORENAME, body.getForename());
         personalisation.put(AAD_RESET_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
-        personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadSignInPageLink());
+        personalisation.put(ADMIN_DASHBOARD_LINK, notifyConfigProperties.getLinks().getAdminDashboardLink());
         return personalisation;
     }
 
@@ -126,6 +125,7 @@ public class PersonalisationService {
             String html = pdfCreationService.jsonToHtml(artefact.getArtefactId());
             byte[] artefactPdf = pdfCreationService.generatePdfFromHtml(html);
             personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
+            personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
             String summary =
                 artefactSummaryService.artefactSummary(
@@ -172,6 +172,7 @@ public class PersonalisationService {
                 : NotificationClient.prepareUpload(artefactData);
 
             personalisation.put("link_to_file", uploadedFile);
+            personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
             return personalisation;
         } catch (NotificationClientException e) {
