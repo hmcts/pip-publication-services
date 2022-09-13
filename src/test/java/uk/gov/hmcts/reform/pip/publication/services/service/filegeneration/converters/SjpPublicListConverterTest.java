@@ -3,11 +3,16 @@ package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.conv
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -15,6 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SjpPublicListConverterTest {
     private final SjpPublicListConverter converter = new SjpPublicListConverter();
@@ -96,5 +102,24 @@ class SjpPublicListConverterTest {
             .hasSize(4)
             .extracting(Element::text)
             .containsExactly("Name", "Postcode", "Offence", "Prosecutor");
+    }
+
+    @Test
+    void testSuccessfulExcelConversion() throws IOException {
+        byte[] result = converter.convertToExcel(getInput("/mocks/sjpPublicList.json"));
+        ByteArrayInputStream file = new ByteArrayInputStream(result);
+        Workbook workbook = new XSSFWorkbook(file);
+        Sheet sheet = workbook.getSheetAt(0);
+        Row headingRow = sheet.getRow(0);
+
+        assertEquals("SJP Public List", sheet.getSheetName(), "Sheet name does not match");
+        assertEquals("Name", headingRow.getCell(0).getStringCellValue(),
+                     "Name column is different");
+        assertEquals("Postcode", headingRow.getCell(1).getStringCellValue(),
+                     "Postcode column is different");
+        assertEquals("Offence", headingRow.getCell(2).getStringCellValue(),
+                     "Offence column is different");
+        assertEquals("Prosecutor", headingRow.getCell(3).getStringCellValue(),
+                     "Prosecutor column is different");
     }
 }
