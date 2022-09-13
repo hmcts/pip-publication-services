@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static uk.gov.hmcts.reform.pip.publication.services.Environments.convertEnvironmentName;
+
 /**
  * This class handles any personalisation for the emails.
  */
@@ -201,6 +203,7 @@ public class PersonalisationService {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             personalisation.put(LINK_TO_FILE, EmailClient.prepareUpload(csvMediaApplications, true));
+            personalisation.put(ENV_NAME, convertEnvironmentName(envName));
             return personalisation;
         } catch (NotificationClientException e) {
             log.error(String.format("Error adding the csv attachment to the media application "
@@ -224,7 +227,7 @@ public class PersonalisationService {
 
 
         personalisation.put(ARRAY_OF_IDS, listOfUnmatched);
-        personalisation.put(ENV_NAME, envName);
+        personalisation.put(ENV_NAME, convertEnvironmentName(envName));
         return personalisation;
     }
 
