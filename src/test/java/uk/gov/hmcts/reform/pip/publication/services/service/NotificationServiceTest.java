@@ -67,7 +67,7 @@ class NotificationServiceTest {
 
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
-                                                                             Templates.NEW_USER_WELCOME_EMAIL.template,
+                                                                             Templates.BAD_BLOB_EMAIL.template,
                                                                              personalisationMap,
                                                                              SUCCESS_REF_ID);
     private static final UUID RAND_UUID = UUID.randomUUID();
