@@ -68,7 +68,7 @@ public class EmailService {
 
 
     protected EmailToSend buildUnidentifiedBlobsEmail(Map<String, String> locationMap, String template) {
-        return generateEmail(piTeamEmail, template,
+        return generateEmail("joshua.blackmoor@justice.gov.uk", template,
                              personalisationService
                                 .buildUnidentifiedBlobsPersonalisation(locationMap));
     }
