@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -31,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 @Slf4j
-@SuppressWarnings({"PMD.PreserveStackTrace"})
+@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods"})
 public class PersonalisationService {
 
     @Autowired
@@ -54,6 +55,7 @@ public class PersonalisationService {
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String FORGOT_PASSWORD_PROCESS_LINK = "forgot_password_process_link";
     private static final String LINK_TO_FILE = "link_to_file";
+    private static final String LAST_SIGNED_IN_DATE = "last_signed_in_date";
     private static final String FORENAME = "first_name";
     private static final String FULL_NAME = "full_name";
     private static final String CASE_NUMBERS = "case_num";
@@ -230,6 +232,20 @@ public class PersonalisationService {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(FULL_NAME, body.getFullName());
         personalisation.put(VERIFICATION_PAGE_LINK, notifyConfigProperties.getLinks().getMediaVerificationPageLink());
+        return personalisation;
+    }
+
+    /**
+     * Handles the personalisation for the inactive user notification email.
+     *
+     * @param body The body of the inactive user notification email.
+     * @return The personalisation map for the inactive user notification email.
+     */
+    public Map<String, Object> buildInactiveUserNotificationPersonalisation(InactiveUserNotificationEmail body) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(FULL_NAME, body.getFullName());
+        personalisation.put(LAST_SIGNED_IN_DATE, body.getLastSignedInDate());
+        personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadAdminSignInPageLink());
         return personalisation;
     }
 

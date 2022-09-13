@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -29,6 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -57,6 +59,7 @@ class PersonalisationServiceTest {
     private static final String DISPLAY_CASE_URN = "display_case_urn";
     private static final String LOCATIONS = "locations";
     private static final String DISPLAY_LOCATIONS = "display_locations";
+    private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
     private static final String YES = "Yes";
     private static final String NO = "No";
     private static final String EMAIL = "a@b.com";
@@ -444,5 +447,26 @@ class PersonalisationServiceTest {
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
         assertEquals(personalisationLinks.getMediaVerificationPageLink(), mediaVerificationLink,
                      "Media verification link does not match expected link");
+    }
+
+    @Test
+    void testBuildInactiveUserNotificationPersonalisation() {
+        InactiveUserNotificationEmail inactiveUserNotificationEmail = new InactiveUserNotificationEmail(
+            EMAIL, FULL_NAME, LAST_SIGNED_IN_DATE);
+
+        assertThat(personalisationService
+                       .buildInactiveUserNotificationPersonalisation(inactiveUserNotificationEmail))
+            .as("Personalisation data does not match")
+            .hasSize(3)
+            .extracting(
+                p -> p.get("full_name"),
+                p -> p.get("last_signed_in_date"),
+                p -> p.get("sign_in_page_link")
+            )
+            .containsExactly(
+                FULL_NAME,
+                LAST_SIGNED_IN_DATE,
+                "https://pip-frontend.staging.platform.hmcts.net/admin-dashboard"
+            );
     }
 }
