@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.WebClientConfiguration;
 
@@ -15,19 +15,30 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class WebClientCreationTest {
 
     @Mock
-    ClientRegistrationRepository clientRegistrationRepository;
+    OAuth2AuthorizedClientManager authorizedClientManager;
 
     @Mock
-    OAuth2AuthorizedClientRepository clientRepository;
+    ClientRegistrationRepository clientRegistrationRepository;
 
     @Test
     void createWebClient() {
 
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
         WebClient webClient =
-            webClientConfiguration.webClient(clientRegistrationRepository, clientRepository);
+            webClientConfiguration.webClient(authorizedClientManager);
 
         assertNotNull(webClient, "WebClient has not been created successfully");
+    }
+
+    @Test
+    void createAuthorizedClientManager() {
+
+        WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
+        OAuth2AuthorizedClientManager clientManager =
+            webClientConfiguration.authorizedClientManager(clientRegistrationRepository);
+
+        assertNotNull(clientManager,
+                      "Client Manager has not been successfully created");
     }
 
     @Test
@@ -36,7 +47,6 @@ class WebClientCreationTest {
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
         WebClient webClient =
             webClientConfiguration.webClientInsecure();
-
         assertNotNull(webClient, "WebClient has not been created successfully");
     }
 }

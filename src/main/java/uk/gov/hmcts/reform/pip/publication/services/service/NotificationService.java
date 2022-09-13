@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
@@ -189,6 +190,19 @@ public class NotificationService {
     public String mediaUserVerificationEmailRequest(MediaVerificationEmail body) {
         EmailToSend email = emailService
             .buildMediaUserVerificationEmail(body, Templates.MEDIA_USER_VERIFICATION_EMAIL.template);
+
+        return emailService.sendEmail(email).getReference().orElse(null);
+    }
+
+    /**
+     * Handles the sending of the inactive user notification email.
+     *
+     * @param body The body of the inactive user notification email.
+     * @return The ID that references the inactive user notification email.
+     */
+    public String inactiveUserNotificationEmailRequest(InactiveUserNotificationEmail body) {
+        EmailToSend email = emailService
+            .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template);
 
         return emailService.sendEmail(email).getReference().orElse(null);
     }
