@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -46,6 +47,12 @@ class FileCreationServiceTest {
         UUID.randomUUID(), "Test user", "test@email.com", "Test employer",
         UUID.randomUUID().toString(), "test-image.png", LocalDateTime.now(),
         "REJECTED", LocalDateTime.now()));
+
+    private String getInput(String resourcePath) throws IOException {
+        try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
+            return IOUtils.toString(inputStream, Charset.defaultCharset());
+        }
+    }
 
     @Test
     void testPdfGenerationSuccess() throws IOException {
@@ -102,6 +109,20 @@ class FileCreationServiceTest {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+    }
+
+    @Test
+    void testGenerateExcelSpreadsheet() throws IOException {
+        Artefact artefact = new Artefact();
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
+        UUID uuid = UUID.randomUUID();
+        when(dataManagementService.getArtefactJsonBlob(uuid))
+            .thenReturn(getInput("/mocks/sjpPublicList.json"));
+        when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
+
+        byte[] outputExcel = fileCreationService.generateExcelSpreadsheet(uuid);
+
+        assertNotNull(outputExcel, "Returned result was empty");
     }
 
     @Test
