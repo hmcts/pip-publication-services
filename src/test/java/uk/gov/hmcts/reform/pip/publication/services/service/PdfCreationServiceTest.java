@@ -77,8 +77,8 @@ class PdfCreationServiceTest {
         artefact.setContentDate(LocalDateTime.now());
         artefact.setLocationId("1");
         artefact.setProvenance("france");
-        artefact.setListType(ListType.MAGS_PUBLIC_LIST);
         artefact.setLanguage(Language.ENGLISH);
+        artefact.setListType(ListType.MAGISTRATES_STANDARD_LIST);
         Location location = new Location();
         location.setName("locationName");
         UUID uuid = UUID.randomUUID();
