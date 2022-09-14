@@ -87,6 +87,7 @@ class NotifyTest {
     private static final String EXTERNAL_PAYLOAD = "test";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
     private static final String MEDIA_VERIFICATION_EMAIL_URL = "/notify/media/verification";
+    private static final String INACTIVE_USER_NOTIFICATION_EMAIL_URL = "/notify/user/sign-in";
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
     private static final String FULL_NAME = "Test user";
@@ -112,7 +113,7 @@ class NotifyTest {
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL = "{\n"
-        + "  \"artefactId\": \"82c33285-ab4b-4c8e-8a80-b9ea7dc67db8\",\n"
+        + "  \"artefactId\": \"4d1e88f5-8457-4d93-8d11-1744a4bc16bd\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + "  \"subscriptions\": {\n"
         + "    \"LOCATION_ID\": [\n"
@@ -122,7 +123,7 @@ class NotifyTest {
         + "}";
 
     private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"55b9e27b-d315-4c7e-9116-0b83939c03eb\",\n"
+        + "  \"artefactId\": \"f94f0d2d-27e6-46f1-8528-e33eeac5728d\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
@@ -132,12 +133,12 @@ class NotifyTest {
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PUBLIC_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"210c4598-7ec3-4a59-9b9a-d7ecf2197a40\",\n"
+        + "  \"artefactId\": \"31889528-ad90-4535-a02d-b7dcc9de1102\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"41ab3903-c87c-42b5-994f-9b55f6dcad48\",\n"
+        + "  \"artefactId\": \"8a0ca51e-847e-4c6d-ad0f-a3f104f27845\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
@@ -161,6 +162,9 @@ class NotifyTest {
     private static final String VALID_MEDIA_VERIFICATION_EMAIL_BODY =
         "{\"fullName\": \"fullName\", \"email\": \"test@email.com\"}";
 
+    private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY =
+        "{\"email\": \"test@test.com\", \"fullName\": \"testName\", \"lastSignedInDate\": \"01 May 2022\"}";
+
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
@@ -175,7 +179,6 @@ class NotifyTest {
     private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
-
 
     private static final Map<String, String> LIST_MAP = Map.of("SSCS Daily List",
                                                                VALID_SCSS_DAILY_LIST_SUBS_EMAIL,
@@ -344,7 +347,6 @@ class NotifyTest {
             .contains("\"publicationDate\": \"2022-04-12T09:30:52.123Z\"");
     }
 
-
     @Test
     void testNotifyApiSubscribersThrowsBadGateway() throws Exception {
         mockMvc.perform(post(API_SUBSCRIPTION_URL)
@@ -394,7 +396,6 @@ class NotifyTest {
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
-
 
     @Test
     void testValidPayloadForSubsEmailThrowsBadGateway() throws Exception {
@@ -568,6 +569,24 @@ class NotifyTest {
     @Test
     void testInvalidPayloadMediaVerificationEmail() throws Exception {
         mockMvc.perform(post(MEDIA_VERIFICATION_EMAIL_URL)
+                            .content("invalid content")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidPayloadInactiveUserNotificationEmail() throws Exception {
+        mockMvc.perform(post(INACTIVE_USER_NOTIFICATION_EMAIL_URL)
+                            .content(VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Inactive user sign-in notification email successfully sent with referenceId")));
+    }
+
+    @Test
+    void testInvalidPayloadMInactiveUserNotificationEmail() throws Exception {
+        mockMvc.perform(post(INACTIVE_USER_NOTIFICATION_EMAIL_URL)
                             .content("invalid content")
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());

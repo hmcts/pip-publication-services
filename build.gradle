@@ -5,10 +5,10 @@ plugins {
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.12.RELEASE'
   id 'org.springframework.boot' version '2.5.14'
-  id 'org.owasp.dependencycheck' version '7.1.1'
+  id 'org.owasp.dependencycheck' version '7.1.2'
   id 'com.github.ben-manes.versions' version '0.42.0'
   id 'org.sonarqube' version '3.4.0.2513'
-  id 'io.freefair.lombok' version '6.5.0.3'
+  id 'io.freefair.lombok' version '6.5.1'
 }
 apply plugin: 'org.owasp.dependencycheck'
 group = 'uk.gov.hmcts.reform'
@@ -151,7 +151,7 @@ ext.libraries = [
     "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
     "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
     "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
-    "org.apiguardian:apiguardian-api:1.0.0",
+    "org.apiguardian:apiguardian-api:1.1.2",
     "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
     "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
   ]
@@ -177,8 +177,8 @@ dependencies {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.17.2'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.18.0'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.18.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '2.6.7'
 
@@ -187,6 +187,11 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '2.6.7'
   implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.5.2'
+
+  // Force upgrade snakeyaml version for CVE-2022-25857
+  implementation( group: 'org.yaml', name: 'snakeyaml').version {
+    strictly("1.31")
+  }
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
   testImplementation libraries.junit5
@@ -197,7 +202,7 @@ dependencies {
   testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.10.0'
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp-tls', version: '4.10.0'
-  testImplementation group: 'org.jsoup', name: 'jsoup', version: '1.15.2'
+  testImplementation group: 'org.jsoup', name: 'jsoup', version: '1.15.3'
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
