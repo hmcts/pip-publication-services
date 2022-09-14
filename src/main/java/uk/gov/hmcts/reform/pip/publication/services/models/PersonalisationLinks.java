@@ -9,6 +9,8 @@ public class PersonalisationLinks {
     private String startPageLink;
     private String govGuidancePageLink;
     private String aadSignInPageLink;
+    private String aadAdminSignInPageLink;
     private String aadPwResetLink;
     private String mediaVerificationPageLink;
+    private String adminDashboardLink;
 }
