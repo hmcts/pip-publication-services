@@ -70,7 +70,10 @@ class PersonalisationServiceTest {
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
     private static final String ARRAY_OF_IDS = "array_of_ids";
     private static final String LINK_TO_FILE_MESSAGE = "Link to file does not match expected value";
+    private static final String LIST_TYPE_MESSAGE = "List type does not match expected list type";
+    private static final String LOCATION_MESSAGE = "Location not as expected";
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
+    private static final String CONTENTS = "Contents";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -173,7 +176,7 @@ class PersonalisationServiceTest {
     void buildRawDataWhenAllPresent() throws IOException {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
-        artefact.setListType(ListType.SJP_PUBLIC_LIST);
+        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
@@ -196,10 +199,10 @@ class PersonalisationServiceTest {
         );
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
-                     "Location not as expected"
+                     LOCATION_MESSAGE
         );
-        assertEquals(ListType.SJP_PUBLIC_LIST, personalisation.get("list_type"),
-                     "List type does not match expected list type"
+        assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
+                     LIST_TYPE_MESSAGE
         );
         assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
                      LINK_TO_FILE_MESSAGE
@@ -242,7 +245,7 @@ class PersonalisationServiceTest {
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
-        byte[] fileContents = "Contents".getBytes();
+        byte[] fileContents = CONTENTS.getBytes();
         when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
 
         Map<String, Object> personalisation =
@@ -250,10 +253,10 @@ class PersonalisationServiceTest {
 
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
-                     "Location not as expected"
+                     LOCATION_MESSAGE
         );
         assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
-                     "List type does not match expected list type"
+                     LIST_TYPE_MESSAGE
         );
         assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
                      LINK_TO_FILE_MESSAGE
@@ -279,7 +282,7 @@ class PersonalisationServiceTest {
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
-        byte[] fileContents = "Contents".getBytes();
+        byte[] fileContents = CONTENTS.getBytes();
         when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
 
         Map<String, Object> personalisation =
@@ -302,7 +305,7 @@ class PersonalisationServiceTest {
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
-        byte[] fileContents = "Contents".getBytes();
+        byte[] fileContents = CONTENTS.getBytes();
         when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
 
         Map<String, Object> personalisation =
@@ -357,7 +360,7 @@ class PersonalisationServiceTest {
 
         assertEquals(NO, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not No");
         assertEquals("", personalisation.get(LOCATIONS),
-                     "Location not as expected"
+                     LOCATION_MESSAGE
         );
     }
 
