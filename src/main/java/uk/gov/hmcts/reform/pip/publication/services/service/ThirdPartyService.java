@@ -1,18 +1,25 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.helpers.MultiPartHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Sensitivity;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.function.Consumer;
 
 @Service
@@ -40,20 +47,19 @@ public class ThirdPartyService {
      * @param location The location to publish.
      * @return A message representing the response.
      */
-    public String handleFlatFileThirdPartyCall(String api, Object payload,
+    public String handleFlatFileThirdPartyCall(String api, byte[] payload,
                                        Artefact artefact, Location location) {
+        MultiValueMap<String, HttpEntity<?>> multiPartValues = MultiPartHelper.createMultiPartByteArrayBody(
+            Collections.singletonList(Triple.of("file", payload, artefact.getSourceArtefactId()))
+        );
+
         webClient.build().post().uri(api)
             .headers(this.getHttpHeadersFromArtefact(artefact, location))
-            .bodyValue(payload)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .body(BodyInserters.fromMultipartData(multiPartValues))
             .retrieve()
             .bodyToMono(Void.class)
-            .retryWhen(Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
-                           .doAfterRetry(signal -> log.info(
-                               "Request failed, retrying {}/" + numOfRetries,
-                               signal.totalRetries() + 1
-                           ))
-                           .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
-                                                      new ThirdPartyServiceException(retrySignal.failure(), api)))
+            .retryWhen(handleRetry(api))
             .block();
         return String.format(SUCCESS_MESSAGE, COURTEL, api);
     }
@@ -74,13 +80,7 @@ public class ThirdPartyService {
             .bodyValue(payload)
             .retrieve()
             .bodyToMono(Void.class)
-            .retryWhen(Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
-                           .doAfterRetry(signal -> log.info(
-                               "Request failed, retrying {}/" + numOfRetries,
-                               signal.totalRetries() + 1
-                           ))
-                           .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
-                                                      new ThirdPartyServiceException(retrySignal.failure(), api)))
+            .retryWhen(handleRetry(api))
             .block();
         return String.format(SUCCESS_MESSAGE, COURTEL, api);
     }
@@ -97,13 +97,7 @@ public class ThirdPartyService {
             .headers(this.getHttpHeadersFromArtefact(artefact, location))
             .retrieve()
             .bodyToMono(Void.class)
-            .retryWhen(Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
-                           .doAfterRetry(signal -> log.info(
-                               "Request failed, retrying {}/" + numOfRetries,
-                               signal.totalRetries() + 1
-                           ))
-                           .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
-                                                      new ThirdPartyServiceException(retrySignal.failure(), api)))
+            .retryWhen(handleRetry(api))
             .block();
         return String.format(SUCCESS_DELETE_MESSAGE, COURTEL, api);
     }
@@ -132,5 +126,15 @@ public class ThirdPartyService {
             httpHeaders.add("x-location-jurisdiction", String.join(",", location.getJurisdiction()));
             httpHeaders.add("x-location-region", String.join(",", location.getRegion()));
         };
+    }
+
+    private Retry handleRetry(String api) {
+        return Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
+            .doAfterRetry(signal -> log.info(
+                "Request failed, retrying {}/" + numOfRetries,
+                signal.totalRetries() + 1
+            ))
+            .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
+                                       new ThirdPartyServiceException(retrySignal.failure(), api));
     }
 }

@@ -13,9 +13,12 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
@@ -46,12 +49,19 @@ class NotificationServiceTest {
 
     private static final String FULL_NAME = "fullName";
     private static final String EMAIL = "test@email.com";
+    private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
     private static final WelcomeEmail VALID_BODY_EXISTING = new WelcomeEmail(
         EMAIL, true, FULL_NAME);
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
         EMAIL, false, FULL_NAME);
     private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
         EMAIL, "test_forename", "test_surname");
+
+    private static final MediaVerificationEmail MEDIA_VERIFICATION_EMAIL = new MediaVerificationEmail(
+        EMAIL, FULL_NAME);
+
+    private static final InactiveUserNotificationEmail INACTIVE_USER_NOTIFICATION_EMAIL =
+        new InactiveUserNotificationEmail(EMAIL, FULL_NAME, LAST_SIGNED_IN_DATE);
 
     private static final String TEST_EMAIL = "test@email.com";
     private static final String SUCCESS_REF_ID = "successRefId";
@@ -62,7 +72,7 @@ class NotificationServiceTest {
 
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
-                                                                             Templates.NEW_USER_WELCOME_EMAIL.template,
+                                                                             Templates.BAD_BLOB_EMAIL.template,
                                                                              personalisationMap,
                                                                              SUCCESS_REF_ID);
     private static final UUID RAND_UUID = UUID.randomUUID();
@@ -276,7 +286,32 @@ class NotificationServiceTest {
         when(thirdPartyService.handleDeleteThirdPartyCall(API_DESTINATION, artefact, location))
             .thenReturn(SUCCESS_REF_ID);
 
-        assertEquals(EMPTY_API_SENT, notificationService.handleThirdParty(API_DESTINATION),
+        ThirdPartySubscriptionArtefact subscription = new ThirdPartySubscriptionArtefact();
+        subscription.setArtefact(artefact);
+        subscription.setApiDestination(API_DESTINATION);
+
+        assertEquals(EMPTY_API_SENT, notificationService.handleThirdParty(subscription),
                      MESSAGES_MATCH);
+    }
+
+    @Test
+    void testValidPayloadReturnsSuccessMediaVerification() {
+        when(emailService.buildMediaUserVerificationEmail(MEDIA_VERIFICATION_EMAIL,
+                                                      Templates.MEDIA_USER_VERIFICATION_EMAIL.template))
+            .thenReturn(validEmailBodyForEmailClient);
+
+        assertEquals(SUCCESS_REF_ID, notificationService.mediaUserVerificationEmailRequest(MEDIA_VERIFICATION_EMAIL),
+                     "Media user verification email successfully sent with referenceId: referenceId.");
+    }
+
+    @Test
+    void testValidPayloadReturnsSuccessInactiveUserNotification() {
+        when(emailService.buildInactiveUserNotificationEmail(INACTIVE_USER_NOTIFICATION_EMAIL,
+                                                             Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template))
+            .thenReturn(validEmailBodyForEmailClient);
+
+        assertEquals(SUCCESS_REF_ID, notificationService.inactiveUserNotificationEmailRequest(
+            INACTIVE_USER_NOTIFICATION_EMAIL),
+                     "Inactive user notification should return successful reference ID");
     }
 }

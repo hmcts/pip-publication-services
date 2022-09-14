@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import com.microsoft.applicationinsights.core.dependencies.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
@@ -11,10 +13,13 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
+import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.ArrayList;
@@ -27,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 @Slf4j
-@SuppressWarnings({"PMD.PreserveStackTrace"})
+@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods"})
 public class PersonalisationService {
 
     @Autowired
@@ -46,10 +51,11 @@ public class PersonalisationService {
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
+    private static final String ADMIN_DASHBOARD_LINK = "admin_dashboard_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String FORGOT_PASSWORD_PROCESS_LINK = "forgot_password_process_link";
     private static final String LINK_TO_FILE = "link_to_file";
-    private static final String SURNAME = "surname";
+    private static final String LAST_SIGNED_IN_DATE = "last_signed_in_date";
     private static final String FORENAME = "first_name";
     private static final String FULL_NAME = "full_name";
     private static final String CASE_NUMBERS = "case_num";
@@ -61,6 +67,7 @@ public class PersonalisationService {
     private static final String YES = "Yes";
     private static final String NO = "No";
     private static final String ARRAY_OF_IDS = "array_of_ids";
+    private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
 
     /**
      * Handles the personalisation for the Welcome email.
@@ -85,10 +92,9 @@ public class PersonalisationService {
      */
     public Map<String, Object> buildAdminAccountPersonalisation(CreatedAdminWelcomeEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(SURNAME, body.getSurname());
         personalisation.put(FORENAME, body.getForename());
         personalisation.put(AAD_RESET_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
-        personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadSignInPageLink());
+        personalisation.put(ADMIN_DASHBOARD_LINK, notifyConfigProperties.getLinks().getAdminDashboardLink());
         return personalisation;
     }
 
@@ -121,6 +127,7 @@ public class PersonalisationService {
             String html = pdfCreationService.jsonToHtml(artefact.getArtefactId());
             byte[] artefactPdf = pdfCreationService.generatePdfFromHtml(html);
             personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
+            personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
             String summary =
                 artefactSummaryService.artefactSummary(
@@ -160,7 +167,14 @@ public class PersonalisationService {
             personalisation.put("list_type", artefact.getListType());
 
             byte[] artefactData = dataManagementService.getArtefactFlatFile(body.getArtefactId());
-            personalisation.put("link_to_file", EmailClient.prepareUpload(artefactData));
+
+            String sourceArtefactId = artefact.getSourceArtefactId();
+            JSONObject uploadedFile = !Strings.isNullOrEmpty(sourceArtefactId) && sourceArtefactId.endsWith(".csv")
+                ? NotificationClient.prepareUpload(artefactData, true)
+                : NotificationClient.prepareUpload(artefactData);
+
+            personalisation.put("link_to_file", uploadedFile);
+            personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
             return personalisation;
         } catch (NotificationClientException e) {
@@ -205,6 +219,33 @@ public class PersonalisationService {
 
 
         personalisation.put(ARRAY_OF_IDS, listOfUnmatched);
+        return personalisation;
+    }
+
+    /**
+     * Handles the personalisation for the media verification email.
+     *
+     * @param body The body of the media verification email.
+     * @return The personalisation map for the media verification email.
+     */
+    public Map<String, Object> buildMediaVerificationPersonalisation(MediaVerificationEmail body) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(FULL_NAME, body.getFullName());
+        personalisation.put(VERIFICATION_PAGE_LINK, notifyConfigProperties.getLinks().getMediaVerificationPageLink());
+        return personalisation;
+    }
+
+    /**
+     * Handles the personalisation for the inactive user notification email.
+     *
+     * @param body The body of the inactive user notification email.
+     * @return The personalisation map for the inactive user notification email.
+     */
+    public Map<String, Object> buildInactiveUserNotificationPersonalisation(InactiveUserNotificationEmail body) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(FULL_NAME, body.getFullName());
+        personalisation.put(LAST_SIGNED_IN_DATE, body.getLastSignedInDate());
+        personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadAdminSignInPageLink());
         return personalisation;
     }
 
