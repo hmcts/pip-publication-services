@@ -127,7 +127,7 @@ public final class DataManipulation {
                         }
                         break;
                     }
-                    case RESPONDENT: {
+                    case "RESPONDENT": {
                         formatPartyNonRepresentative(party, respondent);
                         break;
                     }
