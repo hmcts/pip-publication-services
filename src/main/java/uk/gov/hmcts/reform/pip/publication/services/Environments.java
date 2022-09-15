@@ -14,7 +14,7 @@ public enum Environments {
     TEST("test", "Test"),
     ITHC("ithc", "ITHC"),
     DEMO("demo", "Demo"),
-    SANDBOX("sbox", "Sand box"),
+    SANDBOX("sbox", "Sandbox"),
     LOCAL("local", "Local");
 
     private String originalName;
