@@ -78,7 +78,7 @@ public class PdfCreationService {
         if (language.equals(Language.ENGLISH)) {
             path = PATH_TO_LANGUAGES + "en/" + languageString + ".json";
         } else {
-            path = PATH_TO_LANGUAGES + "cy/" + languageString + ".json";
+            path = PATH_TO_LANGUAGES + "bil/" + languageString + ".json";
         }
         try (InputStream languageFile = Thread.currentThread()
             .getContextClassLoader().getResourceAsStream(path)) {
