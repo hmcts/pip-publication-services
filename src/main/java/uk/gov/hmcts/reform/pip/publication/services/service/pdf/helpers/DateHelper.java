@@ -76,17 +76,17 @@ public final class DateHelper {
     private static String hoursAndMins(int hours, int minutes, Language language) {
         return (language == Language.ENGLISH)
             ? formatDurationTime(hours, "hour") + " " + formatDurationTime(minutes, "min") :
-            formatDurationTime(hours, "awr") + " " + formatDurationTime(minutes, "munud");
+            formatDurationTime(hours, "awr/hour") + " " + formatDurationTime(minutes, "munud/minute");
     }
 
     private static String hoursOnly(int hours, Language language) {
         return (language == Language.ENGLISH) ? formatDurationTime(hours, "hour") : formatDurationTime(
-            hours, "awr");
+            hours, "awr/hour");
     }
 
     private static String minsOnly(int mins, Language language) {
         return (language == Language.ENGLISH) ? formatDurationTime(mins, "min") : formatDurationTime(
-            mins, "munud");
+            mins, "munud/minute");
     }
 
     private static String formatDurationTime(int duration, String format) {
