@@ -3,7 +3,7 @@ plugins {
   id 'checkstyle'
   id 'pmd'
   id 'jacoco'
-  id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+  id 'io.spring.dependency-management' version '1.0.13.RELEASE'
   id 'org.springframework.boot' version '2.5.14'
   id 'org.owasp.dependencycheck' version '7.1.2'
   id 'com.github.ben-manes.versions' version '0.42.0'
@@ -186,7 +186,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '2.6.7'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '2.6.7'
   implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
-  implementation group: 'com.opencsv', name: 'opencsv', version: '5.5.2'
+  implementation group: 'com.opencsv', name: 'opencsv', version: '5.6'
 
   // Force upgrade snakeyaml version for CVE-2022-25857
   implementation( group: 'org.yaml', name: 'snakeyaml').version {
