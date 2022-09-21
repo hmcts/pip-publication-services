@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
  * resources/mocks). Uses Thymeleaf to take in variables from model and build appropriately. Final output string is
  * passed in to PDF Creation Service.
  */
-@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
 @Service
 public class SjpPressListConverter implements Converter {
 
@@ -38,20 +38,24 @@ public class SjpPressListConverter implements Converter {
     public String convert(JsonNode jsonBody, Map<String, String> metadata) {
         Context context = new Context();
         List<SjpPressList> caseList = new ArrayList<>();
-        int count = 1;
-        Iterator<JsonNode> hearingNode =
-            jsonBody.get("courtLists").get(0).get("courtHouse").get("courtRoom").get(0).get("session").get(0).get(
-                "sittings").get(0).get("hearing").elements();
-        while (hearingNode.hasNext()) {
-            JsonNode currentCase = hearingNode.next();
-            SjpPressList thisCase = new SjpPressList();
-            processRoles(thisCase, currentCase);
-            processCaseUrns(thisCase, currentCase.get("case"));
-            processOffences(thisCase, currentCase.get("offence"));
-            thisCase.setCaseCounter(count);
-            caseList.add(thisCase);
-            count += 1;
-        }
+        AtomicInteger count = new AtomicInteger();
+
+        jsonBody.get("courtLists").forEach(courtList -> {
+            courtList.get("courtHouse").get("courtRoom").forEach(courtRoom -> {
+                courtRoom.get("session").forEach(session -> {
+                    session.get("sittings").forEach(sitting -> {
+                        sitting.get("hearing").forEach(hearing -> {
+                            SjpPressList thisCase = new SjpPressList();
+                            processRoles(thisCase, hearing);
+                            processCaseUrns(thisCase, hearing.get("case"));
+                            processOffences(thisCase, hearing.get("offence"));
+                            thisCase.setCaseCounter(count.incrementAndGet());
+                            caseList.add(thisCase);
+                        });
+                    });
+                });
+            });
+        });
 
         String publishedDate = DateHelper.formatTimeStampToBst(
             jsonBody.get("document").get("publicationDate").asText(), false, true
@@ -73,10 +77,10 @@ public class SjpPressListConverter implements Converter {
      * method for handling roles - sorts out accused and prosecutor roles and grabs relevant data from the json body.
      *
      * @param thisCase - case model which is updated by the method.
-     * @param party    - node to be parsed.
+     * @param hearing    - node to be parsed.
      */
-    void processRoles(SjpPressList thisCase, JsonNode party) {
-        Iterator<JsonNode> partyNode = party.get("party").elements();
+    void processRoles(SjpPressList thisCase, JsonNode hearing) {
+        Iterator<JsonNode> partyNode = hearing.get("party").elements();
         while (partyNode.hasNext()) {
             JsonNode currentParty = partyNode.next();
             if ("accused".equals(currentParty.get("partyRole").asText().toLowerCase(Locale.ROOT))) {
@@ -145,12 +149,9 @@ public class SjpPressListConverter implements Converter {
         while (offences.hasNext()) {
             JsonNode thisOffence = offences.next();
             Map<String, String> thisOffenceMap = Map.of(
-                "offence",
-                thisOffence.get("offenceTitle").asText(),
-                "reportingRestriction",
-                processReportingRestrictionsjpPress(thisOffence),
-                "wording",
-                thisOffence.get("offenceWording").asText()
+                "offence", thisOffence.get("offenceTitle").asText(),
+                "reportingRestriction", processReportingRestrictionsjpPress(thisOffence),
+                "wording", thisOffence.get("offenceWording").asText()
             );
             listOfOffences.add(thisOffenceMap);
         }
@@ -164,12 +165,6 @@ public class SjpPressListConverter implements Converter {
      * @return a String containing the relevant text based on reporting restriction.
      */
     private String processReportingRestrictionsjpPress(JsonNode node) {
-        boolean restriction = node.get("reportingRestriction").asBoolean();
-        if (restriction) {
-            return "Active";
-        } else {
-            return "None";
-        }
+        return node.get("reportingRestriction").asBoolean() ? "Active" : "None";
     }
-
 }
