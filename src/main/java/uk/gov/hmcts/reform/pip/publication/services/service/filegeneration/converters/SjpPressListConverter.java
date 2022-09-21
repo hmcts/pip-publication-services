@@ -16,14 +16,10 @@ import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpe
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -75,12 +71,13 @@ public class SjpPressListConverter extends ExcelAbstractList implements Converte
     @Override
     public byte[] convertToExcel(JsonNode artefact) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
-            List<SjpPressList> caseList = processRawJson(artefact);
+            final List<SjpPressList> cases = processRawJson(artefact);
 
             Sheet sheet = workbook.createSheet("SJP Press List");
             CellStyle boldStyle = createBoldStyle(workbook);
-            AtomicInteger rowIdx = new AtomicInteger();
-            Row headingRow = sheet.createRow(rowIdx.getAndIncrement());
+
+            int rowIdx = 0;
+            Row headingRow = sheet.createRow(rowIdx++);
             setCellValue(headingRow, 0, "Address", boldStyle);
             setCellValue(headingRow, 1, "Case URN", boldStyle);
             setCellValue(headingRow, 2, "Date of Birth", boldStyle);
@@ -88,21 +85,40 @@ public class SjpPressListConverter extends ExcelAbstractList implements Converte
 
             // Write out column headings for the max number of offences a defendant may have
             Integer maxOffences =
-                caseList.stream().map(SjpPressList::getNumberOfOffences).reduce(Integer::max).orElse(0);
+                cases.stream().map(SjpPressList::getNumberOfOffences).reduce(Integer::max).orElse(0);
             int offenceHeadingsIdx = 4;
-            for(int i = 1; i <= maxOffences; i++) {
+
+            for (int i = 1; i <= maxOffences; i++) {
                 setCellValue(headingRow, offenceHeadingsIdx,
                              String.format("Offence %o Press Restriction Requested", i),boldStyle);
-                setCellValue(headingRow, offenceHeadingsIdx+1,
+                setCellValue(headingRow, ++offenceHeadingsIdx,
                              String.format("Offence %o Title", i), boldStyle);
-                setCellValue(headingRow, offenceHeadingsIdx+2,
+                setCellValue(headingRow, ++offenceHeadingsIdx,
                              String.format("Offence %o Wording", i), boldStyle);
-
-                offenceHeadingsIdx += 3;
+                offenceHeadingsIdx++;
             }
-            setCellValue(headingRow, offenceHeadingsIdx++, "Prosecutor Name", boldStyle);
+            setCellValue(headingRow, offenceHeadingsIdx, "Prosecutor Name", boldStyle);
 
+            // Write out the data to the sheet
+            for (SjpPressList entry : cases) {
+                Row dataRow = sheet.createRow(rowIdx++);
+                setCellValue(dataRow, 0, concatenateStrings(entry.getAddressLine1(),
+                                                            String.join(" ", entry.getAddressRemainder())));
+                setCellValue(dataRow, 1, concatenateStrings(entry.getReference1(),
+                                                            String.join(" ", entry.getReferenceRemainder())));
+                setCellValue(dataRow, 2, String.format("%s (%s)", entry.getDateOfBirth(), entry.getAge()));
+                setCellValue(dataRow, 3, entry.getName());
 
+                int offenceColumnIdx = 4;
+
+                for (Map<String, String> offence : entry.getOffences()) {
+                    setCellValue(dataRow, offenceColumnIdx, offence.get("reportingRestriction"));
+                    setCellValue(dataRow, ++offenceColumnIdx, offence.get("offence"));
+                    setCellValue(dataRow, ++offenceColumnIdx, offence.get("wording"));
+                    ++offenceColumnIdx;
+                }
+                setCellValue(dataRow, offenceHeadingsIdx, entry.getProsecutor());
+            }
             autoSizeSheet(sheet);
 
             return convertToByteArray(workbook);
@@ -231,5 +247,13 @@ public class SjpPressListConverter extends ExcelAbstractList implements Converte
      */
     private String processReportingRestrictionsjpPress(JsonNode node) {
         return node.get("reportingRestriction").asBoolean() ? "Active" : "None";
+    }
+
+    private String concatenateStrings(String... groupOfStrings) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String stringToAdd : groupOfStrings) {
+            stringBuilder.append(stringToAdd).append(' ');
+        }
+        return stringBuilder.toString();
     }
 }
