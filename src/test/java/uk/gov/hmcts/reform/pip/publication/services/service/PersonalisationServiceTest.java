@@ -351,7 +351,7 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
         when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(fileCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(fileCreationService.generatePdfFromHtml(HELLO)).thenReturn(new byte[0]);
         when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(new byte[0]);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
