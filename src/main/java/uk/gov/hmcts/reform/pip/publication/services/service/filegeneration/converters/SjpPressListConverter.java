@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +28,6 @@ import java.util.stream.Collectors;
  * resources/mocks). Uses Thymeleaf to take in variables from model and build appropriately. Final output string is
  * passed in to PDF Creation Service.
  */
-@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
 @Service
 public class SjpPressListConverter extends ExcelAbstractList implements Converter {
 

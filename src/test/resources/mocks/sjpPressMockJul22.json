@@ -146,6 +146,51 @@
                         ]
                       }
                     ]
+                  },
+                  {
+                    "hearing": [
+                      {
+                        "party": [
+                          {
+                            "partyRole": "ACCUSED",
+                            "individualDetails": {
+                              "individualForenames": "Hello",
+                              "individualSurname": "World",
+                              "dateOfBirth": "19/06/1972",
+                              "age": 50,
+                              "address": {
+                                "county": "",
+                                "town": "London",
+                                "postCode": "W9 2PR",
+                                "line": [
+                                  "1 High Street,"
+                                ]
+                              },
+                              "title": "Mr.",
+                              "individualMiddleName": "Middle"
+                            }
+                          },
+                          {
+                            "partyRole": "PROSECUTOR",
+                            "organisationDetails": {
+                              "organisationName": "Hampshire Police"
+                            }
+                          }
+                        ],
+                        "offence": [
+                          {
+                            "offenceTitle": "Sedition",
+                            "offenceWording": "Speeding - exceed 30 mph on restricted road - manned equipment - On 25/03/2021 at BLACKWATER HAMPSHIRE YOU drove a motor vehicle namely VW REG NO: 0000 ABC on a restricted road namely B3272 HAWLEY ROAD at a speed exceeding 30 miles per hour NAMELY 35MPH.",
+                            "reportingRestriction": true
+                          }
+                        ],
+                        "case": [
+                          {
+                            "caseUrn": "0012346"
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               }
