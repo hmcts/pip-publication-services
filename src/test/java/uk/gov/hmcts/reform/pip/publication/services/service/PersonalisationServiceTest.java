@@ -230,6 +230,7 @@ class PersonalisationServiceTest {
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(fileCreationService.generatePdfFromHtml(HELLO)).thenReturn(overSizeArray);
+        when(fileCreationService.generateExcelSpreadsheet(UUID.randomUUID())).thenReturn(overSizeArray);
 
         assertThrows(NotifyException.class, () ->
             personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact), "desired "
