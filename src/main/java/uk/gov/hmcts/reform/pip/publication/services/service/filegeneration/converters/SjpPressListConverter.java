@@ -1,18 +1,29 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SjpPressList;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelAbstractList;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +33,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
 @Service
-public class SjpPressListConverter implements Converter {
+public class SjpPressListConverter extends ExcelAbstractList implements Converter {
 
     public static final String INDIVIDUAL_DETAILS = "individualDetails";
 
@@ -37,21 +48,7 @@ public class SjpPressListConverter implements Converter {
     @Override
     public String convert(JsonNode jsonBody, Map<String, String> metadata) {
         Context context = new Context();
-        List<SjpPressList> caseList = new ArrayList<>();
-        int count = 1;
-        Iterator<JsonNode> hearingNode =
-            jsonBody.get("courtLists").get(0).get("courtHouse").get("courtRoom").get(0).get("session").get(0).get(
-                "sittings").get(0).get("hearing").elements();
-        while (hearingNode.hasNext()) {
-            JsonNode currentCase = hearingNode.next();
-            SjpPressList thisCase = new SjpPressList();
-            processRoles(thisCase, currentCase);
-            processCaseUrns(thisCase, currentCase.get("case"));
-            processOffences(thisCase, currentCase.get("offence"));
-            thisCase.setCaseCounter(count);
-            caseList.add(thisCase);
-            count += 1;
-        }
+        List<SjpPressList> caseList = processRawJson(jsonBody);
 
         String publishedDate = DateHelper.formatTimeStampToBst(
             jsonBody.get("document").get("publicationDate").asText(), false, true
@@ -70,13 +67,87 @@ public class SjpPressListConverter implements Converter {
     }
 
     /**
+     * Create SJP press list Excel spreadsheet from list data.
+     *
+     * @param artefact Tree object model for artefact.
+     * @return The converted Excel spreadsheet as a byte array.
+     */
+    @Override
+    public byte[] convertToExcel(JsonNode artefact) throws IOException {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            List<SjpPressList> caseList = processRawJson(artefact);
+
+            Sheet sheet = workbook.createSheet("SJP Press List");
+            CellStyle boldStyle = createBoldStyle(workbook);
+            AtomicInteger rowIdx = new AtomicInteger();
+            Row headingRow = sheet.createRow(rowIdx.getAndIncrement());
+            setCellValue(headingRow, 0, "address", boldStyle);
+            setCellValue(headingRow, 1, "caseUrn", boldStyle);
+            setCellValue(headingRow, 2, "dateOfBirth", boldStyle);
+            setCellValue(headingRow, 3, "defendantName", boldStyle);
+
+            Integer maxOffences =
+                caseList.stream().map(SjpPressList::getNumberOfOffences).reduce(Integer::max).orElse(0);
+
+            // Write out column headings for the max number of offences a defendant may have
+            int offenceHeadingsIdx = 4;
+            for(int i = 1; i <= maxOffences; i++) {
+                setCellValue(headingRow, offenceHeadingsIdx, "ok1", boldStyle);
+                setCellValue(headingRow, offenceHeadingsIdx+1, "ok2", boldStyle);
+                setCellValue(headingRow, offenceHeadingsIdx+2, "ok3", boldStyle);
+
+                offenceHeadingsIdx += 3;
+            }
+
+
+
+
+            setCellValue(headingRow, offenceHeadingsIdx++, "prosecutorName", boldStyle);
+
+
+            autoSizeSheet(sheet);
+
+            return convertToByteArray(workbook);
+        }
+    }
+
+    /**
+     * Process the provided json body into a list of SjpPressList.
+     *
+     * @param jsonBody The raw json to process.
+     * @return A list of SjpPressList.
+     */
+    List<SjpPressList> processRawJson(JsonNode jsonBody) {
+        List<SjpPressList> caseList = new ArrayList<>();
+
+        jsonBody.get("courtLists").forEach(courtList -> {
+            courtList.get("courtHouse").get("courtRoom").forEach(courtRoom -> {
+                courtRoom.get("session").forEach(session -> {
+                    session.get("sittings").forEach(sitting -> {
+                        sitting.get("hearing").forEach(hearing -> {
+                            SjpPressList thisCase = new SjpPressList();
+                            processRoles(thisCase, hearing);
+                            processCaseUrns(thisCase, hearing.get("case"));
+                            processOffences(thisCase, hearing.get("offence"));
+                            thisCase.setNumberOfOffences(thisCase.getOffences().size());
+                            caseList.add(thisCase);
+                        });
+                    });
+                });
+            });
+        });
+
+        return caseList;
+    }
+
+    /**
      * method for handling roles - sorts out accused and prosecutor roles and grabs relevant data from the json body.
      *
      * @param thisCase - case model which is updated by the method.
-     * @param party    - node to be parsed.
+     * @param hearing    - node to be parsed.
      */
-    void processRoles(SjpPressList thisCase, JsonNode party) {
-        Iterator<JsonNode> partyNode = party.get("party").elements();
+    void processRoles(SjpPressList thisCase, JsonNode hearing) {
+        Iterator<JsonNode> partyNode = hearing.get("party").elements();
         while (partyNode.hasNext()) {
             JsonNode currentParty = partyNode.next();
             if ("accused".equals(currentParty.get("partyRole").asText().toLowerCase(Locale.ROOT))) {
@@ -145,12 +216,9 @@ public class SjpPressListConverter implements Converter {
         while (offences.hasNext()) {
             JsonNode thisOffence = offences.next();
             Map<String, String> thisOffenceMap = Map.of(
-                "offence",
-                thisOffence.get("offenceTitle").asText(),
-                "reportingRestriction",
-                processReportingRestrictionsjpPress(thisOffence),
-                "wording",
-                thisOffence.get("offenceWording").asText()
+                "offence", thisOffence.get("offenceTitle").asText(),
+                "reportingRestriction", processReportingRestrictionsjpPress(thisOffence),
+                "wording", thisOffence.get("offenceWording").asText()
             );
             listOfOffences.add(thisOffenceMap);
         }
@@ -164,12 +232,6 @@ public class SjpPressListConverter implements Converter {
      * @return a String containing the relevant text based on reporting restriction.
      */
     private String processReportingRestrictionsjpPress(JsonNode node) {
-        boolean restriction = node.get("reportingRestriction").asBoolean();
-        if (restriction) {
-            return "Active";
-        } else {
-            return "None";
-        }
+        return node.get("reportingRestriction").asBoolean() ? "Active" : "None";
     }
-
 }

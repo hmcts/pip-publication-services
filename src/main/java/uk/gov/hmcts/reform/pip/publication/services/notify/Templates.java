@@ -7,7 +7,7 @@ public enum Templates {
     EXISTING_USER_WELCOME_EMAIL("321cbaa6-2a19-4980-87c6-fe90516db59b"),
     ADMIN_ACCOUNT_CREATION_EMAIL("5609165c-ae4b-4d67-acdb-8dcbd0f5fb64"),
     MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL("fb7c6bdd-c833-4f26-bb65-0ee4678ffd76"),
-    MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL("94c74681-8288-499a-80ae-af47f9117715"), // This has been changed to a test
+    MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL("ac1c06e8-e6b7-486c-83aa-ad3b85e51737"), // This has been changed to a test
     // template. Notify template and this will need updating before release
     MEDIA_NEW_ACCOUNT_SETUP("e426073b-958c-42a2-a94f-bbdd1a400cb7"),
     MEDIA_DUPLICATE_ACCOUNT_EMAIL("13b058a5-82da-4331-98ff-97d3ebf66f51"),
