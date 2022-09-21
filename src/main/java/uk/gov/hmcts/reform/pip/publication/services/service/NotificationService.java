@@ -34,7 +34,7 @@ public class NotificationService {
     private EmailService emailService;
 
     @Autowired
-    private CsvCreationService csvCreationService;
+    private FileCreationService fileCreationService;
 
     @Autowired
     private DataManagementService dataManagementService;
@@ -82,7 +82,7 @@ public class NotificationService {
      */
     public String handleMediaApplicationReportingRequest(List<MediaApplication> mediaApplicationList) {
         EmailToSend email = emailService.buildMediaApplicationReportingEmail(
-            csvCreationService.createMediaApplicationReportingCsv(mediaApplicationList),
+            fileCreationService.createMediaApplicationReportingCsv(mediaApplicationList),
             Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template);
 
         return emailService.sendEmail(email)
