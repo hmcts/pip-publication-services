@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +19,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,5 +60,17 @@ class SjpPressListConverterTest {
             "div.pageSeparatedCase:nth-child(2) > table:nth-child(3) > tbody:nth-child(1) >"
                 + " tr:nth-child(7) > td:nth-child(2)").text())
             .as("incorrect value found").isEqualTo("Hampshire Police");
+
+        Elements pages = document.getElementsByClass("pageSeparatedCase");
+        assertThat(pages)
+            .as("Incorrect number of pages")
+            .hasSize(4);
+
+        List<String> expectedOffender = List.of("Thomas Minister", "Nigel Sausage", "Joe Bloggs", "Hello World");
+        AtomicInteger count = new AtomicInteger();
+        pages.forEach(p -> assertThat(p.text())
+            .as("Incorrect offender at index " + count.get())
+            .contains(expectedOffender.get(count.getAndIncrement()))
+        );
     }
 }
