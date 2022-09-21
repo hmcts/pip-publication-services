@@ -81,28 +81,26 @@ public class SjpPressListConverter extends ExcelAbstractList implements Converte
             CellStyle boldStyle = createBoldStyle(workbook);
             AtomicInteger rowIdx = new AtomicInteger();
             Row headingRow = sheet.createRow(rowIdx.getAndIncrement());
-            setCellValue(headingRow, 0, "address", boldStyle);
-            setCellValue(headingRow, 1, "caseUrn", boldStyle);
-            setCellValue(headingRow, 2, "dateOfBirth", boldStyle);
-            setCellValue(headingRow, 3, "defendantName", boldStyle);
-
-            Integer maxOffences =
-                caseList.stream().map(SjpPressList::getNumberOfOffences).reduce(Integer::max).orElse(0);
+            setCellValue(headingRow, 0, "Address", boldStyle);
+            setCellValue(headingRow, 1, "Case URN", boldStyle);
+            setCellValue(headingRow, 2, "Date of Birth", boldStyle);
+            setCellValue(headingRow, 3, "Defendant Name", boldStyle);
 
             // Write out column headings for the max number of offences a defendant may have
+            Integer maxOffences =
+                caseList.stream().map(SjpPressList::getNumberOfOffences).reduce(Integer::max).orElse(0);
             int offenceHeadingsIdx = 4;
             for(int i = 1; i <= maxOffences; i++) {
-                setCellValue(headingRow, offenceHeadingsIdx, "ok1", boldStyle);
-                setCellValue(headingRow, offenceHeadingsIdx+1, "ok2", boldStyle);
-                setCellValue(headingRow, offenceHeadingsIdx+2, "ok3", boldStyle);
+                setCellValue(headingRow, offenceHeadingsIdx,
+                             String.format("Offence %o Press Restriction Requested", i),boldStyle);
+                setCellValue(headingRow, offenceHeadingsIdx+1,
+                             String.format("Offence %o Title", i), boldStyle);
+                setCellValue(headingRow, offenceHeadingsIdx+2,
+                             String.format("Offence %o Wording", i), boldStyle);
 
                 offenceHeadingsIdx += 3;
             }
-
-
-
-
-            setCellValue(headingRow, offenceHeadingsIdx++, "prosecutorName", boldStyle);
+            setCellValue(headingRow, offenceHeadingsIdx++, "Prosecutor Name", boldStyle);
 
 
             autoSizeSheet(sheet);
