@@ -83,7 +83,8 @@ class NotificationControllerTest {
                                                                  ID_STRING, IMAGE_NAME,
                                                                  DATE_TIME, STATUS, DATE_TIME));
         mediaVerificationEmail = new MediaVerificationEmail(FULL_NAME, VALID_EMAIL);
-        inactiveUserNotificationEmail = new InactiveUserNotificationEmail(FULL_NAME, VALID_EMAIL, LAST_SIGNED_IN_DATE);
+        inactiveUserNotificationEmail = new InactiveUserNotificationEmail(FULL_NAME, VALID_EMAIL,
+                                                                          "PI_AAD", LAST_SIGNED_IN_DATE);
 
         subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");

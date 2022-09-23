@@ -461,21 +461,23 @@ class PersonalisationServiceTest {
     @Test
     void testBuildInactiveUserNotificationPersonalisation() {
         InactiveUserNotificationEmail inactiveUserNotificationEmail = new InactiveUserNotificationEmail(
-            EMAIL, FULL_NAME, LAST_SIGNED_IN_DATE);
+            EMAIL, FULL_NAME, "PI_AAD", LAST_SIGNED_IN_DATE);
 
         assertThat(personalisationService
                        .buildInactiveUserNotificationPersonalisation(inactiveUserNotificationEmail))
             .as("Personalisation data does not match")
-            .hasSize(3)
+            .hasSize(4)
             .extracting(
                 p -> p.get("full_name"),
                 p -> p.get("last_signed_in_date"),
-                p -> p.get("sign_in_page_link")
+                p -> p.get("sign_in_page_link"),
+                p -> p.get("cft_sign_in_link")
             )
             .containsExactly(
                 FULL_NAME,
                 LAST_SIGNED_IN_DATE,
-                "https://pip-frontend.staging.platform.hmcts.net/admin-dashboard"
+                "https://pip-frontend.staging.platform.hmcts.net/admin-dashboard",
+                "https://pip-frontend.staging.platform.hmcts.net/cft-login"
             );
     }
 }

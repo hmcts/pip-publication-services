@@ -13,4 +13,5 @@ public class PersonalisationLinks {
     private String aadPwResetLink;
     private String mediaVerificationPageLink;
     private String adminDashboardLink;
+    private String cftSignInPageLink;
 }
