@@ -6,6 +6,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,23 +56,25 @@ class FileCreationServiceTest {
         }
     }
 
-    @Test
-    void testPdfGenerationSuccess() throws IOException {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void testPdfGenerationSuccess(boolean accessible) throws IOException {
         StringWriter writer = new StringWriter();
         IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "testThyme.html")), writer,
                      Charset.defaultCharset()
         );
 
-        byte[] outputPdf = fileCreationService.generatePdfFromHtml(writer.toString());
+        byte[] outputPdf = fileCreationService.generatePdfFromHtml(writer.toString(), accessible);
 
         try (PDDocument doc = PDDocument.load(outputPdf)) {
             PDFTextStripper pdfTextStripper = new PDFTextStripper();
 
             String outputText = pdfTextStripper.getText(doc);
+            log.info(outputText);
 
             assertTrue(outputText.contains(
-                "An example file for the creation of PDF lists from our JSON artefact payloads"
-                    + "."), "Output pdf does not contain input text");
+                "An example file for the creation of PDF lists from our JSON artefact"),
+                       "Output pdf does not contain input text");
 
             assertEquals(doc.getNumberOfPages(), 5, "Output pdf is not the correct length");
         } catch (Exception e) {
@@ -78,15 +82,17 @@ class FileCreationServiceTest {
         }
     }
 
-    @Test
-    void testPdfGenerationFailure() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void testPdfGenerationFailure(boolean accessibility) {
         String badInputHtml = "1 2 3 4 broken html";
         assertThrows(XRRuntimeException.class, () ->
-            fileCreationService.generatePdfFromHtml(badInputHtml), "Exception not thrown");
+            fileCreationService.generatePdfFromHtml(badInputHtml, accessibility), "Exception not thrown");
     }
 
-    @Test
-    void testJsontoHtmltoPdf() throws IOException {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void testJsontoHtmltoPdf(boolean accessibility) throws IOException {
         Artefact artefact = new Artefact();
         artefact.setContentDate(LocalDateTime.now());
         artefact.setLocationId("1");
@@ -101,7 +107,7 @@ class FileCreationServiceTest {
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
         when(dataManagementService.getLocation("1")).thenReturn(location);
 
-        byte[] outputPdf = fileCreationService.generatePdfFromHtml(fileCreationService.jsonToHtml(uuid));
+        byte[] outputPdf = fileCreationService.generatePdfFromHtml(fileCreationService.jsonToHtml(uuid), accessibility);
         try (PDDocument doc = PDDocument.load(outputPdf)) {
             assertEquals(doc.getNumberOfPages(), 1, "pages not correct");
             PDFTextStripper stripper = new PDFTextStripper();

@@ -125,7 +125,11 @@ public class PersonalisationService {
 
             personalisation.put("list_type", artefact.getListType());
             String html = fileCreationService.jsonToHtml(artefact.getArtefactId());
-            byte[] artefactPdf = fileCreationService.generatePdfFromHtml(html);
+            byte[] artefactPdf = fileCreationService.generatePdfFromHtml(html, true);
+            int maxSize = 2_000_000;
+            if (artefactPdf.length > maxSize) {
+                artefactPdf = fileCreationService.generatePdfFromHtml(html, false);
+            }
             personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
