@@ -11,9 +11,8 @@ import java.util.Locale;
 @Service
 public class SjpPressList {
 
-
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String INDIVIDUAL_DETAILS = "individualDetails";
-    private static final String SESSION = "session";
 
     /**
      * sjp press parent method - iterates over session data. Routes to specific methods which handle offences and
@@ -23,18 +22,25 @@ public class SjpPressList {
      * @return String with final summary data.
      * @throws JsonProcessingException - jackson req.
      */
-    public String artefactSummarysjpPress(String payload) throws JsonProcessingException {
+    public String artefactSummarySjpPress(String payload) throws JsonProcessingException {
         StringBuilder output = new StringBuilder();
-        JsonNode node = new ObjectMapper().readTree(payload);
-        Iterator<JsonNode> endNode =
-            node.get("courtLists").get(0).get("courtHouse").get("courtRoom").get(0).get(SESSION).get(0).get(
-                "sittings").get(0).get("hearing").elements();
-        while (endNode.hasNext()) {
-            output.append('•');
-            JsonNode currentCase = endNode.next();
-            output.append(processRolessjpPress(currentCase));
-            output.append(processOffencessjpPress(currentCase.get("offence"))).append('\n');
-        }
+
+        OBJECT_MAPPER.readTree(payload).get("courtLists").forEach(courtList -> {
+            courtList.get("courtHouse").get("courtRoom").forEach(courtRoom -> {
+                courtRoom.get("session").forEach(session -> {
+                    session.get("sittings").forEach(sitting -> {
+                        sitting.get("hearing").forEach(hearing -> {
+                            output
+                                .append('•')
+                                .append(processRolesSjpPress(hearing))
+                                .append(processOffencesSjpPress(hearing.get("offence")))
+                                .append('\n');
+                        });
+                    });
+                });
+            });
+        });
+
         return output.toString();
     }
 
@@ -44,7 +50,7 @@ public class SjpPressList {
      * @param offencesNode - iterator on offences.
      * @return string with offence data.
      */
-    private String processOffencessjpPress(JsonNode offencesNode) {
+    private String processOffencesSjpPress(JsonNode offencesNode) {
         StringBuilder outputString = new StringBuilder();
         // below line is due to pmd "avoid using literals in conditional statements" rule.
         boolean offencesNodeSizeBool = offencesNode.size() > 1;
@@ -53,14 +59,19 @@ public class SjpPressList {
             int counter = 1;
             while (offences.hasNext()) {
                 JsonNode thisOffence = offences.next();
-                outputString.append("\nOffence ").append(counter).append(": ")
-                    .append(thisOffence.get("offenceTitle").asText());
-                outputString.append(processReportingRestrictionsjpPress(thisOffence));
+                outputString
+                    .append("\nOffence ")
+                    .append(counter)
+                    .append(": ")
+                    .append(thisOffence.get("offenceTitle").asText())
+                    .append(processReportingRestrictionSjpPress(thisOffence));
                 counter += 1;
             }
         } else {
-            outputString.append("\nOffence: ").append(offencesNode.get(0).get("offenceTitle").asText())
-                .append(processReportingRestrictionsjpPress(offencesNode.get(0)));
+            outputString
+                .append("\nOffence: ")
+                .append(offencesNode.get(0).get("offenceTitle").asText())
+                .append(processReportingRestrictionSjpPress(offencesNode.get(0)));
         }
         return outputString.toString();
     }
@@ -71,22 +82,18 @@ public class SjpPressList {
      * @param node - node which is checked for reporting restriction.
      * @return - text based on whether restriction exists.
      */
-    private String processReportingRestrictionsjpPress(JsonNode node) {
-        boolean restriction = node.get("reportingRestriction").asBoolean();
-        if (restriction) {
-            return "(Reporting restriction)";
-        }
-        return "";
+    private String processReportingRestrictionSjpPress(JsonNode node) {
+        return node.get("reportingRestriction").asBoolean() ? "(Reporting restriction)" : "";
     }
 
     /**
      * role iteration method for sjp press.
      *
-     * @param party - iterator of party.
+     * @param hearing - iterator of hearing.
      * @return list of roles.
      */
-    private String processRolessjpPress(JsonNode party) {
-        Iterator<JsonNode> partyNode = party.get("party").elements();
+    private String processRolesSjpPress(JsonNode hearing) {
+        Iterator<JsonNode> partyNode = hearing.get("party").elements();
         String accused = "";
         String postCode = "";
         String prosecutor = "";

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 public class ArtefactSummaryService {
 
     @Autowired
-
     CopDailyCauseList copDailyCauseList;
 
     @Autowired
@@ -46,9 +45,9 @@ public class ArtefactSummaryService {
     public String artefactSummary(String payload, ListType listType) throws JsonProcessingException {
         switch (listType) {
             case SJP_PUBLIC_LIST:
-                return sjpPublicList.artefactSummarysjpPublic(payload);
+                return sjpPublicList.artefactSummarySjpPublic(payload);
             case SJP_PRESS_LIST:
-                return sjpPressList.artefactSummarysjpPress(payload);
+                return sjpPressList.artefactSummarySjpPress(payload);
             case CIVIL_DAILY_CAUSE_LIST:
                 return civilDailyCauseList.artefactSummaryCivilDailyCause(payload);
             case COP_DAILY_CAUSE_LIST:
