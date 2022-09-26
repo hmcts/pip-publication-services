@@ -63,7 +63,6 @@ public class PersonalisationService {
     private static final String CASE_URN = "case_urn";
     private static final String DISPLAY_CASE_URN = "display_case_urn";
     private static final String LOCATIONS = "locations";
-    private static final String DISPLAY_LOCATIONS = "display_locations";
     private static final String YES = "Yes";
     private static final String NO = "No";
     private static final String ARRAY_OF_IDS = "array_of_ids";
@@ -124,15 +123,19 @@ public class PersonalisationService {
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
             personalisation.put("list_type", artefact.getListType());
-            String html = fileCreationService.jsonToHtml(artefact.getArtefactId());
-            byte[] artefactPdf = fileCreationService.generatePdfFromHtml(html);
-            personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
+            String html = fileCreationService.jsonToHtml(artefact.getArtefactId());
+            byte[] artefactPdf = fileCreationService.generatePdfFromHtml(html);
             byte[] artefactExcel = fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId());
-            personalisation.put("display_excel", artefactExcel.length > 0);
-            personalisation.put("excel_link_to_file", artefactExcel.length > 0
-                ? EmailClient.prepareUpload(artefactExcel) : "");
+            boolean pdfWithinSize = artefactPdf.length < 2_000_000 && artefactPdf.length > 0;
+            boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;
+
+            personalisation.put("display_pdf", pdfWithinSize);
+            personalisation.put("link_to_file", pdfWithinSize ? EmailClient.prepareUpload(artefactPdf) : "");
+
+            personalisation.put("display_excel", excelWithinSize);
+            personalisation.put("excel_link_to_file", excelWithinSize ? EmailClient.prepareUpload(artefactExcel) : "");
 
             String summary =
                 artefactSummaryService.artefactSummary(

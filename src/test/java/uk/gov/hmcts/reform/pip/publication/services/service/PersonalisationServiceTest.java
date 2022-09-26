@@ -59,7 +59,6 @@ class PersonalisationServiceTest {
     private static final String CASE_URN = "case_urn";
     private static final String DISPLAY_CASE_URN = "display_case_urn";
     private static final String LOCATIONS = "locations";
-    private static final String DISPLAY_LOCATIONS = "display_locations";
     private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
     private static final String YES = "Yes";
     private static final String NO = "No";
@@ -176,7 +175,7 @@ class PersonalisationServiceTest {
     void buildRawDataWhenAllPresent() throws IOException {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
-        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
 
         byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
@@ -197,11 +196,10 @@ class PersonalisationServiceTest {
         assertEquals(SUBSCRIPTIONS.get(SubscriptionTypes.CASE_URN), personalisation.get(CASE_URN),
                      "Case urn not as expected"
         );
-        assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
                      LOCATION_MESSAGE
         );
-        assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
+        assertEquals(ListType.SJP_PUBLIC_LIST, personalisation.get("list_type"),
                      LIST_TYPE_MESSAGE
         );
         assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
@@ -230,6 +228,7 @@ class PersonalisationServiceTest {
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
         when(fileCreationService.generatePdfFromHtml(HELLO)).thenReturn(overSizeArray);
+        when(fileCreationService.generateExcelSpreadsheet(UUID.randomUUID())).thenReturn(overSizeArray);
 
         assertThrows(NotifyException.class, () ->
             personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact), "desired "
@@ -251,7 +250,6 @@ class PersonalisationServiceTest {
         Map<String, Object> personalisation =
             personalisationService.buildFlatFileSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
 
-        assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not Yes");
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
                      LOCATION_MESSAGE
         );
@@ -351,14 +349,13 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
         when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(fileCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(fileCreationService.generatePdfFromHtml(HELLO)).thenReturn(new byte[0]);
         when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(new byte[0]);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
 
-        assertEquals(NO, personalisation.get(DISPLAY_LOCATIONS), "Display case locations is not No");
         assertEquals("", personalisation.get(LOCATIONS),
                      LOCATION_MESSAGE
         );

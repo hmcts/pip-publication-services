@@ -20,5 +20,5 @@ public class SjpPressList {
     List<String> addressRemainder;
     String prosecutor;
     List<Map<String, String>> offences;
-    int caseCounter;
+    Integer numberOfOffences;
 }
