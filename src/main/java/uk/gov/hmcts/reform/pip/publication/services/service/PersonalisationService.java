@@ -266,11 +266,9 @@ public class PersonalisationService {
 
     private void populateLocationPersonalisation(Map<String, Object> personalisation, List<String> content) {
         if (content == null || content.isEmpty()) {
-            personalisation.put(DISPLAY_LOCATIONS, NO);
             personalisation.put(LOCATIONS, "");
         } else {
             Location subLocation = dataManagementService.getLocation(content.get(0));
-            personalisation.put(DISPLAY_LOCATIONS, YES);
             personalisation.put(LOCATIONS, subLocation.getName());
         }
     }
