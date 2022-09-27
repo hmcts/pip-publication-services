@@ -32,7 +32,11 @@ public enum ListType {
     FAMILY_DAILY_CAUSE_LIST(new FamilyDailyCauseListConverter()),
     CIVIL_AND_FAMILY_DAILY_CAUSE_LIST(new CivilAndFamilyDailyCauseListConverter()),
     COP_DAILY_CAUSE_LIST(new CopDailyCauseListConverter()),
-    SSCS_DAILY_LIST(new SscsDailyListConverter());
+    SSCS_DAILY_LIST(new SscsDailyListConverter()),
+    PRIMARY_HEALTH_LIST,
+    CARE_STANDARDS_LIST,
+    ET_DAILY_LIST,
+    ET_FORTNIGHTLY_PRESS_LIST;
 
     private Converter converter;
 }
