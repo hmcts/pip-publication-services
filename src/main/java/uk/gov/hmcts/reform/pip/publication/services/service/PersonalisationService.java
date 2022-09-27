@@ -4,6 +4,7 @@ import com.microsoft.applicationinsights.core.dependencies.google.common.base.St
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
@@ -27,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static uk.gov.hmcts.reform.pip.publication.services.Environments.convertEnvironmentName;
+
 /**
  * This class handles any personalisation for the emails.
  */
@@ -46,6 +49,9 @@ public class PersonalisationService {
 
     @Autowired
     NotifyConfigProperties notifyConfigProperties;
+
+    @Value("${env-name}")
+    private String envName;
 
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String START_PAGE_LINK = "start_page_link";
@@ -67,6 +73,7 @@ public class PersonalisationService {
     private static final String NO = "No";
     private static final String ARRAY_OF_IDS = "array_of_ids";
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
+    private static final String ENV_NAME = "env_name";
 
     /**
      * Handles the personalisation for the Welcome email.
@@ -203,6 +210,7 @@ public class PersonalisationService {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             personalisation.put(LINK_TO_FILE, EmailClient.prepareUpload(csvMediaApplications, true));
+            personalisation.put(ENV_NAME, convertEnvironmentName(envName));
             return personalisation;
         } catch (NotificationClientException e) {
             log.error(String.format("Error adding the csv attachment to the media application "
@@ -226,6 +234,7 @@ public class PersonalisationService {
 
 
         personalisation.put(ARRAY_OF_IDS, listOfUnmatched);
+        personalisation.put(ENV_NAME, convertEnvironmentName(envName));
         return personalisation;
     }
 
