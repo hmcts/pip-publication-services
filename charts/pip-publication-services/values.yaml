@@ -26,4 +26,4 @@ java:
         - name: courtel-certificate
           alias: THIRD_PARTY_CERTIFICATE
   environment:
-
+    ENV_NAME: "{{ .Values.global.environment }}"

@@ -3,6 +3,10 @@ package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.conv
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -13,17 +17,17 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientConfigurationTest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
@@ -32,19 +36,21 @@ class SjpPressListConverterTest {
     @Autowired
     SjpPressListConverter sjpPressListConverter;
 
+    private JsonNode getInput(String resourcePath) throws IOException {
+        try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
+            String inputRaw = IOUtils.toString(inputStream, Charset.defaultCharset());
+            return new ObjectMapper().readTree(inputRaw);
+        }
+    }
+
     @Test
     void testSjpPressListTemplate() throws IOException {
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(Files.newInputStream(Paths.get("src/test/resources/mocks/", "sjpPressMockJul22.json")), writer,
-                     Charset.defaultCharset()
-        );
         Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
                                                  "provenance", "provenance",
                                                  "locationName", "location"
         );
 
-        JsonNode inputJson = new ObjectMapper().readTree(writer.toString());
-        String outputHtml = sjpPressListConverter.convert(inputJson, metadataMap);
+        String outputHtml = sjpPressListConverter.convert(getInput("/mocks/sjpPressMockJul22.json"), metadataMap);
         Document document = Jsoup.parse(outputHtml);
         assertThat(outputHtml).as("No html found").isNotEmpty();
 
@@ -72,5 +78,43 @@ class SjpPressListConverterTest {
             .as("Incorrect offender at index " + count.get())
             .contains(expectedOffender.get(count.getAndIncrement()))
         );
+    }
+
+    @Test
+    void testSuccessfulExcelConversion() throws IOException {
+        byte[] result = sjpPressListConverter.convertToExcel(getInput("/mocks/sjpPressMockJul22.json"));
+
+        ByteArrayInputStream file = new ByteArrayInputStream(result);
+        Workbook workbook = new XSSFWorkbook(file);
+        Sheet sheet = workbook.getSheetAt(0);
+        Row headingRow = sheet.getRow(0);
+
+        assertEquals("SJP Press List", sheet.getSheetName(), "Sheet name does not match");
+        assertEquals("Address", headingRow.getCell(0).getStringCellValue(),
+                     "Address column is different");
+        assertEquals("Case URN", headingRow.getCell(1).getStringCellValue(),
+                     "Case URN column is different");
+        assertEquals("Date of Birth", headingRow.getCell(2).getStringCellValue(),
+                     "Date of Birth column is different");
+        assertEquals("Defendant Name", headingRow.getCell(3).getStringCellValue(),
+                     "Defendant Name column is different");
+
+        // Dynamic column headings
+        assertEquals("Offence 1 Press Restriction Requested", headingRow.getCell(4).getStringCellValue(),
+                     "Offence 1 Press Restriction Requested column is different");
+        assertEquals("Offence 1 Title", headingRow.getCell(5).getStringCellValue(),
+                     "Offence 1 Title column is different");
+        assertEquals("Offence 1 Wording", headingRow.getCell(6).getStringCellValue(),
+                     "Offence 1 Wording column is different");
+
+        assertEquals("Offence 2 Press Restriction Requested", headingRow.getCell(7).getStringCellValue(),
+                     "Offence 2 Press Restriction Requested column is different");
+        assertEquals("Offence 2 Title", headingRow.getCell(8).getStringCellValue(),
+                     "Offence 2 Title column is different");
+        assertEquals("Offence 2 Wording", headingRow.getCell(9).getStringCellValue(),
+                     "Offence 2 Wording column is different");
+
+        assertEquals("Prosecutor Name", headingRow.getCell(10).getStringCellValue(),
+                     "Prosecutor Name column is different");
     }
 }
