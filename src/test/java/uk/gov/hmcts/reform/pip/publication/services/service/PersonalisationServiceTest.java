@@ -161,7 +161,7 @@ class PersonalisationServiceTest {
 
         Object aadResetLink = personalisation.get(AAD_RESET_LINK);
         assertNotNull(aadResetLink, "No aad reset link key found");
-        assertEquals(personalisationLinks.getAadPwResetLink(), aadResetLink,
+        assertEquals(personalisationLinks.getAadPwResetLinkAdmin(), aadResetLink,
                      "aad reset link does not match expected link"
         );
 
