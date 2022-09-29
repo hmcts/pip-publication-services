@@ -131,10 +131,15 @@ public class PersonalisationService {
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
             personalisation.put("list_type", artefact.getListType());
+
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
             String html = fileCreationService.jsonToHtml(artefact.getArtefactId());
-            byte[] artefactPdf = fileCreationService.generatePdfFromHtml(html);
+            byte[] artefactPdf = fileCreationService.generatePdfFromHtml(html, true);
+            int maxSize = 2_000_000;
+            if (artefactPdf.length > maxSize) {
+                artefactPdf = fileCreationService.generatePdfFromHtml(html, false);
+            }
             byte[] artefactExcel = fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId());
             boolean pdfWithinSize = artefactPdf.length < 2_000_000 && artefactPdf.length > 0;
             boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;
