@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Service for functionality related to building PDF files from JSON input. Thymeleaf templates are used to build
- * HTML documents which are then translated to PDF by the OpenHTMLtoPDF Library. Importantly, we're using the highest
- * possible level of PDF accessibility, which means that when developing new templates, we must listen carefully to the
- * warnings output by the compiler.
+ * Service for functionality related to building PDF and xlsx files from JSON input. Thymeleaf templates are used to
+ * build HTML documents which are then translated to PDF by the OpenHTMLtoPDF Library. Importantly, we're using the
+ * second-highest possible level of PDF accessibility, which means that when developing new templates, we must listen
+ * carefully to the warnings output by the compiler.
  */
 @Slf4j
 @Service
@@ -84,30 +84,33 @@ public class FileCreationService {
     }
 
     /**
-     * Class which takes in an HTML file and generates an accessible PDF file (as a byteArray).
+     * Class which takes in an HTML file and generates an accessible PDF file (as a byteArray). This originally used
+     * an Opentype font (.otf) but it reduced the file size to switch to a Truetype font (.ttf).
      *
      * @param html - string input representing a well-formed HTML file conforming to WCAG pdf accessibility guidance
      * @return a byte array representing the generated PDF.
      * @throws IOException - if errors appear during the process.
      */
-    public byte[] generatePdfFromHtml(String html) throws IOException {
+    public byte[] generatePdfFromHtml(String html, boolean accessibility) throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
-            builder.useFastMode();
-            builder.usePdfUaAccessbility(true);
-            builder.usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_3_U);
+            builder.useFastMode()
+                .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_1_A);
 
-            File file = new File("/opt/app/gdsFont.otf");
+            File file = new File("/opt/app/gdsFont.ttf");
             if (file.exists()) {
                 builder.useFont(file, "GDS Transport");
             } else {
                 builder.useFont(new File(Thread.currentThread().getContextClassLoader()
-                                             .getResource("gdsFont.otf").getFile()), "GDS Transport");
+                                             .getResource("gdsFont.ttf").getFile()), "GDS Transport");
+            }
+            if (accessibility) {
+                builder.usePdfUaAccessbility(true);
             }
 
-            builder.withHtmlContent(html, null);
-            builder.toStream(baos);
-            builder.run();
+            builder.withHtmlContent(html, null)
+                .toStream(baos)
+                .run();
             return baos.toByteArray();
         }
     }
