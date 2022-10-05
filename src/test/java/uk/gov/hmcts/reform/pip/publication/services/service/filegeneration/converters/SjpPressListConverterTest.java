@@ -49,14 +49,15 @@ class SjpPressListConverterTest {
     void testSjpPressListTemplate() throws IOException {
         Map<String, Object> language;
         try (InputStream languageFile = Thread.currentThread()
-            .getContextClassLoader().getResourceAsStream("templates/languages/en/sjpPressMockJul22.json")) {
+            .getContextClassLoader().getResourceAsStream("sjpPressList-language.json")) {
             language = new ObjectMapper().readValue(
                 Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
                 });
         }
         Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
                                                  "provenance", "provenance",
-                                                 "locationName", "location"
+                                                 "locationName", "location",
+                                                 "language", "ENGLISH"
         );
 
         String outputHtml = sjpPressListConverter.convert(getInput("/mocks/sjpPressMockJul22.json"), metadataMap,
@@ -70,7 +71,7 @@ class SjpPressListConverterTest {
 
         assertThat(document.getElementsByClass("mainHeaderText")
                        .select(".mainHeaderText > h1:nth-child(1)").text())
-            .as("incorrect header text").isEqualTo("Single Justice Procedure Press List");
+            .as("incorrect header text").isEqualTo("Single Justice Procedure - Press List");
 
         assertThat(document.select(
             "div.pageSeparatedCase:nth-child(2) > table:nth-child(3) > tbody:nth-child(1) >"
