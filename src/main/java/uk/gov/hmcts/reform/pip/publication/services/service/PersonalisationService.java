@@ -4,6 +4,7 @@ import com.microsoft.applicationinsights.core.dependencies.google.common.base.St
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
@@ -27,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static uk.gov.hmcts.reform.pip.publication.services.Environments.convertEnvironmentName;
+
 /**
  * This class handles any personalisation for the emails.
  */
@@ -42,10 +45,13 @@ public class PersonalisationService {
     ArtefactSummaryService artefactSummaryService;
 
     @Autowired
-    PdfCreationService pdfCreationService;
+    FileCreationService fileCreationService;
 
     @Autowired
     NotifyConfigProperties notifyConfigProperties;
+
+    @Value("${env-name}")
+    private String envName;
 
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String START_PAGE_LINK = "start_page_link";
@@ -68,6 +74,7 @@ public class PersonalisationService {
     private static final String NO = "No";
     private static final String ARRAY_OF_IDS = "array_of_ids";
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
+    private static final String ENV_NAME = "env_name";
 
     /**
      * Handles the personalisation for the Welcome email.
@@ -76,7 +83,7 @@ public class PersonalisationService {
      */
     public Map<String, Object> buildWelcomePersonalisation(WelcomeEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(FORGOT_PASSWORD_PROCESS_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
+        personalisation.put(FORGOT_PASSWORD_PROCESS_LINK, notifyConfigProperties.getLinks().getAadPwResetLinkMedia());
         personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
         personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
         personalisation.put(GOV_GUIDANCE_PAGE_LINK, notifyConfigProperties.getLinks().getGovGuidancePageLink());
@@ -93,7 +100,7 @@ public class PersonalisationService {
     public Map<String, Object> buildAdminAccountPersonalisation(CreatedAdminWelcomeEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(FORENAME, body.getForename());
-        personalisation.put(AAD_RESET_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
+        personalisation.put(AAD_RESET_LINK, notifyConfigProperties.getLinks().getAadPwResetLinkAdmin());
         personalisation.put(ADMIN_DASHBOARD_LINK, notifyConfigProperties.getLinks().getAdminDashboardLink());
         return personalisation;
     }
@@ -124,10 +131,24 @@ public class PersonalisationService {
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
             personalisation.put("list_type", artefact.getListType());
-            String html = pdfCreationService.jsonToHtml(artefact.getArtefactId());
-            byte[] artefactPdf = pdfCreationService.generatePdfFromHtml(html);
-            personalisation.put("link_to_file", EmailClient.prepareUpload(artefactPdf));
+
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
+
+            String html = fileCreationService.jsonToHtml(artefact.getArtefactId());
+            byte[] artefactPdf = fileCreationService.generatePdfFromHtml(html, true);
+            int maxSize = 2_000_000;
+            if (artefactPdf.length > maxSize) {
+                artefactPdf = fileCreationService.generatePdfFromHtml(html, false);
+            }
+            byte[] artefactExcel = fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId());
+            boolean pdfWithinSize = artefactPdf.length < 2_000_000 && artefactPdf.length > 0;
+            boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;
+
+            personalisation.put("display_pdf", pdfWithinSize);
+            personalisation.put("link_to_file", pdfWithinSize ? EmailClient.prepareUpload(artefactPdf) : "");
+
+            personalisation.put("display_excel", excelWithinSize);
+            personalisation.put("excel_link_to_file", excelWithinSize ? EmailClient.prepareUpload(artefactExcel) : "");
 
             String summary =
                 artefactSummaryService.artefactSummary(
@@ -135,7 +156,6 @@ public class PersonalisationService {
                         .getArtefactJsonBlob(artefact.getArtefactId()),
                     artefact.getListType()
                 );
-
             personalisation.put("testing_of_array", summary);
 
             log.info("Personalisation map created");
@@ -196,6 +216,7 @@ public class PersonalisationService {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             personalisation.put(LINK_TO_FILE, EmailClient.prepareUpload(csvMediaApplications, true));
+            personalisation.put(ENV_NAME, convertEnvironmentName(envName));
             return personalisation;
         } catch (NotificationClientException e) {
             log.error(String.format("Error adding the csv attachment to the media application "
@@ -219,6 +240,7 @@ public class PersonalisationService {
 
 
         personalisation.put(ARRAY_OF_IDS, listOfUnmatched);
+        personalisation.put(ENV_NAME, convertEnvironmentName(envName));
         return personalisation;
     }
 

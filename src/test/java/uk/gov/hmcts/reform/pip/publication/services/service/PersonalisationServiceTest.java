@@ -35,11 +35,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@SuppressWarnings({"PMD.TooManyMethods"})
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
 class PersonalisationServiceTest {
 
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
@@ -49,6 +50,7 @@ class PersonalisationServiceTest {
     private static final String AAD_SIGN_IN_LINK = "sign_in_page_link";
     private static final String AAD_RESET_LINK = "reset_password_link";
     private static final String LINK_TO_FILE = "link_to_file";
+    private static final String EXCEL_LINK_TO_FILE = "excel_link_to_file";
     private static final String FILE = "file";
     private static final String IS_CSV = "is_csv";
     private static final String FORENAME = "first_name";
@@ -84,7 +86,7 @@ class PersonalisationServiceTest {
     DataManagementService dataManagementService;
 
     @MockBean
-    PdfCreationService pdfCreationService;
+    FileCreationService fileCreationService;
 
     @MockBean
     ArtefactSummaryService artefactSummaryService;
@@ -160,7 +162,7 @@ class PersonalisationServiceTest {
 
         Object aadResetLink = personalisation.get(AAD_RESET_LINK);
         assertNotNull(aadResetLink, "No aad reset link key found");
-        assertEquals(personalisationLinks.getAadPwResetLink(), aadResetLink,
+        assertEquals(personalisationLinks.getAadPwResetLinkAdmin(), aadResetLink,
                      "aad reset link does not match expected link"
         );
 
@@ -175,13 +177,14 @@ class PersonalisationServiceTest {
     void buildRawDataWhenAllPresent() throws IOException {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
-        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
 
         byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("<Placeholder>");
-        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(pdfCreationService.generatePdfFromHtml(any())).thenReturn(testByteArray);
+        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(testByteArray);
+        when(fileCreationService.generatePdfFromHtml(any(), eq(true))).thenReturn(testByteArray);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
@@ -199,12 +202,14 @@ class PersonalisationServiceTest {
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
                      LOCATION_MESSAGE
         );
-        assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
+        assertEquals(ListType.SJP_PUBLIC_LIST, personalisation.get("list_type"),
                      LIST_TYPE_MESSAGE
         );
         assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
                      LINK_TO_FILE_MESSAGE
         );
+        assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get(EXCEL_LINK_TO_FILE)).get(FILE),
+                     LINK_TO_FILE_MESSAGE);
         assertEquals("hi", personalisation.get("testing_of_array"),
                      "testing_of_array does not match expected value"
         );
@@ -224,8 +229,9 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         byte[] overSizeArray = new byte[2_100_000];
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(overSizeArray);
+        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(fileCreationService.generatePdfFromHtml(HELLO, true)).thenReturn(overSizeArray);
+        when(fileCreationService.generateExcelSpreadsheet(UUID.randomUUID())).thenReturn(overSizeArray);
 
         assertThrows(NotifyException.class, () ->
             personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact), "desired "
@@ -346,8 +352,9 @@ class PersonalisationServiceTest {
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
-        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(fileCreationService.generatePdfFromHtml(HELLO, true)).thenReturn(HELLO.getBytes());
+        when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(new byte[0]);
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 
         Map<String, Object> personalisation =
@@ -379,8 +386,9 @@ class PersonalisationServiceTest {
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
-        when(pdfCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(pdfCreationService.generatePdfFromHtml(HELLO)).thenReturn(HELLO.getBytes());
+        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
+        when(fileCreationService.generatePdfFromHtml(HELLO, true)).thenReturn(HELLO.getBytes());
+        when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(new byte[0]);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
         when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
 

@@ -3,14 +3,14 @@ package uk.gov.hmcts.reform.pip.publication.services.models.external;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CivilAndFamilyDailyCauseListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CivilDailyCauseListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.Converter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.CopDailyCauseListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.FamilyDailyCauseListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPressListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SjpPublicListConverter;
-import uk.gov.hmcts.reform.pip.publication.services.service.pdf.converters.SscsDailyListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CivilAndFamilyDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CivilDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.Converter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CopDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.FamilyDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.SjpPressListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.SjpPublicListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.SscsDailyListConverter;
 
 /**
  * Enum that represents the different list types.
@@ -32,7 +32,11 @@ public enum ListType {
     FAMILY_DAILY_CAUSE_LIST(new FamilyDailyCauseListConverter()),
     CIVIL_AND_FAMILY_DAILY_CAUSE_LIST(new CivilAndFamilyDailyCauseListConverter()),
     COP_DAILY_CAUSE_LIST(new CopDailyCauseListConverter()),
-    SSCS_DAILY_LIST(new SscsDailyListConverter());
+    SSCS_DAILY_LIST(new SscsDailyListConverter()),
+    PRIMARY_HEALTH_LIST,
+    CARE_STANDARDS_LIST,
+    ET_DAILY_LIST,
+    ET_FORTNIGHTLY_PRESS_LIST;
 
     private Converter converter;
 }
