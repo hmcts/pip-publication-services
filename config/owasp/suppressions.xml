@@ -48,10 +48,4 @@
     <cve>CVE-2022-42003</cve>
     <cve>CVE-2022-42004</cve>
   </suppress>
-  <suppress>
-    <notes><![CDATA[file name: jackson-databind-2.12.6.1.jar]]></notes>
-    <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.12.6.1</packageUrl>
-    <cve>CVE-2022-42003</cve>
-    <cve>CVE-2022-42004</cve>
-  </suppress>
 </suppressions>
