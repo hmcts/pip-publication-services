@@ -197,11 +197,11 @@
                 <th:block th:each="sitting : ${session.get('sittings')}">
                   <th:block th:each="hearing : ${sitting.get('hearing')}">
                     <tr class="govuk-table__row" th:each="case : ${hearing.get('case')}">
-                      <td class="govuk-table__cell no-wrap" th:text="${sitting.get('time').asText()}"/>
-                      <td class="govuk-table__cell no-wrap" th:text="${case.get('caseNumber').asText()}"/>
+                      <td class="govuk-table__cell" th:text="${sitting.get('time').asText()}"/>
+                      <td class="govuk-table__cell" th:text="${case.get('caseNumber').asText()}"/>
                       <td class="govuk-table__cell" th:text="${case.get('caseSuppressionName').asText()}"/>
                       <td class="govuk-table__cell" th:text="${hearing.get('hearingType').asText()}"/>
-                      <td class="govuk-table__cell no-wrap"
+                      <td class="govuk-table__cell"
                           th:text="${sitting.get('formattedDuration').asText() + ' ' + case.get('caseIndicator').asText()}"/>
                       <td class="govuk-table__cell" th:text="${sitting.get('caseHearingChannel').asText()}"/>
                     </tr>
