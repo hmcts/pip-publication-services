@@ -83,7 +83,7 @@ public class PersonalisationService {
      */
     public Map<String, Object> buildWelcomePersonalisation(WelcomeEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(FORGOT_PASSWORD_PROCESS_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
+        personalisation.put(FORGOT_PASSWORD_PROCESS_LINK, notifyConfigProperties.getLinks().getAadPwResetLinkMedia());
         personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
         personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
         personalisation.put(GOV_GUIDANCE_PAGE_LINK, notifyConfigProperties.getLinks().getGovGuidancePageLink());
@@ -100,7 +100,7 @@ public class PersonalisationService {
     public Map<String, Object> buildAdminAccountPersonalisation(CreatedAdminWelcomeEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(FORENAME, body.getForename());
-        personalisation.put(AAD_RESET_LINK, notifyConfigProperties.getLinks().getAadPwResetLink());
+        personalisation.put(AAD_RESET_LINK, notifyConfigProperties.getLinks().getAadPwResetLinkAdmin());
         personalisation.put(ADMIN_DASHBOARD_LINK, notifyConfigProperties.getLinks().getAdminDashboardLink());
         return personalisation;
     }
