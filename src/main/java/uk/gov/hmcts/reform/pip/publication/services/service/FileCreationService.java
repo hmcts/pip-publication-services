@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVWriter;
@@ -13,23 +14,28 @@ import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguratio
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.Converter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.GeneralHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Service for functionality related to building PDF files from JSON input. Thymeleaf templates are used to build
- * HTML documents which are then translated to PDF by the OpenHTMLtoPDF Library. Importantly, we're using the highest
- * possible level of PDF accessibility, which means that when developing new templates, we must listen carefully to the
- * warnings output by the compiler.
+ * Service for functionality related to building PDF and xlsx files from JSON input. Thymeleaf templates are used to
+ * build HTML documents which are then translated to PDF by the OpenHTMLtoPDF Library. Importantly, we're using the
+ * second-highest possible level of PDF accessibility, which means that when developing new templates, we must listen
+ * carefully to the warnings output by the compiler.
  */
 @Slf4j
 @Service
@@ -41,6 +47,8 @@ public class FileCreationService {
 
     @Autowired
     private DataManagementService dataManagementService;
+
+    private static final String PATH_TO_LANGUAGES = "templates/languages/";
 
     /**
      * Wrapper class for the entire json to pdf process.
@@ -54,19 +62,39 @@ public class FileCreationService {
         Artefact artefact = dataManagementService.getArtefact(inputPayloadUuid);
         Location location = dataManagementService.getLocation(artefact.getLocationId());
 
+        Map<String, Object> language = handleLanguages(artefact.getListType(), artefact.getLanguage());
+
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
+        Language languageEntry = artefact.getLanguage();
+        String locationName = (languageEntry == Language.ENGLISH) ? location.getName() : location.getWelshName();
         Map<String, String> metadataMap = Map.of(
             "contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
             "provenance", artefact.getProvenance(),
-            "locationName", location.getName(),
-            "language", artefact.getLanguage().toString()
+            "locationName", locationName,
+            "language", languageEntry.toString()
         );
 
         Converter converter = artefact.getListType().getConverter();
 
         return (converter == null)
             ? parseThymeleafTemplate(rawJson)
-            : converter.convert(topLevelNode, metadataMap);
+            : converter.convert(topLevelNode, metadataMap, language);
+    }
+
+    private Map<String, Object> handleLanguages(ListType listType, Language language) throws IOException {
+        String path;
+        String languageString = GeneralHelper.listTypeToCamelCase(listType);
+        if (language.equals(Language.ENGLISH)) {
+            path = PATH_TO_LANGUAGES + "en/" + languageString + ".json";
+        } else {
+            path = PATH_TO_LANGUAGES + "cy/" + languageString + ".json";
+        }
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream(path)) {
+            return new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
+        }
     }
 
     /**
@@ -84,30 +112,33 @@ public class FileCreationService {
     }
 
     /**
-     * Class which takes in an HTML file and generates an accessible PDF file (as a byteArray).
+     * Class which takes in an HTML file and generates an accessible PDF file (as a byteArray). This originally used
+     * an Opentype font (.otf) but it reduced the file size to switch to a Truetype font (.ttf).
      *
      * @param html - string input representing a well-formed HTML file conforming to WCAG pdf accessibility guidance
      * @return a byte array representing the generated PDF.
      * @throws IOException - if errors appear during the process.
      */
-    public byte[] generatePdfFromHtml(String html) throws IOException {
+    public byte[] generatePdfFromHtml(String html, boolean accessibility) throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
-            builder.useFastMode();
-            builder.usePdfUaAccessbility(true);
-            builder.usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_3_U);
+            builder.useFastMode()
+                .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_1_A);
 
-            File file = new File("/opt/app/gdsFont.otf");
+            File file = new File("/opt/app/gdsFont.ttf");
             if (file.exists()) {
                 builder.useFont(file, "GDS Transport");
             } else {
                 builder.useFont(new File(Thread.currentThread().getContextClassLoader()
-                                             .getResource("gdsFont.otf").getFile()), "GDS Transport");
+                                             .getResource("gdsFont.ttf").getFile()), "GDS Transport");
+            }
+            if (accessibility) {
+                builder.usePdfUaAccessbility(true);
             }
 
-            builder.withHtmlContent(html, null);
-            builder.toStream(baos);
-            builder.run();
+            builder.withHtmlContent(html, null)
+                .toStream(baos)
+                .run();
             return baos.toByteArray();
         }
     }

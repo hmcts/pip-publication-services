@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +28,8 @@ class CivilDailyCauseListConverterTest {
     private static final Map<String, String> METADATA = Map.of(
         "contentDate", "1 July 2022",
         "locationName", OXFORD_COURT,
-        "provenance", MANUAL_UPLOAD
+        "provenance", MANUAL_UPLOAD,
+        "language", "ENGLISH"
     );
     private static final int NUMBER_OF_TABLES = 3;
 
@@ -34,7 +37,14 @@ class CivilDailyCauseListConverterTest {
 
     @Test
     void testSuccessfulConversion() throws IOException {
-        String result = converter.convert(getInput("/mocks/civilDailyCauseList.json"), METADATA);
+        Map<String, Object> language;
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("templates/languages/en/civilDailyCauseList.json")) {
+            language = new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
+        }
+        String result = converter.convert(getInput("/mocks/civilDailyCauseList.json"), METADATA, language);
         Document document = Jsoup.parse(result);
 
         assertThat(result)
@@ -49,6 +59,29 @@ class CivilDailyCauseListConverterTest {
         assertCourtHouseInfo(document.getElementsByClass("site-address"));
         assertHearingTables(document);
         assertDataSource(document);
+    }
+
+
+    @Test
+    void testSuccessfulConversionWelsh() throws IOException {
+        Map<String, Object> language;
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("templates/languages/cy/civilDailyCauseList.json")) {
+            language = new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
+        }
+        String result = converter.convert(getInput("/mocks/civilDailyCauseList.json"), METADATA, language);
+        Document document = Jsoup.parse(result);
+
+        assertThat(result)
+            .as("No html found")
+            .isNotEmpty();
+
+        assertThat(document.title())
+            .as("incorrect document title")
+            .isEqualTo("Rhestr Ddyddiol o Achosion Sifil");
+
     }
 
     private void assertFirstPageContent(Element element) {
@@ -68,7 +101,7 @@ class CivilDailyCauseListConverterTest {
 
         assertThat(element.getElementsByTag("p"))
             .as("Incorrect first page p elements")
-            .hasSize(6)
+            .hasSize(7)
             .extracting(Element::text)
             .contains("THE LAW COURTS PR1 2LL",
                       "List for 1 July 2022",
@@ -135,7 +168,7 @@ class CivilDailyCauseListConverterTest {
 
     private void assertDataSource(Document document) {
         Elements elements = document.getElementsByTag("p");
-        assertThat(elements.get(8))
+        assertThat(elements.get(9))
             .as("Incorrect data source")
             .extracting(Element::text)
             .isEqualTo("Data Source: " + MANUAL_UPLOAD);

@@ -10,7 +10,8 @@ public class PersonalisationLinks {
     private String govGuidancePageLink;
     private String aadSignInPageLink;
     private String aadAdminSignInPageLink;
-    private String aadPwResetLink;
+    private String aadPwResetLinkAdmin;
+    private String aadPwResetLinkMedia;
     private String mediaVerificationPageLink;
     private String adminDashboardLink;
     private String cftSignInPageLink;

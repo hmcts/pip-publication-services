@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
@@ -16,39 +17,49 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SjpPublicListConverterTest {
     private final SjpPublicListConverter converter = new SjpPublicListConverter();
-    private final Map<String, String> metaData = Collections.singletonMap("contentDate", "1 July 2022");
+    private final Map<String, String> metaData = Map.of("contentDate", "1 July 2022",
+                                                        "language", "ENGLISH");
+    private final Map<String, Object> language = handleLanguage();
+
+    SjpPublicListConverterTest() throws IOException {
+        // deliberately empty constructor to handle IOException at class level.
+    }
 
     @Test
     void testSuccessfulConversion() throws IOException {
-        String result = converter.convert(getInput("/mocks/sjpPublicList.json"), metaData);
+        String result = converter.convert(getInput("/mocks/sjpPublicList.json"), metaData, language);
         Document doc = Jsoup.parse(result);
         assertTitleAndDescription(doc);
 
         assertThat(doc.getElementsByTag("td"))
             .as("Incorrect table contents")
-            .hasSize(8)
+            .hasSize(12)
             .extracting(Element::text)
             .containsExactly("This is a forename This is a surname",
                              "AA1 AA1",
-                             "This is an offence title",
+                             "Offence A, Offence B",
                              "This is an organisation",
                              "This is a forename2 This is a surname2",
                              "AA2 AA2",
                              "This is an offence title2",
-                             "This is an organisation2");
+                             "This is an organisation2",
+                             "This is a forename4 This is a surname4",
+                             "AA1 AA1",
+                             "This is an offence title4",
+                             "This is an organisation4");
     }
 
     @Test
     void testConversionWithMissingField() throws IOException {
-        String result = converter.convert(getInput("/mocks/sjpPublicListMissingPostcode.json"), metaData);
+        String result = converter.convert(getInput("/mocks/sjpPublicListMissingPostcode.json"), metaData, language);
         Document doc = Jsoup.parse(result);
         assertTitleAndDescription(doc);
 
@@ -57,16 +68,27 @@ class SjpPublicListConverterTest {
             .as("Incorrect table contents")
             .hasSize(4)
             .extracting(Element::text)
-            .containsExactly("This is a forename2 This is a surname2",
-                             "AA2 AA2",
-                             "This is an offence title2",
-                             "This is an organisation2");
+            .containsExactly(
+                "This is a forename2 This is a surname2",
+                "AA2 AA2",
+                "This is an offence title2",
+                "This is an organisation2"
+            );
     }
 
     private JsonNode getInput(String resourcePath) throws IOException {
         try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
             String inputRaw = IOUtils.toString(inputStream, Charset.defaultCharset());
             return new ObjectMapper().readTree(inputRaw);
+        }
+    }
+
+    private Map<String, Object> handleLanguage() throws IOException {
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("templates/languages/en/sjpPublicList.json")) {
+            return new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
         }
     }
 
@@ -94,8 +116,10 @@ class SjpPublicListConverterTest {
             .as("Incorrect p elements")
             .hasSize(2)
             .extracting(Element::text)
-            .containsExactly("List for 1 July 2022",
-                             "Published: 14 September 2016 at 00:30");
+            .containsExactly(
+                "List for 1 July 2022",
+                "Published: 14 September 2016 at 00:30"
+            );
 
         assertThat(doc.getElementsByTag("th"))
             .as("Incorrect table headers")

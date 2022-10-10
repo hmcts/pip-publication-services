@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <style>
+  <style th:inline="text">
     @page {
       margin: 30px 20px;
 
@@ -9,9 +9,10 @@
         font-family: 'GDS Transport';
         font-size: 16px;
         color: grey;
-        content: "Court and Tribunal Hearings Service - PDF/UA page " counter(page) " of " counter(pages) ".";
+        content: "[[${i18n.serviceName + i18n.pdfAccessibility}]]" counter(page) "[[${i18n.of}]]" counter(pages) ".";
       }
     }
+
 
     .headerBar {
       background-color: #0b0c0c;
@@ -69,7 +70,7 @@
     .logoDatesContainer {
       vertical-align: middle;
       display: inline-block;
-      width: 165px;
+      width: 190px;
     }
 
     .logoHeaderWrapper {
@@ -80,15 +81,9 @@
     .mainHeaderText {
       font-family: "GDS Transport";
       display: inline-block;
-      width: 500px;
+      width: 475px;
       text-align: center;
       vertical-align: top;
-    }
-
-    .caseHeader {
-      text-align: center;
-      font-size: 24px;
-      text-decoration: underline;
     }
 
     h1 {
@@ -125,7 +120,7 @@
       width: 160px;
       overflow: hidden;
       font-size: 20px;
-      padding-left:10px;
+      padding-left: 10px;
       text-align: left;
     }
 
@@ -140,7 +135,7 @@
   <meta name="subject" content="Accessible PDF template"/>
   <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
   <meta name="description" content="Document description - vital for compliance."/>
-  <title th:text="${'Single Justice Procedure - Press List ' + contentDate}"/>
+  <title th:text="${i18n.titleText + contentDate}"/>
 </head>
 <body>
 <div class="headerBar">
@@ -148,7 +143,7 @@
     <img style="padding-left:20px; vertical-align: middle;"
          src="https://www.gov.uk/assets/static/govuk-logotype-crown-66ad9a9b8fca42cf0ba18979eef6afc2e8056d5f158ca9b27ce9afdf852aae87.png"
          width="36px" height="32px" alt="Gov.UK banner"/>
-    <span style="vertical-align: middle">GOV.UK</span>
+    <span style="vertical-align: middle" th:text="${i18n.govUk}"/>
   </div>
 </div>
 <div class="logoHeaderWrapper">
@@ -158,18 +153,18 @@
            src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png"
            alt="HMCTS Logo"/>
       <div class="logoText">
-        <p class="logoText">HM Courts &amp;</p>
-        <p class="logoText">Tribunals Service</p>
+        <p th:text="${i18n.logoText1}" class="logoText"/>
+        <p th:text="${i18n.logoText2}" class="logoText"/>
       </div>
     </div>
     <div class="dateContainer">
-      <h4 th:text="${'List for ' + contentDate}"/>
-      <h5 th:text="${'Published: ' + publishedDate}"/>
+      <h4 th:text="${i18n.listFor + contentDate}"/>
+      <h5 th:text="${i18n.published + publishedDate}"/>
     </div>
   </div>
   <div class="mainHeaderText">
-    <h1>Single Justice Procedure Press List</h1>
-    <h3>Single Justice Procedure cases that are ready for hearing.</h3>
+    <h1 th:text="${i18n.titleText}"/>
+    <h3 th:text="${i18n.subHeader}"/>
   </div>
 </div>
 
@@ -177,15 +172,15 @@
   <div class="pageSeparatedCase" th:each="case : ${cases}">
     <table>
       <tr>
-        <th>Name</th>
+        <th th:text="${i18n.tableHeaders[0]}"/>
         <td th:text="${case.name}"/>
       </tr>
       <tr>
-        <th>Date of Birth</th>
+        <th th:text="${i18n.tableHeaders[1]}"/>
         <td th:text="${case.dateOfBirth + ' (' + case.age + ')'}"/>
       </tr>
       <tr>
-        <th>Address</th>
+        <th th:text="${i18n.tableHeaders[2]}"/>
         <td th:text="${case.addressLine1}"/>
       </tr>
       <tr th:each="addressLine : ${case.addressRemainder}">
@@ -193,11 +188,11 @@
         <td th:text="${addressLine}"/>
       </tr>
       <tr>
-        <th>Prosecutor</th>
+        <th th:text="${i18n.tableHeaders[3]}"/>
         <td th:text="${case.prosecutor}"/>
       </tr>
       <tr>
-        <th>Case Reference(s)</th>
+        <th th:text="${i18n.tableHeaders[4]}"/>
         <td th:text="${case.reference1}"/>
       </tr>
       <tr th:each="reference: ${case.referenceRemainder}">
@@ -205,18 +200,18 @@
         <td th:text="${reference}"/>
       </tr>
       <span th:each="case: ${case.offences}">
-      <tr><th>Offence Title</th><td th:text="${case.offence}"/></tr>
-      <tr><th>Offence Wording</th><td th:text="${case.wording}"/></tr>
-      <tr><th>Reporting Restriction</th><td th:text="${case.reportingRestriction}"/></tr>
+      <tr><th th:text="${i18n.offenceHeaders[0]}"/><td th:text="${case.offence}"/></tr>
+      <tr><th th:text="${i18n.offenceHeaders[1]}"/><td th:text="${case.wording}"/></tr>
+      <tr><th th:text="${i18n.offenceHeaders[2]}"/><td th:text="${case.reportingRestriction}"/></tr>
     </span>
     </table>
   </div>
 </div>
 
 <hr/>
-<p style="font-family: 'GDS Transport'; font-size: 24px;">Note this document contains Special Category Data as defined by Data Protection Act 2018, formally known as Sensitive Personal Data, and should be handled appropriately.</p>
-<p style="font-family: 'GDS Transport'; font-size: 24px;">This document contains information intended to assist the accurate reporting of court proceedings. It is vital you ensure that you safeguard the Special Category Data included and abide by reporting restrictions (for example on victims and children). HMCTS will stop sending the data if there is concern about how it will be used.</p>
+<p th:text="${i18n.legal1}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
+<p th:text="${i18n.legal2}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
 <hr/>
-<p style="text-align: center;">Thank you for reading this document thoroughly.</p>
+<p th:text="${i18n.endText}" style="text-align: center;"/>
 </body>
 </html>

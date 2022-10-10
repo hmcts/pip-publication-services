@@ -1,19 +1,26 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SjpPressList;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelAbstractList;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +29,7 @@ import java.util.stream.Collectors;
  * passed in to PDF Creation Service.
  */
 @Service
-public class SjpPressListConverter implements Converter {
+public class SjpPressListConverter extends ExcelAbstractList implements Converter {
 
     public static final String INDIVIDUAL_DETAILS = "individualDetails";
 
@@ -35,10 +42,100 @@ public class SjpPressListConverter implements Converter {
      * @return - html string of final output
      */
     @Override
-    public String convert(JsonNode jsonBody, Map<String, String> metadata) {
+    public String convert(JsonNode jsonBody, Map<String, String> metadata, Map<String, Object> language) {
         Context context = new Context();
+        List<SjpPressList> caseList = processRawJson(jsonBody);
+
+        String publishedDate = DateHelper.formatTimeStampToBst(
+            jsonBody.get("document").get("publicationDate").asText(), Language.valueOf(metadata.get("language")),
+            false,
+            true
+        );
+        context.setVariable(
+            "contentDate",
+            metadata.get("contentDate")
+        );
+        context.setVariable("i18n", language);
+        context.setVariable("publishedDate", publishedDate);
+        context.setVariable("jsonBody", jsonBody);
+        context.setVariable("metaData", metadata);
+        context.setVariable("cases", caseList);
+        context.setVariable("artefact", jsonBody);
+        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
+        return templateEngine.process("sjpPressList.html", context);
+    }
+
+    /**
+     * Create SJP press list Excel spreadsheet from list data.
+     *
+     * @param artefact Tree object model for artefact.
+     * @return The converted Excel spreadsheet as a byte array.
+     */
+    @Override
+    public byte[] convertToExcel(JsonNode artefact) throws IOException {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            final List<SjpPressList> cases = processRawJson(artefact);
+
+            Sheet sheet = workbook.createSheet("SJP Press List");
+            CellStyle boldStyle = createBoldStyle(workbook);
+
+            int rowIdx = 0;
+            Row headingRow = sheet.createRow(rowIdx++);
+            setCellValue(headingRow, 0, "Address", boldStyle);
+            setCellValue(headingRow, 1, "Case URN", boldStyle);
+            setCellValue(headingRow, 2, "Date of Birth", boldStyle);
+            setCellValue(headingRow, 3, "Defendant Name", boldStyle);
+
+            // Write out column headings for the max number of offences a defendant may have
+            Integer maxOffences =
+                cases.stream().map(SjpPressList::getNumberOfOffences).reduce(Integer::max).orElse(0);
+            int offenceHeadingsIdx = 4;
+
+            for (int i = 1; i <= maxOffences; i++) {
+                setCellValue(headingRow, offenceHeadingsIdx,
+                             String.format("Offence %o Press Restriction Requested", i),boldStyle);
+                setCellValue(headingRow, ++offenceHeadingsIdx,
+                             String.format("Offence %o Title", i), boldStyle);
+                setCellValue(headingRow, ++offenceHeadingsIdx,
+                             String.format("Offence %o Wording", i), boldStyle);
+                offenceHeadingsIdx++;
+            }
+            setCellValue(headingRow, offenceHeadingsIdx, "Prosecutor Name", boldStyle);
+
+            // Write out the data to the sheet
+            for (SjpPressList entry : cases) {
+                Row dataRow = sheet.createRow(rowIdx++);
+                setCellValue(dataRow, 0, concatenateStrings(entry.getAddressLine1(),
+                                                            String.join(" ", entry.getAddressRemainder())));
+                setCellValue(dataRow, 1, concatenateStrings(entry.getReference1(),
+                                                            String.join(" ", entry.getReferenceRemainder())));
+                setCellValue(dataRow, 2, String.format("%s (%s)", entry.getDateOfBirth(), entry.getAge()));
+                setCellValue(dataRow, 3, entry.getName());
+
+                int offenceColumnIdx = 4;
+
+                for (Map<String, String> offence : entry.getOffences()) {
+                    setCellValue(dataRow, offenceColumnIdx, offence.get("reportingRestriction"));
+                    setCellValue(dataRow, ++offenceColumnIdx, offence.get("offence"));
+                    setCellValue(dataRow, ++offenceColumnIdx, offence.get("wording"));
+                    ++offenceColumnIdx;
+                }
+                setCellValue(dataRow, offenceHeadingsIdx, entry.getProsecutor());
+            }
+            autoSizeSheet(sheet);
+
+            return convertToByteArray(workbook);
+        }
+    }
+
+    /**
+     * Process the provided json body into a list of SjpPressList.
+     *
+     * @param jsonBody The raw json to process.
+     * @return A list of SjpPressList.
+     */
+    List<SjpPressList> processRawJson(JsonNode jsonBody) {
         List<SjpPressList> caseList = new ArrayList<>();
-        AtomicInteger count = new AtomicInteger();
 
         jsonBody.get("courtLists").forEach(courtList -> {
             courtList.get("courtHouse").get("courtRoom").forEach(courtRoom -> {
@@ -49,7 +146,7 @@ public class SjpPressListConverter implements Converter {
                             processRoles(thisCase, hearing);
                             processCaseUrns(thisCase, hearing.get("case"));
                             processOffences(thisCase, hearing.get("offence"));
-                            thisCase.setCaseCounter(count.incrementAndGet());
+                            thisCase.setNumberOfOffences(thisCase.getOffences().size());
                             caseList.add(thisCase);
                         });
                     });
@@ -57,20 +154,7 @@ public class SjpPressListConverter implements Converter {
             });
         });
 
-        String publishedDate = DateHelper.formatTimeStampToBst(
-            jsonBody.get("document").get("publicationDate").asText(), false, true
-        );
-        context.setVariable(
-            "contentDate",
-            metadata.get("contentDate")
-        );
-        context.setVariable("publishedDate", publishedDate);
-        context.setVariable("jsonBody", jsonBody);
-        context.setVariable("metaData", metadata);
-        context.setVariable("cases", caseList);
-        context.setVariable("artefact", jsonBody);
-        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
-        return templateEngine.process("sjpPressList.html", context);
+        return caseList;
     }
 
     /**
@@ -166,5 +250,13 @@ public class SjpPressListConverter implements Converter {
      */
     private String processReportingRestrictionsjpPress(JsonNode node) {
         return node.get("reportingRestriction").asBoolean() ? "Active" : "None";
+    }
+
+    private String concatenateStrings(String... groupOfStrings) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String stringToAdd : groupOfStrings) {
+            stringBuilder.append(stringToAdd).append(' ');
+        }
+        return stringBuilder.toString();
     }
 }

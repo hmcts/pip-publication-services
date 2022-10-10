@@ -4,6 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.text.WordUtils;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Class for static utility methods assisting with json->html->pdf issues.
@@ -46,6 +52,14 @@ public final class GeneralHelper {
                     .append(delimiter);
             }
         });
+    }
+
+    public static String listTypeToCamelCase(ListType listType) {
+        StringBuilder outputString = new StringBuilder();
+        List<String> splitList = List.of(listType.toString().split("_"));
+        outputString.append(splitList.get(0).toLowerCase(Locale.UK))
+            .append(splitList.stream().skip(1).map(WordUtils::capitalizeFully).collect(Collectors.joining()));
+        return outputString.toString();
     }
 
     @SuppressWarnings("PMD.AvoidCatchingNPE")
