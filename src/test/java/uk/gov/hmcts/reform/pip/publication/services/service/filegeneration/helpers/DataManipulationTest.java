@@ -6,6 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -55,7 +56,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatVenueAddressMethod() {
-        List<String> venueAddress = DataManipulation.formatVenueAddress(inputJson);
+        List<String> venueAddress = LocationHelper.formatVenueAddress(inputJson);
 
         assertEquals(venueAddress.get(0), "Address Line 1",
                      "Unable to get address for venue");
@@ -67,7 +68,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatCourtAddressMethod() {
-        DataManipulation.formatCourtAddress(inputJson);
+        LocationHelper.formatCourtAddress(inputJson);
 
         assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
                        .has(FORMATTED_COURT_HOUSE_ADDRESS))
@@ -87,7 +88,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatWithNoCourtAddressMethod() {
-        DataManipulation.formatCourtAddress(inputJson);
+        LocationHelper.formatCourtAddress(inputJson);
 
         assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
                        .has(FORMATTED_COURT_HOUSE_ADDRESS))
@@ -102,7 +103,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatCourtRoomName() {
-        DataManipulation.manipulatedDailyListData(inputJson);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -115,7 +116,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatHearingDuration() {
-        DataManipulation.manipulatedDailyListData(inputJson);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -129,7 +130,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatHearingTime() {
-        DataManipulation.manipulatedDailyListData(inputJson);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -143,7 +144,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatHearingChannel() {
-        DataManipulation.manipulatedDailyListData(inputJson);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -157,7 +158,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatCaseIndicator() {
-        DataManipulation.manipulateCopListData(inputJsonCop);
+        DataManipulation.manipulateCopListData(inputJsonCop, Language.ENGLISH);
 
         assertThat(inputJsonCop.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -173,7 +174,7 @@ class DataManipulationTest {
 
     @Test
     void testFindAndManipulateJudiciary() {
-        DataManipulation.manipulateCopListData(inputJsonCop);
+        DataManipulation.manipulateCopListData(inputJsonCop, Language.ENGLISH);
 
         assertThat(inputJsonCop.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -202,7 +203,7 @@ class DataManipulationTest {
 
         JsonNode newInputJson = new ObjectMapper().readTree(writer.toString());
 
-        DataManipulation.manipulateCopListData(newInputJson);
+        DataManipulation.manipulateCopListData(newInputJson, Language.ENGLISH);
 
         assertThat(newInputJson.get("regionName").asText())
             .as("Unable to get region name")
@@ -211,7 +212,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatRegionalJoh() {
-        DataManipulation.manipulateCopListData(inputJsonCop);
+        DataManipulation.manipulateCopListData(inputJsonCop, Language.ENGLISH);
 
         assertThat(inputJsonCop.get("regionalJoh").asText())
             .as("Unable to get regional Joh")
@@ -228,7 +229,7 @@ class DataManipulationTest {
 
         JsonNode newInputJson = new ObjectMapper().readTree(writer.toString());
 
-        DataManipulation.manipulateCopListData(newInputJson);
+        DataManipulation.manipulateCopListData(newInputJson, Language.ENGLISH);
 
         assertThat(newInputJson.get("regionalJoh").asText())
             .as("Unable to get regional Joh")
@@ -237,7 +238,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatCaseName() {
-        DataManipulation.manipulatedDailyListData(inputJson);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -253,7 +254,7 @@ class DataManipulationTest {
 
     @Test
     void testCaseType() {
-        DataManipulation.manipulatedDailyListData(inputJson);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)

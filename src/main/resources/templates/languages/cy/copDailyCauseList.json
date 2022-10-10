@@ -1,0 +1,30 @@
+{
+  "serviceName": "Gwasanaeth Gwrandawiadau llys a thribiwnlys",
+  "pdfAccessibility": " Tudalen PDF/UA ",
+  "of": " o ",
+  "listName": "Rhestr Achosion Ddyddiol y Llys Gwarchod",
+  "lastUpdated": "Diweddarwyd ddiwethaf ",
+  "inThe": "Yn y ",
+  "listFor": "Rhestr ar gyfer ",
+  "courtOfProtection": "llys Gwarchod ",
+  "regionalLeadJudge": "Barnwr Arweiniol Rhanbarthol: ",
+  "sittingAt": "Yn eistedd yn ",
+  "at": " yn ",
+  "importantInfo": "Gwybodaeth bwysig",
+  "legal1": "Mae cyfiawnder agored yn egwyddor sylfaenol yng nghyfundrefn y llysoedd a'r tribiwnlysoedd, a bydd yn dal i fod felly wrth i'r defnydd o dechnoleg sain a fideo gynyddu.",
+  "legal2": "Nid yw gwrandawiadau datrys anghydfod yn wrandawiadau a fynychir i ddibenion Cyfarwyddyd Ymarfer 4C. Dylid gwneud cais i arsylwi unrhyw wrandawiad arall i:",
+  "legal3": "Bydd barnwyr yn ystyried egwyddorion cyfiawnder agored wrth ystyried defnyddio technoleg ffôn a fideo. Geill y bydd arsylwyr yn cael eu heithrio pan fo hynny'n angenrheidiol i sicrhau gweinyddu cyfiawnder yn iawn.",
+  "beforeHon": "Cyn ",
+  "headerValuesWrap": [
+    "Amser dechrau",
+    "Cyfeirnod achos",
+    "Manylion yr achos",
+    "Math o wrandawiad",
+    "Amcangyfrif o'r amser",
+    "Sianel y Gwrandawiad"
+  ],
+  "dataSource": "Ffynhonnell y Data: ",
+  "thanks": "Diolch am ddarllen y ddogfen hon yn fanwl.",
+  "bottomLegal1": "Noder bod y ddogfen hon yn cynnwys Data Categori Arbennig fel y’i diffinnir yn Neddf Gwarchod Data 2018, a elwid gynt yn Ddata Personol Sensitif, a dylid ei drin yn y ffordd briodol.",
+  "bottomLegal2": "Mae’r ddogfen hon yn cynnwys gwybodaeth a fwriedir i gynorthwyo i roi adroddiad manwl-gywir am achosion llys. Mae’n hanfodol eich bod yn sicrhau eich bod yn gwarchod y Data Categori Arbennig sydd ynddi ac yn cadw at gyfyngiadau adrodd (er enghraifft yn achos dioddefwyr a phlant). Bydd GLlTEM yn rhoi’r gorau i anfon y data os cyfyd pryder ynghylch sut y’i defnyddir."
+}

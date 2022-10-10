@@ -11,6 +11,8 @@ public class Location {
 
     private String name;
 
+    private String welshName;
+
     private List<String> jurisdiction;
 
     private List<String> region;

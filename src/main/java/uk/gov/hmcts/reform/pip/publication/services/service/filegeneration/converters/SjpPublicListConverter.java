@@ -9,6 +9,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SjpPublicList;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelAbstractList;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
@@ -30,13 +31,16 @@ public class SjpPublicListConverter extends ExcelAbstractList implements Convert
      * @return the HTML representation of the SJP public cases
      */
     @Override
-    public String convert(JsonNode artefact, Map<String, String> metadata) {
+    public String convert(JsonNode artefact, Map<String, String> metadata, Map<String,Object> language) {
         Context context = new Context();
         String publicationDate = DateHelper.formatTimeStampToBst(
-            artefact.get("document").get("publicationDate").textValue(), false, true
+            artefact.get("document").get("publicationDate").textValue(), Language.valueOf(metadata.get("language")),
+            false,
+            true
         );
         context.setVariable("publicationDate", publicationDate);
         context.setVariable("contentDate", metadata.get("contentDate"));
+        context.setVariable("i18n", language);
         context.setVariable("cases", processRawListData(artefact));
 
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();

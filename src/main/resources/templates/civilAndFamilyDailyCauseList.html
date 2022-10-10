@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <style>
+  <style th:inline="text">
     @page {
       margin: 30px 20px;
 
       @bottom-center {
         font-family: 'GDS Transport';
         font-size: 16px;
-        color: blue;
-        content: "This is PDF/UA page " counter(page) " of " counter(pages) ".";
+        color: grey;
+        content: "[[${i18n.serviceName + i18n.pdfAccessibility}]]" counter(page) "[[${i18n.of}]]" counter(pages) ".";
       }
     }
 
@@ -77,7 +77,6 @@
       position: relative;
       margin-bottom: 5px;
       padding-left: 25px;
-      color: #1d70b8;
       cursor: pointer;
     }
 
@@ -156,37 +155,31 @@
   <meta name="subject" content="Accessible PDF template"/>
   <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
   <meta name="description" content="Document description - vital for compliance."/>
-  <title>Family Daily Cause List</title>
+  <title th:text="${i18n.listName}"/>
 </head>
 <body>
 <div class="header">
   <img
     src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png"
     alt="HMCTS Logo"/>
-  <h1>Court and Tribunal Hearings Service</h1>
-  <h2 id="page-heading" class="govuk-heading-l">Civil and Family Daily Cause List:</h2>
-  <h2 id="page-heading" class="govuk-heading-l" th:text="${'In the ' + locationName}"/>
+  <h1 th:text="${i18n.serviceName}"/>
+  <h2 id="page-heading" class="govuk-heading-l" th:text="${i18n.listName + ':'}"/>
+  <h2 id="page-heading" class="govuk-heading-l" th:text="${i18n.inThe + locationName}"/>
   <p class="govuk-body">
     <span th:each="address : ${venueAddress}">
       <td th:text="${address}"/>
     </span>
   </p>
-  <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1" th:text="${'List for ' + contentDate}"/>
-  <p class="govuk-body" th:text="${'Last Updated ' + publicationDate + ' at ' + publicationTime}"/>
+  <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1" th:text="${i18n.listFor + contentDate}"/>
+  <p class="govuk-body" th:text="${i18n.lastUpdated + publicationDate + i18n.at + publicationTime}"/>
   <details class="govuk-details" data-module="govuk-details" open="">
     <summary class="govuk-details__summary">
-        <span class="govuk-details__summary-text">
-          Important information
-        </span>
+      <p th:text="${i18n.importantInfo}" class="govuk-details__summary-text"/>
     </summary>
     <div class="govuk-details__text">
-      <p>Open justice is a fundamental principle in our courts and tribunals system, and will continue to be as we
-        increase the use of audio and video technology.</p>
-      <p
-        th:text="${'Requests from the media and others to observe a hearing remotely in Milton Keynes County Court and Family Court should be made direct to: ' + artefact.get('venue').get('venueContact').get('venueEmail').asText() + ' or by calling ' + artefact.get('venue').get('venueContact').get('venueTelephone').asText() + '. Arrangements will then be made to enable you to attend.'}"/>
-      <p>When considering the use of telephone and video technology, the judiciary will have regard to the principles of
-        open justice. Judges may determine that a hearing should be held in private if this is necessary to secure the
-        proper administration of justice.</p>
+      <p th:text="${i18n.legal1}"/>
+      <p th:text="${i18n.legal2 + locationName + i18n.legal3 + email + i18n.legal4 + phone + i18n.legal5}"/>
+      <p th:text="${i18n.legal6}"/>
     </div>
   </details>
   <div aria-label="Court Lists" class="landscape">
@@ -212,15 +205,12 @@
               <table class="govuk-table">
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
-                  <th scope="col" class="govuk-table__header no-wrap">Time</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Case ref</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Case name</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Case type</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Hearing type</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Location</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Duration</th>
-                  <th scope="col" class="govuk-table__header">Applicant/Petitioner</th>
-                  <th scope="col" class="govuk-table__header">Respondent</th>
+                  <th:block th:each="header:${i18n.headerValuesWrap}">
+                    <th th:text="${header}" scope="col" class="govuk-table__header no-wrap"/>
+                  </th:block>
+                  <th:block th:each="headerUnWrapped:${i18n.headerValuesUnwrap}">
+                  <th th:text="${headerUnWrapped}" scope="col" class="govuk-table__header"/>
+                  </th:block>
                 </tr>
                 </thead>
                 <tbody class="govuk-table__body">
@@ -247,19 +237,14 @@
       </div>
     </div>
   </div>
-  <div style="display: inline-flex; align-items: center;">
-    <p class="govuk-body govuk-!-font-size-14" th:text="${'Data Source: ' + provenance}"/>
+  <section>
+    <p class="govuk-body govuk-font-14" th:text="${i18n.dataSource + metadata.provenance}"/>
     <hr/>
-    <p class="govuk-body govuk-!-font-size-14">Note this document contains Special Category Data as
-      defined by Data Protection Act 2018, formally known as Sensitive Personal Data, and should be handled
-      appropriately.</p>
-    <p class="govuk-body govuk-!-font-size-14">This document contains information intended to assist the
-      accurate reporting of court proceedings. It is vital you ensure that you safeguard the Special Category Data
-      included and abide by reporting restrictions (for example on victims and children). HMCTS will stop sending the
-      data if there is concern about how it will be used.</p>
+    <p th:text="${i18n.bottomLegal1}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
+    <p th:text="${i18n.bottomLegal2}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
     <hr/>
-    <p style="text-align: center;" class="govuk-body govuk-!-font-size-14">Thank you for reading this document thoroughly.</p>
-  </div>
+    <p th:text="${i18n.thanks}" style="text-align: center;"/>
+  </section>
 </div>
 </body>
 </html>

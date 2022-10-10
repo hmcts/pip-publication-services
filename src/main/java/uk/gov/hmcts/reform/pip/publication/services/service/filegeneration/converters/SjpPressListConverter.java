@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.SjpPressList;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelAbstractList;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
@@ -41,17 +42,20 @@ public class SjpPressListConverter extends ExcelAbstractList implements Converte
      * @return - html string of final output
      */
     @Override
-    public String convert(JsonNode jsonBody, Map<String, String> metadata) {
+    public String convert(JsonNode jsonBody, Map<String, String> metadata, Map<String, Object> language) {
         Context context = new Context();
         List<SjpPressList> caseList = processRawJson(jsonBody);
 
         String publishedDate = DateHelper.formatTimeStampToBst(
-            jsonBody.get("document").get("publicationDate").asText(), false, true
+            jsonBody.get("document").get("publicationDate").asText(), Language.valueOf(metadata.get("language")),
+            false,
+            true
         );
         context.setVariable(
             "contentDate",
             metadata.get("contentDate")
         );
+        context.setVariable("i18n", language);
         context.setVariable("publishedDate", publishedDate);
         context.setVariable("jsonBody", jsonBody);
         context.setVariable("metaData", metadata);

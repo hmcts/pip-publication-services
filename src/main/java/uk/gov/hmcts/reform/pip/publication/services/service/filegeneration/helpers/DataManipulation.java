@@ -6,13 +6,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.micrometer.core.instrument.util.StringUtils;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.CourtHouse;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.CourtRoom;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.Hearing;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.sscsdailylist.Sitting;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,11 +20,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.GodClass"})
+@SuppressWarnings({"PMD.TooManyMethods"})
 public final class DataManipulation {
-    private static final String POSTCODE = "postCode";
-    private static final String COURT_HOUSE = "courtHouse";
-    private static final int MINUTES_PER_HOUR = 60;
     private static final String CASE_SEQUENCE_INDICATOR = "caseSequenceIndicator";
     private static final ObjectMapper MAPPER = new ObjectMapper();
     public static final String APPLICANT = "applicant";
@@ -39,22 +35,26 @@ public final class DataManipulation {
 
     public static void manipulateCaseInformationForCop(JsonNode hearingCase) {
         if (!GeneralHelper.findAndReturnNodeText(hearingCase, CASE_SEQUENCE_INDICATOR).isEmpty()) {
-            ((ObjectNode)hearingCase).put("caseIndicator",
-                                          "[" + hearingCase.get(CASE_SEQUENCE_INDICATOR).asText() + "]");
+            ((ObjectNode) hearingCase).put(
+                "caseIndicator",
+                "[" + hearingCase.get(CASE_SEQUENCE_INDICATOR).asText() + "]"
+            );
         }
     }
 
-    public static void manipulateCopListData(JsonNode artefact) {
-        formatRegionName(artefact);
-        formatRegionalJoh(artefact);
+    public static void manipulateCopListData(JsonNode artefact, Language language) {
+        LocationHelper.formatRegionName(artefact);
+        LocationHelper.formatRegionalJoh(artefact);
 
         artefact.get("courtLists").forEach(courtList -> {
             courtList.get("courtHouse").get("courtRoom").forEach(courtRoom -> {
                 courtRoom.get("session").forEach(session -> {
-                    ((ObjectNode)session).put("formattedSessionJoh",
-                                              DataManipulation.findAndManipulateJudiciaryForCop(session));
+                    ((ObjectNode) session).put(
+                        "formattedSessionJoh",
+                        DataManipulation.findAndManipulateJudiciaryForCop(session)
+                    );
                     session.get("sittings").forEach(sitting -> {
-                        DataManipulation.calculateDuration(sitting);
+                        DateHelper.calculateDuration(sitting, language);
                         DataManipulation.findAndConcatenateHearingPlatform(sitting, session);
 
                         sitting.get("hearing").forEach(hearing -> {
@@ -66,117 +66,47 @@ public final class DataManipulation {
         });
     }
 
-    public static List<String> formatVenueAddress(JsonNode artefact) {
-        List<String> address = new ArrayList<>();
-        JsonNode arrayNode = artefact.get("venue").get("venueAddress").get("line");
-        for (JsonNode jsonNode : arrayNode) {
-            if (!jsonNode.asText().isEmpty()) {
-                address.add(jsonNode.asText());
-            }
-        }
-        if (!GeneralHelper.findAndReturnNodeText(artefact.get("venue").get("venueAddress"), POSTCODE).isEmpty()) {
-            address.add(artefact.get("venue").get("venueAddress").get(POSTCODE).asText());
-        }
-        return address;
-
-    }
-
-    public static void formatCourtAddress(JsonNode artefact) {
+    public static void manipulatedDailyListData(JsonNode artefact, Language language) {
         artefact.get("courtLists").forEach(courtList -> {
-            StringBuilder formattedCourtAddress = new StringBuilder();
-
-            if (courtList.get(COURT_HOUSE).has("courtHouseAddress")) {
-                JsonNode courtHouseAddress = courtList.get(COURT_HOUSE).get("courtHouseAddress");
-
-                GeneralHelper.loopAndFormatString(courtHouseAddress, "line",
-                                            formattedCourtAddress, "|");
-
-                checkAndFormatAddress(courtHouseAddress, "town",
-                                           formattedCourtAddress, '|');
-
-                checkAndFormatAddress(courtHouseAddress, "county",
-                                           formattedCourtAddress, '|');
-
-                checkAndFormatAddress(courtHouseAddress, POSTCODE,
-                                           formattedCourtAddress, '|');
-            }
-
-            ((ObjectNode)courtList.get(COURT_HOUSE)).put("formattedCourtHouseAddress",
-                formattedCourtAddress.toString().replaceAll(", $", ""));
-        });
-    }
-
-    private static void checkAndFormatAddress(JsonNode node, String nodeName,
-                                      StringBuilder builder, Character delimiter) {
-        if (!GeneralHelper.findAndReturnNodeText(node, nodeName).isEmpty()) {
-            builder
-                .append(node.get(nodeName).asText())
-                .append(delimiter);
-        }
-    }
-
-    public static void manipulatedDailyListData(JsonNode artefact) {
-        artefact.get("courtLists").forEach(courtList -> {
-            courtList.get(COURT_HOUSE).get("courtRoom").forEach(courtRoom -> {
+            courtList.get(LocationHelper.COURT_HOUSE).get("courtRoom").forEach(courtRoom -> {
                 courtRoom.get("session").forEach(session -> {
                     StringBuilder formattedJudiciary = new StringBuilder();
                     formattedJudiciary.append(findAndManipulateJudiciary(session));
                     session.get("sittings").forEach(sitting -> {
-                        calculateDuration(sitting);
+                        DateHelper.calculateDuration(sitting, language);
                         findAndConcatenateHearingPlatform(sitting, session);
 
                         sitting.get("hearing").forEach(hearing -> {
                             if (hearing.has("party")) {
-                                findAndManipulatePartyInformation(hearing);
+                                findAndManipulatePartyInformation(hearing, language);
                             } else {
-                                ((ObjectNode)hearing).put(APPLICANT, "");
-                                ((ObjectNode)hearing).put(RESPONDENT, "");
+                                ((ObjectNode) hearing).put(APPLICANT, "");
+                                ((ObjectNode) hearing).put(RESPONDENT, "");
                             }
                             hearing.get("case").forEach(DataManipulation::manipulateCaseInformation);
                         });
                     });
-                    formattedCourtRoomName(courtRoom, session, formattedJudiciary);
+                    LocationHelper.formattedCourtRoomName(courtRoom, session, formattedJudiciary);
                 });
             });
         });
     }
 
-    public static void calculateDuration(JsonNode sitting) {
-        ZonedDateTime sittingStart = DateHelper.convertStringToUtc(sitting.get("sittingStart").asText());
-        ZonedDateTime sittingEnd = DateHelper.convertStringToUtc(sitting.get("sittingEnd").asText());
-
-        double durationAsHours = 0;
-        double durationAsMinutes = DateHelper.convertTimeToMinutes(sittingStart, sittingEnd);
-
-        if (durationAsMinutes >= MINUTES_PER_HOUR) {
-            durationAsHours = Math.floor(durationAsMinutes / MINUTES_PER_HOUR);
-            durationAsMinutes = durationAsMinutes - (durationAsHours * MINUTES_PER_HOUR);
-        }
-
-        String formattedDuration = DateHelper.formatDuration((int) durationAsHours,
-            (int) durationAsMinutes);
-
-        ((ObjectNode)sitting).put("formattedDuration", formattedDuration);
-
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
-        String time = dtf.format(sittingStart);
-
-        ((ObjectNode)sitting).put("time", time);
-    }
-
     private static void manipulateCaseInformation(JsonNode hearingCase) {
         if (!GeneralHelper.findAndReturnNodeText(hearingCase, CASE_SEQUENCE_INDICATOR).isEmpty()) {
-            ((ObjectNode)hearingCase).put("caseName",
+            ((ObjectNode) hearingCase).put(
+                "caseName",
                 GeneralHelper.findAndReturnNodeText(hearingCase, "caseName")
-                    + " [" + hearingCase.get(CASE_SEQUENCE_INDICATOR).asText() + "]");
+                    + " [" + hearingCase.get(CASE_SEQUENCE_INDICATOR).asText() + "]"
+            );
         }
 
         if (!hearingCase.has("caseType")) {
-            ((ObjectNode)hearingCase).put("caseType", "");
+            ((ObjectNode) hearingCase).put("caseType", "");
         }
     }
 
-    private static void findAndManipulatePartyInformation(JsonNode hearing) {
+    private static void findAndManipulatePartyInformation(JsonNode hearing, Language language) {
         StringBuilder applicant = new StringBuilder();
         StringBuilder respondent = new StringBuilder();
 
@@ -190,21 +120,19 @@ public final class DataManipulation {
                     case "APPLICANT_PETITIONER_REPRESENTATIVE": {
                         final String applicantPetitionerDetails = createIndividualDetails(party);
                         if (!applicantPetitionerDetails.isEmpty()) {
-                            applicant.append("Legal Advisor: ");
+                            String advisor = (language == Language.ENGLISH) ? "Legal Advisor: " :
+                                "Cynghorydd Cyfreithiol: ";
+                            applicant.append(advisor);
                             applicant.append(applicantPetitionerDetails).append(", ");
                         }
                         break;
                     }
-                    case RESPONDENT: {
+                    case "RESPONDENT": {
                         formatPartyNonRepresentative(party, respondent);
                         break;
                     }
                     case "RESPONDENT_REPRESENTATIVE": {
-                        final String respondentDetails = createIndividualDetails(party);
-                        if (!respondentDetails.isEmpty()) {
-                            respondent.append("Legal Advisor: ");
-                            respondent.append(respondentDetails).append(", ");
-                        }
+                        respondent.append(respondentRepresentative(language, party));
                         break;
                     }
                     default:
@@ -213,8 +141,20 @@ public final class DataManipulation {
             }
         });
 
-        ((ObjectNode)hearing).put(APPLICANT, GeneralHelper.trimAnyCharacterFromStringEnd(applicant.toString()));
-        ((ObjectNode)hearing).put(RESPONDENT, GeneralHelper.trimAnyCharacterFromStringEnd(respondent.toString()));
+        ((ObjectNode) hearing).put(APPLICANT, GeneralHelper.trimAnyCharacterFromStringEnd(applicant.toString()));
+        ((ObjectNode) hearing).put(RESPONDENT, GeneralHelper.trimAnyCharacterFromStringEnd(respondent.toString()));
+    }
+
+    private static String respondentRepresentative(Language language, JsonNode respondentDetails) {
+        StringBuilder builder = new StringBuilder();
+        final String details = createIndividualDetails(respondentDetails);
+        if (!respondentDetails.isEmpty()) {
+            String advisor = (language == Language.ENGLISH) ? "Legal Advisor: " :
+                "Cynghorydd Cyfreithiol: ";
+            builder.append(advisor);
+            builder.append(details).append(", ");
+        }
+        return builder.toString();
     }
 
     private static void formatPartyNonRepresentative(JsonNode party, StringBuilder builder) {
@@ -240,13 +180,15 @@ public final class DataManipulation {
 
         if (sitting.has(CHANNEL)) {
             GeneralHelper.loopAndFormatString(sitting, CHANNEL,
-                                              formattedHearingPlatform, ", ");
+                                              formattedHearingPlatform, ", "
+            );
         } else if (session.has("sessionChannel")) {
             GeneralHelper.loopAndFormatString(session, "sessionChannel",
-                                              formattedHearingPlatform, ", ");
+                                              formattedHearingPlatform, ", "
+            );
         }
 
-        ((ObjectNode)sitting).put("caseHearingChannel", GeneralHelper.trimAnyCharacterFromStringEnd(
+        ((ObjectNode) sitting).put("caseHearingChannel", GeneralHelper.trimAnyCharacterFromStringEnd(
             formattedHearingPlatform.toString().trim()));
     }
 
@@ -269,46 +211,6 @@ public final class DataManipulation {
         }
 
         return GeneralHelper.trimAnyCharacterFromStringEnd(formattedJudiciary.toString());
-    }
-
-    public static void formatRegionName(JsonNode artefact) {
-        try {
-            ((ObjectNode) artefact).put("regionName",
-                                        artefact.get("locationDetails").get("region").get("name").asText());
-        } catch (Exception e) {
-            ((ObjectNode) artefact).put("regionName", "");
-        }
-    }
-
-    public static void formatRegionalJoh(JsonNode artefact) {
-        StringBuilder formattedJoh = new StringBuilder();
-        try {
-            artefact.get("locationDetails").get("region").get("regionalJOH").forEach(joh -> {
-                if (formattedJoh.length() != 0) {
-                    formattedJoh.append(", ");
-                }
-
-                formattedJoh.append(GeneralHelper.findAndReturnNodeText(joh, "johKnownAs"));
-                formattedJoh.append(' ');
-                formattedJoh.append(GeneralHelper.findAndReturnNodeText(joh, "johNameSurname"));
-            });
-
-            ((ObjectNode) artefact).put("regionalJoh", formattedJoh.toString());
-        } catch (Exception e) {
-            ((ObjectNode) artefact).put("regionalJoh", "");
-        }
-    }
-
-    private static void formattedCourtRoomName(JsonNode courtRoom, JsonNode session,
-                                        StringBuilder formattedJudiciary) {
-        if (StringUtils.isBlank(formattedJudiciary.toString())) {
-            formattedJudiciary.append(courtRoom.get("courtRoomName").asText());
-        } else {
-            formattedJudiciary.insert(0, courtRoom.get("courtRoomName").asText() + ": ");
-        }
-
-        ((ObjectNode)session).put("formattedSessionCourtRoom",
-            GeneralHelper.trimAnyCharacterFromStringEnd(formattedJudiciary.toString()));
     }
 
     private static String findAndManipulateJudiciary(JsonNode session) {
@@ -443,7 +345,8 @@ public final class DataManipulation {
         thisCourtRoom.setName(GeneralHelper.safeGet("courtRoomName", node));
         List<Sitting> sittingList = new ArrayList<>();
         List<String> sessionChannel;
-        TypeReference<List<String>> typeReference = new TypeReference<>() {};
+        TypeReference<List<String>> typeReference = new TypeReference<>() {
+        };
         for (final JsonNode session : node.get("session")) {
             sessionChannel = MAPPER.readValue(
                 session.get("sessionChannel").toString(),

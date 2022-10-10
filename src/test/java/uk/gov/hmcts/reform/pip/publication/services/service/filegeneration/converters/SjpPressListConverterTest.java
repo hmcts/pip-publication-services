@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
@@ -24,6 +25,7 @@ import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,12 +47,21 @@ class SjpPressListConverterTest {
 
     @Test
     void testSjpPressListTemplate() throws IOException {
+        Map<String, Object> language;
+        try (InputStream languageFile = Thread.currentThread()
+            .getContextClassLoader().getResourceAsStream("sjpPressList-language.json")) {
+            language = new ObjectMapper().readValue(
+                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
+                });
+        }
         Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
                                                  "provenance", "provenance",
-                                                 "locationName", "location"
+                                                 "locationName", "location",
+                                                 "language", "ENGLISH"
         );
 
-        String outputHtml = sjpPressListConverter.convert(getInput("/mocks/sjpPressMockJul22.json"), metadataMap);
+        String outputHtml = sjpPressListConverter.convert(getInput("/mocks/sjpPressMockJul22.json"), metadataMap,
+                                                          language);
         Document document = Jsoup.parse(outputHtml);
         assertThat(outputHtml).as("No html found").isNotEmpty();
 
@@ -60,7 +71,7 @@ class SjpPressListConverterTest {
 
         assertThat(document.getElementsByClass("mainHeaderText")
                        .select(".mainHeaderText > h1:nth-child(1)").text())
-            .as("incorrect header text").isEqualTo("Single Justice Procedure Press List");
+            .as("incorrect header text").isEqualTo("Single Justice Procedure - Press List");
 
         assertThat(document.select(
             "div.pageSeparatedCase:nth-child(2) > table:nth-child(3) > tbody:nth-child(1) >"

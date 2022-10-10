@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DataManipulation;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.GeneralHelper;
 
@@ -20,7 +21,7 @@ public class CopDailyCauseList {
     public String artefactSummaryCopDailyCauseList(String payload) throws JsonProcessingException {
         JsonNode node = new ObjectMapper().readTree(payload);
 
-        DataManipulation.manipulateCopListData(node);
+        DataManipulation.manipulateCopListData(node, Language.ENGLISH);
 
         return this.processCopDailyCauseList(node);
     }
@@ -52,7 +53,7 @@ public class CopDailyCauseList {
                                     .append(GeneralHelper.findAndReturnNodeText(sitting, "formattedDuration"))
                                     .append(' ')
                                     .append(GeneralHelper.findAndReturnNodeText(hearingCase, "caseIndicator"))
-                                    .append("\nBefore Hon - ")
+                                    .append("\nBefore - ")
                                     .append(GeneralHelper.findAndReturnNodeText(session, "formattedSessionJoh"));
                             });
                         });

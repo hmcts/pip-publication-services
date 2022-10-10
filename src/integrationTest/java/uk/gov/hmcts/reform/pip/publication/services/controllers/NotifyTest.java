@@ -105,7 +105,6 @@ class NotifyTest {
         + "    ]\n\n"
         + "  }\n\n"
         + "}\"";
-    private static final String EMAIL_SEND_MESSAGE = "Subscription email successfully sent to";
 
     private static final String NONEXISTENT_BLOB_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
@@ -138,7 +137,8 @@ class NotifyTest {
         + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"8a0ca51e-847e-4c6d-ad0f-a3f104f27845\",\n"
+        + "  \"email\": \"test_account_verified@hmcts.net\",\n"
+        + "  \"artefactId\": \"41ab3903-c87c-42b5-994f-9b55f6dcad48\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
@@ -405,7 +405,8 @@ class NotifyTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"SSCS Daily List", "SJP Public List", "SJP Press List", "COP Daily List"})
+    @ValueSource(strings = {"SSCS Daily List", "SJP Public List", "SJP Press List", "COP Daily List", "Civil Daily "
+        + "Cause List", "Civil and Family Daily Cause List", "Family Daily Cause List"})
     void testValidPayloadForAllSubsEmailTypesReturnsOk(String listType) throws Exception {
         MvcResult value = mockMvc.perform(post(SUBSCRIPTION_URL)
                                               .content(LIST_MAP.get(listType))
@@ -426,30 +427,6 @@ class NotifyTest {
                             .content(invalidEmailJsonBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testValidPayloadForSubsCivilDailyCauseListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString("Subscription email successfully sent to")));
-    }
-
-    @Test
-    void testValidPayloadForSubsFamilyCauseListListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
-    }
-
-    @Test
-    void testValidPayloadForSubsCivilAndFamilyCauseListEmailReturnsOk() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
-                            .content(VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andExpect(content().string(containsString(EMAIL_SEND_MESSAGE)));
     }
 
     @Test

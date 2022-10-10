@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <style>
+    <style th:inline="text">
     @page {
       margin: 30px 20px;
 
       @bottom-center {
         font-family: 'GDS Transport';
         font-size: 16px;
-        color: blue;
-        content: "Court and Tribunal Hearings Service - PDF/UA page " counter(page) " of " counter(pages) ".";
+        color: grey;
+        content: "[[${i18n.serviceName + i18n.pdfAccessibility}]]" counter(page) "[[${i18n.of}]]" counter(pages) ".";
       }
     }
 
@@ -21,16 +21,19 @@
     .landscape {
       page: landscapePage;
     }
+
     body {
       font-family: 'GDS Transport';
-      color: darkblue;
+      color: #0b0c0c;
       padding: 2px;
       font-size: 105%;
     }
+
     h1, h4 {
       font-family: "GDS Transport";
       color: black;
     }
+
     .govuk-heading-l {
       color: #0b0c0c;
       font-family: "GDS Transport";
@@ -41,6 +44,7 @@
       margin-top: 0;
       margin-bottom: 20px;
     }
+
     .govuk-body {
       color: #0b0c0c;
       font-family: "GDS Transport";
@@ -50,9 +54,11 @@
       margin-top: 0;
       margin-bottom: 15px;
     }
+
     .govuk-\!-font-weight-bold {
       font-weight: 700 !important;
     }
+
     .govuk-details {
       font-family: "GDS Transport";
       font-weight: 400;
@@ -62,24 +68,28 @@
       margin-bottom: 20px;
       display: block;
     }
+
     .govuk-details__summary {
       display: inline-block;
       position: relative;
       margin-bottom: 5px;
       padding-left: 25px;
-      color: #1d70b8;
+      color: #0b0c0c;
       cursor: pointer;
     }
+
     .govuk-details__text {
       padding-top: 15px;
       padding-bottom: 15px;
       padding-left: 20px;
       border-left: 5px solid #b1b4b6;
     }
+
     .site-header {
       position: relative;
       top: 2em;
     }
+
     .govuk-accordion__section-heading {
       margin-top: 0;
       margin-bottom: 0;
@@ -92,93 +102,108 @@
       color: #0b0c0c;
       display: block;
     }
+
     .govuk-accordion {
       page-break-after: always;
     }
+
+    td, th {
+      width: 140px;
+      padding: 10px;
+      word-wrap: break-word;
+    }
+
+
     .govuk-table {
+      table-layout: fixed;
       font-family: "GDS Transport";
       font-weight: 400;
       font-size: 16px;
       line-height: 1.25;
       color: #0b0c0c;
-      width: 100%;
+      width: 1050px;
       margin-bottom: 20px;
       border-spacing: 0;
       border-collapse: collapse;
     }
+
     .no-wrap {
       white-space: nowrap;
     }
+
     .govuk-table__header, .govuk-table__cell {
       padding: 10px 20px 10px 0;
       border-bottom: 1px solid #b1b4b6;
       text-align: left;
       vertical-align: top;
     }
+
     .govuk-table__header {
       font-weight: 700;
     }
-  </style>
+    </style>
   <meta charset="UTF-8"/>
   <meta name="subject" content="Accessible PDF template"/>
   <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
   <meta name="description" content="Document description - vital for compliance."/>
-  <title>COP Daily Cause List</title>
+  <title th:text="${i18n.listName}"/>
 </head>
 <body>
-<div class = "header">
-  <img src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png" alt="HMCTS Logo"/>
-  <h1>Court and Tribunal Hearings Service</h1>
-  <h2 id="page-heading" class="govuk-heading-l" th:text="${'In the court of Protection: ' + artefact.get('regionName').asText()}" />
-  <h2 class="govuk-heading-l" th:text="${'Regional Lead Judge: ' + artefact.get('regionalJoh').asText()}" />
-  <h2 class="govuk-heading-l" th:text="${'Sitting at ' + locationName}" />
-  <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1" th:text="${'List for ' + contentDate}" />
-  <p class="govuk-body" th:text="${'Last Updated ' + publicationDate + ' at ' + publicationTime}" />
+<div class="header">
+  <img
+    src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png"
+    alt="HMCTS Logo"/>
+  <h2 id="page-heading" class="govuk-heading-l"
+      th:text="${i18n.inThe + i18n.courtOfProtection + artefact.get('regionName').asText()}"/>
+  <h2 class="govuk-heading-l" th:text="${i18n.regionalLeadJudge + artefact.get('regionalJoh').asText()}"/>
+  <h2 class="govuk-heading-l" th:text="${i18n.sittingAt + locationName}"/>
+  <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1" th:text="${i18n.listFor + contentDate}"/>
+  <p class="govuk-body" th:text="${i18n.lastUpdated + publicationDate + i18n.at + publicationTime}"/>
   <details class="govuk-details" data-module="govuk-details" open="">
     <summary class="govuk-details__summary">
-        <span class="govuk-details__summary-text">
-          Important information
-        </span>
+      <p th:text="${i18n.importantInfo}" class="govuk-details__summary-text"/>
     </summary>
     <div class="govuk-details__text">
-      <p>Open justice is a fundamental principle in our courts and tribunals system, and will continue to be as we increase the use of audio and video technology.</p>
-      <p>Dispute Resolution Hearings are not attended hearings for the purpose of Practice Direction 4C. Requests to observe any other hearing should be made to:</p>
-      <p th:text="${artefact.get('venue').get('venueContact').get('venueEmail').asText() + ' ' +  artefact.get('venue').get('venueContact').get('venueTelephone').asText()}" />
-      <p>Judges will have regard to the principles of open justice when considering the use of telephone and video technology. Observers may be excluded where necessary to secure the proper administration of justice</p>
+      <p th:text="${i18n.legal1}"/>
+      <p th:text="${i18n.legal2}"/>
+      <p th:text="${artefact.get('venue').get('venueContact').get('venueEmail').asText() + ' ' +  artefact.get('venue').get('venueContact').get('venueTelephone').asText()}"/>
+      <p th:text="${i18n.legal3}"/>
     </div>
   </details>
 
   <div aria-label="Court Lists" class="landscape">
-    <div class="site-header" tabindex="0" aria-label="Court Details" th:each="courtList : ${artefact.get('courtLists')}">
-      <h1 class="govuk-heading-l site-address" tabindex="0" th:text="${courtList.get('courtHouse').get('courtHouseName').asText()}" />
-      <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default" th:each="courtRoom : ${courtList.get('courtHouse').get('courtRoom')}">
+    <div class="site-header" tabindex="0" aria-label="Court Details"
+         th:each="courtList : ${artefact.get('courtLists')}">
+      <h1 class="govuk-heading-l site-address" tabindex="0"
+          th:text="${courtList.get('courtHouse').get('courtHouseName').asText()}"/>
+      <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default"
+           th:each="courtRoom : ${courtList.get('courtHouse').get('courtRoom')}">
         <div th:each="session : ${courtRoom.get('session')}">
           <div class="govuk-accordion__section-header">
-            <h2 class="govuk-accordion__section-heading" th:text="${'Before Hon ' + session.get('formattedSessionJoh').asText()}" />
+            <h2 class="govuk-accordion__section-heading"
+                th:text="${i18n.beforeHon + session.get('formattedSessionJoh').asText()}"/>
           </div>
           <div class="govuk-accordion__section-content">
             <div class="parent-box overflow-table">
               <table class="govuk-table">
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
-                  <th scope="col" class="govuk-table__header no-wrap">Start Time</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Case ref</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Case Details</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Hearing type</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Time Estimate</th>
-                  <th scope="col" class="govuk-table__header no-wrap">Hearing Channel</th>
+                  <th:block th:each="header: ${i18n.headerValuesWrap}">
+                    <th scope="col" class="govuk-table__header no-wrap" th:text="${header}"/>
+                  </th:block>
                 </tr>
                 </thead>
                 <tbody class="govuk-table__body">
                 <th:block th:each="sitting : ${session.get('sittings')}">
                   <th:block th:each="hearing : ${sitting.get('hearing')}">
                     <tr class="govuk-table__row" th:each="case : ${hearing.get('case')}">
-                      <td class="govuk-table__cell no-wrap" th:text="${sitting.get('time').asText()}" />
-                      <td class="govuk-table__cell no-wrap" th:text="${case.get('caseNumber').asText()}" />
-                      <td class="govuk-table__cell" th:text="${case.get('caseSuppressionName').asText()}" />
-                      <td class="govuk-table__cell" th:text="${hearing.get('hearingType').asText()}" />
-                      <td class="govuk-table__cell no-wrap" th:text="${sitting.get('formattedDuration').asText() + ' ' + case.get('caseIndicator').asText()}" />
-                      <td class="govuk-table__cell" th:text="${sitting.get('caseHearingChannel').asText()}" />
+                      <td class="govuk-table__cell" th:text="${sitting.get('time').asText()}"/>
+                      <td class="govuk-table__cell" th:text="${case.get('caseNumber').asText()}"/>
+                      <td class="govuk-table__cell" th:text="${case.get('caseSuppressionName').asText()}"/>
+                      <td class="govuk-table__cell" th:text="${hearing.get('hearingType').asText()}"/>
+                      <td class="govuk-table__cell"
+                          th:text="${sitting.get('formattedDuration').asText() + ' ' + case.get('caseIndicator').asText()}"/>
+                      <td class="govuk-table__cell" th:text="${sitting.get('caseHearingChannel').asText()}"/>
                     </tr>
                   </th:block>
                 </th:block>
@@ -190,19 +215,15 @@
       </div>
     </div>
   </div>
-  <div>
-    <p class="govuk-body govuk-!-font-size-14" th:text="${'Data Source: ' + provenance}"/>
+  <section>
+    <p class="govuk-body govuk-font-14" th:text="${i18n.dataSource + provenance}"/>
     <hr/>
-    <p class="govuk-body govuk-!-font-size-14">Note this document contains Special Category Data as
-      defined by Data Protection Act 2018, formally known as Sensitive Personal Data, and should be handled
-      appropriately.</p>
-    <p class="govuk-body govuk-!-font-size-14">This document contains information intended to assist the
-      accurate reporting of court proceedings. It is vital you ensure that you safeguard the Special Category Data
-      included and abide by reporting restrictions (for example on victims and children). HMCTS will stop sending the
-      data if there is concern about how it will be used.</p>
+    <p th:text="${i18n.bottomLegal1}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
+    <p th:text="${i18n.bottomLegal2}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
     <hr/>
-    <p style="text-align: center;" class="govuk-body govuk-!-font-size-14">Thank you for reading this document thoroughly.</p>
-  </div>
+    <p th:text="${i18n.thanks}" style="text-align: center;"/>
+  </section>
+
 </div>
 </body>
 </html>

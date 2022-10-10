@@ -11,9 +11,9 @@ import static uk.gov.hmcts.reform.pip.publication.services.service.filegeneratio
 public class CivilDailyCauseListConverter implements Converter {
 
     @Override
-    public String convert(JsonNode artefact, Map<String, String> artefactValues) {
+    public String convert(JsonNode artefact, Map<String, String> artefactValues, Map<String, Object> language) {
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         return templateEngine.process("civilDailyCauseList.html",
-                                      preprocessArtefactForThymeLeafConverter(artefact, artefactValues));
+                                      preprocessArtefactForThymeLeafConverter(artefact, artefactValues, language));
     }
 }
