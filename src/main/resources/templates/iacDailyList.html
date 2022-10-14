@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    @page {
+      margin: 30px 20px;
+
+      @bottom-center {
+        font-family: 'GDS Transport';
+        font-size: 16px;
+        color: grey;
+        content: "[[${i18n.serviceName + i18n.pdfAccessibility}]]" counter(page) "[[${i18n.of}]]" counter(pages) ".";
+      }
+    }
+
+    @page landscapePage {
+      size: A4 landscape;
+
+    }
+
+    .landscape {
+      page: landscapePage;
+    }
+    body {
+      font-family: 'GDS Transport';
+      color: #0b0c0c;
+      padding: 2px;
+      font-size: 105%;
+    }
+    h1, h4 {
+      font-family: "GDS Transport";
+      color: black;
+    }
+    .govuk-heading-l {
+      color: #0b0c0c;
+      font-family: "GDS Transport";
+      font-weight: 700;
+      font-size: 24px;
+      font-size: 1.5rem;
+      line-height: 1.04167;
+      display: block;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    .govuk-body {
+      color: #0b0c0c;
+      font-family: "GDS Transport";
+      font-weight: 400;
+      font-size: 16px;
+      font-size: 1rem;
+      line-height: 1.25;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    .govuk-\!-font-weight-bold {
+      font-weight: 700 !important;
+    }
+    .govuk-details {
+      font-family: "GDS Transport", arial, sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      font-size: 1rem;
+      line-height: 1.25;
+      color: #0b0c0c;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .govuk-details__summary {
+      display: inline-block;
+      position: relative;
+      margin-bottom: 5px;
+      padding-left: 25px;
+      color: #0b0c0c;
+      cursor: pointer;
+    }
+
+    .govuk-details__text {
+      padding-top: 15px;
+      padding-bottom: 15px;
+      padding-left: 20px;
+      border-left: 5px solid #b1b4b6;
+    }
+    .site-header {
+      position: relative;
+      top: 2em;
+    }
+    .site-address {
+      margin-top: 0.5em;
+    }
+    .govuk-accordion__section-heading {
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      font-family: "GDS Transport", arial, sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      font-size: 1.125rem;
+      line-height: 1.11111;
+      color: #0b0c0c;
+      display: block;
+    }
+    .govuk-accordion {
+      page-break-after: always;
+    }
+    .govuk-table {
+      font-family: "GDS Transport", arial, sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      font-size: 1rem;
+      line-height: 1.25;
+      color: #0b0c0c;
+      width: 100%;
+      margin-bottom: 20px;
+      border-spacing: 0;
+      border-collapse: collapse;
+    }
+    .no-wrap {
+      white-space: nowrap;
+    }
+    .govuk-table__header, .govuk-table__cell {
+      padding: 10px 20px 10px 0;
+      border-bottom: 1px solid #b1b4b6;
+      text-align: left;
+      vertical-align: top;
+    }
+    .govuk-table__header {
+      font-weight: 700;
+    }
+  </style>
+  <meta charset="UTF-8"/>
+  <meta name="subject" content="Accessible PDF template"/>
+  <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
+  <meta name="description" content="Document description - vital for compliance."/>
+  <title th:text="${i18n.heading}"/>
+
+</head>
+<body>
+<div class = "header">
+  <img src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png" alt="HMCTS Logo"/>
+  <h1 th:text="${i18n.serviceName}"/>
+  <h2 id="page-heading" class="govuk-heading-l" th:text="${i18n.heading}"/>
+  <h2 id="page-heading" class="govuk-heading-l" th:text="${locationName + i18n.dailyList}"/>
+  <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1" th:text="${i18n.listFor + contentDate}" />
+  <p class="govuk-body" th:text="${i18n.lastUpdated + publicationDate + i18n.at + publicationTime}" />
+  <details class="govuk-details" data-module="govuk-details" open="">
+    <summary class="govuk-details__summary">
+      <p th:text="${i18n.importantInfo}" class="govuk-details__summary-text"/>
+    </summary>
+    <div class="govuk-details__text">
+      <p th:text="${i18n.legal1}"/>
+      <p th:text="${i18n.legal2}"/>
+      <p th:text="${email}"/>
+      <p th:text="${i18n.legal3}"/>
+    </div>
+  </details>
+
+  <div aria-label="Court Lists" class="landscape">
+    <div class="site-header" tabindex="0" aria-label="Court Details" th:each="courtList : ${artefact.get('courtLists')}">
+      <h1 class="govuk-heading-l site-address" tabindex="0" th:text="${courtList.get('courtListName').asText()}" />
+      <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default" th:each="courtRoom : ${courtList.get('courtHouse').get('courtRoom')}">
+        <div class="govuk-accordion__section-header">
+          <p>Court Room Name appears here</p>
+        </div>
+        <div class="govuk-accordion__section-content">
+          <div class="parent-box overflow-table">
+            <table class="govuk-table">
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <th th:text="${i18n.startTime}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.caseRef}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.appellant}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.respondent}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.interpreterLanguage}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.hearingChannel}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.linkedCases}" scope="col" class="govuk-table__header"/>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <p class="govuk-body govuk-font-14" th:text="${i18n.dataSource + provenance}"/>
+    <hr/>
+    <p th:text="${i18n.bottomLegal1}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
+    <p th:text="${i18n.bottomLegal2}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
+    <hr/>
+    <p th:text="${i18n.thanks}" style="text-align: center;"/>
+  </section>
+
+</div>
+</body>
+</html>
