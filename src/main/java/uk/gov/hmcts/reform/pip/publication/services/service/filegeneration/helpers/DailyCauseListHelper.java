@@ -13,7 +13,7 @@ public final class DailyCauseListHelper {
     public static Context preprocessArtefactForThymeLeafConverter(JsonNode artefact, Map<String, String> metadata,
                                                                   Map<String, Object> language) {
         Context context = new Context();
-        LocationHelper.formatCourtAddress(artefact);
+        LocationHelper.formatCourtAddress(artefact, "|");
         context.setVariable("metadata", metadata);
         context.setVariable("i18n", language);
         String publicationDate = artefact.get("document").get("publicationDate").asText();
