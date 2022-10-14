@@ -21,8 +21,8 @@ public class IacDailyListConverter implements Converter {
         context.setVariable("i18n", language);
         context.setVariable("provenance", metadata.get("provenance"));
         context.setVariable("artefact", artefact);
-        context.setVariable("telephone", artefact.get("venue").get("venueContact").get("venueTelephone"));
-        context.setVariable("email", artefact.get("venue").get("venueContact").get("venueEmail"));
+        context.setVariable("telephone", artefact.get("venue").get("venueContact").get("venueTelephone").asText());
+        context.setVariable("email", artefact.get("venue").get("venueContact").get("venueEmail").asText());
         return templateEngine.process("iacDailyList.html", context);
     }
 

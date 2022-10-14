@@ -84,7 +84,7 @@
       position: relative;
       top: 2em;
     }
-    .site-address {
+    .list-name {
       margin-top: 0.5em;
     }
     .govuk-accordion__section-heading {
@@ -150,14 +150,14 @@
     <div class="govuk-details__text">
       <p th:text="${i18n.legal1}"/>
       <p th:text="${i18n.legal2}"/>
-      <p th:text="${email}"/>
+      <p th:text="${email + ' ' + telephone}"/>
       <p th:text="${i18n.legal3}"/>
     </div>
   </details>
 
   <div aria-label="Court Lists" class="landscape">
     <div class="site-header" tabindex="0" aria-label="Court Details" th:each="courtList : ${artefact.get('courtLists')}">
-      <h1 class="govuk-heading-l site-address" tabindex="0" th:text="${courtList.get('courtListName').asText()}" />
+      <h1 class="govuk-heading-l list-name" tabindex="0" th:text="${courtList.get('courtListName').asText()}" />
       <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default" th:each="courtRoom : ${courtList.get('courtHouse').get('courtRoom')}">
         <div class="govuk-accordion__section-header">
           <p>Court Room Name appears here</p>
