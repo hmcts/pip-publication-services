@@ -13,14 +13,13 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Converter class for the IAC daily list to generate the PDF
+ * Converter class for the IAC daily list to generate the PDF.
  */
 public class IacDailyListConverter implements Converter {
 
     @Override
-    public String convert(JsonNode artefact, Map<String, String> metadata, Map<String, Object> language) throws IOException {
-        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
-
+    public String convert(JsonNode artefact, Map<String, String> metadata,
+                          Map<String, Object> language) throws IOException {
         Context context = new Context();
 
         calculateListData(artefact);
@@ -43,6 +42,8 @@ public class IacDailyListConverter implements Converter {
 
         context.setVariable("telephone", artefact.get("venue").get("venueContact").get("venueTelephone").asText());
         context.setVariable("email", artefact.get("venue").get("venueContact").get("venueEmail").asText());
+
+        SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
         return templateEngine.process("iacDailyList.html", context);
     }
 
@@ -55,8 +56,8 @@ public class IacDailyListConverter implements Converter {
 
             ((ObjectNode) courtList).put(
                 "isBailList",
-                courtList.get("courtListName")
-                    .asText().equalsIgnoreCase("bail list")
+                "bail list".equalsIgnoreCase(courtList.get("courtListName")
+                                                 .asText())
             );
 
             courtList.get("courtHouse").get("courtRoom").forEach(courtRoom -> {

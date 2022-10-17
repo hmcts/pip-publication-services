@@ -28,8 +28,7 @@ public class IacDailyList {
                         sitting.get("hearing").forEach(hearing -> {
                             DataManipulation.findAndManipulatePartyInformation(hearing, Language.ENGLISH);
                             hearing.get("case").forEach(hearingCase -> {
-                                output.append("\n");
-                                output.append("Start Time - ");
+                                output.append("\nStart Time - ");
                                 output.append(sittingStart);
                                 GeneralHelper.appendToStringBuilder(output, "Case Ref - ",
                                                                     hearingCase, "caseNumber");

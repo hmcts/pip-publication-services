@@ -144,13 +144,11 @@ public final class DataManipulation {
                         respondent.append(respondentRepresentative(language, party));
                         break;
                     }
-                    case "CLAIMANT_PETITIONER":
-                    {
+                    case "CLAIMANT_PETITIONER": {
                         formatPartyNonRepresentative(party, claimant);
                         break;
                     }
-                    case "CLAIMANT_PETITIONER_REPRESENTATIVE":
-                    {
+                    case "CLAIMANT_PETITIONER_REPRESENTATIVE": {
                         formatPartyNonRepresentative(party, claimantRepresentative);
                         break;
                     }
@@ -164,8 +162,10 @@ public final class DataManipulation {
         ((ObjectNode) hearing).put(APPLICANT, GeneralHelper.trimAnyCharacterFromStringEnd(applicant.toString()));
         ((ObjectNode) hearing).put(RESPONDENT, GeneralHelper.trimAnyCharacterFromStringEnd(respondent.toString()));
         ((ObjectNode) hearing).put(CLAIMANT, GeneralHelper.trimAnyCharacterFromStringEnd(claimant.toString()));
-        ((ObjectNode) hearing).put(CLAIMANT_REPRESENTATIVE, GeneralHelper.trimAnyCharacterFromStringEnd(claimantRepresentative.toString()));
-        ((ObjectNode) hearing).put(PROSECUTING_AUTHORITY, GeneralHelper.trimAnyCharacterFromStringEnd(prosecutingAuthority.toString()));
+        ((ObjectNode) hearing).put(CLAIMANT_REPRESENTATIVE,
+                                   GeneralHelper.trimAnyCharacterFromStringEnd(claimantRepresentative.toString()));
+        ((ObjectNode) hearing).put(PROSECUTING_AUTHORITY,
+                                   GeneralHelper.trimAnyCharacterFromStringEnd(prosecutingAuthority.toString()));
     }
 
     private static String respondentRepresentative(Language language, JsonNode respondentDetails) {
