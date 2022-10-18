@@ -190,6 +190,11 @@ dependencies {
     strictly("1.33")
   }
 
+  // Force upgrade commons version for CVE-2022-42889
+  implementation( group: 'org.apache.commons', name: 'commons-text').version {
+    strictly("1.10.0")
+  }
+
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
