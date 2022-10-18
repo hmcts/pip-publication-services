@@ -122,6 +122,14 @@ class ArtefactSummaryServiceTest {
     }
 
     @Test
+    void iacDailyListTest() throws IOException {
+        String body = readMockJsonFile("mocks/iacDailyList.json");
+        assertThat(body).as(BODY_WRONG).contains("12341234");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.IAC_DAILY_LIST))
+            .as(MISSING_DATA_RETURN).contains("12341234");
+    }
+
+    @Test
     void magsPublicList() throws IOException {
         try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
             .getResourceAsStream("mocks/familyDailyCauseList.json")) {
