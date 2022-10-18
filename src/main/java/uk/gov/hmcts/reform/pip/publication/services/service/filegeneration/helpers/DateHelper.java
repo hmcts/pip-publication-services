@@ -111,7 +111,7 @@ public final class DateHelper {
 
     public static String timeStampToBstTimeWithFormat(String timestamp, String format) {
         ZonedDateTime zonedDateTime = convertStringToUtc(timestamp);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format).withLocale(Locale.UK);
         return dtf.format(zonedDateTime);
     }
 
