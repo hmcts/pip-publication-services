@@ -165,6 +165,11 @@ class NotifyTest {
     private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY =
         "{\"email\": \"test@test.com\", \"fullName\": \"testName\", \"lastSignedInDate\": \"01 May 2022\"}";
 
+    private static final String VALID_CROWN_DAILY_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
+        + "  \"artefactId\": \"98292daa-4ca3-4fbe-8878-11878a056d57\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
+        + SUBSCRIPTION_REQUEST;
+
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
@@ -193,7 +198,9 @@ class NotifyTest {
                                                                "Civil and Family Daily Cause List",
                                                                VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL,
                                                                "Civil Daily Cause List",
-                                                               VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL
+                                                               VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL,
+                                                               "Crown Daily List",
+                                                               VALID_CROWN_DAILY_LIST_SUBS_EMAIL
     );
 
     private MockWebServer externalApiMockServer;
@@ -406,7 +413,7 @@ class NotifyTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"SSCS Daily List", "SJP Public List", "SJP Press List", "COP Daily List", "Civil Daily "
-        + "Cause List", "Civil and Family Daily Cause List", "Family Daily Cause List"})
+        + "Cause List", "Civil and Family Daily Cause List", "Family Daily Cause List", "Crown Daily List"})
     void testValidPayloadForAllSubsEmailTypesReturnsOk(String listType) throws Exception {
         MvcResult value = mockMvc.perform(post(SUBSCRIPTION_URL)
                                               .content(LIST_MAP.get(listType))
