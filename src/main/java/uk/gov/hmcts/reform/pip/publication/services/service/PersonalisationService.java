@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
-import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static uk.gov.hmcts.reform.pip.publication.services.Environments.convertEnvironmentName;
+import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.convertEnvironmentName;
 
 /**
  * This class handles any personalisation for the emails.
@@ -40,9 +39,6 @@ public class PersonalisationService {
 
     @Autowired
     DataManagementService dataManagementService;
-
-    @Autowired
-    ArtefactSummaryService artefactSummaryService;
 
     @Autowired
     FileCreationService fileCreationService;
@@ -112,63 +108,63 @@ public class PersonalisationService {
      * @param artefact The artefact to send in the subscription.
      * @return The personalisation map for the raw data subscription email.
      */
-    public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body,
-                                                                       Artefact artefact) {
+//    public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body,
+//                                                                       Artefact artefact) {
 
-        try {
-            Map<String, Object> personalisation = new ConcurrentHashMap<>();
-
-            Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
-
-            populateGenericPersonalisation(personalisation, DISPLAY_CASE_NUMBERS, CASE_NUMBERS,
-                                           subscriptions.get(SubscriptionTypes.CASE_NUMBER)
-            );
-
-            populateGenericPersonalisation(personalisation, DISPLAY_CASE_URN, CASE_URN,
-                                           subscriptions.get(SubscriptionTypes.CASE_URN)
-            );
-
-            populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
-
-            personalisation.put("list_type", artefact.getListType());
-
-            personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
-
-            String html = fileCreationService.jsonToHtml(artefact.getArtefactId());
-            byte[] artefactPdf = fileCreationService.generatePdfFromHtml(html, true);
-            int maxSize = 2_000_000;
-            if (artefactPdf.length > maxSize) {
-                artefactPdf = fileCreationService.generatePdfFromHtml(html, false);
-            }
-            byte[] artefactExcel = fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId());
-            boolean pdfWithinSize = artefactPdf.length < 2_000_000 && artefactPdf.length > 0;
-            boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;
-
-            personalisation.put("display_pdf", pdfWithinSize);
-            personalisation.put("link_to_file", pdfWithinSize ? EmailClient.prepareUpload(artefactPdf) : "");
-
-            personalisation.put("display_excel", excelWithinSize);
-            personalisation.put("excel_link_to_file", excelWithinSize ? EmailClient.prepareUpload(artefactExcel) : "");
-
-            String summary =
-                artefactSummaryService.artefactSummary(
-                    dataManagementService
-                        .getArtefactJsonBlob(artefact.getArtefactId()),
-                    artefact.getListType()
-                );
-            personalisation.put("testing_of_array", summary);
-
-            log.info("Personalisation map created");
-            return personalisation;
-        } catch (Exception e) {
-            log.warn("Error adding attachment to raw data email {}. Artefact ID: {}",
-                     EmailHelper.maskEmail(body.getEmail()),
-                     artefact.getArtefactId()
-            );
-            throw new NotifyException(e.getMessage());
-
-        }
-    }
+//        try {
+//            Map<String, Object> personalisation = new ConcurrentHashMap<>();
+//
+//            Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
+//
+//            populateGenericPersonalisation(personalisation, DISPLAY_CASE_NUMBERS, CASE_NUMBERS,
+//                                           subscriptions.get(SubscriptionTypes.CASE_NUMBER)
+//            );
+//
+//            populateGenericPersonalisation(personalisation, DISPLAY_CASE_URN, CASE_URN,
+//                                           subscriptions.get(SubscriptionTypes.CASE_URN)
+//            );
+//
+//            populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
+//
+//            personalisation.put("list_type", artefact.getListType());
+//
+//            personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
+//
+//            String html = fileCreationService.jsonToHtml(artefact.getArtefactId());
+//            byte[] artefactPdf = fileCreationService.generatePdfFromHtml(html, true);
+//            int maxSize = 2_000_000;
+//            if (artefactPdf.length > maxSize) {
+//                artefactPdf = fileCreationService.generatePdfFromHtml(html, false);
+//            }
+//            byte[] artefactExcel = fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId());
+//            boolean pdfWithinSize = artefactPdf.length < 2_000_000 && artefactPdf.length > 0;
+//            boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;
+//
+//            personalisation.put("display_pdf", pdfWithinSize);
+//            personalisation.put("link_to_file", pdfWithinSize ? EmailClient.prepareUpload(artefactPdf) : "");
+//
+//            personalisation.put("display_excel", excelWithinSize);
+//            personalisation.put("excel_link_to_file", excelWithinSize ? EmailClient.prepareUpload(artefactExcel) : "");
+//
+//            String summary =
+//                artefactSummaryService.artefactSummary(
+//                    dataManagementService
+//                        .getArtefactJsonBlob(artefact.getArtefactId()),
+//                    artefact.getListType()
+//                );
+//            personalisation.put("testing_of_array", summary);
+//
+//            log.info("Personalisation map created");
+//            return personalisation;
+//        } catch (Exception e) {
+//            log.warn("Error adding attachment to raw data email {}. Artefact ID: {}",
+//                     EmailHelper.maskEmail(body.getEmail()),
+//                     artefact.getArtefactId()
+//            );
+//            throw new NotifyException(e.getMessage());
+//
+//        }
+//    }
 
     /**
      * Handles the personalisation for the flat file subscription email.
