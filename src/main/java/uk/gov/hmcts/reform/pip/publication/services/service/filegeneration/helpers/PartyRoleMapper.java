@@ -8,7 +8,9 @@ public final class PartyRoleMapper {
         "APPLICANT_PETITIONER", List.of("APL", "APP", "CLP20", "CRED", "OTH", "PET"),
         "APPLICANT_PETITIONER_REPRESENTATIVE", List.of("CREP", "CREP20"),
         "RESPONDENT", List.of("DEBT", "DEF", "DEF20", "RES"),
-        "RESPONDENT_REPRESENTATIVE", List.of("DREP", "DREP20", "RREP")
+        "RESPONDENT_REPRESENTATIVE", List.of("DREP", "DREP20", "RREP"),
+        "PROSECUTING_AUTHORITY", List.of(""),
+        "DEFENDANT", List.of("")
     );
 
     private PartyRoleMapper() {

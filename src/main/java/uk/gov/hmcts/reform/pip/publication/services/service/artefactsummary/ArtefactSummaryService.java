@@ -33,6 +33,9 @@ public class ArtefactSummaryService {
     @Autowired
     ScssDailyList scssDailyList;
 
+    @Autowired
+    CrownDailyList crownDailyList;
+
     /**
      * Parent class to route based on list types.
      *
@@ -57,6 +60,8 @@ public class ArtefactSummaryService {
                 return dailyCauseList.artefactSummaryDailyCause(payload);
             case SSCS_DAILY_LIST:
                 return scssDailyList.artefactSummaryScssDailyList(payload);
+            case CROWN_DAILY_LIST:
+                return crownDailyList.artefactSummaryCrownDailyList(payload);
             default:
                 return "";
         }

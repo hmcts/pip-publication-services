@@ -33,9 +33,24 @@ class ArtefactSummaryServiceTest {
 
     @Test
     void notImplementedListTest() throws IOException {
-        String body = readMockJsonFile("mocks/copDailyCauseList.json");
-        assertThat(artefactSummaryService.artefactSummary(body, ListType.CROWN_DAILY_LIST))
+        String body = readMockJsonFile("mocks/crownDailyList.json");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.CROWN_FIRM_LIST))
             .as(MISSING_DATA_RETURN).isEqualTo("");
+    }
+
+    @Test
+    void crownDailyList() throws IOException {
+        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream("mocks/crownDailyList.json")) {
+            assertThat(mockFile).as(NULL_FILE).isNotNull();
+            String body = new String(mockFile.readAllBytes());
+            assertThat(body).as(BODY_WRONG).contains("sitting");
+            assertThat(artefactSummaryService.artefactSummary(
+                body,
+                ListType.CROWN_DAILY_LIST
+            )).as(MISSING_DATA_RETURN).contains(
+                "Case Reference - 12345678");
+        }
     }
 
     @Test
