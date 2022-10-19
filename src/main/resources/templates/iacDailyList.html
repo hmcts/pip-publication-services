@@ -140,13 +140,13 @@
       <h1 class="govuk-heading-l list-name" tabindex="0" th:text="${courtList.get('courtListName').asText()}" />
       <div class="govuk-accordion" th:each="courtRoom : ${courtList.get('courtHouse').get('courtRoom')}">
         <th:block th:each="session: ${courtRoom.get('session')}">
-          <th:block th:if="${courtList.get('isBailList').asBoolean() || #strings.length(session.get('formattedJudiciary').asText()) == 0}">
+          <th:block th:if="${!courtList.get('isBailList').asBoolean()}">
             <p class="govuk-body" th:text="${i18n.hearingRoom + courtRoom.get('courtRoomName').asText}"/>
           </th:block>
-          <th:block th:if="${#strings.length(session.get('formattedJudiciary').asText()) > 0 && !courtList.get('isBailList').asBoolean()}">
+          <th:block th:if="${#strings.length(session.get('formattedJudiciary').asText()) > 0 && courtList.get('isBailList').asBoolean()}">
             <p class="govuk-body" th:text="${courtRoom.get('courtRoomName').asText() + ',' + i18n.beforeJudge + session.get('formattedJudiciary').asText()}"/>
           </th:block>
-          <th:block th:if="${#strings.length(session.get('formattedJudiciary').asText()) == 0 && !courtList.get('isBailList').asBoolean()}">
+          <th:block th:if="${#strings.length(session.get('formattedJudiciary').asText()) == 0 && courtList.get('isBailList').asBoolean()}">
             <p class="govuk-body" th:text="${courtRoom.get('courtRoomName').asText()}"/>
           </th:block>
           <table class="govuk-table">

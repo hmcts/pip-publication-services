@@ -83,7 +83,7 @@ class IacDailyListConverterTest {
         softly.assertThat(doc.getElementsByClass("govuk-accordion").get(0).getElementsByTag("p").get(0))
             .as("Incorrect room name element")
             .extracting(Element::text)
-            .isEqualTo("Hearing Room: Court Room A");
+            .isEqualTo("Court Room A, Before Judge Test Name, Magistrate Test Name");
 
         softly.assertThat(doc.getElementsByClass("govuk-table__head").get(0).getElementsByTag("th"))
             .as("Incorrect table headers")
@@ -124,7 +124,7 @@ class IacDailyListConverterTest {
         softly.assertThat(doc.getElementsByClass("govuk-accordion").get(1).getElementsByTag("p").get(0))
             .as("Incorrect room name element")
             .extracting(Element::text)
-            .isEqualTo("Court Room B, Before Judge Test Name, Magistrate Test Name");
+            .isEqualTo("Hearing Room: Court Room B");
 
         softly.assertThat(doc.getElementsByClass("govuk-table__head").get(1).getElementsByTag("th"))
             .as("Incorrect table headers")
