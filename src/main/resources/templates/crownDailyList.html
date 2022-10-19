@@ -29,7 +29,7 @@
       font-size: 105%;
     }
 
-    h1, h4 {
+    h1 {
       font-family: "GDS Transport";
       color: black;
     }
@@ -61,41 +61,6 @@
       font-weight: 700 !important;
     }
 
-    .govuk-details {
-      font-family: "GDS Transport", arial, sans-serif;
-      font-weight: 400;
-      font-size: 16px;
-      font-size: 1rem;
-      line-height: 1.25;
-      color: #0b0c0c;
-      margin-bottom: 20px;
-      display: block;
-    }
-
-    .govuk-details__summary {
-      display: inline-block;
-      position: relative;
-      margin-bottom: 5px;
-      padding-left: 25px;
-      cursor: pointer;
-    }
-
-    .govuk-details__summary {
-      display: inline-block;
-      position: relative;
-      margin-bottom: 5px;
-      padding-left: 25px;
-      color: #1d70b8;
-      cursor: pointer;
-    }
-
-    .govuk-details__text {
-      padding-top: 15px;
-      padding-bottom: 15px;
-      padding-left: 20px;
-      border-left: 5px solid #b1b4b6;
-    }
-
     .site-header {
       position: relative;
       top: 2em;
@@ -103,20 +68,6 @@
 
     .site-address {
       margin-top: 0.5em;
-    }
-
-    .govuk-accordion__section-heading {
-      margin-top: 0;
-      margin-bottom: 0;
-      padding-top: 15px;
-      padding-bottom: 15px;
-      font-family: "GDS Transport", arial, sans-serif;
-      font-weight: 700;
-      font-size: 18px;
-      font-size: 1.125rem;
-      line-height: 1.11111;
-      color: #0b0c0c;
-      display: block;
     }
 
     .govuk-accordion {
@@ -187,8 +138,6 @@
       font-size: 30px;
       line-height: 30px;
       text-align: center;
-      user-select: none;
-      forced-color-adjust: none;
     }
 
     .govuk-warning-text__text {
@@ -218,7 +167,7 @@
   <title th:text="${i18n.listName}"/>
 </head>
 <body>
-  <div class="header first-page">
+  <div class="header">
     <img
       src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png"
       alt="HMCTS Logo"/>
@@ -254,16 +203,16 @@
     </div>
   </div>
   <div aria-label="Court Lists" class="landscape">
-    <div class="site-header" tabindex="0" aria-label="Court Details"
+    <div class="site-header" aria-label="Court Details"
            th:each="courtList : ${artefact.get('courtLists')}">
       <div th:if="${courtList.get('unallocatedCases').asText() == 'false'}">
         <h1 class="govuk-heading-l site-address" tabindex="0"
             th:text="${courtList.get('courtHouse').get('courtHouseName').asText()}"/>
       </div>
       <div th:if="${courtList.get('unallocatedCases').asText() == 'true'}">
-        <h3 class="govuk-heading-m site-address" tabindex="0"
+        <h2 class="govuk-heading-m site-address" tabindex="0"
             th:text="${i18n.unallocatedCourtText}"/>
-        <h3 class="govuk-heading-m site-address" tabindex="0"
+        <h2 class="govuk-heading-m site-address" tabindex="0"
             th:text="${i18n.toBeAllocatedText}"/>
       </div>
       <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default"
@@ -271,8 +220,7 @@
         <div th:if="${courtRoom.has('exclude') != true}">
           <div th:each="session : ${courtRoom.get('session')}">
             <div class="govuk-accordion__section-header">
-              <h2 class="govuk-accordion__section-heading"
-                  th:text="${session.get('formattedSessionCourtRoom').asText()}"/>
+              <h2 th:text="${session.get('formattedSessionCourtRoom').asText()}"/>
             </div>
             <div class="govuk-accordion__section-content">
               <div class="parent-box overflow-table">
