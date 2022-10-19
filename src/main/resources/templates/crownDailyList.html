@@ -173,26 +173,26 @@
     }
 
     .govuk-warning-text__icon {
-      font-weight: 700;
+      font-weight: 300;
       box-sizing: border-box;
       display: inline-block;
       position: absolute;
       left: 0;
       min-width: 35px;
       min-height: 35px;
-      border: 3px solid #0b0c0c;
+      border: 1px solid #0b0c0c;
       border-radius: 50%;
       color: #ffffff;
       background: #0b0c0c;
       font-size: 30px;
-      line-height: 29px;
+      line-height: 30px;
       text-align: center;
       user-select: none;
       forced-color-adjust: none;
     }
 
     .govuk-warning-text__text {
-      font-weight: 700;
+      font-weight: 500;
       color: #0b0c0c;
       display: block;
       padding-left: 45px;
@@ -222,7 +222,6 @@
     <img
       src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png"
       alt="HMCTS Logo"/>
-    <h2 id="page-heading" class="govuk-heading-l" th:text="${i18n.listName + ':'}"/>
     <h2 id="page-heading" class="govuk-heading-l" th:text="${locationName + ': ' + i18n.headerPart1}"/>
     <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1" th:text="${i18n.listDate + contentDate}"/>
     <p class="govuk-body" th:text="${i18n.listUpdated + publicationDate + i18n.at + publicationTime}"/>
@@ -250,7 +249,7 @@
           <li th:text="${i18n.restrictionBulletPoint1}"/>
           <li th:text="${i18n.restrictionBulletPoint2}"/>
         </ul>
-        <span class="govuk-body" th:text="${i18n.restrictionInformationP5 + ':'}" /> <a href="#" class="govuk-link" th:text="${i18n.restrictionLink}" />
+        <span class="govuk-body" th:text="${i18n.restrictionInformationP5}" /> <a href="#" class="govuk-link" th:text="${i18n.restrictionLink}" />
       </div>
     </div>
   </div>
@@ -266,12 +265,6 @@
             th:text="${i18n.unallocatedCourtText}"/>
         <h3 class="govuk-heading-m site-address" tabindex="0"
             th:text="${i18n.toBeAllocatedText}"/>
-      </div>
-      <div aria-label="Court Address">
-        <p class="govuk-body site-address" tabindex="0"
-           th:each="address : ${#strings.arraySplit(courtList.get('courtHouse').get('formattedCourtHouseAddress').asText(), '|')}">
-        <td th:text="${address}"/>
-        </p>
       </div>
       <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default"
              th:each="courtRoom : ${courtList.get('courtHouse').get('courtRoom')}">

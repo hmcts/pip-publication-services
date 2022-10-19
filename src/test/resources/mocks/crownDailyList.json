@@ -272,18 +272,12 @@
         },
         "courtRoom": [
           {
-            "courtRoomName": "1",
+            "courtRoomName": "CourtRoom 1",
             "session": [
               {
                 "sessionStartTime": "",
                 "sessionChannel": [
                   "VIDEO HEARING"
-                ],
-                "judiciary": [
-                  {
-                    "johTitle": "Mr",
-                    "johKnownAs": "Firstname1 Surname1"
-                  }
                 ],
                 "sittings": [
                   {

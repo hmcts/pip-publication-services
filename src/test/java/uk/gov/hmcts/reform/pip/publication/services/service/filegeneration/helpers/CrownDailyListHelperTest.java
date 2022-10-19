@@ -6,6 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -55,6 +56,27 @@ class CrownDailyListHelperTest {
         assertEquals(inputJson.get(COURT_LISTS).get(4).get(COURT_HOUSE).get(COURT_ROOM).get(0)
                          .get("courtRoomName").asText(), "to be allocated",
                      "Unable to find unallocated courtroom");
+    }
+
+    @Test
+    void testFormattedCourtRoomNameMethod() {
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
+        CrownDailyListHelper.manipulatedCrownDailyListData(inputJson);
+        CrownDailyListHelper.findUnallocatedCasesInCrownDailyListData(inputJson);
+        CrownDailyListHelper.formattedCourtRoomName(inputJson);
+
+        assertEquals(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE).get(COURT_ROOM).get(0)
+                         .get(SESSION).get(0).get("formattedSessionCourtRoom").asText(),
+                     "1: Firstname1 Surname1, Firstname2 Surname2",
+                     "Unable to find formatted courtroom name");
+
+        assertEquals(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE).get(COURT_ROOM).get(1)
+                         .get(SESSION).get(0).get("formattedSessionCourtRoom").asText(), "to be allocated",
+                     "Unable to find unallocated formatted courtroom name");
+
+        assertEquals(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE).get(COURT_ROOM).get(0)
+                         .get(SESSION).get(0).get("formattedSessionCourtRoom").asText(), "CourtRoom 1",
+                     "Unable to find formatted courtroom name without judge");
     }
 
     @Test

@@ -16,6 +16,7 @@ public final class CrownDailyListHelper {
     public static final String DEFENDANT = "defendant";
     public static final String COURT_LIST = "courtLists";
     public static final String CASE = "case";
+    public static final String COURT_ROOM = "courtRoom";
 
     private CrownDailyListHelper() {
     }
@@ -26,13 +27,14 @@ public final class CrownDailyListHelper {
         context = preprocessArtefactForThymeLeafConverter(artefact, metadata, language);
         manipulatedCrownDailyListData(artefact);
         findUnallocatedCasesInCrownDailyListData(artefact);
+        formattedCourtRoomName(artefact);
         context.setVariable("version", artefact.get("document").get("version").asText());
         return context;
     }
 
     public static void manipulatedCrownDailyListData(JsonNode artefact) {
         artefact.get(COURT_LIST).forEach(courtList -> {
-            courtList.get(LocationHelper.COURT_HOUSE).get("courtRoom").forEach(courtRoom -> {
+            courtList.get(LocationHelper.COURT_HOUSE).get(COURT_ROOM).forEach(courtRoom -> {
                 courtRoom.get("session").forEach(session -> {
                     session.get("sittings").forEach(sitting -> {
                         formatCaseTime(sitting);
@@ -52,12 +54,30 @@ public final class CrownDailyListHelper {
         });
     }
 
+    public static void formattedCourtRoomName(JsonNode artefact) {
+        artefact.get(COURT_LIST).forEach(courtList -> {
+            courtList.get(LocationHelper.COURT_HOUSE).get(COURT_ROOM).forEach(courtRoom -> {
+                courtRoom.get("session").forEach(session -> {
+                    if (GeneralHelper.findAndReturnNodeText(courtRoom, "courtRoomName")
+                        .contains("to be allocated")) {
+                        ((ObjectNode)session).put("formattedSessionCourtRoom",
+                            GeneralHelper.findAndReturnNodeText(courtRoom, "courtRoomName"));
+                    } else {
+                        ((ObjectNode)session).put("formattedSessionCourtRoom",
+                            GeneralHelper.findAndReturnNodeText(session, "formattedSessionCourtRoom")
+                            .replace("Before: ", ""));
+                    }
+                });
+            });
+        });
+    }
+
     public static void findUnallocatedCasesInCrownDailyListData(JsonNode artefact) {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode unAllocatedCasesNodeArray = mapper.createArrayNode();
         artefact.get(COURT_LIST).forEach(courtList -> {
             final int[] roomCount = {0};
-            courtList.get(LocationHelper.COURT_HOUSE).get("courtRoom").forEach(courtRoom -> {
+            courtList.get(LocationHelper.COURT_HOUSE).get(COURT_ROOM).forEach(courtRoom -> {
                 if (GeneralHelper.findAndReturnNodeText(courtRoom, "courtRoomName").contains("to be allocated")) {
                     JsonNode cloneCourtRoom = courtRoom.deepCopy();
                     unAllocatedCasesNodeArray.add(cloneCourtRoom);
@@ -70,7 +90,11 @@ public final class CrownDailyListHelper {
         //IF THERE IS ANY UNALLOCATED CASES, ADD THE SECTION AT END OF COURTLIST ARRAY
         if (unAllocatedCasesNodeArray.size() > 0) {
             JsonNode cloneCourtList = artefact.get(COURT_LIST).get(0).deepCopy();
-            formatUnallocatedCourtList(cloneCourtList, unAllocatedCasesNodeArray);
+            ((ObjectNode)cloneCourtList.get(LocationHelper.COURT_HOUSE)).put("courtHouseName", "");
+            ((ObjectNode)cloneCourtList.get(LocationHelper.COURT_HOUSE)).put("courtHouseAddress", "");
+            ((ObjectNode)cloneCourtList).put("unallocatedCases", true);
+            ((ObjectNode)cloneCourtList.get(LocationHelper.COURT_HOUSE))
+                .putArray(COURT_ROOM).addAll(unAllocatedCasesNodeArray);
 
             ArrayNode courtListArray = mapper.createArrayNode();
 
@@ -83,14 +107,6 @@ public final class CrownDailyListHelper {
                 ((ObjectNode)artefact).putArray(COURT_LIST).addAll(courtListArray);
             }
         }
-    }
-
-    private static void formatUnallocatedCourtList(JsonNode courtListForUnallocatedCases, ArrayNode unallocatedCase) {
-        ((ObjectNode)courtListForUnallocatedCases.get(LocationHelper.COURT_HOUSE)).put("courtHouseName", "");
-        ((ObjectNode)courtListForUnallocatedCases.get(LocationHelper.COURT_HOUSE)).put("courtHouseAddress", "");
-        ((ObjectNode)courtListForUnallocatedCases).put("unallocatedCases", true);
-        ((ObjectNode)courtListForUnallocatedCases.get(LocationHelper.COURT_HOUSE))
-            .putArray("courtRoom").addAll(unallocatedCase);
     }
 
     private static void formatCaseInformation(JsonNode hearing) {

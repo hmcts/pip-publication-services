@@ -62,7 +62,7 @@ class CrownDailyListConverterTest {
 
         assertThat(document.getElementsByClass("govuk-heading-l")
                        .get(0).text())
-            .as(HEADER_TEXT).isEqualTo("Crown Daily List:");
+            .as(HEADER_TEXT).contains("Daily List");
 
         assertThat(document.getElementsByClass("govuk-body")
                        .get(2).text())
@@ -99,7 +99,7 @@ class CrownDailyListConverterTest {
 
         assertThat(document.getElementsByClass("govuk-heading-l")
                        .get(0).text())
-            .as(HEADER_TEXT).isEqualTo("Crown Rhestr Ddyddiol:");
+            .as(HEADER_TEXT).contains("Rhestr Ddyddiol");
 
         assertThat(document.getElementsByClass("govuk-body")
                        .get(2).text())
