@@ -22,7 +22,7 @@ public final class PrimaryHealthListManipulation {
                                                                          language, false, false,
                                                                          "dd MMMM");
                     session.get("sittings").forEach(sitting -> {
-                        DateHelper.calculateDuration(sitting, Language.ENGLISH, true);
+                        DateHelper.calculateDuration(sitting, language, true);
                         sitting.get("hearing").forEach(hearing -> {
                             String hearingType = hearing.get("hearingType").asText();
                             hearing.get("case").forEach(hearingCase -> {
