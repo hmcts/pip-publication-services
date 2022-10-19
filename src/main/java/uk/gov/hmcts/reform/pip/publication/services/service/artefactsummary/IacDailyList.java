@@ -23,11 +23,17 @@ public class IacDailyList {
             courtList.get("courtHouse").get("courtRoom").forEach(courtRoom -> {
                 courtRoom.get("session").forEach(session -> {
                     session.get("sittings").forEach(sitting -> {
-                        String sittingStart = DateHelper.timeStampToBstTime(sitting.get("sittingStart").asText());
+
+                        String sittingStart = DateHelper.formatTimeStampToBst(
+                            sitting.get("sittingStart").asText(), Language.ENGLISH,
+                            true, false);
+
                         DataManipulation.findAndConcatenateHearingPlatform(sitting, session);
                         sitting.get("hearing").forEach(hearing -> {
                             DataManipulation.findAndManipulatePartyInformation(hearing, Language.ENGLISH);
                             hearing.get("case").forEach(hearingCase -> {
+                                GeneralHelper.appendToStringBuilder(output, "List Name - ",
+                                                                    courtList, "courtListName");
                                 output.append("\nStart Time - ");
                                 output.append(sittingStart);
                                 GeneralHelper.appendToStringBuilder(output, "Case Ref - ",
@@ -38,6 +44,7 @@ public class IacDailyList {
                                                                     hearing, "claimant");
                                 GeneralHelper.appendToStringBuilder(output, "Prosecuting Authority - ",
                                                                     hearing, "prosecutingAuthority");
+                                output.append('\n');
                             });
                         });
                     });

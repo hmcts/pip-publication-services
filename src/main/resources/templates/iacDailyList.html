@@ -182,7 +182,14 @@
                       </th:block>
 
                       <td class="govuk-table__cell" th:text="${hearing.get('prosecutingAuthority').asText()}"/>
-                      <td class="govuk-table__cell" th:text="${case.get('language').asText()}"/>
+
+                      <th:block th:if="${case.get('language') != null}">
+                        <td class="govuk-table__cell" th:text="${case.get('language').asText()}"/>
+                      </th:block>
+                      <th:block th:if="${case.get('language') == null}">
+                        <td class="govuk-table__cell"/>
+                      </th:block>
+
                       <td class="govuk-table__cell" th:text="${sitting.get('caseHearingChannel').asText()}"/>
                       <td class="govuk-table__cell" th:text="${case.get('formattedLinkedCases').asText()}"/>
                     </tr>

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -10,7 +11,7 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class IacDailyListTests {
+class IacDailyListTests {
 
     @Test
     void testIacDailyListTemplate() throws IOException {
@@ -29,11 +30,11 @@ public class IacDailyListTests {
 
         assertThat(artefactSummary.split(System.lineSeparator()))
             .as("Incorrect output lines")
-                .hasSize(11);
+                .hasSize(14);
 
         assertThat(artefactSummary)
             .as("incorrect start time found")
-            .contains("20:00");
+            .contains("9pm");
 
         assertThat(artefactSummary)
             .as("incorrect case ref found")

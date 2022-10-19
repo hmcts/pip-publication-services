@@ -38,7 +38,7 @@
                 ],
                 "sittings": [
                   {
-                    "sittingStart": "2020-02-20T20:00:00.001Z",
+                    "sittingStart": "2020-10-20T20:00:00.001Z",
                     "sittingEnd": "2020-02-20T22:00:00.001Z",
                     "hearing": [
                       {
@@ -127,7 +127,7 @@
                 ],
                 "sittings": [
                   {
-                    "sittingStart": "2020-02-20T20:00:00.001Z",
+                    "sittingStart": "2020-10-20T20:20:00.001Z",
                     "sittingEnd": "2020-02-20T22:00:00.001Z",
                     "hearing": [
                       {
@@ -136,14 +136,7 @@
                           {
                             "caseNumber": "12341234",
                             "caseSequenceIndicator": "[2 of 3]",
-                            "caseType": "case type",
-                            "caseLinked": [
-                              {
-                                "caseId": "1234",
-                                "name": "A Vs B"
-                              }
-                            ],
-                            "language": "French"
+                            "caseType": "case type"
                           }
                         ],
                         "party": [
@@ -156,7 +149,7 @@
                           {
                             "partyRole": "RESPONDENT",
                             "individualDetails": {
-                              "individualSurname": "Surname"
+                              "individualSurname": "Authority Surname"
                             }
                           },
                           {

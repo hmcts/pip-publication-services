@@ -67,8 +67,10 @@ public class IacDailyListConverter implements Converter {
                     ((ObjectNode) session).put("formattedJudiciary", formattedJoh);
 
                     session.get("sittings").forEach(sitting -> {
+                        String sittingStart = DateHelper.formatTimeStampToBst(
+                            sitting.get("sittingStart").asText(), Language.ENGLISH,
+                            true, false);
 
-                        String sittingStart = DateHelper.timeStampToBstTime(sitting.get("sittingStart").asText());
                         ((ObjectNode) sitting).put("formattedStart", sittingStart);
 
                         DataManipulation.findAndConcatenateHearingPlatform(sitting, session);
@@ -90,14 +92,18 @@ public class IacDailyListConverter implements Converter {
      */
     private void formatLinkedCases(JsonNode caseInfo) {
         StringBuilder formattedLinked = new StringBuilder();
-        caseInfo.get("caseLinked").forEach(linkedCase -> {
 
-            if (formattedLinked.length() != 0) {
-                formattedLinked.append(", ");
-            }
+        if (caseInfo.get("caseLinked") != null) {
+            caseInfo.get("caseLinked").forEach(linkedCase -> {
 
-            formattedLinked.append(linkedCase.get("caseId").asText());
-        });
+                if (formattedLinked.length() != 0) {
+                    formattedLinked.append(", ");
+                }
+
+                formattedLinked.append(linkedCase.get("caseId").asText());
+            });
+        }
+
         ((ObjectNode) caseInfo).put("formattedLinkedCases", formattedLinked.toString());
     }
 
