@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpe
 import java.util.Map;
 
 @Service
-public class PrimaryHealthListConverter implements Converter {
+public class CareStandardsListConverter implements Converter {
     @Override
     public String convert(JsonNode artefact, Map<String, String> metadata, Map<String, Object> languageResources) {
         Context context = new Context();
@@ -32,6 +32,6 @@ public class PrimaryHealthListConverter implements Converter {
         context.setVariable("cases", TribunalNationalListsManipulation.processRawListData(artefact, language));
 
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
-        return templateEngine.process("primaryHealthList.html", context);
+        return templateEngine.process("careStandardsList.html", context);
     }
 }

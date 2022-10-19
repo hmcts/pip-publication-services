@@ -2,18 +2,18 @@ package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.help
 
 import com.fasterxml.jackson.databind.JsonNode;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
-import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.PrimaryHealthList;
+import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.TribunalNationalList;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class PrimaryHealthListManipulation {
-    private PrimaryHealthListManipulation() {
+public final class TribunalNationalListsManipulation {
+    private TribunalNationalListsManipulation() {
     }
 
-    public static List<PrimaryHealthList> processRawListData(JsonNode data, Language language) {
-        List<PrimaryHealthList> cases = new ArrayList<>();
+    public static List<TribunalNationalList> processRawListData(JsonNode data, Language language) {
+        List<TribunalNationalList> cases = new ArrayList<>();
 
         data.get("courtLists").forEach(courtList -> {
             courtList.get("courtHouse").get("courtRoom").forEach(courtRoom -> {
@@ -29,7 +29,7 @@ public final class PrimaryHealthListManipulation {
                                 String duration = formatDurationWithCaseSequence(
                                     sitting.get("formattedDuration").asText(), hearingCase
                                 );
-                                cases.add(new PrimaryHealthList(
+                                cases.add(new TribunalNationalList(
                                     hearingDate, hearingCase.get("caseName").asText(), duration, hearingType,
                                     courtList.get("courtHouse").get("formattedCourtHouseAddress").asText()
                                 ));
