@@ -29,6 +29,7 @@ public class PrimaryHealthListConverter implements Converter {
         context.setVariable("i18n", languageResources);
 
         LocationHelper.formatCourtAddress(artefact, "\n", true);
+
         context.setVariable("cases", TribunalNationalListsManipulation.processRawListData(artefact, language));
 
         SpringTemplateEngine templateEngine = new ThymeleafConfiguration().templateEngine();
