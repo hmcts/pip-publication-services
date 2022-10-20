@@ -232,6 +232,7 @@ public class FileCreationService {
             .map(l -> l.split(","))
             .collect(Collectors.toList());
 
+        // Remove the values for the 'court_name' field to allow PowerBI to populate with real court names
         String[] header = values.get(0);
         int index = ArrayUtils.indexOf(header, "court_name");
         if (index != -1) {
