@@ -185,4 +185,25 @@ class DataManagementServiceTest {
         assertTrue(notifyException.getMessage().contains(NOT_FOUND),
                    NO_STATUS_CODE_IN_EXCEPTION);
     }
+
+    @Test
+    void testGetMiDataReturnsOk() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                    .setBody(RESPONSE_BODY)
+                                                    .setResponseCode(200));
+
+        String response = dataManagementService.getMiData();
+        assertEquals(RESPONSE_BODY, response, "Messages do not match");
+    }
+
+    @Test
+    void testGetMiDataThrowsException() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
+                                                                     dataManagementService.getMiData(),
+                                                                 NO_EXPECTED_EXCEPTION);
+
+        assertTrue(notifyException.getMessage().contains(NOT_FOUND), NO_STATUS_CODE_IN_EXCEPTION);
+    }
 }

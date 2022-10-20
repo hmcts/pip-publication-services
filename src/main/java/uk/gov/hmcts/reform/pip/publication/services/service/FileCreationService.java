@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVWriter;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelGenerationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.Converter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.GeneralHelper;
@@ -30,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Service for functionality related to building PDF and xlsx files from JSON input. Thymeleaf templates are used to
@@ -45,10 +49,19 @@ public class FileCreationService {
     private static final String[] HEADINGS = {"Full name", "Email", "Employer",
         "Request date", "Status", "Status date"};
 
+    private static final String PATH_TO_LANGUAGES = "templates/languages/";
+
     @Autowired
     private DataManagementService dataManagementService;
 
-    private static final String PATH_TO_LANGUAGES = "templates/languages/";
+    @Autowired
+    private AccountManagementService accountManagementService;
+
+    @Autowired
+    private SubscriptionManagementService subscriptionManagementService;
+
+    @Autowired
+    private ExcelGenerationService excelGenerationService;
 
     /**
      * Wrapper class for the entire json to pdf process.
@@ -176,5 +189,56 @@ public class FileCreationService {
         } catch (IOException e) {
             throw new CsvCreationException(e.getMessage());
         }
+    }
+
+    /**
+     * Calls out to data management, account management and subscription management services to get the MI data and
+     * generates an Excel spreadsheet returned as a byte array.
+     *
+     * @return a byte array of the Excel spreadsheet.
+     * @throws IOException if an error appears during Excel generation.
+     */
+    public byte[] generateMiReport() throws IOException {
+        return excelGenerationService.generateMultiSheetWorkBook(extractMiData());
+    }
+
+    private Map<String, List<String[]>> extractMiData() {
+        Map<String, List<String[]>> data = new ConcurrentHashMap<>();
+
+        List<String[]> artefactData = formatData(dataManagementService.getMiData());
+        if (!artefactData.isEmpty()) {
+            data.put("Publications", artefactData);
+        }
+
+        List<String[]> userData = formatData(accountManagementService.getMiData());
+        if (!userData.isEmpty()) {
+            data.put("User accounts", userData);
+        }
+
+        List<String[]> allSubscriptionData = formatData(subscriptionManagementService.getAllMiData());
+        if (!allSubscriptionData.isEmpty()) {
+            data.put("All subscriptions", allSubscriptionData);
+        }
+
+        List<String[]> locationSubscriptionData = formatData(subscriptionManagementService.getLocationMiData());
+        if (!locationSubscriptionData.isEmpty()) {
+            data.put("Location subscriptions", locationSubscriptionData);
+        }
+        return data;
+    }
+
+    private List<String[]> formatData(String data) {
+        List<String[]> values = data.lines()
+            .map(l -> l.split(","))
+            .collect(Collectors.toList());
+
+        String[] header = values.get(0);
+        int index = ArrayUtils.indexOf(header, "court_name");
+        if (index != -1) {
+            values.stream()
+                .skip(1)
+                .forEach(l -> l[index] = "");
+        }
+        return values;
     }
 }

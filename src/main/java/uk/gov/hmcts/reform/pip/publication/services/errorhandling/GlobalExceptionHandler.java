@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.BadPayloadException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
@@ -118,6 +119,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CsvCreationException.class)
     public ResponseEntity<ExceptionResponse> handle(CsvCreationException ex) {
+        log.error(writeLog(String.format("ExcelCreationException was thrown with the init cause: %s", ex.getCause())));
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setMessage(ex.getMessage());
+        exceptionResponse.setTimestamp(LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(ExcelCreationException.class)
+    public ResponseEntity<ExceptionResponse> handle(ExcelCreationException ex) {
         log.error(writeLog(String.format("CsvCreationException was thrown with the init cause: %s", ex.getCause())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();

@@ -21,8 +21,7 @@ public abstract class ExcelAbstractList {
      * Set a given cells value with a given value.
      */
     protected void setCellValue(Row row, int cellNumber, String value) {
-        Cell cell = row.createCell(cellNumber);
-        cell.setCellValue(value);
+        setCellValue(row, cellNumber, value, null);
     }
 
     /**
@@ -31,7 +30,9 @@ public abstract class ExcelAbstractList {
     protected void setCellValue(Row row, int cellNumber, String value, CellStyle style) {
         Cell cell = row.createCell(cellNumber);
         cell.setCellValue(value);
-        cell.setCellStyle(style);
+        if (style != null) {
+            cell.setCellStyle(style);
+        }
     }
 
     /**

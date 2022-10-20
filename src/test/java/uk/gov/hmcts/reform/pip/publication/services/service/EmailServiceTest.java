@@ -287,4 +287,25 @@ class EmailServiceTest {
             );
 
     }
+
+    @Test
+    void testMiDataReportingEmailReturnsSuccess() {
+        when(personalisationService.buildMiDataReportingPersonalisation())
+            .thenReturn(personalisation);
+
+        EmailToSend email = emailService.buildMiDataReportingEmail(Templates.MI_DATA_REPORTING_EMAIL.template);
+
+        assertThat(email)
+            .as("Returned values do not match")
+            .extracting(
+                EmailToSend::getEmailAddress,
+                EmailToSend::getPersonalisation,
+                EmailToSend::getTemplate
+            )
+            .containsExactly(
+                EMAIL,
+                personalisation,
+                Templates.MI_DATA_REPORTING_EMAIL.template
+            );
+    }
 }

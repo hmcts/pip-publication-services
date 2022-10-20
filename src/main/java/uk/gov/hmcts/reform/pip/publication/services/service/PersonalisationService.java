@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.Arte
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -145,7 +147,7 @@ public class PersonalisationService {
             boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;
 
             personalisation.put("display_pdf", pdfWithinSize);
-            personalisation.put("link_to_file", pdfWithinSize ? EmailClient.prepareUpload(artefactPdf) : "");
+            personalisation.put(LINK_TO_FILE, pdfWithinSize ? EmailClient.prepareUpload(artefactPdf) : "");
 
             personalisation.put("display_excel", excelWithinSize);
             personalisation.put("excel_link_to_file", excelWithinSize ? EmailClient.prepareUpload(artefactExcel) : "");
@@ -166,7 +168,6 @@ public class PersonalisationService {
                      artefact.getArtefactId()
             );
             throw new NotifyException(e.getMessage());
-
         }
     }
 
@@ -193,7 +194,7 @@ public class PersonalisationService {
                 ? NotificationClient.prepareUpload(artefactData, true)
                 : NotificationClient.prepareUpload(artefactData);
 
-            personalisation.put("link_to_file", uploadedFile);
+            personalisation.put(LINK_TO_FILE, uploadedFile);
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
             return personalisation;
@@ -303,6 +304,27 @@ public class PersonalisationService {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(FULL_NAME, body.getFullName());
         personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadSignInPageLink());
+        return personalisation;
+    }
+
+    /**
+     * Handles the personalisation for the MI data reporting email.
+     *
+     * @return The personalisation map for the email.
+     */
+    public Map<String, Object> buildMiDataReportingPersonalisation() {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        try {
+            byte[] excel = fileCreationService.generateMiReport();
+            personalisation.put(LINK_TO_FILE, EmailClient.prepareUpload(excel));
+            personalisation.put(ENV_NAME, convertEnvironmentName(envName));
+        } catch (IOException e) {
+            log.warn("Error generating excel file attachment");
+            throw new ExcelCreationException(e.getMessage());
+        } catch (NotificationClientException e) {
+            log.warn("Error adding attachment to MI data reporting email");
+            throw new NotifyException(e.getMessage());
+        }
         return personalisation;
     }
 }

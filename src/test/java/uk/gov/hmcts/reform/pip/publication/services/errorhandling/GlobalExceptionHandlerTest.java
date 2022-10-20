@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.BadPayloadException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
@@ -145,13 +146,24 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void testHandleCsvCreationException() {
-        GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
-
         CsvCreationException csvCreationException = new CsvCreationException(TEST_MESSAGE);
 
         ResponseEntity<ExceptionResponse> responseEntity =
             globalExceptionHandler.handle(csvCreationException);
 
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), STATUS_CODE);
+        assertNotNull(responseEntity.getBody(), BODY_RESPONSE);
+        assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
+                     PASSED_IN_MESSAGE);
+    }
+
+    @Test
+    void testHandleExcelCreationException() {
+        ExcelCreationException excelCreationException = new ExcelCreationException(TEST_MESSAGE);
+
+        ResponseEntity<ExceptionResponse> responseEntity =
+            globalExceptionHandler.handle(excelCreationException);
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), STATUS_CODE);
         assertNotNull(responseEntity.getBody(), BODY_RESPONSE);
