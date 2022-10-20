@@ -8,6 +8,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
+import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
+
 @Slf4j
 @Service
 @SuppressWarnings({"PMD.PreserveStackTrace"})
@@ -23,6 +25,7 @@ public class SubscriptionManagementService {
     public String getAllMiData() {
         try {
             return webClient.get().uri(String.format("%s/subscription/mi-data-all", url))
+                .attributes(clientRegistrationId("subscriptionManagementApi"))
                 .retrieve()
                 .bodyToMono(String.class).block();
         } catch (WebClientResponseException ex) {
@@ -33,6 +36,7 @@ public class SubscriptionManagementService {
     public String getLocationMiData() {
         try {
             return webClient.get().uri(String.format("%s/subscription/mi-data-local", url))
+                .attributes(clientRegistrationId("subscriptionManagementApi"))
                 .retrieve()
                 .bodyToMono(String.class).block();
         } catch (WebClientResponseException ex) {

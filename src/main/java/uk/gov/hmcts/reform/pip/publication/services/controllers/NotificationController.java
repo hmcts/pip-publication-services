@@ -212,7 +212,7 @@ public class NotificationController {
         @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     })
     @ApiOperation("Send email with MI report")
-    @PostMapping("/mi-data")
+    @PostMapping("/mi/report")
     public ResponseEntity<String> sendMiReportingEmail() {
         return ResponseEntity.ok(String.format(
             "MI data reporting email successfully sent with referenceId: %s",

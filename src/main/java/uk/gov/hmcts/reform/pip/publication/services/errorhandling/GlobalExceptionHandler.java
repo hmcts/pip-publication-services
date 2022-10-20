@@ -119,7 +119,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CsvCreationException.class)
     public ResponseEntity<ExceptionResponse> handle(CsvCreationException ex) {
-        log.error(writeLog(String.format("ExcelCreationException was thrown with the init cause: %s", ex.getCause())));
+        log.error(writeLog(String.format("CsvCreationException was thrown with the init cause: %s", ex.getCause())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
@@ -130,7 +130,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExcelCreationException.class)
     public ResponseEntity<ExceptionResponse> handle(ExcelCreationException ex) {
-        log.error(writeLog(String.format("CsvCreationException was thrown with the init cause: %s", ex.getCause())));
+        log.error(writeLog(String.format("ExcelCreationException was thrown with the init cause: %s", ex.getCause())));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
