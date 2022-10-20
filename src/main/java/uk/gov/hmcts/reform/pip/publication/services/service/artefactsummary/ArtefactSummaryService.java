@@ -48,6 +48,7 @@ public class ArtefactSummaryService {
      *     subscriptions email templates.
      * @throws JsonProcessingException - jackson prereq.
      */
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public String artefactSummary(String payload, ListType listType) throws JsonProcessingException {
         switch (listType) {
             case SJP_PUBLIC_LIST:

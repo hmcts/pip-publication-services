@@ -268,7 +268,7 @@ class DataManipulationTest {
 
         assertThat(inputJson.get("prosecutingAuthority").asText())
             .as("prosecuting authority is incorrect")
-            .startsWith("Title Forename Middlename Surname");
+            .isEqualTo("Title Forename Middlename Surname");
     }
 
     @Test
@@ -279,7 +279,7 @@ class DataManipulationTest {
 
         assertThat(inputJson.get("respondent").asText())
             .as("respondent is incorrect")
-            .contains("Legal Advisor: Mr ForenameB MiddlenameB SurnameB");
+            .endsWith("Legal Advisor: Mr ForenameB MiddlenameB SurnameB");
     }
 
     @Test

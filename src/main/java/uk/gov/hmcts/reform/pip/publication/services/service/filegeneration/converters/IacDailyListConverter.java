@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguratio
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DataManipulation;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.GeneralHelper;
 
 import java.io.IOException;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class IacDailyListConverter implements Converter {
                           Map<String, Object> language) throws IOException {
         Context context = new Context();
 
-        calculateListData(artefact);
+        calculateListData(artefact, Language.valueOf(metadata.get("language")));
 
         context.setVariable("i18n", language);
         context.setVariable("provenance", metadata.get("provenance"));
@@ -50,8 +51,9 @@ public class IacDailyListConverter implements Converter {
     /**
      * This method calculates the list data for the artefact.
      * @param artefact List data to calculate.
+     * @param language The language for the list type.
      */
-    private void calculateListData(JsonNode artefact) {
+    private void calculateListData(JsonNode artefact, Language language) {
         artefact.get("courtLists").forEach(courtList -> {
 
             ((ObjectNode) courtList).put(
@@ -68,7 +70,7 @@ public class IacDailyListConverter implements Converter {
 
                     session.get("sittings").forEach(sitting -> {
                         String sittingStart = DateHelper.formatTimeStampToBst(
-                            sitting.get("sittingStart").asText(), Language.ENGLISH,
+                            sitting.get("sittingStart").asText(), language,
                             true, false);
 
                         ((ObjectNode) sitting).put("formattedStart", sittingStart);
@@ -76,7 +78,7 @@ public class IacDailyListConverter implements Converter {
                         DataManipulation.findAndConcatenateHearingPlatform(sitting, session);
 
                         sitting.get("hearing").forEach(hearing -> {
-                            DataManipulation.findAndManipulatePartyInformation(hearing, Language.ENGLISH);
+                            DataManipulation.findAndManipulatePartyInformation(hearing, language);
                             hearing.get("case").forEach(this::formatLinkedCases);
                         });
                     });
@@ -93,14 +95,13 @@ public class IacDailyListConverter implements Converter {
     private void formatLinkedCases(JsonNode caseInfo) {
         StringBuilder formattedLinked = new StringBuilder();
 
-        if (caseInfo.get("caseLinked") != null) {
+        if (caseInfo.has("caseLinked")) {
             caseInfo.get("caseLinked").forEach(linkedCase -> {
 
                 if (formattedLinked.length() != 0) {
                     formattedLinked.append(", ");
                 }
-
-                formattedLinked.append(linkedCase.get("caseId").asText());
+                formattedLinked.append(GeneralHelper.findAndReturnNodeText(linkedCase, "caseId"));
             });
         }
 
