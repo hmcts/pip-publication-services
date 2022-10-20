@@ -24,9 +24,8 @@ public class IacDailyList {
                 courtRoom.get("session").forEach(session -> {
                     session.get("sittings").forEach(sitting -> {
 
-                        String sittingStart = DateHelper.formatTimeStampToBst(
-                            sitting.get("sittingStart").asText(), Language.ENGLISH,
-                            true, false);
+                        String sittingStart = DateHelper.timeStampToBstTimeWithFormat(
+                            sitting.get("sittingStart").asText(), "h:mma");
 
                         DataManipulation.findAndConcatenateHearingPlatform(sitting, session);
                         sitting.get("hearing").forEach(hearing -> {

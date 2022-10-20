@@ -101,7 +101,7 @@ class IacDailyListConverterTest {
             .as("Incorrect table rows")
             .hasSize(7)
             .extracting(Element::text)
-            .contains("9pm",
+            .contains("9:00pm",
                       "12341234 [2 of 3]",
                       "Surname Rep: Mr Individual Forenames Individual Middlename Individual Surname",
                       "Authority Surname",
@@ -138,7 +138,21 @@ class IacDailyListConverterTest {
                              "Hearing Channel",
                              "Linked Cases");
 
-        softly.assertThat(doc.getElementsByClass("govuk-table__body").get(1).getElementsByTag("td"))
+        softly.assertThat(doc.getElementsByClass("govuk-table__body").get(1)
+                              .getElementsByClass("govuk-table__row").get(0).getElementsByTag("td"))
+            .as("Incorrect table rows")
+            .hasSize(7)
+            .extracting(Element::text)
+            .contains("9:20pm",
+                      "12341234 [2 of 3]",
+                      "Surname Rep: No Representative",
+                      "Authority Surname",
+                      "",
+                      "Teams, Attended",
+                      "");
+
+        softly.assertThat(doc.getElementsByClass("govuk-table__body").get(1)
+                              .getElementsByClass("govuk-table__row").get(1).getElementsByTag("td"))
             .as("Incorrect table rows")
             .hasSize(7)
             .extracting(Element::text)

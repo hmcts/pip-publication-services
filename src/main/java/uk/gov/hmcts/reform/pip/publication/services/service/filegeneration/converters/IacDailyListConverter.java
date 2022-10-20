@@ -69,9 +69,8 @@ public class IacDailyListConverter implements Converter {
                     ((ObjectNode) session).put("formattedJudiciary", formattedJoh);
 
                     session.get("sittings").forEach(sitting -> {
-                        String sittingStart = DateHelper.formatTimeStampToBst(
-                            sitting.get("sittingStart").asText(), language,
-                            true, false);
+                        String sittingStart = DateHelper.timeStampToBstTimeWithFormat(
+                            sitting.get("sittingStart").asText(), "h:mma");
 
                         ((ObjectNode) sitting).put("formattedStart", sittingStart);
 

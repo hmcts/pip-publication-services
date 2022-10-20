@@ -136,7 +136,52 @@
                           {
                             "caseNumber": "12341234",
                             "caseSequenceIndicator": "[2 of 3]",
-                            "caseType": "case type"
+                            "caseType": "case type",
+                            "caseLinked": []
+                          }
+                        ],
+                        "party": [
+                          {
+                            "partyRole": "CLAIMANT_PETITIONER",
+                            "individualDetails": {
+                              "individualSurname": "Surname"
+                            }
+                          },
+                          {
+                            "partyRole": "RESPONDENT",
+                            "individualDetails": {
+                              "individualSurname": "Authority Surname"
+                            }
+                          },
+                          {
+                            "partyRole": "RESPONDENT_REPRESENTATIVE",
+                            "individualDetails": {
+                              "individualForenames": "Individual Forenames",
+                              "individualMiddleName": "Individual Middlename",
+                              "individualSurname": "Individual Surname",
+                              "title": "Mr"
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "channel": [
+                      "Teams",
+                      "Attended"
+                    ]
+                  },
+                  {
+                    "sittingStart": "2020-10-20T20:20:00.001Z",
+                    "sittingEnd": "2020-02-20T22:00:00.001Z",
+                    "hearing": [
+                      {
+                        "hearingType": "Directions",
+                        "case": [
+                          {
+                            "caseNumber": "12341234",
+                            "caseSequenceIndicator": "[2 of 3]",
+                            "caseType": "case type",
+                            "caseLinked": []
                           }
                         ],
                         "party": [

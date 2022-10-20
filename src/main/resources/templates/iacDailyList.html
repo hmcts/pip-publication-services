@@ -174,11 +174,19 @@
                         <td class="govuk-table__cell" th:text="${case.get('caseNumber').asText()}"/>
                       </th:block>
 
-                      <th:block th:if="${hearing.get('claimantRepresentative') != null}">
-                        <td class="govuk-table__cell" th:text="${hearing.get('claimant').asText() + i18n.rep + hearing.get('claimantRepresentative').asText()}"/>
+                      <th:block th:if="${hearing.get('claimantRepresentative') != null && hearing.get('claimantRepresentative').asText().length > 0}">
+                        <td class="govuk-table__cell">
+                          <span th:text="${hearing.get('claimant').asText()}"/>
+                          <br/>
+                          <span th:text="${i18n.rep + hearing.get('claimantRepresentative').asText()}"/>
+                        </td>
                       </th:block>
-                      <th:block th:if="${hearing.get('claimantRepresentative') == null}">
-                        <td class="govuk-table__cell" th:text="${hearing.get('claimant').asText()}"/>
+                      <th:block th:if="${hearing.get('claimantRepresentative') == null || hearing.get('claimantRepresentative').asText().length == 0}">
+                        <td class="govuk-table__cell">
+                          <span th:text="${hearing.get('claimant').asText()}"/>
+                          <br/>
+                          <span th:text="${i18n.rep + i18n.noRep}"/>
+                        </td>
                       </th:block>
 
                       <td class="govuk-table__cell" th:text="${hearing.get('prosecutingAuthority').asText()}"/>

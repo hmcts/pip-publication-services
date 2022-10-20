@@ -30,11 +30,11 @@ class IacDailyListTests {
 
         assertThat(artefactSummary.split(System.lineSeparator()))
             .as("Incorrect output lines")
-                .hasSize(14);
+                .hasSize(21);
 
         assertThat(artefactSummary)
             .as("incorrect start time found")
-            .contains("9pm");
+            .contains("9:00pm");
 
         assertThat(artefactSummary)
             .as("incorrect case ref found")
