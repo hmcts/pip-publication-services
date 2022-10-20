@@ -40,11 +40,11 @@ public final class TribunalNationalListsManipulation {
 
         data.get("courtLists").forEach(courtList -> {
             courtList.get("courtHouse").get("courtRoom").forEach(courtRoom -> {
-                courtRoom.get("session").forEach(roomSession -> {
-                    String hearingDate = DateHelper.formatTimeStampToBst(roomSession.get("sessionStartTime").asText(),
+                courtRoom.get("session").forEach(session -> {
+                    String hearingDate = DateHelper.formatTimeStampToBst(session.get("sessionStartTime").asText(),
                                                                          language, false, false,
                                                                          "dd MMMM");
-                    roomSession.get("sittings").forEach(sitting -> {
+                    session.get("sittings").forEach(sitting -> {
                         DateHelper.calculateDuration(sitting, Language.ENGLISH, true);
                         sitting.get("hearing").forEach(hearing -> {
                             String hearingType = hearing.get("hearingType").asText();
