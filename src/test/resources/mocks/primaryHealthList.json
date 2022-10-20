@@ -1,0 +1,84 @@
+{
+  "document": {
+    "publicationDate": "2022-10-04T09:00:52.123Z"
+  },
+  "venue": {
+    "venueContact": {
+      "venueTelephone": "01772 844700",
+      "venueEmail": "court1@moj.gov.uk"
+    }
+  },
+  "locationDetails": {
+    "jurisdiction": "Tribunal"
+  },
+  "courtLists": [
+    {
+      "courtHouse": {
+        "courtHouseName": "The Court House",
+        "courtHouseAddress": {
+          "line": [
+            "Court Street"
+          ],
+          "postCode": "SK4 5LE"
+        },
+        "courtRoom": [
+          {
+            "session": [
+              {
+                "sessionStartTime": "2022-10-05T09:00:52.123Z",
+                "sittings": [
+                  {
+                    "sittingStart": "2022-10-05T11:00:52.123Z",
+                    "sittingEnd": "2022-10-06T11:30:52.123Z",
+                    "hearing": [
+                      {
+                        "hearingType": "Remote - Teams",
+                        "case": [
+                          {
+                            "caseName": "A Vs B",
+                            "caseNumber": "45684548",
+                            "caseSequenceIndicator": "[1 of 2]"
+                          }
+                        ]
+                      },
+                      {
+                        "hearingType": "Remote - Teams",
+                        "case": [
+                          {
+                            "caseName": "A Vs B",
+                            "caseNumber": "45684548",
+                            "caseSequenceIndicator": "[2 of 2]"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "sessionStartTime": "2022-10-06T11:00:52.123Z",
+                "sittings": [
+                  {
+                    "sittingStart": "2022-10-06T11:00:52.123Z",
+                    "sittingEnd": "2022-10-06T13:30:52.123Z",
+                    "hearing": [
+                      {
+                        "hearingType": "Video",
+                        "case": [
+                          {
+                            "caseName": "C Vs D",
+                            "caseNumber": "45684550"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

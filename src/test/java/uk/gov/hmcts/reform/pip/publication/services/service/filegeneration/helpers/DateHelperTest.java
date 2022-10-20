@@ -33,6 +33,14 @@ class DateHelperTest {
     }
 
     @Test
+    void testZonedDateMethodWithDateFormat() {
+        assertThat(DateHelper.formatTimeStampToBst(
+            "2022-07-26T16:04:43.416924Z", Language.ENGLISH, false, false, "dd MMMM"))
+            .as(ERR_MSG)
+            .isEqualTo("26 July");
+    }
+
+    @Test
     void testZonedTimeOnlyHoursMethod() {
         assertThat(DateHelper.formatTimeStampToBst(
             "2022-07-26T16:00:00.416924Z", Language.ENGLISH, true, false))
@@ -74,10 +82,38 @@ class DateHelperTest {
     }
 
     @Test
+    void testFormatDurationInDaysForSingleDay() {
+        assertThat(DateHelper.formatDurationInDays(1, Language.ENGLISH))
+            .as(ERR_MSG)
+            .isEqualTo("1 day");
+    }
+
+    @Test
+    void testFormatDurationInDaysForMultipleDays() {
+        assertThat(DateHelper.formatDurationInDays(3, Language.ENGLISH))
+            .as(ERR_MSG)
+            .isEqualTo("3 days");
+    }
+
+    @Test
+    void testFormatDurationInDaysInNonEnglish() {
+        assertThat(DateHelper.formatDurationInDays(1, Language.WELSH))
+            .as(ERR_MSG)
+            .isEqualTo("1 dydd/day");
+    }
+
+    @Test
     void testFormatDurationMethod() {
         assertThat(DateHelper.formatDuration(3, 10, Language.ENGLISH))
             .as(ERR_MSG)
             .isEqualTo("3 hours 10 mins");
+    }
+
+    @Test
+    void testFormatDurationMethodInNonEnglish() {
+        assertThat(DateHelper.formatDuration(3, 10, Language.WELSH))
+            .as(ERR_MSG)
+            .isEqualTo("3 awr/hours 10 munud/minutes");
     }
 
     @Test
