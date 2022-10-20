@@ -23,7 +23,7 @@ class ArtefactSummaryServiceTest {
     private static final String BODY_WRONG = "Body is not as expected.";
     private static final String STRING_NOT_EMPTY = "The returned string should trigger the default (i.e. empty string)";
     private static final String NULL_FILE = "Mock file is null - are you sure it's still there?";
-    private static final String CARE_NAME = "A Vs B";
+    private static final String CASE_NAME = "A Vs B";
 
     private String readMockJsonFile(String filePath)  throws IOException {
         try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
@@ -118,9 +118,9 @@ class ArtefactSummaryServiceTest {
     @Test
     void primaryHealthListTest() throws IOException {
         String body = readMockJsonFile("mocks/primaryHealthList.json");
-        assertThat(body).as(BODY_WRONG).contains(CARE_NAME);
+        assertThat(body).as(BODY_WRONG).contains(CASE_NAME);
         assertThat(artefactSummaryService.artefactSummary(body, ListType.PRIMARY_HEALTH_LIST))
-            .as(MISSING_DATA_RETURN).contains(CARE_NAME);
+            .as(MISSING_DATA_RETURN).contains(CASE_NAME);
     }
 
     @Test
@@ -144,8 +144,8 @@ class ArtefactSummaryServiceTest {
     @Test
     void careStandardsListTest() throws IOException {
         String body = readMockJsonFile("mocks/careStandardsList.json");
-        assertThat(body).as(BODY_WRONG).contains(CARE_NAME);
+        assertThat(body).as(BODY_WRONG).contains(CASE_NAME);
         assertThat(artefactSummaryService.artefactSummary(body, ListType.CARE_STANDARDS_LIST))
-            .as(MISSING_DATA_RETURN).contains(CARE_NAME);
+            .as(MISSING_DATA_RETURN).contains(CASE_NAME);
     }
 }
