@@ -117,6 +117,14 @@ class ArtefactSummaryServiceTest {
     }
 
     @Test
+    void primaryHealthListTest() throws IOException {
+        String body = readMockJsonFile("mocks/primaryHealthList.json");
+        assertThat(body).as(BODY_WRONG).contains("A Vs B");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.PRIMARY_HEALTH_LIST))
+            .as(MISSING_DATA_RETURN).contains("A Vs B");
+    }
+
+    @Test
     void magsPublicListTest() throws IOException {
         String body = readMockJsonFile("mocks/familyDailyCauseList.json");
         assertThat(artefactSummaryService.artefactSummary(body, ListType.MAGISTRATES_PUBLIC_LIST)).as(STRING_NOT_EMPTY)

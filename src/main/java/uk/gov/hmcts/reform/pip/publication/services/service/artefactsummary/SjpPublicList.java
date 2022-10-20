@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.SjpManipulation;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.listmanipulation.SjpManipulation;
 
 import java.util.Optional;
 

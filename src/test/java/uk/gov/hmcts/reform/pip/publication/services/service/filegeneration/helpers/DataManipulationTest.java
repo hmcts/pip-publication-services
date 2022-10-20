@@ -13,10 +13,8 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles("test")
 @SuppressWarnings("PMD.TooManyMethods")
@@ -30,9 +28,6 @@ class DataManipulationTest {
     private static final String CASE = "case";
     private static final String CASE_NAME = "caseName";
     private static final String CASE_TYPE = "caseType";
-    private static final String FORMATTED_COURT_HOUSE_ADDRESS = "formattedCourtHouseAddress";
-
-    private static final String COURT_ADDRESS_ERROR = "Unable to get court address address";
 
     private static JsonNode inputJson;
     private static JsonNode inputJsonCop;
@@ -52,53 +47,6 @@ class DataManipulationTest {
         );
 
         inputJsonCop = new ObjectMapper().readTree(copWriter.toString());
-    }
-
-    @Test
-    void testFormatVenueAddressMethod() {
-        List<String> venueAddress = LocationHelper.formatVenueAddress(inputJson);
-
-        assertEquals(venueAddress.get(0), "Address Line 1",
-                     "Unable to get address for venue");
-
-        assertEquals(venueAddress.get(venueAddress.size() - 1),
-                     "AA1 AA1",
-                     "Unable to get address for venue");
-    }
-
-    @Test
-    void testFormatCourtAddressMethod() {
-        LocationHelper.formatCourtAddress(inputJson);
-
-        assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
-                       .has(FORMATTED_COURT_HOUSE_ADDRESS))
-            .as(COURT_ADDRESS_ERROR)
-            .isTrue();
-
-        assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
-                       .get(FORMATTED_COURT_HOUSE_ADDRESS).asText())
-            .as(COURT_ADDRESS_ERROR)
-            .contains("Address Line 1");
-
-        assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
-                       .get(FORMATTED_COURT_HOUSE_ADDRESS).asText())
-            .as("Unable to get court address postcode")
-            .contains("AA1 AA1");
-    }
-
-    @Test
-    void testFormatWithNoCourtAddressMethod() {
-        LocationHelper.formatCourtAddress(inputJson);
-
-        assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
-                       .has(FORMATTED_COURT_HOUSE_ADDRESS))
-            .as(COURT_ADDRESS_ERROR)
-            .isTrue();
-
-        assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
-                       .get(FORMATTED_COURT_HOUSE_ADDRESS).asText())
-            .as(COURT_ADDRESS_ERROR)
-            .isEmpty();
     }
 
     @Test

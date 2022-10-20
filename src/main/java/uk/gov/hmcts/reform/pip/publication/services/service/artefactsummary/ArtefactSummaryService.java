@@ -36,6 +36,9 @@ public class ArtefactSummaryService {
     @Autowired
     IacDailyList iacDailyList;
 
+    @Autowired
+    PrimaryHealthList primaryHealthList;
+
     /**
      * Parent class to route based on list types.
      *
@@ -62,6 +65,8 @@ public class ArtefactSummaryService {
                 return scssDailyList.artefactSummaryScssDailyList(payload);
             case IAC_DAILY_LIST:
                 return iacDailyList.artefactSummary(payload);
+            case PRIMARY_HEALTH_LIST:
+                return primaryHealthList.artefactSummaryPrimaryHealthList(payload);
             default:
                 return "";
         }

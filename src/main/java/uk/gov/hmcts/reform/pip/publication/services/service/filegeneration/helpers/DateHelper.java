@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,6 +18,7 @@ public final class DateHelper {
     private static final int ONE = 1;
     public static final String EUROPE_LONDON = "Europe/London";
     private static final int MINUTES_PER_HOUR = 60;
+    private static final int HOURS_PER_DAY = 24;
 
     private DateHelper() {
         throw new UnsupportedOperationException();
@@ -24,23 +26,29 @@ public final class DateHelper {
 
     public static String formatTimeStampToBst(String timestamp, Language language, Boolean isTimeOnly,
                                               Boolean isBothDateAndTime) {
+        return formatTimeStampToBst(timestamp, language, isTimeOnly, isBothDateAndTime, "dd MMMM yyyy");
+    }
+
+    public static String formatTimeStampToBst(String timestamp, Language language, Boolean isTimeOnly,
+                                              Boolean isBothDateAndTime, String dateFormat) {
         ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
-        String pattern = DateHelper.getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime, language);
+        String pattern = DateHelper.getDateTimeFormat(zonedDateTime, isTimeOnly, isBothDateAndTime, language,
+                                                      dateFormat);
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern, Locale.UK);
         return dtf.format(zonedDateTime);
     }
 
     private static String getDateTimeFormat(ZonedDateTime zonedDateTime, Boolean isTimeOnly,
-                                            Boolean isBothDateAndTime, Language language) {
+                                            Boolean isBothDateAndTime, Language language, String dateFormat) {
         if (isTimeOnly) {
             if (zonedDateTime.getMinute() == 0) {
                 return "ha";
             }
             return "h:mma";
         } else if (isBothDateAndTime) {
-            return (language == Language.ENGLISH) ? "dd MMMM yyyy 'at' HH:mm" : "dd MMMM yyyy 'yn' HH:mm";
+            return (language == Language.ENGLISH) ? dateFormat + " 'at' HH:mm" : dateFormat + " 'yn' HH:mm";
         }
-        return "dd MMMM yyyy";
+        return dateFormat;
     }
 
     public static String formatLocalDateTimeToBst(LocalDateTime date) {
@@ -54,15 +62,18 @@ public final class DateHelper {
         return unZonedDateTime.atZone(zone);
     }
 
-    public static int convertTimeToMinutes(ZonedDateTime startDateTime,
+    public static long convertTimeToMinutes(ZonedDateTime startDateTime,
                                            ZonedDateTime endDateTime) {
-        int diffHours = endDateTime.getHour() - startDateTime.getHour();
-        int diffMinutes = endDateTime.getMinute() - startDateTime.getMinute();
-
-        return diffHours * 60 + diffMinutes;
+        return Duration.between(startDateTime, endDateTime).toMinutes();
     }
 
-    public static String formatDuration(int hours, int minutes, Language language) {
+    static String formatDurationInDays(int days, Language language) {
+        return (language == Language.ENGLISH)
+            ? formatDurationTime(days, "day")
+            : formatDurationTime(days, "dydd/day");
+    }
+
+    static String formatDuration(int hours, int minutes, Language language) {
         if (hours > 0 && minutes > 0) {
             return hoursAndMins(hours, minutes, language);
         } else if (hours > 0 && minutes == 0) {
@@ -75,26 +86,24 @@ public final class DateHelper {
 
     private static String hoursAndMins(int hours, int minutes, Language language) {
         return (language == Language.ENGLISH)
-            ? formatDurationTime(hours, "hour") + " " + formatDurationTime(minutes, "min") :
-            formatDurationTime(hours, "awr/hour") + " " + formatDurationTime(minutes, "munud/minute");
+            ? formatDurationTime(hours, "hour") + " " + formatDurationTime(minutes, "min")
+            : formatDurationTime(hours, "awr/hour") + " " + formatDurationTime(minutes, "munud/minute");
     }
 
     private static String hoursOnly(int hours, Language language) {
-        return (language == Language.ENGLISH) ? formatDurationTime(hours, "hour") : formatDurationTime(
-            hours, "awr/hour");
+        return (language == Language.ENGLISH)
+            ? formatDurationTime(hours, "hour")
+            : formatDurationTime(hours, "awr/hour");
     }
 
     private static String minsOnly(int mins, Language language) {
-        return (language == Language.ENGLISH) ? formatDurationTime(mins, "min") : formatDurationTime(
-            mins, "munud/minute");
+        return (language == Language.ENGLISH)
+            ? formatDurationTime(mins, "min")
+            : formatDurationTime(mins, "munud/minute");
     }
 
     private static String formatDurationTime(int duration, String format) {
-        if (duration > ONE) {
-            return duration + " " + format + "s";
-        }
-
-        return duration + " " + format;
+        return duration > ONE ? duration + " " + format + "s" : duration + " " + format;
     }
 
     public static ZonedDateTime convertStringToUtc(String timestamp) {
@@ -124,6 +133,10 @@ public final class DateHelper {
     }
 
     public static void calculateDuration(JsonNode sitting, Language language) {
+        calculateDuration(sitting, language, false);
+    }
+
+    public static void calculateDuration(JsonNode sitting, Language language, boolean dayCalculation) {
         ZonedDateTime sittingStart = convertStringToUtc(sitting.get("sittingStart").asText());
         ZonedDateTime sittingEnd = convertStringToUtc(sitting.get("sittingEnd").asText());
 
@@ -135,10 +148,15 @@ public final class DateHelper {
             durationAsMinutes = durationAsMinutes - (durationAsHours * MINUTES_PER_HOUR);
         }
 
-        String formattedDuration = formatDuration(
-            (int) durationAsHours,
-            (int) durationAsMinutes, language
-        );
+        String formattedDuration;
+        if (dayCalculation && durationAsHours >= HOURS_PER_DAY) {
+            formattedDuration = formatDurationInDays((int) Math.floor(durationAsHours / HOURS_PER_DAY), language);
+        } else {
+            formattedDuration = formatDuration(
+                (int) durationAsHours,
+                (int) durationAsMinutes, language
+            );
+        }
 
         ((ObjectNode) sitting).put("formattedDuration", formattedDuration);
 
