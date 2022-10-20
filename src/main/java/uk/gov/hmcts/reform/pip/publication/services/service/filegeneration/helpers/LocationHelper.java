@@ -2,13 +2,15 @@ package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.help
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.micrometer.core.instrument.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class LocationHelper {
-
+    private static final String LINE = "line";
+    private static final String TOWN = "town";
+    private static final String COUNTY = "county";
     private static final String POSTCODE = "postCode";
     static final String COURT_HOUSE = "courtHouse";
 
@@ -16,11 +18,9 @@ public final class LocationHelper {
         throw new UnsupportedOperationException();
     }
 
-
-
     public static List<String> formatVenueAddress(JsonNode artefact) {
         List<String> address = new ArrayList<>();
-        JsonNode arrayNode = artefact.get("venue").get("venueAddress").get("line");
+        JsonNode arrayNode = artefact.get("venue").get("venueAddress").get(LINE);
         for (JsonNode jsonNode : arrayNode) {
             if (!jsonNode.asText().isEmpty()) {
                 address.add(jsonNode.asText());
@@ -30,36 +30,38 @@ public final class LocationHelper {
             address.add(artefact.get("venue").get("venueAddress").get(POSTCODE).asText());
         }
         return address;
-
     }
 
-    public static void formatCourtAddress(JsonNode artefact) {
+    public static void formatCourtAddress(JsonNode artefact, String delimiter) {
+        formatCourtAddress(artefact, delimiter, false);
+    }
+
+    public static void formatCourtAddress(JsonNode artefact, String delimiter, boolean addCourtHouseName) {
         artefact.get("courtLists").forEach(courtList -> {
             StringBuilder formattedCourtAddress = new StringBuilder();
+            JsonNode courtHouse = courtList.get(COURT_HOUSE);
 
-            if (courtList.get(COURT_HOUSE).has("courtHouseAddress")) {
-                JsonNode courtHouseAddress = courtList.get(COURT_HOUSE).get("courtHouseAddress");
-
-                GeneralHelper.loopAndFormatString(courtHouseAddress, "line",
-                                            formattedCourtAddress, "|");
-
-                checkAndFormatAddress(courtHouseAddress, "town",
-                                           formattedCourtAddress, '|');
-
-                checkAndFormatAddress(courtHouseAddress, "county",
-                                           formattedCourtAddress, '|');
-
-                checkAndFormatAddress(courtHouseAddress, POSTCODE,
-                                           formattedCourtAddress, '|');
+            if (addCourtHouseName && courtHouse.has("courtHouseName")) {
+                formattedCourtAddress
+                    .append(courtHouse.get("courtHouseName").asText())
+                    .append(delimiter);
             }
 
-            ((ObjectNode)courtList.get(COURT_HOUSE)).put("formattedCourtHouseAddress",
-                formattedCourtAddress.toString().replaceAll(", $", ""));
+            if (courtHouse.has("courtHouseAddress")) {
+                JsonNode courtHouseAddress = courtHouse.get("courtHouseAddress");
+                GeneralHelper.loopAndFormatString(courtHouseAddress, LINE, formattedCourtAddress, delimiter);
+                checkAndFormatAddress(courtHouseAddress, TOWN, formattedCourtAddress, delimiter);
+                checkAndFormatAddress(courtHouseAddress, COUNTY, formattedCourtAddress, delimiter);
+                checkAndFormatAddress(courtHouseAddress, POSTCODE, formattedCourtAddress, delimiter);
+            }
+
+            ((ObjectNode)courtHouse).put("formattedCourtHouseAddress",
+                                         StringUtils.stripEnd(formattedCourtAddress.toString(), delimiter));
         });
     }
 
     private static void checkAndFormatAddress(JsonNode node, String nodeName,
-                                              StringBuilder builder, Character delimiter) {
+                                              StringBuilder builder, String delimiter) {
         if (!GeneralHelper.findAndReturnNodeText(node, nodeName).isEmpty()) {
             builder
                 .append(node.get(nodeName).asText())
