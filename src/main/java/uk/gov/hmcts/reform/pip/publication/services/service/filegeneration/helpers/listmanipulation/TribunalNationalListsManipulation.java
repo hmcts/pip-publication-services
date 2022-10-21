@@ -5,6 +5,7 @@ import org.thymeleaf.context.Context;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.templatemodels.TribunalNationalList;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.GeneralHelper;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.LocationHelper;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public final class TribunalNationalListsManipulation {
 
         LocationHelper.formatCourtAddress(artefact, "\n", true);
 
-        context.setVariable("cases", TribunalNationalListsManipulation.processRawListData(artefact, language));
+        context.setVariable("cases", processRawListData(artefact, language));
         return context;
     }
 
@@ -45,9 +46,9 @@ public final class TribunalNationalListsManipulation {
                                                                          language, false, false,
                                                                          "dd MMMM");
                     session.get("sittings").forEach(sitting -> {
-                        DateHelper.calculateDuration(sitting, Language.ENGLISH, true);
+                        DateHelper.calculateDuration(sitting, language, true);
                         sitting.get("hearing").forEach(hearing -> {
-                            String hearingType = hearing.get("hearingType").asText();
+                            String hearingType = GeneralHelper.findAndReturnNodeText(hearing, "hearingType");
                             hearing.get("case").forEach(hearingCase -> {
                                 String duration = formatDurationWithCaseSequence(
                                     sitting.get("formattedDuration").asText(), hearingCase
