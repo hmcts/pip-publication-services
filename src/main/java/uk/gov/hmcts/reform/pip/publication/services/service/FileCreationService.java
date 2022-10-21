@@ -2,21 +2,17 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
-
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 
-
 import java.io.IOException;
-
 import java.io.StringWriter;
 import java.util.List;
 
 
 /**
-TODO
+ * Service to create files to send in emails.
  */
 @Slf4j
 @Service

@@ -49,11 +49,11 @@ public class EmailService {
                              personalisationService.buildFlatFileSubscriptionPersonalisation(body, artefact));
     }
 
-//    protected EmailToSend buildRawDataSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
-//                                                        String template) {
-//        return generateEmail(body.getEmail(), template,
-//                             personalisationService.buildRawDataSubscriptionPersonalisation(body, artefact));
-//    }
+    protected EmailToSend buildRawDataSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
+                                                        String template) {
+        return generateEmail(body.getEmail(), template,
+                             personalisationService.buildRawDataSubscriptionPersonalisation(body, artefact));
+    }
 
     protected EmailToSend buildDuplicateMediaSetupEmail(DuplicatedMediaEmail body, String template) {
         return generateEmail(body.getEmail(), template,

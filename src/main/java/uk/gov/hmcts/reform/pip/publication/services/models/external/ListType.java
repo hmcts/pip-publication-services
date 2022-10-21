@@ -1,15 +1,12 @@
 package uk.gov.hmcts.reform.pip.publication.services.models.external;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 
 /**
  * Enum that represents the different list types.
  */
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
 public enum ListType {
     SJP_PUBLIC_LIST,
     SJP_PRESS_LIST,
