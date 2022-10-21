@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.conve
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.Converter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CopDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.FamilyDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.PrimaryHealthListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.SjpPressListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.SjpPublicListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.SscsDailyListConverter;
@@ -33,7 +34,7 @@ public enum ListType {
     CIVIL_AND_FAMILY_DAILY_CAUSE_LIST(new CivilAndFamilyDailyCauseListConverter()),
     COP_DAILY_CAUSE_LIST(new CopDailyCauseListConverter()),
     SSCS_DAILY_LIST(new SscsDailyListConverter()),
-    PRIMARY_HEALTH_LIST,
+    PRIMARY_HEALTH_LIST(new PrimaryHealthListConverter()),
     CARE_STANDARDS_LIST,
     ET_DAILY_LIST,
     ET_FORTNIGHTLY_PRESS_LIST;
