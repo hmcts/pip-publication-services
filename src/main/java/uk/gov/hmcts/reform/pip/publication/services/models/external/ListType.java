@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.pip.publication.services.models.external;
 
 import lombok.Getter;
 
-
 /**
  * Enum that represents the different list types.
  */
