@@ -139,4 +139,16 @@ class ArtefactSummaryServiceTest {
                 .as(STRING_NOT_EMPTY).hasSize(0);
         }
     }
+
+    @Test
+    void etDailyListTest() throws IOException {
+        String body = readMockJsonFile("mocks/etDailyList.json");
+        assertThat(body)
+            .as(BODY_WRONG)
+            .contains("Anderson")
+            .contains("Hargreaves");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.ET_DAILY_LIST))
+            .as(MISSING_DATA_RETURN)
+            .contains("Claimant: HRH G Anderson, Rep: Mr R Hargreaves");
+    }
 }

@@ -55,6 +55,7 @@ public final class DataManipulation {
                     );
                     session.get("sittings").forEach(sitting -> {
                         DateHelper.calculateDuration(sitting, language);
+                        DateHelper.formatStartTime(sitting, "HH:mm");
                         DataManipulation.findAndConcatenateHearingPlatform(sitting, session);
 
                         sitting.get("hearing").forEach(hearing -> {
@@ -74,6 +75,7 @@ public final class DataManipulation {
                     formattedJudiciary.append(findAndManipulateJudiciary(session));
                     session.get("sittings").forEach(sitting -> {
                         DateHelper.calculateDuration(sitting, language);
+                        DateHelper.formatStartTime(sitting, "HH:mm");
                         findAndConcatenateHearingPlatform(sitting, session);
 
                         sitting.get("hearing").forEach(hearing -> {
@@ -175,7 +177,7 @@ public final class DataManipulation {
         return "";
     }
 
-    private static void findAndConcatenateHearingPlatform(JsonNode sitting, JsonNode session) {
+    public static void findAndConcatenateHearingPlatform(JsonNode sitting, JsonNode session) {
         StringBuilder formattedHearingPlatform = new StringBuilder();
 
         if (sitting.has(CHANNEL)) {
