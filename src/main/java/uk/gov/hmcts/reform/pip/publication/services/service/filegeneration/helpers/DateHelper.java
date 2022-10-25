@@ -158,7 +158,7 @@ public final class DateHelper {
     }
 
     public static void formatStartTime(JsonNode sitting, String format) {
-        ZonedDateTime sittingStart = convertStringToUtc(sitting.get("sittingStart").asText());
+        ZonedDateTime sittingStart = convertStringToBst(sitting.get("sittingStart").asText());
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format).withLocale(Locale.UK);
         String time = dtf.format(sittingStart);
 
