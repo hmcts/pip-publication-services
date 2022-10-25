@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    @page {
+      margin: 30px 20px;
+
+      @bottom-center {
+        font-family: 'GDS Transport';
+        font-size: 16px;
+        color: grey;
+        content: "[[${i18n.serviceName + i18n.pdfAccessibility}]]" counter(page) "[[${i18n.of}]]" counter(pages) ".";
+      }
+    }
+
+    @page landscapePage {
+      size: A4 landscape;
+    }
+
+    .landscape {
+      page: landscapePage;
+    }
+    body {
+      font-family: 'GDS Transport';
+      color: #0b0c0c;
+      padding: 2px;
+      font-size: 105%;
+    }
+    h1, h4 {
+      font-family: "GDS Transport";
+      color: black;
+    }
+    .govuk-heading-l {
+      color: #0b0c0c;
+      font-family: "GDS Transport";
+      font-weight: 700;
+      font-size: 24px;
+      font-size: 1.5rem;
+      line-height: 1.04167;
+      display: block;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    .govuk-body {
+      color: #0b0c0c;
+      font-family: "GDS Transport";
+      font-weight: 400;
+      font-size: 16px;
+      font-size: 1rem;
+      line-height: 1.25;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    .govuk-\!-font-weight-bold {
+      font-weight: 700 !important;
+    }
+    .govuk-details {
+      font-family: "GDS Transport", arial, sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      font-size: 1rem;
+      line-height: 1.25;
+      color: #0b0c0c;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .govuk-details__summary {
+      display: inline-block;
+      position: relative;
+      margin-bottom: 5px;
+      padding-left: 25px;
+      color: #0b0c0c;
+      cursor: pointer;
+    }
+
+    .govuk-details__text {
+      padding-top: 15px;
+      padding-bottom: 15px;
+      padding-left: 20px;
+      border-left: 5px solid #b1b4b6;
+    }
+
+    .list-name {
+      margin-top: 0.5em;
+    }
+    .govuk-accordion {
+      page-break-after: always;
+    }
+    .govuk-table {
+      table-layout: fixed;
+      font-family: "GDS Transport";
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.25;
+      color: #0b0c0c;
+      width: 1050px;
+      margin-bottom: 20px;
+      border-spacing: 0;
+      border-collapse: collapse;
+    }
+    .govuk-table__header, .govuk-table__cell {
+      padding: 10px 20px 10px 0;
+      border-bottom: 1px solid #b1b4b6;
+      text-align: left;
+      vertical-align: top;
+    }
+    .govuk-table__header {
+      font-weight: 700;
+    }
+  </style>
+  <meta charset="UTF-8"/>
+  <meta name="subject" content="Accessible PDF template"/>
+  <meta name="author" content="HMCTS Court and Tribunal Hearings"/>
+  <meta name="description" content="Document description - vital for compliance."/>
+  <title th:text="${i18n.heading}"/>
+
+</head>
+<body>
+<div class = "header">
+  <img src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png" alt="HMCTS Logo"/>
+  <h1 th:text="${i18n.serviceName}"/>
+  <h2 id="page-heading" class="govuk-heading-l" th:text="${i18n.heading}"/>
+  <h2 id="page-heading" class="govuk-heading-l" th:text="${locationName + i18n.dailyList}"/>
+  <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1" th:text="${i18n.listFor + contentDate}" />
+  <p class="govuk-body" th:text="${i18n.lastUpdated + publicationDate + i18n.at + publicationTime}" />
+  <details class="govuk-details">
+    <summary class="govuk-details__summary">
+      <p th:text="${i18n.importantInfo}" class="govuk-details__summary-text"/>
+    </summary>
+    <div class="govuk-details__text">
+      <p th:text="${i18n.legal1}"/>
+      <p th:text="${i18n.legal2}"/>
+      <p th:text="${email + ' ' + telephone}"/>
+      <p th:text="${i18n.legal3}"/>
+    </div>
+  </details>
+
+  <div id="parentTable" aria-label="Court Lists" class="landscape">
+    <th:block th:each="courtList : ${artefact.get('courtLists')}">
+      <h1 class="govuk-heading-l list-name" tabindex="0" th:text="${courtList.get('courtListName').asText()}" />
+      <div class="govuk-accordion" th:each="courtRoom : ${courtList.get('courtHouse').get('courtRoom')}">
+        <th:block th:each="session: ${courtRoom.get('session')}">
+          <th:block th:if="${!courtList.get('isBailList').asBoolean()}">
+            <p class="govuk-body" th:text="${i18n.hearingRoom + courtRoom.get('courtRoomName').asText}"/>
+          </th:block>
+          <th:block th:if="${#strings.length(session.get('formattedJudiciary').asText()) > 0 && courtList.get('isBailList').asBoolean()}">
+            <p class="govuk-body" th:text="${courtRoom.get('courtRoomName').asText() + ',' + i18n.beforeJudge + session.get('formattedJudiciary').asText()}"/>
+          </th:block>
+          <th:block th:if="${#strings.length(session.get('formattedJudiciary').asText()) == 0 && courtList.get('isBailList').asBoolean()}">
+            <p class="govuk-body" th:text="${courtRoom.get('courtRoomName').asText()}"/>
+          </th:block>
+          <table class="govuk-table">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th th:text="${i18n.startTime}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.caseRef}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.appellant}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.respondent}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.interpreterLanguage}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.hearingChannel}" scope="col" class="govuk-table__header"/>
+                <th th:text="${i18n.linkedCases}" scope="col" class="govuk-table__header"/>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              <th:block th:each="sitting: ${session.get('sittings')}">
+                <th:block th:each="hearing: ${sitting.get('hearing')}">
+                  <th:block th:each="case: ${hearing.get('case')}">
+                    <tr class="govuk-table__row">
+                      <td class="govuk-table__cell" th:text="${sitting.get('formattedStart').asText()}"/>
+                      <th:block th:if="${case.get('caseSequenceIndicator') != null}">
+                        <td class="govuk-table__cell" th:text="${case.get('caseNumber').asText() + ' ' + case.get('caseSequenceIndicator').asText()}"/>
+                      </th:block>
+                      <th:block th:if="${case.get('caseSequenceIndicator') == null}">
+                        <td class="govuk-table__cell" th:text="${case.get('caseNumber').asText()}"/>
+                      </th:block>
+
+                      <th:block th:if="${hearing.get('claimantRepresentative') != null && hearing.get('claimantRepresentative').asText().length > 0}">
+                        <td class="govuk-table__cell">
+                          <span th:text="${hearing.get('claimant').asText()}"/>
+                          <br/>
+                          <span th:text="${i18n.rep + hearing.get('claimantRepresentative').asText()}"/>
+                        </td>
+                      </th:block>
+                      <th:block th:if="${hearing.get('claimantRepresentative') == null || hearing.get('claimantRepresentative').asText().length == 0}">
+                        <td class="govuk-table__cell">
+                          <span th:text="${hearing.get('claimant').asText()}"/>
+                          <br/>
+                          <span th:text="${i18n.rep + i18n.noRep}"/>
+                        </td>
+                      </th:block>
+
+                      <td class="govuk-table__cell" th:text="${hearing.get('prosecutingAuthority').asText()}"/>
+
+                      <th:block th:if="${case.get('language') != null}">
+                        <td class="govuk-table__cell" th:text="${case.get('language').asText()}"/>
+                      </th:block>
+                      <th:block th:if="${case.get('language') == null}">
+                        <td class="govuk-table__cell"/>
+                      </th:block>
+
+                      <td class="govuk-table__cell" th:text="${sitting.get('caseHearingChannel').asText()}"/>
+                      <td class="govuk-table__cell" th:text="${case.get('formattedLinkedCases').asText()}"/>
+                    </tr>
+                  </th:block>
+                </th:block>
+              </th:block>
+            </tbody>
+          </table>
+        </th:block>
+      </div>
+    </th:block>
+  </div>
+
+  <section>
+    <p class="govuk-body govuk-font-14" th:text="${i18n.dataSource + provenance}"/>
+    <hr/>
+    <p th:text="${i18n.bottomLegal1}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
+    <p th:text="${i18n.bottomLegal2}" style="font-family: 'GDS Transport'; font-size: 24px;"/>
+    <hr/>
+    <p th:text="${i18n.thanks}" style="text-align: center;"/>
+  </section>
+
+</div>
+</body>
+</html>

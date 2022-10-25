@@ -34,6 +34,9 @@ public class ArtefactSummaryService {
     ScssDailyList scssDailyList;
 
     @Autowired
+    IacDailyList iacDailyList;
+
+    @Autowired
     PrimaryHealthList primaryHealthList;
 
     /**
@@ -45,6 +48,7 @@ public class ArtefactSummaryService {
      *     subscriptions email templates.
      * @throws JsonProcessingException - jackson prereq.
      */
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public String artefactSummary(String payload, ListType listType) throws JsonProcessingException {
         switch (listType) {
             case SJP_PUBLIC_LIST:
@@ -60,6 +64,8 @@ public class ArtefactSummaryService {
                 return dailyCauseList.artefactSummaryDailyCause(payload);
             case SSCS_DAILY_LIST:
                 return scssDailyList.artefactSummaryScssDailyList(payload);
+            case IAC_DAILY_LIST:
+                return iacDailyList.artefactSummary(payload);
             case PRIMARY_HEALTH_LIST:
                 return primaryHealthList.artefactSummaryPrimaryHealthList(payload);
             default:

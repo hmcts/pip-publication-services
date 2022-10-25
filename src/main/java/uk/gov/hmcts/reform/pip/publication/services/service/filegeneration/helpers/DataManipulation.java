@@ -29,6 +29,11 @@ public final class DataManipulation {
     public static final String CHANNEL = "channel";
     public static final String JUDICIARY = "judiciary";
 
+    public static final String CLAIMANT = "claimant";
+    public static final String CLAIMANT_REPRESENTATIVE = "claimantRepresentative";
+
+    public static final String PROSECUTING_AUTHORITY = "prosecutingAuthority";
+
     private DataManipulation() {
         throw new UnsupportedOperationException();
     }
@@ -106,9 +111,12 @@ public final class DataManipulation {
         }
     }
 
-    private static void findAndManipulatePartyInformation(JsonNode hearing, Language language) {
+    public static void findAndManipulatePartyInformation(JsonNode hearing, Language language) {
         StringBuilder applicant = new StringBuilder();
         StringBuilder respondent = new StringBuilder();
+        StringBuilder claimant = new StringBuilder();
+        StringBuilder claimantRepresentative = new StringBuilder();
+        StringBuilder prosecutingAuthority = new StringBuilder();
 
         hearing.get("party").forEach(party -> {
             if (!GeneralHelper.findAndReturnNodeText(party, "partyRole").isEmpty()) {
@@ -129,12 +137,22 @@ public final class DataManipulation {
                     }
                     case "RESPONDENT": {
                         formatPartyNonRepresentative(party, respondent);
+                        formatPartyNonRepresentative(party, prosecutingAuthority);
                         break;
                     }
                     case "RESPONDENT_REPRESENTATIVE": {
                         respondent.append(respondentRepresentative(language, party));
                         break;
                     }
+                    case "CLAIMANT_PETITIONER": {
+                        formatPartyNonRepresentative(party, claimant);
+                        break;
+                    }
+                    case "CLAIMANT_PETITIONER_REPRESENTATIVE": {
+                        formatPartyNonRepresentative(party, claimantRepresentative);
+                        break;
+                    }
+
                     default:
                         break;
                 }
@@ -143,6 +161,11 @@ public final class DataManipulation {
 
         ((ObjectNode) hearing).put(APPLICANT, GeneralHelper.trimAnyCharacterFromStringEnd(applicant.toString()));
         ((ObjectNode) hearing).put(RESPONDENT, GeneralHelper.trimAnyCharacterFromStringEnd(respondent.toString()));
+        ((ObjectNode) hearing).put(CLAIMANT, GeneralHelper.trimAnyCharacterFromStringEnd(claimant.toString()));
+        ((ObjectNode) hearing).put(CLAIMANT_REPRESENTATIVE,
+                                   GeneralHelper.trimAnyCharacterFromStringEnd(claimantRepresentative.toString()));
+        ((ObjectNode) hearing).put(PROSECUTING_AUTHORITY,
+                                   GeneralHelper.trimAnyCharacterFromStringEnd(prosecutingAuthority.toString()));
     }
 
     private static String respondentRepresentative(Language language, JsonNode respondentDetails) {
@@ -175,7 +198,7 @@ public final class DataManipulation {
         return "";
     }
 
-    private static void findAndConcatenateHearingPlatform(JsonNode sitting, JsonNode session) {
+    public static void findAndConcatenateHearingPlatform(JsonNode sitting, JsonNode session) {
         StringBuilder formattedHearingPlatform = new StringBuilder();
 
         if (sitting.has(CHANNEL)) {

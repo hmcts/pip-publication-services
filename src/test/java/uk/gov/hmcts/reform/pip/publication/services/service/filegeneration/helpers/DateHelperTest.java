@@ -157,4 +157,19 @@ class DateHelperTest {
             .as(ERR_MSG)
             .isEmpty();
     }
+
+    @Test
+    void testTimestampToBstTimeWithNoFormat() {
+        assertThat(DateHelper.timeStampToBstTime("2022-08-19T10:30:00Z"))
+            .as(ERR_MSG)
+            .isEqualTo("11:30");
+    }
+
+    @Test
+    void testTimestampToBstTimeWithFormat() {
+        assertThat(DateHelper.timeStampToBstTimeWithFormat("2022-08-19T10:30:00Z", "hh:mma"))
+            .as(ERR_MSG)
+            .isEqualTo("11:30am");
+    }
+
 }
