@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigPropertie
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
@@ -97,7 +98,7 @@ class PersonalisationServiceTest {
     private static final Map<SubscriptionTypes, List<String>> SUBSCRIPTIONS = new ConcurrentHashMap<>();
     private static final SubscriptionEmail SUBSCRIPTIONS_EMAIL = new SubscriptionEmail();
 
-    private static final Map<String, byte[]> FILES_MAP = new ConcurrentHashMap<>();
+    private static final Map<FileType, byte[]> FILES_MAP = new ConcurrentHashMap<>();
 
 
     private static final byte[] TEST_BYTE_ARRAY = HELLO.getBytes();
@@ -117,8 +118,8 @@ class PersonalisationServiceTest {
         SUBSCRIPTIONS_EMAIL.setArtefactId(ARTEFACT_ID);
         SUBSCRIPTIONS_EMAIL.setSubscriptions(SUBSCRIPTIONS);
 
-        FILES_MAP.put("PDF", TEST_BYTE_ARRAY);
-        FILES_MAP.put("EXCEL", TEST_BYTE_ARRAY);
+        FILES_MAP.put(FileType.PDF, TEST_BYTE_ARRAY);
+        FILES_MAP.put(FileType.EXCEL, TEST_BYTE_ARRAY);
     }
 
     @Test

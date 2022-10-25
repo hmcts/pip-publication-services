@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigPropertie
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
@@ -132,11 +133,11 @@ public class PersonalisationService {
 
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
-            Map<String, byte[]> publicationFiles =
+            Map<FileType, byte[]> publicationFiles =
                 channelManagementService.getArtefactFiles(artefact.getArtefactId());
 
-            byte[] artefactPdf = publicationFiles.get("PDF");
-            byte[] artefactExcel = publicationFiles.get("EXCEL");
+            byte[] artefactPdf = publicationFiles.get(FileType.PDF);
+            byte[] artefactExcel = publicationFiles.get(FileType.EXCEL);
 
             boolean pdfWithinSize = artefactPdf.length < 2_000_000 && artefactPdf.length > 0;
             boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;

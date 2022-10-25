@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientConfigurationTest;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
 
 import java.io.IOException;
 import java.util.Map;
@@ -75,19 +76,19 @@ class ChannelManagementServiceTest {
 
     @Test
     void testGetArtefactFiles() throws JsonProcessingException {
-        Map<String, byte[]> testMap = new ConcurrentHashMap<>();
-        testMap.put("PDF", HELLO.getBytes());
-        testMap.put("EXCEL", HELLO.getBytes());
+        Map<FileType, byte[]> testMap = new ConcurrentHashMap<>();
+        testMap.put(FileType.PDF, HELLO.getBytes());
+        testMap.put(FileType.EXCEL, HELLO.getBytes());
 
         mockChannelManagementMockEndpoint.enqueue(new MockResponse().addHeader(
             "Content-Type",
             ContentType.APPLICATION_JSON
         ).setBody(ow.writeValueAsString(testMap)));
 
-        Map<String, byte[]> returnedMap = channelManagementService.getArtefactFiles(UUID.randomUUID());
+        Map<FileType, byte[]> returnedMap = channelManagementService.getArtefactFiles(UUID.randomUUID());
 
-        assertTrue(returnedMap.get("PDF").length > 0, "Byte array doesn't exist");
-        assertTrue(returnedMap.get("EXCEL").length > 0, "Byte array doesn't exist");
+        assertTrue(returnedMap.get(FileType.PDF).length > 0, "Byte array doesn't exist");
+        assertTrue(returnedMap.get(FileType.EXCEL).length > 0, "Byte array doesn't exist");
     }
 
     @Test
