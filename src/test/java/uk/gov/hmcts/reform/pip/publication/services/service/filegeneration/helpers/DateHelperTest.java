@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.help
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
@@ -159,6 +160,20 @@ class DateHelperTest {
         assertThat(DateHelper.formatDuration(0, 0, Language.ENGLISH))
             .as(ERR_MSG)
             .isEmpty();
+    }
+
+    @Test
+    void testTimestampToBstTimeWithNoFormat() {
+        assertThat(DateHelper.timeStampToBstTime("2022-08-19T10:30:00Z"))
+            .as(ERR_MSG)
+            .isEqualTo("11:30");
+    }
+
+    @Test
+    void testTimestampToBstTimeWithFormat() {
+        assertThat(DateHelper.timeStampToBstTimeWithFormat("2022-08-19T10:30:00Z", "hh:mma"))
+            .as(ERR_MSG)
+            .isEqualTo("11:30am");
     }
 
     @Test

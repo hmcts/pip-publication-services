@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.conve
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CopDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.EtDailyListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.FamilyDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.IacDailyListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.PrimaryHealthListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.SjpPressListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.SjpPublicListConverter;
@@ -29,7 +30,7 @@ public enum ListType {
     CROWN_WARNED_LIST,
     MAGISTRATES_PUBLIC_LIST,
     MAGISTRATES_STANDARD_LIST,
-    IAC_DAILY_LIST,
+    IAC_DAILY_LIST(new IacDailyListConverter()),
     CIVIL_DAILY_CAUSE_LIST(new CivilDailyCauseListConverter()),
     FAMILY_DAILY_CAUSE_LIST(new FamilyDailyCauseListConverter()),
     CIVIL_AND_FAMILY_DAILY_CAUSE_LIST(new CivilAndFamilyDailyCauseListConverter()),

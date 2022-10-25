@@ -11,6 +11,7 @@ public final class PartyRoleMapper {
         "RESPONDENT_REPRESENTATIVE", List.of("DREP", "DREP20", "RREP"),
         "CLAIMANT_PETITIONER", List.of(),
         "CLAIMANT_PETITIONER_REPRESENTATIVE", List.of()
+
     );
 
     private PartyRoleMapper() {
