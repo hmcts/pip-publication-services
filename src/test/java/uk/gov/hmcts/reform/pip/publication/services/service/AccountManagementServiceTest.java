@@ -25,7 +25,7 @@ class AccountManagementServiceTest {
     private static final String RESPONSE_BODY = "responseBody";
     private static final String NOT_FOUND = "404";
 
-    private static MockWebServer mockPublicationServicesEndpoint;
+    private static MockWebServer mockAccountManagementEndpoint;
 
     @Autowired
     WebClient webClient;
@@ -35,18 +35,18 @@ class AccountManagementServiceTest {
 
     @BeforeEach
     void setup() throws IOException {
-        mockPublicationServicesEndpoint = new MockWebServer();
-        mockPublicationServicesEndpoint.start(8081);
+        mockAccountManagementEndpoint = new MockWebServer();
+        mockAccountManagementEndpoint.start(8081);
     }
 
     @AfterEach
     void after() throws IOException {
-        mockPublicationServicesEndpoint.close();
+        mockAccountManagementEndpoint.close();
     }
 
     @Test
     void testGetMiDataReturnsOk() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+        mockAccountManagementEndpoint.enqueue(new MockResponse()
                                                     .setBody(RESPONSE_BODY)
                                                     .setResponseCode(200));
 
@@ -56,7 +56,7 @@ class AccountManagementServiceTest {
 
     @Test
     void testGetMiDataThrowsException() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockAccountManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
                                                                      accountManagementService.getMiData(),

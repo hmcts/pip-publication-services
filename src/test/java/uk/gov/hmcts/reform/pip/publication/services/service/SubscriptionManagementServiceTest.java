@@ -28,7 +28,7 @@ class SubscriptionManagementServiceTest {
     private static final String EXCEPTION_NOT_MATCH = "Exception does not match";
     private static final String MESSAGE_NOT_MATCH = "Message does not match";
 
-    private static MockWebServer mockPublicationServicesEndpoint;
+    private static MockWebServer mockSubscriptionManagementEndpoint;
 
     @Autowired
     WebClient webClient;
@@ -38,18 +38,18 @@ class SubscriptionManagementServiceTest {
 
     @BeforeEach
     void setup() throws IOException {
-        mockPublicationServicesEndpoint = new MockWebServer();
-        mockPublicationServicesEndpoint.start(8081);
+        mockSubscriptionManagementEndpoint = new MockWebServer();
+        mockSubscriptionManagementEndpoint.start(8081);
     }
 
     @AfterEach
     void after() throws IOException {
-        mockPublicationServicesEndpoint.close();
+        mockSubscriptionManagementEndpoint.close();
     }
 
     @Test
     void testGetAllMiDataReturnsOk() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+        mockSubscriptionManagementEndpoint.enqueue(new MockResponse()
                                                     .setBody(RESPONSE_BODY)
                                                     .setResponseCode(200));
 
@@ -59,7 +59,7 @@ class SubscriptionManagementServiceTest {
 
     @Test
     void testGetAllMiDataThrowsException() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockSubscriptionManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
                                                                      subscriptionManagementService.getAllMiData(),
@@ -70,7 +70,7 @@ class SubscriptionManagementServiceTest {
 
     @Test
     void testGetLocationMiDataReturnsOk() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+        mockSubscriptionManagementEndpoint.enqueue(new MockResponse()
                                                     .setBody(RESPONSE_BODY)
                                                     .setResponseCode(200));
 
@@ -80,7 +80,7 @@ class SubscriptionManagementServiceTest {
 
     @Test
     void testGetLocationMiDataThrowsException() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockSubscriptionManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
                                                                      subscriptionManagementService.getLocationMiData(),

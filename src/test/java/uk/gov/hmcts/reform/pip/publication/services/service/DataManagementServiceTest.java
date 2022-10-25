@@ -34,7 +34,7 @@ class DataManagementServiceTest {
     private static final String EXCEPTION_RESPONSE_MESSAGE =
         "Exception response does not contain the status code in the message";
 
-    private static MockWebServer mockPublicationServicesEndpoint;
+    private static MockWebServer mockDataManagementEndpoint;
 
     private static final String NOT_FOUND = "404";
     private static final String NO_STATUS_CODE_IN_EXCEPTION = "Exception response does not contain the status code in"
@@ -51,23 +51,22 @@ class DataManagementServiceTest {
 
     @BeforeEach
     void setup() throws IOException {
-        mockPublicationServicesEndpoint = new MockWebServer();
-        mockPublicationServicesEndpoint.start(8081);
+        mockDataManagementEndpoint = new MockWebServer();
+        mockDataManagementEndpoint.start(8081);
         uuid = UUID.randomUUID();
     }
 
     @AfterEach
     void after() throws IOException {
-        mockPublicationServicesEndpoint.close();
+        mockDataManagementEndpoint.close();
     }
 
     @Test
     void testGetArtefactReturnsOk() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                    .addHeader(CONTENT_TYPE_HEADER,
-                                                               ContentType.APPLICATION_JSON)
-                                                    .setBody("{\"artefactId\": \"" + uuid + "\"}")
-                                                    .setResponseCode(200));
+        mockDataManagementEndpoint.enqueue(new MockResponse()
+                                               .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                               .setBody("{\"artefactId\": \"" + uuid + "\"}")
+                                               .setResponseCode(200));
 
         Artefact artefact = dataManagementService.getArtefact(uuid);
         assertEquals(uuid, artefact.getArtefactId(), "Returned artefact does not match expected artefact");
@@ -75,7 +74,7 @@ class DataManagementServiceTest {
 
     @Test
     void testGetArtefactReturnsException() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(501));
+        mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(501));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
                                                            dataManagementService.getArtefact(uuid),
@@ -87,11 +86,10 @@ class DataManagementServiceTest {
 
     @Test
     void testGetArtefactFlatFileReturnsOk() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                    .addHeader(CONTENT_TYPE_HEADER,
-                                                               ContentType.APPLICATION_OCTET_STREAM)
-                                                    .setBody(RESPONSE_BODY)
-                                                    .setResponseCode(200));
+        mockDataManagementEndpoint.enqueue(new MockResponse()
+                                               .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_OCTET_STREAM)
+                                               .setBody(RESPONSE_BODY)
+                                               .setResponseCode(200));
 
         byte[] returnedContent = dataManagementService.getArtefactFlatFile(uuid);
         assertEquals(RESPONSE_BODY, new String(returnedContent),
@@ -100,7 +98,7 @@ class DataManagementServiceTest {
 
     @Test
     void testGetArtefactContentReturnsException() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(501));
+        mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(501));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
                                                            dataManagementService.getArtefactFlatFile(uuid),
@@ -114,11 +112,10 @@ class DataManagementServiceTest {
     void testGetLocationReturnsOk() {
         String locationName = "locationName";
 
-        mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                    .addHeader(CONTENT_TYPE_HEADER,
-                                                               ContentType.APPLICATION_JSON)
-                                                    .setBody("{\"name\": \"" + locationName + "\"}")
-                                                    .setResponseCode(200));
+        mockDataManagementEndpoint.enqueue(new MockResponse()
+                                               .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                               .setBody("{\"name\": \"" + locationName + "\"}")
+                                               .setResponseCode(200));
 
         Location location = dataManagementService.getLocation("1234");
         assertEquals(locationName, location.getName(), "Returned location does not match expected location");
@@ -128,7 +125,7 @@ class DataManagementServiceTest {
     void testGetLocationReturnsException() {
         String locationId = "1234";
 
-        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
                                                            dataManagementService.getLocation(locationId),
@@ -140,11 +137,10 @@ class DataManagementServiceTest {
 
     @Test
     void testGetArtefactJsonBlobReturnsOk() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                    .addHeader(CONTENT_TYPE_HEADER,
-                                                               ContentType.APPLICATION_JSON)
-                                                    .setBody(RESPONSE_BODY)
-                                                    .setResponseCode(200));
+        mockDataManagementEndpoint.enqueue(new MockResponse()
+                                               .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                               .setBody(RESPONSE_BODY)
+                                               .setResponseCode(200));
 
         String returnedContent = dataManagementService.getArtefactJsonBlob(uuid);
         assertEquals(RESPONSE_BODY, returnedContent, "Returned payload does not match expected data");
@@ -153,7 +149,7 @@ class DataManagementServiceTest {
     @Test
     void testGetArtefactJsonBlobThrowsException() {
 
-        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
                                                            dataManagementService.getArtefactFlatFile(uuid),
@@ -167,9 +163,9 @@ class DataManagementServiceTest {
     @Test
     void testGetArtefactJsonPayload() {
         UUID uuid = UUID.randomUUID();
-        mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                    .setBody("testJsonString")
-                                                    .setResponseCode(200));
+        mockDataManagementEndpoint.enqueue(new MockResponse()
+                                               .setBody("testJsonString")
+                                               .setResponseCode(200));
         String jsonPayload = dataManagementService.getArtefactJsonBlob(uuid);
         assertEquals("testJsonString", jsonPayload, "Messages do not match");
     }
@@ -177,7 +173,7 @@ class DataManagementServiceTest {
     @Test
     void testFailedGetArtefactJsonPayload() {
         UUID uuid = UUID.randomUUID();
-        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
                                                            dataManagementService.getArtefactJsonBlob(uuid),
@@ -188,9 +184,9 @@ class DataManagementServiceTest {
 
     @Test
     void testGetMiDataReturnsOk() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse()
-                                                    .setBody(RESPONSE_BODY)
-                                                    .setResponseCode(200));
+        mockDataManagementEndpoint.enqueue(new MockResponse()
+                                               .setBody(RESPONSE_BODY)
+                                               .setResponseCode(200));
 
         String response = dataManagementService.getMiData();
         assertEquals(RESPONSE_BODY, response, "Messages do not match");
@@ -198,7 +194,7 @@ class DataManagementServiceTest {
 
     @Test
     void testGetMiDataThrowsException() {
-        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
                                                                      dataManagementService.getMiData(),
