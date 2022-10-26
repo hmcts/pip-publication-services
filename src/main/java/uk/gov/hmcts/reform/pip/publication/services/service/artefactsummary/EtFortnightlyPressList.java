@@ -20,7 +20,7 @@ public class EtFortnightlyPressList {
         return this.processEtFortnightlyPressList(node);
     }
 
-    public String processEtFortnightlyPressList(JsonNode node) {
+    private String processEtFortnightlyPressList(JsonNode node) {
         StringBuilder output = new StringBuilder();
         node.get("courtLists").forEach(courtList -> {
             courtList.get("sittings").forEach(sitting -> {

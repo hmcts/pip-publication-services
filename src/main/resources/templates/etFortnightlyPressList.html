@@ -27,7 +27,7 @@
       padding: 2px;
       font-size: 105%;
     }
-    h1, h4 {
+    h1, h3 {
       font-family: "GDS Transport";
       color: black;
     }
@@ -87,19 +87,6 @@
     .site-address {
       margin-top: 0.5em;
     }
-    .govuk-accordion__section-heading {
-      margin-top: 0;
-      margin-bottom: 0;
-      padding-top: 15px;
-      padding-bottom: 15px;
-      font-family: "GDS Transport", arial, sans-serif;
-      font-weight: 700;
-      font-size: 18px;
-      font-size: 1.125rem;
-      line-height: 1.11111;
-      color: #0b0c0c;
-      display: block;
-    }
     .govuk-accordion {
       page-break-after: always;
     }
@@ -136,7 +123,7 @@
 
 </head>
 <body>
-<div class = "header">
+<div>
   <img src="https://www.gov.uk/assets/collections/govuk_publishing_components/crests/org_crest_18px_x2-d759444376a83ad439650d64c8de4158658aa1b5034e5a6080e66ebaa9594b0d.png" alt="HMCTS Logo"/>
   <h1 th:text="${i18n.serviceName}"/>
   <h2 id="page-heading" class="govuk-heading-l" th:text="${i18n.listName1 + regionName}"/>
@@ -157,18 +144,18 @@
     </div>
   </details>
     <div aria-label="Court Lists" class="landscape">
-      <div class="site-header" tabindex="0" aria-label="Court Details" th:each="courtList : ${artefact.get('courtLists')}">
-        <h1 class="govuk-heading-l site-address" tabindex="0" th:text="${i18n.venue + courtList.get('courtHouse').get('courtHouseName').asText()}" />
+      <div class="site-header" aria-label="Court Details" th:each="courtList : ${artefact.get('courtLists')}">
+        <h1 class="govuk-heading-l site-address" th:text="${i18n.venue + courtList.get('courtHouse').get('courtHouseName').asText()}" />
         <div aria-label="Court Address">
-          <p class="govuk-body site-address" tabindex="0" th:each="address : ${#strings.arraySplit(courtList.get('courtHouse').get('formattedCourtHouseAddress').asText(), '|')}">
+          <p class="govuk-body site-address" th:each="address : ${#strings.arraySplit(courtList.get('courtHouse').get('formattedCourtHouseAddress').asText(), '|')}">
           <td th:text="${address}"/>
           </p>
         </div>
-        <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default" th:each="sitting : ${courtList.get('sittings')}">
+        <div class="govuk-accordion" id="accordion-default" th:each="sitting : ${courtList.get('sittings')}">
           <div>
             <div>
               <div class="govuk-accordion__section-header">
-                <h2 class="govuk-accordion__section-heading" th:text="${sitting.get('sittingDate').asText()}" />
+                <h3 th:text="${sitting.get('sittingDate').asText()}" />
               </div>
               <div class="govuk-accordion__section-content">
                 <div class="parent-box overflow-table">
