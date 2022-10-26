@@ -215,4 +215,103 @@ class DataManipulationTest {
             .as("Unable to get case type")
             .isEqualTo("normal");
     }
+
+    @Test
+    void testFindManipulatePartyInformationApplicant() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("applicant").asText())
+            .as("applicant is incorrect")
+            .startsWith("Applicant Title Applicant Forename Applicant Middlename Applicant Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationApplicantRepresentativeEnglish() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("applicant").asText())
+            .as("applicant is incorrect")
+            .contains("Legal Advisor: Rep Title Rep Forename Rep Middlename Rep Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationApplicantRepresentativeWelsh() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.WELSH);
+
+        assertThat(inputJson.get("applicant").asText())
+            .as("applicant is incorrect")
+            .contains("Cynghorydd Cyfreithiol: Rep Title Rep Forename Rep Middlename Rep Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationRespondent() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("respondent").asText())
+            .as("respondent is incorrect")
+            .startsWith("Title Forename Middlename Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationProsecutingAuthority() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("prosecutingAuthority").asText())
+            .as("prosecuting authority is incorrect")
+            .isEqualTo("Title Forename Middlename Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationRespondentRepresentative() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("respondent").asText())
+            .as("respondent is incorrect")
+            .endsWith("Legal Advisor: Mr ForenameB MiddlenameB SurnameB");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationClaimant() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("claimant").asText())
+            .as("claimant is incorrect")
+            .isEqualTo("Claimant Title Claimant Forename Claimant Middlename Claimant Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationClaimantRepresentative() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("claimantRepresentative").asText())
+            .as("claimant representative is incorrect")
+            .isEqualTo("Rep Title Rep Forename Rep Middlename Rep Surname");
+    }
+
+    private JsonNode loadInPartyFile() throws IOException {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(
+                         Paths.get("src/test/resources/mocks/partyManipulationJson.json")), writer,
+                     Charset.defaultCharset()
+        );
+
+        return new ObjectMapper().readTree(writer.toString());
+    }
+
 }
