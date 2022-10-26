@@ -7,8 +7,9 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 public final class PartyRoleHelper {
     public static final String APPLICANT = "applicant";
     public static final String RESPONDENT = "respondent";
-    public static final String CLAIMANT_PETITIONER = "claimant_petitioner";
-    public static final String CLAIMANT_PETITIONER_REPRESENTATIVE = "claimant_petitioner_representative";
+    public static final String CLAIMANT = "claimant";
+    public static final String CLAIMANT_REPRESENTATIVE = "claimantRepresentative";
+    public static final String PROSECUTING_AUTHORITY = "prosecutingAuthority";
 
     private PartyRoleHelper() {
     }
@@ -16,8 +17,9 @@ public final class PartyRoleHelper {
     public static void findAndManipulatePartyInformation(JsonNode hearing, Language language, Boolean initialised) {
         StringBuilder applicant = new StringBuilder();
         StringBuilder respondent = new StringBuilder();
-        StringBuilder claimantPetitioner = new StringBuilder();
-        StringBuilder claimantPetitionerRepresentative = new StringBuilder();
+        StringBuilder claimant = new StringBuilder();
+        StringBuilder claimantRepresentative = new StringBuilder();
+        StringBuilder prosecutingAuthority = new StringBuilder();
 
         hearing.get("party").forEach(party -> {
             if (!GeneralHelper.findAndReturnNodeText(party, "partyRole").isEmpty()) {
@@ -38,6 +40,7 @@ public final class PartyRoleHelper {
                     }
                     case "RESPONDENT": {
                         formatPartyNonRepresentative(party, respondent, initialised);
+                        formatPartyNonRepresentative(party, prosecutingAuthority, initialised);
                         break;
                     }
                     case "RESPONDENT_REPRESENTATIVE": {
@@ -45,13 +48,14 @@ public final class PartyRoleHelper {
                         break;
                     }
                     case "CLAIMANT_PETITIONER": {
-                        formatPartyNonRepresentative(party, claimantPetitioner, initialised);
+                        formatPartyNonRepresentative(party, claimant, initialised);
                         break;
                     }
                     case "CLAIMANT_PETITIONER_REPRESENTATIVE": {
-                        formatPartyNonRepresentative(party, claimantPetitionerRepresentative, initialised);
+                        formatPartyNonRepresentative(party, claimantRepresentative, initialised);
                         break;
                     }
+
                     default:
                         break;
                 }
@@ -60,10 +64,11 @@ public final class PartyRoleHelper {
 
         ((ObjectNode) hearing).put(APPLICANT, GeneralHelper.trimAnyCharacterFromStringEnd(applicant.toString()));
         ((ObjectNode) hearing).put(RESPONDENT, GeneralHelper.trimAnyCharacterFromStringEnd(respondent.toString()));
-        ((ObjectNode) hearing).put(CLAIMANT_PETITIONER,
-            GeneralHelper.trimAnyCharacterFromStringEnd(claimantPetitioner.toString()));
-        ((ObjectNode) hearing).put(CLAIMANT_PETITIONER_REPRESENTATIVE,
-            GeneralHelper.trimAnyCharacterFromStringEnd(claimantPetitionerRepresentative.toString()));
+        ((ObjectNode) hearing).put(CLAIMANT, GeneralHelper.trimAnyCharacterFromStringEnd(claimant.toString()));
+        ((ObjectNode) hearing).put(CLAIMANT_REPRESENTATIVE,
+                                   GeneralHelper.trimAnyCharacterFromStringEnd(claimantRepresentative.toString()));
+        ((ObjectNode) hearing).put(PROSECUTING_AUTHORITY,
+                                   GeneralHelper.trimAnyCharacterFromStringEnd(prosecutingAuthority.toString()));
     }
 
     private static String respondentRepresentative(Language language, JsonNode respondentDetails,

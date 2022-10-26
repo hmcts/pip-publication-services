@@ -220,7 +220,7 @@ class DataManipulationTest {
     void testFindManipulatePartyInformationApplicant() throws IOException {
         JsonNode inputJson = loadInPartyFile();
 
-        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+        PartyRoleHelper.findAndManipulatePartyInformation(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get("applicant").asText())
             .as("applicant is incorrect")
@@ -231,7 +231,7 @@ class DataManipulationTest {
     void testFindManipulatePartyInformationApplicantRepresentativeEnglish() throws IOException {
         JsonNode inputJson = loadInPartyFile();
 
-        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+        PartyRoleHelper.findAndManipulatePartyInformation(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get("applicant").asText())
             .as("applicant is incorrect")
@@ -242,7 +242,7 @@ class DataManipulationTest {
     void testFindManipulatePartyInformationApplicantRepresentativeWelsh() throws IOException {
         JsonNode inputJson = loadInPartyFile();
 
-        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.WELSH);
+        PartyRoleHelper.findAndManipulatePartyInformation(inputJson, Language.WELSH, false);
 
         assertThat(inputJson.get("applicant").asText())
             .as("applicant is incorrect")
@@ -253,7 +253,7 @@ class DataManipulationTest {
     void testFindManipulatePartyInformationRespondent() throws IOException {
         JsonNode inputJson = loadInPartyFile();
 
-        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+        PartyRoleHelper.findAndManipulatePartyInformation(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get("respondent").asText())
             .as("respondent is incorrect")
@@ -264,7 +264,7 @@ class DataManipulationTest {
     void testFindManipulatePartyInformationProsecutingAuthority() throws IOException {
         JsonNode inputJson = loadInPartyFile();
 
-        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+        PartyRoleHelper.findAndManipulatePartyInformation(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get("prosecutingAuthority").asText())
             .as("prosecuting authority is incorrect")
@@ -275,7 +275,7 @@ class DataManipulationTest {
     void testFindManipulatePartyInformationRespondentRepresentative() throws IOException {
         JsonNode inputJson = loadInPartyFile();
 
-        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+        PartyRoleHelper.findAndManipulatePartyInformation(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get("respondent").asText())
             .as("respondent is incorrect")
@@ -286,7 +286,7 @@ class DataManipulationTest {
     void testFindManipulatePartyInformationClaimant() throws IOException {
         JsonNode inputJson = loadInPartyFile();
 
-        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+        PartyRoleHelper.findAndManipulatePartyInformation(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get("claimant").asText())
             .as("claimant is incorrect")
@@ -297,7 +297,7 @@ class DataManipulationTest {
     void testFindManipulatePartyInformationClaimantRepresentative() throws IOException {
         JsonNode inputJson = loadInPartyFile();
 
-        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+        PartyRoleHelper.findAndManipulatePartyInformation(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get("claimantRepresentative").asText())
             .as("claimant representative is incorrect")

@@ -108,9 +108,7 @@ public final class DateHelper {
     }
 
     public static String timeStampToBstTime(String timestamp) {
-        ZonedDateTime zonedDateTime = convertStringToUtc(timestamp);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
-        return dtf.format(zonedDateTime);
+        return timeStampToBstTimeWithFormat(timestamp, "HH:mm");
     }
 
     public static String timeStampToBstTimeWithFormat(String timestamp, String format) {

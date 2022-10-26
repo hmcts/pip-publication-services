@@ -93,11 +93,11 @@ public final class EtFortnightlyPressListHelper {
                             formatCaseTime(sitting, hearing);
                             ((ObjectNode)hearing).put(COURT_ROOM,
                                 GeneralHelper.findAndReturnNodeText(courtRoom, "courtRoomName"));
-                            ((ObjectNode)hearing).put("claimant_petitioner",
+                            ((ObjectNode)hearing).put("claimant",
                                 getClaimantPetitioner(GeneralHelper.findAndReturnNodeText(hearing,
-                                "claimant_petitioner"),
+                                "claimant"),
                                     GeneralHelper.findAndReturnNodeText(hearing,
-                                "claimant_petitioner_representative"),
+                                "claimantRepresentative"),
                                     language));
                             ((ObjectNode)hearing).put("respondent",
                                     formatRespondent(GeneralHelper.findAndReturnNodeText(hearing, "respondent"),

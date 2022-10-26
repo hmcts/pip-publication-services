@@ -188,7 +188,7 @@
                             <td class="govuk-table__cell" th:text="${hearing.get('time').asText()}" />
                             <td class="govuk-table__cell" th:text="${hearing.get('formattedDuration').asText() + ' ' + case.get('caseSequenceIndicator').asText()}"/>
                             <td class="govuk-table__cell" th:text="${case.get('caseNumber').asText()}" />
-                            <td class="govuk-table__cell" th:text="${hearing.get('claimant_petitioner').asText()}" />
+                            <td class="govuk-table__cell" th:text="${hearing.get('claimant').asText()}" />
                             <td class="govuk-table__cell" th:text="${hearing.get('respondent').asText()}" />
                             <td class="govuk-table__cell" th:text="${hearing.get('hearingType').asText()}" />
                             <td class="govuk-table__cell" th:text="${case.get('caseType').asText()}" />

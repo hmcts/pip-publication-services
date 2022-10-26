@@ -14,7 +14,7 @@ public class EtFortnightlyPressList {
     public String artefactSummaryEtFortnightlyPressList(String payload) throws JsonProcessingException {
         JsonNode node = new ObjectMapper().readTree(payload);
 
-        DataManipulation.manipulatedDailyListData(node, Language.ENGLISH, false);
+        DataManipulation.manipulatedDailyListData(node, Language.ENGLISH, true);
         EtFortnightlyPressListHelper.etFortnightlyListFormatted(node, Language.ENGLISH);
         EtFortnightlyPressListHelper.splitByCourtAndDate(node);
         return this.processEtFortnightlyPressList(node);
@@ -37,7 +37,7 @@ public class EtFortnightlyPressList {
                             GeneralHelper.appendToStringBuilder(output, "Case Number - ",
                                                                 hearingCase, "caseNumber");
                             GeneralHelper.appendToStringBuilder(output, "Claimant - ",
-                                                                hearing,"claimant_petitioner");
+                                                                hearing,"claimant");
                             GeneralHelper.appendToStringBuilder(output, "Respondent - ",
                                                                 hearing,"respondent");
                             GeneralHelper.appendToStringBuilder(output, "Hearing Type - ",
