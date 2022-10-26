@@ -220,15 +220,18 @@
         <div th:if="${courtRoom.has('exclude') != true}">
           <div th:each="session : ${courtRoom.get('session')}">
             <div class="govuk-accordion__section-header">
-              <h2 th:text="${session.get('formattedSessionCourtRoom').asText()}"/>
+              <h2 th:text="${i18n.sittingAtCourt + ' ' + session.get('formattedSessionCourtRoom').asText()}"/>
             </div>
             <div class="govuk-accordion__section-content">
               <div class="parent-box overflow-table">
                 <table class="govuk-table">
                   <thead class="govuk-table__head">
                   <tr class="govuk-table__row">
-                    <th:block th:each="header:${i18n.headerValuesWrap}">
+                    <th:block th:each="header:${i18n.headerValuesNoWrap}">
                       <th th:text="${header}" scope="col" class="govuk-table__header no-wrap"/>
+                    </th:block>
+                    <th:block th:each="header:${i18n.headerValuesWrap}">
+                      <th th:text="${header}" scope="col" class="govuk-table__header"/>
                     </th:block>
                   </tr>
                   </thead>
@@ -238,7 +241,7 @@
                       <th:block th:each="case : ${hearing.get('case')}">
                         <tr class="govuk-table__row">
                           <td class="govuk-table__cell no-wrap" th:classappend="${case.get('caseCellBorder').asText()}" th:text="${sitting.get('time').asText()}"/>
-                          <td class="govuk-table__cell no-wrap" th:classappend="${case.get('caseCellBorder').asText()}" th:text="${case.get('caseNumber').asText()}"/>
+                          <td class="govuk-table__cell" th:classappend="${case.get('caseCellBorder').asText()}" th:text="${case.get('caseNumber').asText()}"/>
                           <td class="govuk-table__cell" th:classappend="${case.get('caseCellBorder').asText()}" th:text="${hearing.get('defendant').asText()}"/>
                           <td class="govuk-table__cell no-wrap" th:classappend="${case.get('caseCellBorder').asText()}" th:text="${hearing.get('hearingType').asText()}"/>
                           <td class="govuk-table__cell no-wrap" th:classappend="${case.get('caseCellBorder').asText()}" th:text="${sitting.get('formattedDuration').asText() + ' ' + case.get('caseSequenceIndicator').asText()}"/>

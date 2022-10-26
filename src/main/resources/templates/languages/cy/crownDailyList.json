@@ -24,8 +24,10 @@
   "hearingDurationMinute": "munud",
   "hearingDurationHours": "awr",
   "hearingDurationMinutes": "munud",
+  "headerValuesNoWrap": [
+    "Yn eistedd yn"
+  ],
   "headerValuesWrap": [
-    "Yn eistedd yn",
     "Cyfeirnod yr Achos",
     "Enw'r Diffynnydd(Diffynyddion)",
     "Math o Wrandawiad",
