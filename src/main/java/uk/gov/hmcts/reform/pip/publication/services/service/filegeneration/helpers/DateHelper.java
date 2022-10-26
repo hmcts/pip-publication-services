@@ -113,11 +113,14 @@ public final class DateHelper {
     }
 
     public static String timeStampToBstTime(String timestamp) {
-        Instant unZonedDateTime = Instant.parse(timestamp);
-        ZoneId zone = ZoneId.of(EUROPE_LONDON);
-        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
-        DateTimeFormatter dtf;
-        dtf = DateTimeFormatter.ofPattern("HH:mm");
+        ZonedDateTime zonedDateTime = convertStringToUtc(timestamp);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
+        return dtf.format(zonedDateTime);
+    }
+
+    public static String timeStampToBstTimeWithFormat(String timestamp, String format) {
+        ZonedDateTime zonedDateTime = convertStringToUtc(timestamp);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format).withLocale(Locale.UK);
         return dtf.format(zonedDateTime);
     }
 

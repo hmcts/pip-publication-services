@@ -51,7 +51,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatCourtRoomName() {
-        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -64,7 +64,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatHearingDuration() {
-        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -78,7 +78,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatHearingTime() {
-        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -92,7 +92,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatHearingChannel() {
-        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -186,7 +186,7 @@ class DataManipulationTest {
 
     @Test
     void testFormatCaseName() {
-        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)
@@ -202,7 +202,7 @@ class DataManipulationTest {
 
     @Test
     void testCaseType() {
-        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH, false);
 
         assertThat(inputJson.get(COURT_LISTS).get(0)
                        .get(COURT_HOUSE)

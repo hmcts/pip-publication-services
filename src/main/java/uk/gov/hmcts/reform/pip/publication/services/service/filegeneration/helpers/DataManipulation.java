@@ -24,10 +24,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class DataManipulation {
     private static final String CASE_SEQUENCE_INDICATOR = "caseSequenceIndicator";
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    public static final String APPLICANT = "applicant";
-    public static final String RESPONDENT = "respondent";
     public static final String CHANNEL = "channel";
     public static final String JUDICIARY = "judiciary";
+    public static final String APPLICANT = "applicant";
+    public static final String RESPONDENT = "respondent";
 
     private DataManipulation() {
         throw new UnsupportedOperationException();
@@ -66,7 +66,7 @@ public final class DataManipulation {
         });
     }
 
-    public static void manipulatedDailyListData(JsonNode artefact, Language language) {
+    public static void manipulatedDailyListData(JsonNode artefact, Language language, Boolean initialised) {
         artefact.get("courtLists").forEach(courtList -> {
             courtList.get(LocationHelper.COURT_HOUSE).get("courtRoom").forEach(courtRoom -> {
                 courtRoom.get("session").forEach(session -> {
@@ -78,7 +78,7 @@ public final class DataManipulation {
 
                         sitting.get("hearing").forEach(hearing -> {
                             if (hearing.has("party")) {
-                                findAndManipulatePartyInformation(hearing, language);
+                                PartyRoleHelper.findAndManipulatePartyInformation(hearing, language, initialised);
                             } else {
                                 ((ObjectNode) hearing).put(APPLICANT, "");
                                 ((ObjectNode) hearing).put(RESPONDENT, "");
@@ -104,75 +104,6 @@ public final class DataManipulation {
         if (!hearingCase.has("caseType")) {
             ((ObjectNode) hearingCase).put("caseType", "");
         }
-    }
-
-    private static void findAndManipulatePartyInformation(JsonNode hearing, Language language) {
-        StringBuilder applicant = new StringBuilder();
-        StringBuilder respondent = new StringBuilder();
-
-        hearing.get("party").forEach(party -> {
-            if (!GeneralHelper.findAndReturnNodeText(party, "partyRole").isEmpty()) {
-                switch (PartyRoleMapper.convertPartyRole(party.get("partyRole").asText())) {
-                    case "APPLICANT_PETITIONER": {
-                        formatPartyNonRepresentative(party, applicant);
-                        break;
-                    }
-                    case "APPLICANT_PETITIONER_REPRESENTATIVE": {
-                        final String applicantPetitionerDetails = createIndividualDetails(party);
-                        if (!applicantPetitionerDetails.isEmpty()) {
-                            String advisor = (language == Language.ENGLISH) ? "Legal Advisor: " :
-                                "Cynghorydd Cyfreithiol: ";
-                            applicant.append(advisor);
-                            applicant.append(applicantPetitionerDetails).append(", ");
-                        }
-                        break;
-                    }
-                    case "RESPONDENT": {
-                        formatPartyNonRepresentative(party, respondent);
-                        break;
-                    }
-                    case "RESPONDENT_REPRESENTATIVE": {
-                        respondent.append(respondentRepresentative(language, party));
-                        break;
-                    }
-                    default:
-                        break;
-                }
-            }
-        });
-
-        ((ObjectNode) hearing).put(APPLICANT, GeneralHelper.trimAnyCharacterFromStringEnd(applicant.toString()));
-        ((ObjectNode) hearing).put(RESPONDENT, GeneralHelper.trimAnyCharacterFromStringEnd(respondent.toString()));
-    }
-
-    private static String respondentRepresentative(Language language, JsonNode respondentDetails) {
-        StringBuilder builder = new StringBuilder();
-        final String details = createIndividualDetails(respondentDetails);
-        if (!respondentDetails.isEmpty()) {
-            String advisor = (language == Language.ENGLISH) ? "Legal Advisor: " :
-                "Cynghorydd Cyfreithiol: ";
-            builder.append(advisor);
-            builder.append(details).append(", ");
-        }
-        return builder.toString();
-    }
-
-    private static void formatPartyNonRepresentative(JsonNode party, StringBuilder builder) {
-        String respondentDetails = createIndividualDetails(party);
-        respondentDetails = respondentDetails
-            + GeneralHelper.stringDelimiter(respondentDetails, ", ");
-        builder.insert(0, respondentDetails);
-    }
-
-    private static String createIndividualDetails(JsonNode party) {
-        if (party.has("individualDetails")) {
-            JsonNode individualDetails = party.get("individualDetails");
-            return (GeneralHelper.findAndReturnNodeText(individualDetails, "title") + " "
-                + GeneralHelper.findAndReturnNodeText(individualDetails, "individualForenames") + " "
-                + GeneralHelper.findAndReturnNodeText(individualDetails, "individualMiddleName") + " "
-                + GeneralHelper.findAndReturnNodeText(individualDetails, "individualSurname")).trim();
-        }
-        return "";
     }
 
     private static void findAndConcatenateHearingPlatform(JsonNode sitting, JsonNode session) {
