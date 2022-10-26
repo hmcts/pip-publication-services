@@ -157,7 +157,7 @@
       <thead class="govuk-table__header">
       <tr>
         <th:block th:each="heading: ${i18n.tableHeadings}">
-          <th th:text="${heading}"/>
+          <th th:text="${heading}" scope="col" class="govuk-table__header"/>
         </th:block>
       </tr>
       </thead>
