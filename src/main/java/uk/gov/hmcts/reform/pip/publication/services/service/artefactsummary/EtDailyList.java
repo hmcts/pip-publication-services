@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.GeneralHelper;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.listmanipulation.EtDailyListManipulation;
 
 @Service
@@ -22,33 +23,33 @@ public class EtDailyList {
                     session.get("sittings").forEach(sitting -> {
                         sitting.get("hearing").forEach(hearing -> {
                             hearing.get("case").forEach(hearingCase -> {
-                                output
-                                    .append("\t•Start Time: ")
-                                    .append(sitting.get("time").asText())
-                                    .append("\n\t\tDuration: ")
-                                    .append(sitting.get("formattedDuration").asText())
-                                    .append(hearingCase.has("caseSequenceIndicator")
-                                                ? " " + hearingCase.get("caseSequenceIndicator").asText()
-                                                : "")
-                                    .append("\nCase Number: ")
-                                    .append(hearingCase.get("caseNumber").asText())
-                                    .append("\nClaimant: ")
-                                    .append(hearing.get("claimant").asText())
-                                    .append(", Rep: ")
-                                    .append(hearing.get("claimantRepresentative").asText())
-                                    .append("\nRespondent: ")
-                                    .append(hearing.get("respondent").asText())
-                                    .append(", Rep: ")
-                                    .append(hearing.get("respondentRepresentative").asText())
-                                    .append("\nHearing Type: ")
-                                    .append(hearing.get("hearingType").asText())
-                                    .append("\nJurisdiction: ")
-                                    .append(hearingCase.has("caseType")
-                                                ? hearingCase.get("caseType").asText()
-                                                : "")
-                                    .append("\nHearing Platform: ")
-                                    .append(sitting.get("caseHearingChannel").asText())
-                                    .append('\n');
+                                GeneralHelper.appendToStringBuilderWithPrefix(output, "Start Time: ",
+                                                                              sitting, "time", "\t•");
+                                GeneralHelper.appendToStringBuilderWithPrefix(output, "Duration: ",
+                                                                              sitting, "formattedDuration",
+                                                                              "\n\t\t");
+                                output.append(hearingCase.has("caseSequenceIndicator")
+                                                  ? " " + hearingCase.get("caseSequenceIndicator").asText()
+                                                  : "");
+
+                                GeneralHelper.appendToStringBuilder(output, "Case Number: ",
+                                                                    hearingCase, "caseNumber");
+
+                                GeneralHelper.appendToStringBuilder(output, "Claimant: ",
+                                                                    hearing, "claimant");
+                                output.append(", Rep: ").append(hearing.get("claimantRepresentative").asText());
+
+                                GeneralHelper.appendToStringBuilder(output, "Respondent: ",
+                                                                    hearing, "respondent");
+                                output.append(", Rep: ").append(hearing.get("respondentRepresentative").asText());
+
+                                GeneralHelper.appendToStringBuilder(output, "Hearing Type: ",
+                                                                    hearing, "hearingType");
+                                GeneralHelper.appendToStringBuilder(output, "Jurisdiction: ",
+                                                                    hearingCase, "caseType");
+                                GeneralHelper.appendToStringBuilder(output, "Hearing Platform: ",
+                                                                    sitting, "caseHearingChannel");
+                                output.append('\n');
                             });
                         });
                     });
