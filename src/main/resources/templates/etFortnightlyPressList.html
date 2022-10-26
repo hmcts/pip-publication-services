@@ -138,7 +138,8 @@
       <p th:text="${i18n.openJustice1}"/>
       <p th:text="${i18n.openJustice2}"/>
       <p th:text="${i18n.openJustice3}"/>
-      <p th:text="${i18n.openJustice4 + locationName +  ', ' + email + ' ,' + phone}"/>
+      <p th:text="${i18n.openJustice4}"/>
+      <p th:text="${artefact.get('venue').get('venueName').asText() +  ', ' + artefact.get('venue').get('venueContact').get('venueEmail').asText() + ', ' + artefact.get('venue').get('venueContact').get('venueTelephone').asText()}"/>
       <p th:text="${i18n.openJustice5}"/>
       <p th:text="${i18n.openJustice6}"/>
     </div>
@@ -162,9 +163,15 @@
                   <table class="govuk-table">
                     <thead class="govuk-table__head">
                     <tr class="govuk-table__row">
-                      <th:block th:each="header:${i18n.tableHeaders}">
-                        <th th:text="${header}" scope="col" class="govuk-table__header no-wrap"/>
-                      </th:block>
+                      <th th:text="${i18n.courtroom}" scope="col" class="govuk-table__header"/>
+                      <th th:text="${i18n.startTime}" scope="col" class="govuk-table__header"/>
+                      <th th:text="${i18n.duration}" scope="col" class="govuk-table__header"/>
+                      <th th:text="${i18n.caseNumber}" scope="col" class="govuk-table__header"/>
+                      <th th:text="${i18n.claimant}" scope="col" class="govuk-table__header"/>
+                      <th th:text="${i18n.respondent}" scope="col" class="govuk-table__header"/>
+                      <th th:text="${i18n.hearingType}" scope="col" class="govuk-table__header"/>
+                      <th th:text="${i18n.jurisdiction}" scope="col" class="govuk-table__header"/>
+                      <th th:text="${i18n.hearingPlatform}" scope="col" class="govuk-table__header"/>
                     </tr>
                     </thead>
                     <tbody class="govuk-table__body">
@@ -172,7 +179,7 @@
                         <th:block th:each="hearing : ${hearings}">
                           <tr class="govuk-table__row" th:each="case : ${hearing.get('case')}">
                             <td class="govuk-table__cell" th:text="${hearing.get('courtRoom').asText()}" />
-                            <td class="govuk-table__cell" th:text="${hearing.get('time').asText()}" />
+                            <td class="govuk-table__cell no-wrap" th:text="${hearing.get('time').asText()}" />
                             <td class="govuk-table__cell" th:text="${hearing.get('formattedDuration').asText() + ' ' + case.get('caseSequenceIndicator').asText()}"/>
                             <td class="govuk-table__cell" th:text="${case.get('caseNumber').asText()}" />
                             <td class="govuk-table__cell" th:text="${hearing.get('claimant').asText()}" />
