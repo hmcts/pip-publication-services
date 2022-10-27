@@ -426,8 +426,8 @@ class NotifyTest {
             Arguments.of("Civil and Family Daily Cause List", VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL),
             Arguments.of("Civil Daily Cause List", VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL),
             Arguments.of("Primary Health Tribunal Hearing List", VALID_PRIMARY_HEALTH_TRIBUNAL_LIST_SUBS_EMAIL),
-            Arguments.of("Crown Daily List", VALID_CROWN_DAILY_LIST_SUBS_EMAIL),
-            Arguments.of("Care Standards Tribunal Hearing List", VALID_CARE_STANDARDS_TRIBUNAL_LIST_SUBS_EMAIL)
+            Arguments.of("Care Standards Tribunal Hearing List", VALID_CARE_STANDARDS_TRIBUNAL_LIST_SUBS_EMAIL),
+            Arguments.of("Crown Daily List", VALID_CROWN_DAILY_LIST_SUBS_EMAIL)
         );
     }
 
