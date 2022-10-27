@@ -166,6 +166,11 @@ class NotifyTest {
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
+    private static final String VALID_CARE_STANDARDS_TRIBUNAL_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
+        + "  \"artefactId\": \"4cb375f7-bed9-47be-9055-684f95b378d5\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
+        + SUBSCRIPTION_REQUEST;
+
     private static final String VALID_ET_DAILY_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"14f17281-e6ea-44e1-bbd5-6e2cd6d3d354\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
@@ -176,6 +181,11 @@ class NotifyTest {
 
     private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY =
         "{\"email\": \"test@test.com\", \"fullName\": \"testName\", \"lastSignedInDate\": \"01 May 2022\"}";
+
+    private static final String VALID_CROWN_DAILY_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
+        + "  \"artefactId\": \"b8c0fc62-eb51-404e-bf34-19ca7b80fc22\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
+        + SUBSCRIPTION_REQUEST;
 
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
@@ -421,7 +431,9 @@ class NotifyTest {
             Arguments.of("Civil and Family Daily Cause List", VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL),
             Arguments.of("Civil Daily Cause List", VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL),
             Arguments.of("Primary Health Tribunal Hearing List", VALID_PRIMARY_HEALTH_TRIBUNAL_LIST_SUBS_EMAIL),
-            Arguments.of("ET Daily List", VALID_ET_DAILY_LIST_SUBS_EMAIL)
+            Arguments.of("ET Daily List", VALID_ET_DAILY_LIST_SUBS_EMAIL),
+            Arguments.of("Care Standards Tribunal Hearing List", VALID_CARE_STANDARDS_TRIBUNAL_LIST_SUBS_EMAIL),
+            Arguments.of("Crown Daily List", VALID_CROWN_DAILY_LIST_SUBS_EMAIL)
         );
     }
 

@@ -35,10 +35,13 @@ public class ArtefactSummaryService {
     ScssDailyList scssDailyList;
 
     @Autowired
+    CrownDailyList crownDailyList;
+
+    @Autowired
     IacDailyList iacDailyList;
 
     @Autowired
-    PrimaryHealthList primaryHealthList;
+    TribunalNationalLists tribunalNationalLists;
 
     @Autowired
     EtDailyList etDailyList;
@@ -68,10 +71,13 @@ public class ArtefactSummaryService {
                 return dailyCauseList.artefactSummaryDailyCause(payload);
             case SSCS_DAILY_LIST:
                 return scssDailyList.artefactSummaryScssDailyList(payload);
+            case CROWN_DAILY_LIST:
+                return crownDailyList.artefactSummaryCrownDailyList(payload);
             case IAC_DAILY_LIST:
                 return iacDailyList.artefactSummary(payload);
             case PRIMARY_HEALTH_LIST:
-                return primaryHealthList.artefactSummaryPrimaryHealthList(payload);
+            case CARE_STANDARDS_LIST:
+                return tribunalNationalLists.artefactSummaryTribunalNationalLists(payload);
             case ET_DAILY_LIST:
                 return etDailyList.artefactSummaryEtDailyList(payload);
             default:

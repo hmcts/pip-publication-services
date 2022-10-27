@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.help
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
@@ -17,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DateHelperTest {
 
     private static final String ERR_MSG = "Helper method doesn't seem to be working correctly";
+    private static final String TEST_DATETIME = "2022-08-19T09:30:00Z";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
@@ -69,14 +71,14 @@ class DateHelperTest {
 
     @Test
     void testConvertStringToBstMethod() {
-        assertThat(DateHelper.convertStringToBst("2022-08-19T09:30:00Z").toLocalDateTime())
+        assertThat(DateHelper.convertStringToBst(TEST_DATETIME).toLocalDateTime())
             .as(ERR_MSG)
             .isEqualTo("2022-08-19T10:30");
     }
 
     @Test
     void testConvertTimeToMinutesMethod() {
-        ZonedDateTime startTime = DateHelper.convertStringToBst("2022-08-19T09:30:00Z");
+        ZonedDateTime startTime = DateHelper.convertStringToBst(TEST_DATETIME);
         ZonedDateTime endTime = DateHelper.convertStringToBst("2022-08-19T10:55:00Z");
 
         assertThat(DateHelper.convertTimeToMinutes(startTime, endTime))
@@ -159,6 +161,34 @@ class DateHelperTest {
         assertThat(DateHelper.formatDuration(0, 0, Language.ENGLISH))
             .as(ERR_MSG)
             .isEmpty();
+    }
+
+    @Test
+    void testTimeStampToBstTimeMethod() {
+        assertThat(DateHelper.timeStampToBstTime(TEST_DATETIME))
+            .as(ERR_MSG)
+            .isEqualTo("10:30");
+    }
+
+    @Test
+    void testTimeStampToBstTimeForAfternoonTimeMethod() {
+        assertThat(DateHelper.timeStampToBstTime("2022-08-19T13:30:00Z"))
+            .as(ERR_MSG)
+            .isEqualTo("14:30");
+    }
+
+    @Test
+    void testTimeStampToBstTimeWithFormatForAmMethod() {
+        assertThat(DateHelper.timeStampToBstTimeWithFormat(TEST_DATETIME, "h:mma"))
+            .as(ERR_MSG)
+            .isEqualTo("10:30am");
+    }
+
+    @Test
+    void testTimeStampToBstTimeWithFormatForPmMethod() {
+        assertThat(DateHelper.timeStampToBstTimeWithFormat("2022-08-19T13:30:00Z", "h:mma"))
+            .as(ERR_MSG)
+            .isEqualTo("2:30pm");
     }
 
     @Test

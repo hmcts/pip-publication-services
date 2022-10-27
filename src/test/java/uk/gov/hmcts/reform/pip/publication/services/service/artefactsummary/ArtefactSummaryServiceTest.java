@@ -23,6 +23,7 @@ class ArtefactSummaryServiceTest {
     private static final String BODY_WRONG = "Body is not as expected.";
     private static final String STRING_NOT_EMPTY = "The returned string should trigger the default (i.e. empty string)";
     private static final String NULL_FILE = "Mock file is null - are you sure it's still there?";
+    private static final String CASE_NAME = "A Vs B";
 
     private static final String CASE_ID = "12341234";
 
@@ -35,9 +36,24 @@ class ArtefactSummaryServiceTest {
 
     @Test
     void notImplementedListTest() throws IOException {
-        String body = readMockJsonFile("mocks/copDailyCauseList.json");
-        assertThat(artefactSummaryService.artefactSummary(body, ListType.CROWN_DAILY_LIST))
+        String body = readMockJsonFile("mocks/crownDailyList.json");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.CROWN_FIRM_LIST))
             .as(MISSING_DATA_RETURN).isEqualTo("");
+    }
+
+    @Test
+    void crownDailyList() throws IOException {
+        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream("mocks/crownDailyList.json")) {
+            assertThat(mockFile).as(NULL_FILE).isNotNull();
+            String body = new String(mockFile.readAllBytes());
+            assertThat(body).as(BODY_WRONG).contains("sitting");
+            assertThat(artefactSummaryService.artefactSummary(
+                body,
+                ListType.CROWN_DAILY_LIST
+            )).as(MISSING_DATA_RETURN).contains(
+                "Case Reference - 12345678");
+        }
     }
 
     @Test
@@ -119,9 +135,9 @@ class ArtefactSummaryServiceTest {
     @Test
     void primaryHealthListTest() throws IOException {
         String body = readMockJsonFile("mocks/primaryHealthList.json");
-        assertThat(body).as(BODY_WRONG).contains("A Vs B");
+        assertThat(body).as(BODY_WRONG).contains(CASE_NAME);
         assertThat(artefactSummaryService.artefactSummary(body, ListType.PRIMARY_HEALTH_LIST))
-            .as(MISSING_DATA_RETURN).contains("A Vs B");
+            .as(MISSING_DATA_RETURN).contains(CASE_NAME);
     }
 
     @Test
@@ -148,6 +164,14 @@ class ArtefactSummaryServiceTest {
             assertThat(artefactSummaryService.artefactSummary(body, ListType.MAGISTRATES_PUBLIC_LIST))
                 .as(STRING_NOT_EMPTY).hasSize(0);
         }
+    }
+
+    @Test
+    void careStandardsListTest() throws IOException {
+        String body = readMockJsonFile("mocks/careStandardsList.json");
+        assertThat(body).as(BODY_WRONG).contains(CASE_NAME);
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.CARE_STANDARDS_LIST))
+            .as(MISSING_DATA_RETURN).contains(CASE_NAME);
     }
 
     @Test
