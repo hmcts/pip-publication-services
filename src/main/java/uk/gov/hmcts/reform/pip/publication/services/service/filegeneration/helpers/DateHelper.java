@@ -39,7 +39,8 @@ public final class DateHelper {
     }
 
     private static String getDateTimeFormat(ZonedDateTime zonedDateTime, Boolean isTimeOnly,
-                                            Boolean isBothDateAndTime, Language language, String dateFormat) {
+                                            Boolean isBothDateAndTime, Language language,
+                                            String dateFormat) {
         if (isTimeOnly) {
             if (zonedDateTime.getMinute() == 0) {
                 return "ha";
@@ -54,12 +55,6 @@ public final class DateHelper {
     public static String formatLocalDateTimeToBst(LocalDateTime date) {
         return date.format(
             DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.UK));
-    }
-
-    public static ZonedDateTime convertStringToBst(String timestamp) {
-        Instant unZonedDateTime = Instant.parse(timestamp);
-        ZoneId zone = ZoneId.of(EUROPE_LONDON);
-        return unZonedDateTime.atZone(zone);
     }
 
     public static long convertTimeToMinutes(ZonedDateTime startDateTime,
@@ -106,18 +101,19 @@ public final class DateHelper {
         return duration > ONE ? duration + " " + format + "s" : duration + " " + format;
     }
 
-    public static ZonedDateTime convertStringToUtc(String timestamp) {
+    public static ZonedDateTime convertStringToBst(String timestamp) {
         Instant unZonedDateTime = Instant.parse(timestamp);
         ZoneId zone = ZoneId.of(EUROPE_LONDON);
         return unZonedDateTime.atZone(zone);
     }
 
     public static String timeStampToBstTime(String timestamp) {
-        Instant unZonedDateTime = Instant.parse(timestamp);
-        ZoneId zone = ZoneId.of(EUROPE_LONDON);
-        ZonedDateTime zonedDateTime = unZonedDateTime.atZone(zone);
-        DateTimeFormatter dtf;
-        dtf = DateTimeFormatter.ofPattern("HH:mm");
+        return timeStampToBstTimeWithFormat(timestamp, "HH:mm");
+    }
+
+    public static String timeStampToBstTimeWithFormat(String timestamp, String format) {
+        ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format).withLocale(Locale.UK);
         return dtf.format(zonedDateTime);
     }
 
@@ -137,8 +133,8 @@ public final class DateHelper {
     }
 
     public static void calculateDuration(JsonNode sitting, Language language, boolean dayCalculation) {
-        ZonedDateTime sittingStart = convertStringToUtc(sitting.get("sittingStart").asText());
-        ZonedDateTime sittingEnd = convertStringToUtc(sitting.get("sittingEnd").asText());
+        ZonedDateTime sittingStart = convertStringToBst(sitting.get("sittingStart").asText());
+        ZonedDateTime sittingEnd = convertStringToBst(sitting.get("sittingEnd").asText());
 
         double durationAsHours = 0;
         double durationAsMinutes = convertTimeToMinutes(sittingStart, sittingEnd);

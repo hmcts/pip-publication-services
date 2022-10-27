@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
  */
 @Service
 @Slf4j
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public class ArtefactSummaryService {
 
     @Autowired
@@ -34,7 +35,10 @@ public class ArtefactSummaryService {
     ScssDailyList scssDailyList;
 
     @Autowired
-    PrimaryHealthList primaryHealthList;
+    TribunalNationalLists tribunalNationalLists;
+
+    @Autowired
+    IacDailyList iacDailyList;
 
     /**
      * Parent class to route based on list types.
@@ -45,6 +49,7 @@ public class ArtefactSummaryService {
      *     subscriptions email templates.
      * @throws JsonProcessingException - jackson prereq.
      */
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public String artefactSummary(String payload, ListType listType) throws JsonProcessingException {
         switch (listType) {
             case SJP_PUBLIC_LIST:
@@ -60,8 +65,11 @@ public class ArtefactSummaryService {
                 return dailyCauseList.artefactSummaryDailyCause(payload);
             case SSCS_DAILY_LIST:
                 return scssDailyList.artefactSummaryScssDailyList(payload);
+            case IAC_DAILY_LIST:
+                return iacDailyList.artefactSummary(payload);
             case PRIMARY_HEALTH_LIST:
-                return primaryHealthList.artefactSummaryPrimaryHealthList(payload);
+            case CARE_STANDARDS_LIST:
+                return tribunalNationalLists.artefactSummaryTribunalNationalLists(payload);
             default:
                 return "";
         }

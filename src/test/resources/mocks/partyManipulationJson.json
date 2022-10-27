@@ -1,0 +1,58 @@
+{
+  "party": [
+    {
+      "partyRole": "APPLICANT_PETITIONER",
+      "individualDetails": {
+        "individualForenames": "Applicant Forename",
+        "individualMiddleName": "Applicant Middlename",
+        "individualSurname": "Applicant Surname",
+        "title": "Applicant Title"
+      }
+    },
+    {
+      "partyRole": "APPLICANT_PETITIONER_REPRESENTATIVE",
+      "individualDetails": {
+        "individualForenames": "Rep Forename",
+        "individualMiddleName": "Rep Middlename",
+        "individualSurname": "Rep Surname",
+        "title": "Rep Title"
+      }
+    },
+    {
+      "partyRole": "CLAIMANT_PETITIONER",
+      "individualDetails": {
+        "individualForenames": "Claimant Forename",
+        "individualMiddleName": "Claimant Middlename",
+        "individualSurname": "Claimant Surname",
+        "title": "Claimant Title"
+      }
+    },
+    {
+      "partyRole": "RESPONDENT",
+      "individualDetails": {
+        "title": "Title",
+        "individualForenames": "Forename",
+        "individualMiddleName": "Middlename",
+        "individualSurname": "Surname"
+      }
+    },
+    {
+      "partyRole": "CLAIMANT_PETITIONER_REPRESENTATIVE",
+      "individualDetails": {
+        "individualForenames": "Rep Forename",
+        "individualMiddleName": "Rep Middlename",
+        "individualSurname": "Rep Surname",
+        "title": "Rep Title"
+      }
+    },
+    {
+      "partyRole": "RESPONDENT_REPRESENTATIVE",
+      "individualDetails": {
+        "individualForenames": "ForenameB",
+        "individualMiddleName": "MiddlenameB",
+        "individualSurname": "SurnameB",
+        "title": "Mr"
+      }
+    }
+  ]
+}
