@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.models.external;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CareStandardsListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CivilAndFamilyDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CivilDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.Converter;
@@ -37,7 +38,7 @@ public enum ListType {
     COP_DAILY_CAUSE_LIST(new CopDailyCauseListConverter()),
     SSCS_DAILY_LIST(new SscsDailyListConverter()),
     PRIMARY_HEALTH_LIST(new PrimaryHealthListConverter()),
-    CARE_STANDARDS_LIST,
+    CARE_STANDARDS_LIST(new CareStandardsListConverter()),
     ET_DAILY_LIST,
     ET_FORTNIGHTLY_PRESS_LIST(new EtFortnightlyPressListConverter());
 

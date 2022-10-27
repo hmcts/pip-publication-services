@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PrimaryHealthList {
+public class TribunalNationalList {
     private String hearingDate;
     private String caseName;
     private String duration;
