@@ -198,10 +198,10 @@
         <div class="govuk-accordion__section-content">
           <div class="parent-box overflow-table">
             <table class="govuk-table">
-              <thead class="govuk-table__header">
-                <tr>
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
                   <th:block th:each="heading: ${i18n.tableHeadings}">
-                    <th th:text="${heading}"/>
+                    <th th:text="${heading}" scope="col" class="govuk-table__header" />
                   </th:block>
                 </tr>
               </thead>
