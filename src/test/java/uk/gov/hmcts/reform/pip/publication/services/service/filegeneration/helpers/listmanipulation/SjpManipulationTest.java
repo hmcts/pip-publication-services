@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers;
+package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.listmanipulation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

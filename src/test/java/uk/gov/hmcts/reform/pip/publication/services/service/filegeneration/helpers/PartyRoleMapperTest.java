@@ -6,7 +6,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
-@SuppressWarnings({"PMD.TooManyMethods"})
+@SuppressWarnings("PMD.TooManyMethods")
 class PartyRoleMapperTest {
 
     private static final String ERR_MSG = "PartyRole Mapper method doesn't seem to be working correctly";
@@ -18,6 +18,12 @@ class PartyRoleMapperTest {
         "RESPONDENT_REPRESENTATIVE";
     private static final String DEFENDANT = "DEFENDANT";
     private static final String PROSECUTING_AUTHORITY = "PROSECUTING_AUTHORITY";
+
+    private static final String CLAIMANT =
+        "CLAIMANT_PETITIONER";
+
+    private static final String CLAIMANT_REPRESENTATIVE =
+        "CLAIMANT_PETITIONER_REPRESENTATIVE";
 
     @Test
     void testConvertPartyRoleApplicantMethod() {
@@ -47,6 +53,22 @@ class PartyRoleMapperTest {
                     .convertPartyRole(RESPONDENT_REPRESENTATIVE))
             .as(ERR_MSG)
             .isEqualTo(RESPONDENT_REPRESENTATIVE);
+    }
+
+    @Test
+    void testConvertPartyRoleClaimantMethod() {
+        assertThat(PartyRoleMapper
+                       .convertPartyRole(CLAIMANT))
+            .as(ERR_MSG)
+            .isEqualTo(CLAIMANT);
+    }
+
+    @Test
+    void testConvertPartyRoleClaimantRepresentativeMethod() {
+        assertThat(PartyRoleMapper
+                       .convertPartyRole(CLAIMANT_REPRESENTATIVE))
+            .as(ERR_MSG)
+            .isEqualTo(CLAIMANT_REPRESENTATIVE);
     }
 
     @Test

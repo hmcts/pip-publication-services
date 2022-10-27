@@ -13,10 +13,8 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles("test")
 @SuppressWarnings("PMD.TooManyMethods")
@@ -30,9 +28,6 @@ class DataManipulationTest {
     private static final String CASE = "case";
     private static final String CASE_NAME = "caseName";
     private static final String CASE_TYPE = "caseType";
-    private static final String FORMATTED_COURT_HOUSE_ADDRESS = "formattedCourtHouseAddress";
-
-    private static final String COURT_ADDRESS_ERROR = "Unable to get court address address";
 
     private static JsonNode inputJson;
     private static JsonNode inputJsonCop;
@@ -52,53 +47,6 @@ class DataManipulationTest {
         );
 
         inputJsonCop = new ObjectMapper().readTree(copWriter.toString());
-    }
-
-    @Test
-    void testFormatVenueAddressMethod() {
-        List<String> venueAddress = LocationHelper.formatVenueAddress(inputJson);
-
-        assertEquals(venueAddress.get(0), "Address Line 1",
-                     "Unable to get address for venue");
-
-        assertEquals(venueAddress.get(venueAddress.size() - 1),
-                     "AA1 AA1",
-                     "Unable to get address for venue");
-    }
-
-    @Test
-    void testFormatCourtAddressMethod() {
-        LocationHelper.formatCourtAddress(inputJson);
-
-        assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
-                       .has(FORMATTED_COURT_HOUSE_ADDRESS))
-            .as(COURT_ADDRESS_ERROR)
-            .isTrue();
-
-        assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
-                       .get(FORMATTED_COURT_HOUSE_ADDRESS).asText())
-            .as(COURT_ADDRESS_ERROR)
-            .contains("Address Line 1");
-
-        assertThat(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
-                       .get(FORMATTED_COURT_HOUSE_ADDRESS).asText())
-            .as("Unable to get court address postcode")
-            .contains("AA1 AA1");
-    }
-
-    @Test
-    void testFormatWithNoCourtAddressMethod() {
-        LocationHelper.formatCourtAddress(inputJson);
-
-        assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
-                       .has(FORMATTED_COURT_HOUSE_ADDRESS))
-            .as(COURT_ADDRESS_ERROR)
-            .isTrue();
-
-        assertThat(inputJson.get(COURT_LISTS).get(1).get(COURT_HOUSE)
-                       .get(FORMATTED_COURT_HOUSE_ADDRESS).asText())
-            .as(COURT_ADDRESS_ERROR)
-            .isEmpty();
     }
 
     @Test
@@ -267,4 +215,103 @@ class DataManipulationTest {
             .as("Unable to get case type")
             .isEqualTo("normal");
     }
+
+    @Test
+    void testFindManipulatePartyInformationApplicant() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("applicant").asText())
+            .as("applicant is incorrect")
+            .startsWith("Applicant Title Applicant Forename Applicant Middlename Applicant Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationApplicantRepresentativeEnglish() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("applicant").asText())
+            .as("applicant is incorrect")
+            .contains("Legal Advisor: Rep Title Rep Forename Rep Middlename Rep Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationApplicantRepresentativeWelsh() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.WELSH);
+
+        assertThat(inputJson.get("applicant").asText())
+            .as("applicant is incorrect")
+            .contains("Cynghorydd Cyfreithiol: Rep Title Rep Forename Rep Middlename Rep Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationRespondent() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("respondent").asText())
+            .as("respondent is incorrect")
+            .startsWith("Title Forename Middlename Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationProsecutingAuthority() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("prosecutingAuthority").asText())
+            .as("prosecuting authority is incorrect")
+            .isEqualTo("Title Forename Middlename Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationRespondentRepresentative() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("respondent").asText())
+            .as("respondent is incorrect")
+            .endsWith("Legal Advisor: Mr ForenameB MiddlenameB SurnameB");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationClaimant() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("claimant").asText())
+            .as("claimant is incorrect")
+            .isEqualTo("Claimant Title Claimant Forename Claimant Middlename Claimant Surname");
+    }
+
+    @Test
+    void testFindManipulatePartyInformationClaimantRepresentative() throws IOException {
+        JsonNode inputJson = loadInPartyFile();
+
+        DataManipulation.findAndManipulatePartyInformation(inputJson, Language.ENGLISH);
+
+        assertThat(inputJson.get("claimantRepresentative").asText())
+            .as("claimant representative is incorrect")
+            .isEqualTo("Rep Title Rep Forename Rep Middlename Rep Surname");
+    }
+
+    private JsonNode loadInPartyFile() throws IOException {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(Files.newInputStream(
+                         Paths.get("src/test/resources/mocks/partyManipulationJson.json")), writer,
+                     Charset.defaultCharset()
+        );
+
+        return new ObjectMapper().readTree(writer.toString());
+    }
+
 }

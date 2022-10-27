@@ -11,7 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -158,6 +160,11 @@ class NotifyTest {
             + "  \"subscriptions\": {\n"
             + "    \"CASE_URN\": [\n"
             + "      \"123\"\n]\n}\n}";
+
+    private static final String VALID_PRIMARY_HEALTH_TRIBUNAL_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
+        + "  \"artefactId\": \"43bf6e71-9666-4a1d-98c2-fe2283395d49\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
+        + SUBSCRIPTION_REQUEST;
 
     private static final String VALID_MEDIA_VERIFICATION_EMAIL_BODY =
         "{\"fullName\": \"fullName\", \"email\": \"test@email.com\"}";
@@ -412,15 +419,28 @@ class NotifyTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"SSCS Daily List", "SJP Public List", "SJP Press List", "COP Daily List", "Civil Daily "
-        + "Cause List", "Civil and Family Daily Cause List", "Family Daily Cause List", "Crown Daily List"})
-    void testValidPayloadForAllSubsEmailTypesReturnsOk(String listType) throws Exception {
+    @MethodSource("parameters")
+    void testValidPayloadForAllSubsEmailTypesReturnsOk(String listType, String listSubscription) throws Exception {
         MvcResult value = mockMvc.perform(post(SUBSCRIPTION_URL)
-                                              .content(LIST_MAP.get(listType))
+                                              .content(listSubscription)
                                               .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
             .andReturn();
         assertThat(value.getResponse().getContentAsString()).as("Failed - List type = " + listType)
             .contains(SUBS_EMAIL_SUCCESS);
+    }
+
+    private static Stream<Arguments> parameters() {
+        return Stream.of(
+            Arguments.of("SSCS Daily List", VALID_SCSS_DAILY_LIST_SUBS_EMAIL),
+            Arguments.of("SJP Public List", VALID_SJP_PUBLIC_SUBS_EMAIL),
+            Arguments.of("SJP Press List", VALID_SJP_PRESS_SUBS_EMAIL),
+            Arguments.of("COP Daily List", VALID_COP_CAUSE_SUBS_EMAIL),
+            Arguments.of("Family Daily Cause List", VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL),
+            Arguments.of("Civil and Family Daily Cause List", VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL),
+            Arguments.of("Civil Daily Cause List", VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL),
+            Arguments.of("Primary Health Tribunal Hearing List", VALID_PRIMARY_HEALTH_TRIBUNAL_LIST_SUBS_EMAIL),
+            Arguments.of("Crown Daily List", VALID_CROWN_DAILY_LIST_SUBS_EMAIL)
+        );
     }
 
     @Test

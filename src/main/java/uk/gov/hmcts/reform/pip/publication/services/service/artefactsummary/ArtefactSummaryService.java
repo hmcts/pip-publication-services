@@ -36,6 +36,12 @@ public class ArtefactSummaryService {
     @Autowired
     CrownDailyList crownDailyList;
 
+    @Autowired
+    IacDailyList iacDailyList;
+
+    @Autowired
+    PrimaryHealthList primaryHealthList;
+
     /**
      * Parent class to route based on list types.
      *
@@ -45,6 +51,7 @@ public class ArtefactSummaryService {
      *     subscriptions email templates.
      * @throws JsonProcessingException - jackson prereq.
      */
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public String artefactSummary(String payload, ListType listType) throws JsonProcessingException {
         switch (listType) {
             case SJP_PUBLIC_LIST:
@@ -62,6 +69,10 @@ public class ArtefactSummaryService {
                 return scssDailyList.artefactSummaryScssDailyList(payload);
             case CROWN_DAILY_LIST:
                 return crownDailyList.artefactSummaryCrownDailyList(payload);
+            case IAC_DAILY_LIST:
+                return iacDailyList.artefactSummary(payload);
+            case PRIMARY_HEALTH_LIST:
+                return primaryHealthList.artefactSummaryPrimaryHealthList(payload);
             default:
                 return "";
         }
