@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.pip.publication.services.config.ThymeleafConfiguratio
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.EtFortnightlyPressListHelper.preprocessArtefactForEtFortnightlyListThymeLeafConverter;
+import static uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.listmanipulation.EtFortnightlyPressListHelper.preprocessArtefactForEtFortnightlyListThymeLeafConverter;
 
 public class EtFortnightlyPressListConverter implements Converter {
     @Override

@@ -50,11 +50,11 @@ class EtFortnightlyPressListTest {
 
         assertThat(emailOutput)
             .as("incorrect Claimant found")
-            .contains("HRH G. Anderson");
+            .contains("HRH G Anderson");
 
         assertThat(emailOutput)
             .as("incorrect Respondent found")
-            .contains("Capt. S. Jenkins");
+            .contains("Capt. S Jenkins");
 
         assertThat(emailOutput)
             .as("incorrect hearing type found")

@@ -96,12 +96,9 @@ public final class PartyRoleHelper {
             JsonNode individualDetails = party.get("individualDetails");
             if (initialised) {
                 String forename = GeneralHelper.findAndReturnNodeText(individualDetails, "individualForenames");
-                if (!forename.isEmpty()) {
-                    forename = forename.substring(0, 1);
-                    forename = forename + (forename.length() > 0 ? "." : "");
-                }
+                String forenameInitial = forename.isEmpty() ? "" : forename.substring(0, 1);
                 return (GeneralHelper.findAndReturnNodeText(individualDetails, "title") + " "
-                    + forename + " "
+                    + forenameInitial + " "
                     + GeneralHelper.findAndReturnNodeText(individualDetails, "individualSurname")).trim();
             } else {
                 return (GeneralHelper.findAndReturnNodeText(individualDetails, "title") + " "

@@ -1,21 +1,30 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
+import uk.gov.hmcts.reform.pip.publication.services.service.FileCreationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DataManipulation;
-import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.EtFortnightlyPressListHelper;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.GeneralHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.listmanipulation.EtFortnightlyPressListHelper;
+
+import java.io.IOException;
+import java.util.Map;
 
 @Service
 public class EtFortnightlyPressList {
-    public String artefactSummaryEtFortnightlyPressList(String payload) throws JsonProcessingException {
-        JsonNode node = new ObjectMapper().readTree(payload);
+    @Autowired
+    private FileCreationService fileCreationService;
 
+    public String artefactSummaryEtFortnightlyPressList(String payload) throws IOException {
+        JsonNode node = new ObjectMapper().readTree(payload);
+        Map<String, Object> language = fileCreationService
+            .handleLanguages(ListType.ET_FORTNIGHTLY_PRESS_LIST, Language.ENGLISH);
         DataManipulation.manipulatedDailyListData(node, Language.ENGLISH, true);
-        EtFortnightlyPressListHelper.etFortnightlyListFormatted(node, Language.ENGLISH);
+        EtFortnightlyPressListHelper.etFortnightlyListFormatted(node, language);
         EtFortnightlyPressListHelper.splitByCourtAndDate(node);
         return this.processEtFortnightlyPressList(node);
     }
@@ -38,8 +47,10 @@ public class EtFortnightlyPressList {
                                                                 hearingCase, "caseNumber");
                             GeneralHelper.appendToStringBuilder(output, "Claimant - ",
                                                                 hearing,"claimant");
+                            output.append(", ").append(hearing.get("claimantRepresentative").asText());
                             GeneralHelper.appendToStringBuilder(output, "Respondent - ",
                                                                 hearing,"respondent");
+                            output.append(", ").append(hearing.get("respondentRepresentative").asText());
                             GeneralHelper.appendToStringBuilder(output, "Hearing Type - ",
                                                                 hearing,"hearingType");
                             GeneralHelper.appendToStringBuilder(output, "Jurisdiction - ",

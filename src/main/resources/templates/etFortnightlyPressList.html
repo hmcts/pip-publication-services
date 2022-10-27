@@ -138,8 +138,7 @@
       <p th:text="${i18n.openJustice1}"/>
       <p th:text="${i18n.openJustice2}"/>
       <p th:text="${i18n.openJustice3}"/>
-      <p th:text="${i18n.openJustice4}"/>
-      <p th:text="${artefact.get('venue').get('venueName').asText() +  ', ' + artefact.get('venue').get('venueContact').get('venueEmail').asText() + ', ' + artefact.get('venue').get('venueContact').get('venueTelephone').asText()}"/>
+      <p th:text="${i18n.openJustice4 + ' ' + artefact.get('venue').get('venueName').asText() +  ', ' + artefact.get('venue').get('venueContact').get('venueEmail').asText() + ', ' + artefact.get('venue').get('venueContact').get('venueTelephone').asText()}"/>
       <p th:text="${i18n.openJustice5}"/>
       <p th:text="${i18n.openJustice6}"/>
     </div>
@@ -182,8 +181,8 @@
                             <td class="govuk-table__cell no-wrap" th:text="${hearing.get('time').asText()}" />
                             <td class="govuk-table__cell" th:text="${hearing.get('formattedDuration').asText() + ' ' + case.get('caseSequenceIndicator').asText()}"/>
                             <td class="govuk-table__cell" th:text="${case.get('caseNumber').asText()}" />
-                            <td class="govuk-table__cell" th:text="${hearing.get('claimant').asText()}" />
-                            <td class="govuk-table__cell" th:text="${hearing.get('respondent').asText()}" />
+                            <td class="govuk-table__cell" th:utext="${hearing.get('claimant').asText() + '<br/>' + hearing.get('claimantRepresentative').asText()}"/>
+                            <td class="govuk-table__cell" th:utext="${hearing.get('respondent').asText() + '<br/>' + hearing.get('respondentRepresentative').asText()}"/>
                             <td class="govuk-table__cell" th:text="${hearing.get('hearingType').asText()}" />
                             <td class="govuk-table__cell" th:text="${case.get('caseType').asText()}" />
                             <td class="govuk-table__cell" th:text="${hearing.get('caseHearingChannel').asText()}" />

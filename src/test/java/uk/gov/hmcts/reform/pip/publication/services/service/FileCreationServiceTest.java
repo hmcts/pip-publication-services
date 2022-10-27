@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -54,6 +55,7 @@ class FileCreationServiceTest {
 
     public static final String TEST_STRING = "test";
     public static final String ONE_TWO_THREE_FOUR = "1234";
+    private static final Location LOCATION = new Location();
 
     private static final Map<String, ListType> LIST_TYPE_LOOKUP = Map.of(
         "civilAndFamilyDailyCauseList.json", ListType.CIVIL_DAILY_CAUSE_LIST,
@@ -82,6 +84,11 @@ class FileCreationServiceTest {
         return artefact;
     }
 
+    @BeforeAll
+    public static void setup() {
+        LOCATION.setName(TEST_STRING);
+        LOCATION.setRegion(List.of(TEST_STRING));
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"civilAndFamilyDailyCauseList.json", "civilDailyCauseList.json",
@@ -89,14 +96,11 @@ class FileCreationServiceTest {
         "sscsDailyList.json", "etFortnightlyPressList.json"})
     void testAllPdfListsAccessible(String filePath) throws IOException {
         ListType listType = LIST_TYPE_LOOKUP.get(filePath);
-        Location location = new Location();
-        location.setName(TEST_STRING);
-        location.setRegion(List.of(TEST_STRING));
         UUID uuid = UUID.randomUUID();
         Artefact artefact = preBuiltArtefact(listType);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(getInput("/mocks/" + filePath));
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
-        when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(location);
+        when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(LOCATION);
         String htmlOutput = fileCreationService.jsonToHtml(uuid);
         byte[] outputPdf = fileCreationService.generatePdfFromHtml(htmlOutput, true);
         assertNotNull(outputPdf, "Output PDF is not a valid file. Did the generation process work?");
@@ -108,14 +112,11 @@ class FileCreationServiceTest {
         "sscsDailyList.json", "etFortnightlyPressList.json"})
     void testAllPdfListsNonAccessible(String filePath) throws IOException {
         ListType listType = LIST_TYPE_LOOKUP.get(filePath);
-        Location location = new Location();
-        location.setName(TEST_STRING);
-        location.setRegion(List.of(TEST_STRING));
         UUID uuid = UUID.randomUUID();
         Artefact artefact = preBuiltArtefact(listType);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(getInput("/mocks/" + filePath));
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
-        when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(location);
+        when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(LOCATION);
         String htmlOutput = fileCreationService.jsonToHtml(uuid);
         byte[] outputPdf = fileCreationService.generatePdfFromHtml(htmlOutput, false);
         assertNotNull(outputPdf, "Output PDF is not a valid file. Did the generation process work?");
@@ -165,14 +166,11 @@ class FileCreationServiceTest {
         artefact.setProvenance("france");
         artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.MAGISTRATES_STANDARD_LIST);
-        Location location = new Location();
-        location.setName(TEST_STRING);
-        location.setRegion(List.of(TEST_STRING));
         UUID uuid = UUID.randomUUID();
         String inputJson = "{\"document\":{\"value1\":\"x\",\"value2\":\"hiddenTestString\"}}";
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(inputJson);
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
-        when(dataManagementService.getLocation("1")).thenReturn(location);
+        when(dataManagementService.getLocation("1")).thenReturn(LOCATION);
 
         byte[] outputPdf = fileCreationService.generatePdfFromHtml(fileCreationService.jsonToHtml(uuid), accessibility);
         try (PDDocument doc = PDDocument.load(outputPdf)) {

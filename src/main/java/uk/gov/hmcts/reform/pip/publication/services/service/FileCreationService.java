@@ -82,7 +82,7 @@ public class FileCreationService {
             : converter.convert(topLevelNode, metadataMap, language);
     }
 
-    private Map<String, Object> handleLanguages(ListType listType, Language language) throws IOException {
+    public Map<String, Object> handleLanguages(ListType listType, Language language) throws IOException {
         String path;
         String languageString = GeneralHelper.listTypeToCamelCase(listType);
         if (language.equals(Language.ENGLISH)) {

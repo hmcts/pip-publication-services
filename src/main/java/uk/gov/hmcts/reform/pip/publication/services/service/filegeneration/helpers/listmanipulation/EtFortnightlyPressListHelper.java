@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers;
+package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.listmanipulation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,17 +6,21 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.thymeleaf.context.Context;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.GeneralHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.LocationHelper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DailyCauseListHelper.preprocessArtefactForThymeLeafConverter;
 
 public final class EtFortnightlyPressListHelper {
-    public static final String COURT_ROOM = "courtRoom";
-    public static final String SITTING_DATE = "sittingDate";
-    public static final String SITTINGS = "sittings";
+    private static final String COURT_ROOM = "courtRoom";
+    private static final String SITTING_DATE = "sittingDate";
+    private static final String SITTINGS = "sittings";
+    private static final String LEGAL_ADVISOR = "Legal Advisor: ";
 
     private EtFortnightlyPressListHelper() {
     }
@@ -25,7 +29,7 @@ public final class EtFortnightlyPressListHelper {
         JsonNode artefact, Map<String, String> metadata, Map<String, Object> language) {
         Context context;
         context = preprocessArtefactForThymeLeafConverter(artefact, metadata, language, true);
-        etFortnightlyListFormatted(artefact, Language.valueOf(metadata.get("language")));
+        etFortnightlyListFormatted(artefact, language);
         splitByCourtAndDate(artefact);
         context.setVariable("regionName", metadata.get("regionName"));
         return context;
@@ -35,17 +39,18 @@ public final class EtFortnightlyPressListHelper {
         artefact.get("courtLists").forEach(courtList -> {
             ObjectMapper mapper = new ObjectMapper();
             ArrayNode sittingArray = mapper.createArrayNode();
-            List<String> uniqueSittingDate = findUniqueSittingDate(
+            Set<String> uniqueSittingDate = findUniqueSittingDate(
                 courtList.get(LocationHelper.COURT_HOUSE).get(COURT_ROOM));
-            for (int i = 0; i <= uniqueSittingDate.size() - 1; i++) {
+            String[] uniqueSittingDates = uniqueSittingDate.toArray(new String[0]);
+            for (int i = 0; i < uniqueSittingDates.length; i++) {
                 int finalI = i;
                 ObjectNode sittingNode = mapper.createObjectNode();
                 ArrayNode hearingNodeArray = mapper.createArrayNode();
-                (sittingNode).put(SITTING_DATE, uniqueSittingDate.get(finalI));
+                (sittingNode).put(SITTING_DATE, uniqueSittingDates[finalI]);
                 courtList.get(LocationHelper.COURT_HOUSE).get(COURT_ROOM).forEach(courtRoom -> {
                     courtRoom.get("session").forEach(session -> {
                         session.get(SITTINGS).forEach(sitting -> {
-                            checkSittingDateAlreadyExists(sitting, uniqueSittingDate,
+                            checkSittingDateAlreadyExists(sitting, uniqueSittingDates,
                                                           hearingNodeArray, finalI);
                         });
                     });
@@ -57,31 +62,28 @@ public final class EtFortnightlyPressListHelper {
         });
     }
 
-    private static void checkSittingDateAlreadyExists(JsonNode sitting, List<String> uniqueSittingDate,
+    private static void checkSittingDateAlreadyExists(JsonNode sitting, String[] uniqueSittingDate,
                                                       ArrayNode hearingNodeArray, Integer sittingDateIndex) {
         String sittingDate = GeneralHelper.findAndReturnNodeText(sitting, SITTING_DATE);
         if (!sittingDate.isEmpty()
-            && sittingDate.equals(uniqueSittingDate.get(sittingDateIndex))) {
+            && sittingDate.equals(uniqueSittingDate[sittingDateIndex])) {
             hearingNodeArray.add(sitting.get("hearing"));
         }
     }
 
-    private static List<String> findUniqueSittingDate(JsonNode courtRooms) {
-        List<String> uniqueDate = new ArrayList<>();
+    private static Set<String> findUniqueSittingDate(JsonNode courtRooms) {
+        Set<String> uniqueDates = new HashSet<>();
         courtRooms.forEach(courtRoom -> {
             courtRoom.get("session").forEach(session -> {
                 session.get(SITTINGS).forEach(sitting -> {
-                    String sittingDate = GeneralHelper.findAndReturnNodeText(sitting, SITTING_DATE);
-                    if (!uniqueDate.contains(sittingDate)) {
-                        uniqueDate.add(sittingDate);
-                    }
+                    uniqueDates.add(GeneralHelper.findAndReturnNodeText(sitting, SITTING_DATE));
                 });
             });
         });
-        return uniqueDate;
+        return uniqueDates;
     }
 
-    public static void etFortnightlyListFormatted(JsonNode artefact, Language language) {
+    public static void etFortnightlyListFormatted(JsonNode artefact, Map<String, Object> language) {
         artefact.get("courtLists").forEach(courtList -> {
             courtList.get(LocationHelper.COURT_HOUSE).get(COURT_ROOM).forEach(courtRoom -> {
                 courtRoom.get("session").forEach(session -> {
@@ -91,22 +93,7 @@ public final class EtFortnightlyPressListHelper {
                         ((ObjectNode)sitting).put(SITTING_DATE, sittingDate);
                         sitting.get("hearing").forEach(hearing -> {
                             formatCaseTime(sitting, hearing);
-                            ((ObjectNode)hearing).put(COURT_ROOM,
-                                GeneralHelper.findAndReturnNodeText(courtRoom, "courtRoomName"));
-                            ((ObjectNode)hearing).put("claimant",
-                                getClaimantPetitioner(GeneralHelper.findAndReturnNodeText(hearing,
-                                "claimant"),
-                                    GeneralHelper.findAndReturnNodeText(hearing,
-                                "claimantRepresentative"),
-                                    language));
-                            ((ObjectNode)hearing).put("respondent",
-                                    formatRespondent(GeneralHelper.findAndReturnNodeText(hearing, "respondent"),
-                                    language));
-                            ((ObjectNode)hearing).put("formattedDuration",
-                                    GeneralHelper.findAndReturnNodeText(sitting, "formattedDuration"));
-                            ((ObjectNode)hearing).put("caseHearingChannel",
-                                    GeneralHelper.findAndReturnNodeText(sitting, "caseHearingChannel"));
-
+                            moveTableColumnValuesToHearing(courtRoom, sitting, hearing, language);
                             if (hearing.has("case")) {
                                 hearing.get("case").forEach(cases -> {
                                     if (!cases.has("caseSequenceIndicator")) {
@@ -121,33 +108,58 @@ public final class EtFortnightlyPressListHelper {
         });
     }
 
-    private static String getClaimantPetitioner(String claimant,
-                                                String claimantRepresentative, Language language) {
+    private static void moveTableColumnValuesToHearing(JsonNode courtRoom, JsonNode sitting,
+                                                       JsonNode hearing,
+                                                       Map<String, Object> language) {
+        ((ObjectNode)hearing).put(COURT_ROOM,
+            GeneralHelper.findAndReturnNodeText(courtRoom, "courtRoomName"));
+        ((ObjectNode)hearing).put("claimant",
+            GeneralHelper.findAndReturnNodeText(hearing,"claimant"));
+        ((ObjectNode)hearing).put("claimantRepresentative",
+            getClaimantRepresentative(GeneralHelper.findAndReturnNodeText(hearing,"claimantRepresentative"),
+            language));
+        String respondent = GeneralHelper.findAndReturnNodeText(hearing, "respondent");
+        ((ObjectNode)hearing).put("respondent",
+            findRespondent(respondent));
+        ((ObjectNode)hearing).put("respondentRepresentative",
+            findRespondentRepresentative(respondent,
+            language));
+        ((ObjectNode)hearing).put("formattedDuration",
+            GeneralHelper.findAndReturnNodeText(sitting, "formattedDuration"));
+        ((ObjectNode)hearing).put("caseHearingChannel",
+            GeneralHelper.findAndReturnNodeText(sitting, "caseHearingChannel"));
+    }
+
+    private static String getClaimantRepresentative(String claimantRepresentative,
+        Map<String, Object> language) {
         if (claimantRepresentative.isEmpty()) {
-            return formatClaimant(claimant, "", language,
-                           "No Representative", "Dim Cynrychiolydd");
+            return (String) language.get("noRep");
         } else {
-            return formatClaimant(claimant, claimantRepresentative, language,
-                           "Rep: ", "Cynrychiolydd: ");
-        }
-    }
-
-    private static String formatClaimant(String claimant, String claimantRepresentative, Language language,
-                                         String englishText, String welshText) {
-        if (claimant.isEmpty()) {
-            return
-                (language == Language.ENGLISH) ? englishText : welshText
-                + claimantRepresentative;
-        } else {
-            return claimant + ", "
-                + ((language == Language.ENGLISH) ? englishText : welshText)
+            return language.get("rep")
                 + claimantRepresentative;
         }
     }
 
-    private static String formatRespondent(String respondent, Language language) {
-        String rep = (language == Language.ENGLISH) ?  "Rep" : "Cynrychiolydd";
-        return respondent.replace("Legal Advisor", rep);
+    private static String findRespondent(String respondent) {
+        if (respondent.indexOf(LEGAL_ADVISOR) > 0) {
+            return GeneralHelper.trimAnyCharacterFromStringEnd(
+                respondent.substring(0, respondent.indexOf(LEGAL_ADVISOR)));
+        }
+        return respondent;
+    }
+
+    private static String findRespondentRepresentative(String respondentRepresentative,
+                                                       Map<String, Object> language) {
+        if (respondentRepresentative.indexOf(LEGAL_ADVISOR) > 0) {
+            return GeneralHelper.trimAnyCharacterFromStringEnd(
+                language.get("rep") + respondentRepresentative.substring(respondentRepresentative
+                     .indexOf(LEGAL_ADVISOR) + LEGAL_ADVISOR.length()));
+        }
+        if (respondentRepresentative.isEmpty()) {
+            return (String) language.get("noRep");
+        }
+
+        return respondentRepresentative;
     }
 
     private static void formatCaseTime(JsonNode sitting, JsonNode hearing) {
