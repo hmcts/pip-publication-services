@@ -178,7 +178,7 @@ class NotifyTest {
         "{\"email\": \"test@test.com\", \"fullName\": \"testName\", \"lastSignedInDate\": \"01 May 2022\"}";
 
     private static final String VALID_CROWN_DAILY_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"98292daa-4ca3-4fbe-8878-11878a056d57\",\n"
+        + "  \"artefactId\": \"b8c0fc62-eb51-404e-bf34-19ca7b80fc22\",\n"
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
