@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
  */
 @Service
 @Slf4j
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public class ArtefactSummaryService {
 
     @Autowired
@@ -34,10 +35,10 @@ public class ArtefactSummaryService {
     ScssDailyList scssDailyList;
 
     @Autowired
-    IacDailyList iacDailyList;
+    TribunalNationalLists tribunalNationalLists;
 
     @Autowired
-    PrimaryHealthList primaryHealthList;
+    IacDailyList iacDailyList;
 
     /**
      * Parent class to route based on list types.
@@ -67,7 +68,8 @@ public class ArtefactSummaryService {
             case IAC_DAILY_LIST:
                 return iacDailyList.artefactSummary(payload);
             case PRIMARY_HEALTH_LIST:
-                return primaryHealthList.artefactSummaryPrimaryHealthList(payload);
+            case CARE_STANDARDS_LIST:
+                return tribunalNationalLists.artefactSummaryTribunalNationalLists(payload);
             default:
                 return "";
         }
