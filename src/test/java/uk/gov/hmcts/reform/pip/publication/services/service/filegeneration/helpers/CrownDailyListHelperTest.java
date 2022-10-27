@@ -60,7 +60,7 @@ class CrownDailyListHelperTest {
 
     @Test
     void testFormattedCourtRoomNameMethod() {
-        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH);
+        DataManipulation.manipulatedDailyListData(inputJson, Language.ENGLISH, false);
         CrownDailyListHelper.manipulatedCrownDailyListData(inputJson);
         CrownDailyListHelper.findUnallocatedCasesInCrownDailyListData(inputJson);
         CrownDailyListHelper.formattedCourtRoomName(inputJson);

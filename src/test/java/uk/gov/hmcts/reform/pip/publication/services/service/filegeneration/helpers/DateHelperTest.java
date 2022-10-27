@@ -203,34 +203,6 @@ class DateHelperTest {
     }
 
     @Test
-    void testTimeStampToBstTimeMethod() {
-        assertThat(DateHelper.timeStampToBstTime(TEST_DATETIME_1))
-            .as(ERR_MSG)
-            .isEqualTo("10:30");
-    }
-
-    @Test
-    void testTimeStampToBstTimeForAfternoonTimeMethod() {
-        assertThat(DateHelper.timeStampToBstTime("2022-08-19T13:30:00Z"))
-            .as(ERR_MSG)
-            .isEqualTo("14:30");
-    }
-
-    @Test
-    void testTimeStampToBstTimeWithFormatForAmMethod() {
-        assertThat(DateHelper.timeStampToBstTimeWithFormat(TEST_DATETIME_1, "h:mma"))
-            .as(ERR_MSG)
-            .isEqualTo("10:30am");
-    }
-
-    @Test
-    void testTimeStampToBstTimeWithFormatForPmMethod() {
-        assertThat(DateHelper.timeStampToBstTimeWithFormat("2022-08-19T13:30:00Z", "h:mma"))
-            .as(ERR_MSG)
-            .isEqualTo("2:30pm");
-    }
-
-    @Test
     void testFormatTimeStampToBstHavingWeekDay() {
         assertThat(DateHelper.formatTimeStampToBstHavingWeekDay(
             TEST_DATETIME_2, "dd MMMM yyyy", Language.ENGLISH))
