@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
@@ -8,13 +9,12 @@ import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpe
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.GeneralHelper;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.listmanipulation.EtFortnightlyPressListHelper;
 
-import java.io.IOException;
 import java.util.Map;
 
 @Service
 public class EtFortnightlyPressList {
 
-    public String artefactSummaryEtFortnightlyPressList(String payload) throws IOException {
+    public String artefactSummaryEtFortnightlyPressList(String payload) throws JsonProcessingException {
         JsonNode node = new ObjectMapper().readTree(payload);
         Map<String, Object> language =
             Map.of("rep", "Rep: ",

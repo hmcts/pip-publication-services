@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 
-import java.io.IOException;
-
 /**
  * Service which extracts relevant summary data from each list type to be included in gov.notify emails. For the most
  * part, developing these is a very fiddly process and it doesn't seem like there's much of an easier way. Some
@@ -55,7 +53,7 @@ public class ArtefactSummaryService {
      * @throws JsonProcessingException - jackson prereq.
      */
     @SuppressWarnings("PMD.CyclomaticComplexity")
-    public String artefactSummary(String payload, ListType listType) throws IOException {
+    public String artefactSummary(String payload, ListType listType) throws JsonProcessingException {
         switch (listType) {
             case SJP_PUBLIC_LIST:
                 return sjpPublicList.artefactSummarySjpPublic(payload);
