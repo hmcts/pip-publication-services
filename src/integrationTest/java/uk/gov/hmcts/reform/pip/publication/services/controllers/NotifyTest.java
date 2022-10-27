@@ -192,24 +192,6 @@ class NotifyTest {
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
 
-    private static final Map<String, String> LIST_MAP = Map.of("SSCS Daily List",
-                                                               VALID_SCSS_DAILY_LIST_SUBS_EMAIL,
-                                                               "SJP Public List",
-                                                               VALID_SJP_PUBLIC_SUBS_EMAIL,
-                                                               "SJP Press List",
-                                                               VALID_SJP_PRESS_SUBS_EMAIL,
-                                                               "COP Daily List",
-                                                               VALID_COP_CAUSE_SUBS_EMAIL,
-                                                               "Family Daily Cause List",
-                                                               VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL,
-                                                               "Civil and Family Daily Cause List",
-                                                               VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL,
-                                                               "Civil Daily Cause List",
-                                                               VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL,
-                                                               "Crown Daily List",
-                                                               VALID_CROWN_DAILY_LIST_SUBS_EMAIL
-    );
-
     private MockWebServer externalApiMockServer;
 
     @Autowired
