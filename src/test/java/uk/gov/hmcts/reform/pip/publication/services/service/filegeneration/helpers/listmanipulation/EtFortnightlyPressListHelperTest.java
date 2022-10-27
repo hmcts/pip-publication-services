@@ -1,24 +1,19 @@
-package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers;
+package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.listmanipulation;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
-import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.listmanipulation.EtFortnightlyPressListHelper;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DailyCauseListHelper.preprocessArtefactForThymeLeafConverter;
@@ -34,7 +29,9 @@ class EtFortnightlyPressListHelperTest {
     private static final String HEARING = "hearing";
     private static final String CASE = "case";
     public static final String PROVENANCE = "provenance";
-    private static Map<String, Object> language;
+    Map<String, Object> language =
+            Map.of("rep", "Rep: ",
+                   "noRep", "No Representative");
 
     Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
                                              PROVENANCE, PROVENANCE,
@@ -53,18 +50,6 @@ class EtFortnightlyPressListHelperTest {
         inputJson = new ObjectMapper().readTree(writer.toString());
     }
 
-    @BeforeAll
-    public static void handleLanguages() throws IOException {
-        String languageString = GeneralHelper.listTypeToCamelCase(ListType.ET_FORTNIGHTLY_PRESS_LIST);
-        String path = "languages/" + languageString + ".json";
-        try (InputStream languageFile = Thread.currentThread()
-            .getContextClassLoader().getResourceAsStream(path)) {
-            language = new ObjectMapper().readValue(
-                Objects.requireNonNull(languageFile).readAllBytes(), new TypeReference<>() {
-                });
-        }
-    }
-
     @Test
     void testEtFortnightlyListFormattedMethod() {
         preprocessArtefactForThymeLeafConverter(inputJson, metadataMap, language, true);
@@ -75,7 +60,7 @@ class EtFortnightlyPressListHelperTest {
         assertEquals(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
                         .get(COURT_ROOM).get(0).get(SESSION).get(0)
                         .get(SITTINGS).get(0).get("sittingDate").asText(),
-                        "14 February 2022",
+                        "Monday 14 February 2022",
                     "Unable to find sitting date");
         assertEquals(inputJson.get(COURT_LISTS).get(0).get(COURT_HOUSE)
                          .get(COURT_ROOM).get(0).get(SESSION).get(0)
@@ -157,7 +142,7 @@ class EtFortnightlyPressListHelperTest {
                      "Unable to find correct court List array");
         assertEquals(inputJson.get(COURT_LISTS).get(0)
                          .get(SITTINGS).get(0).get("sittingDate").asText(),
-                     "14 February 2022",
+                     "Monday 14 February 2022",
                      "Unable to find sitting date");
         assertEquals(inputJson.get(COURT_LISTS).get(0)
                          .get(SITTINGS).get(0).get(HEARING).get(1).get(0)

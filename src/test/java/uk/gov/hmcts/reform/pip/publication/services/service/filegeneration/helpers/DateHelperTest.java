@@ -201,4 +201,12 @@ class DateHelperTest {
             .isEqualTo("2:30pm");
     }
 
+    @Test
+    void testFormatTimeStampToBstHavingWeekDay() {
+        assertThat(DateHelper.formatTimeStampToBstHavingWeekDay(
+            "2022-07-26T16:04:43.416924Z", "dd MMMM yyyy", Language.ENGLISH))
+            .as(ERR_MSG)
+            .isEqualTo("Tuesday 26 July 2022");
+    }
+
 }

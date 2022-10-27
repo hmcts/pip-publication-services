@@ -88,8 +88,9 @@ public final class EtFortnightlyPressListHelper {
             courtList.get(LocationHelper.COURT_HOUSE).get(COURT_ROOM).forEach(courtRoom -> {
                 courtRoom.get("session").forEach(session -> {
                     session.get(SITTINGS).forEach(sitting -> {
-                        String sittingDate = DateHelper.formatTimeStampToBst(sitting.get("sittingStart").asText(),
-                                Language.ENGLISH, false, false);
+                        String sittingDate = DateHelper.formatTimeStampToBstHavingWeekDay(
+                            sitting.get("sittingStart").asText(),
+                            "dd MMMM yyyy", Language.ENGLISH);
                         ((ObjectNode)sitting).put(SITTING_DATE, sittingDate);
                         sitting.get("hearing").forEach(hearing -> {
                             formatCaseTime(sitting, hearing);
