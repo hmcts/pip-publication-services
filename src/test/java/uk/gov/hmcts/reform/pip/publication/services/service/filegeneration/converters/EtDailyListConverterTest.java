@@ -92,7 +92,7 @@ class EtDailyListConverterTest {
             .as("Incorrect table contents")
             .hasSize(40)
             .extracting(Element::text)
-            .startsWith("09:30am",
+            .startsWith("9:30am",
                         "2 hours [2 of 3]",
                         "12341234",
                         "HRH G Anderson Rep: Mr R Hargreaves",
