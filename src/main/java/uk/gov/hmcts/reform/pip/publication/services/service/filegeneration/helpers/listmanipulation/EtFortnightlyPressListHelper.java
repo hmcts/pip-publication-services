@@ -30,7 +30,7 @@ public final class EtFortnightlyPressListHelper {
     private static final String COURT_ROOM = "courtRoom";
     private static final String SITTING_DATE = "sittingDate";
     private static final String SITTINGS = "sittings";
-    private static final String LEGAL_ADVISOR = "Legal Advisor: ";
+    private static final String LEGAL_ADVISOR = "legalAdvisor";
     private static final String REP = "rep";
     private static final String SITTING_START = "sittingStart";
 
@@ -155,7 +155,7 @@ public final class EtFortnightlyPressListHelper {
             language));
         String respondent = GeneralHelper.findAndReturnNodeText(hearing, "respondent");
         ((ObjectNode)hearing).put("respondent",
-            findRespondent(respondent));
+            findRespondent(respondent, language));
         ((ObjectNode)hearing).put("respondentRepresentative",
             findRespondentRepresentative(respondent,
             language));
@@ -175,20 +175,25 @@ public final class EtFortnightlyPressListHelper {
         }
     }
 
-    private static String findRespondent(String respondent) {
-        if (respondent.indexOf(LEGAL_ADVISOR) > 0) {
+    private static String findRespondent(String respondent,
+                                         Map<String, Object> language) {
+        String legalAdvisor = (String) language.get(LEGAL_ADVISOR);
+
+        if (respondent.indexOf(legalAdvisor) > 0) {
             return GeneralHelper.trimAnyCharacterFromStringEnd(
-                respondent.substring(0, respondent.indexOf(LEGAL_ADVISOR)));
+                respondent.substring(0, respondent.indexOf(legalAdvisor)));
         }
         return respondent;
     }
 
     private static String findRespondentRepresentative(String respondentRepresentative,
                                                        Map<String, Object> language) {
-        if (respondentRepresentative.indexOf(LEGAL_ADVISOR) > 0) {
+        String legalAdvisor = (String) language.get(LEGAL_ADVISOR);
+
+        if (respondentRepresentative.indexOf(legalAdvisor) > 0) {
             return GeneralHelper.trimAnyCharacterFromStringEnd(
                 language.get(REP) + respondentRepresentative.substring(respondentRepresentative
-                     .indexOf(LEGAL_ADVISOR) + LEGAL_ADVISOR.length()));
+                     .indexOf(legalAdvisor) + legalAdvisor.length()));
         }
         if (respondentRepresentative.isEmpty()) {
             return (String) language.get(REP);

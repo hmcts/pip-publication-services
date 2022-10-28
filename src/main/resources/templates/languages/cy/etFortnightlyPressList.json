@@ -23,7 +23,7 @@
   "hearingDurationMinute": "munud",
   "hearingDurationHours": "awr",
   "hearingDurationMinutes": "munud",
-  "rep": "Cynrychiolydd",
+  "rep": "Cynrychiolydd: ",
   "courtroom": "Ystafell llys",
   "startTime": "Amser Cychwyn",
   "duration": "Hyd",
@@ -33,7 +33,8 @@
   "hearingType": "Math o wrandawiad",
   "jurisdiction": "Awdurdodaeth",
   "hearingPlatform": "Sianel y Gwrandawiad",
-  "dataSource": "Ffynhonnell y Data: ",
+  "legalAdvisor": "Cynghorydd Cyfreithiol: ",
+  "dataSource": "Ffynhonnell y Data",
   "bottomLegal1": "Noder bod y ddogfen hon yn cynnwys Data Categori Arbennig fel y’i diffinnir yn Neddf Gwarchod Data 2018, a elwid gynt yn Ddata Personol Sensitif, a dylid ei drin yn y ffordd briodol.",
   "bottomLegal2": "Mae’r ddogfen hon yn cynnwys gwybodaeth a fwriedir i gynorthwyo i roi adroddiad manwl-gywir am achosion llys. Mae’n hanfodol eich bod yn sicrhau eich bod yn gwarchod y Data Categori Arbennig sydd ynddi ac yn cadw at gyfyngiadau adrodd (er enghraifft yn achos dioddefwyr a phlant). Bydd GLlTEM yn rhoi’r gorau i anfon y data os cyfyd pryder ynghylch sut y’i defnyddir.",
   "thanks": "Diolch am ddarllen y ddogfen hon yn fanwl."
