@@ -42,9 +42,6 @@ public class PersonalisationService {
     DataManagementService dataManagementService;
 
     @Autowired
-    FileCreationService fileCreationService;
-
-    @Autowired
     NotifyConfigProperties notifyConfigProperties;
 
     @Autowired
