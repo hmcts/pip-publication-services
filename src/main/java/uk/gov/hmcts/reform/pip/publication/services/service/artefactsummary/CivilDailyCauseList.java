@@ -113,7 +113,7 @@ public class CivilDailyCauseList {
             }
             JsonNode currentSitting = sittingIterator.next();
             DateTimeFormatter inputfmt = DateTimeFormatter.ISO_DATE_TIME;
-            DateTimeFormatter outputfmt = DateTimeFormatter.ofPattern("hh:mm a");
+            DateTimeFormatter outputfmt = DateTimeFormatter.ofPattern("h:mma");
             String startTime =
                 outputfmt.format(LocalDateTime.from(inputfmt.parse(currentSitting.get("sittingStart").asText())));
             outputString.append(processCivilDailyHearings(currentSitting))

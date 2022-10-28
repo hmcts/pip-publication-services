@@ -158,8 +158,11 @@ public final class DateHelper {
         }
 
         ((ObjectNode) sitting).put("formattedDuration", formattedDuration);
+    }
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
+    public static void formatStartTime(JsonNode sitting, String format) {
+        ZonedDateTime sittingStart = convertStringToBst(sitting.get("sittingStart").asText());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format).withLocale(Locale.UK);
         String time = dtf.format(sittingStart);
 
         ((ObjectNode) sitting).put("time", time);

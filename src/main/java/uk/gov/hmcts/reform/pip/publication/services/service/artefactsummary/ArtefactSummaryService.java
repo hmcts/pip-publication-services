@@ -43,6 +43,9 @@ public class ArtefactSummaryService {
     @Autowired
     TribunalNationalLists tribunalNationalLists;
 
+    @Autowired
+    EtDailyList etDailyList;
+
     /**
      * Parent class to route based on list types.
      *
@@ -75,6 +78,8 @@ public class ArtefactSummaryService {
             case PRIMARY_HEALTH_LIST:
             case CARE_STANDARDS_LIST:
                 return tribunalNationalLists.artefactSummaryTribunalNationalLists(payload);
+            case ET_DAILY_LIST:
+                return etDailyList.artefactSummaryEtDailyList(payload);
             default:
                 return "";
         }
