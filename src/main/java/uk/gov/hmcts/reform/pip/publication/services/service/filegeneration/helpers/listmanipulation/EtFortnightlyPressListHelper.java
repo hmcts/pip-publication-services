@@ -4,24 +4,35 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.extern.slf4j.Slf4j;
 import org.thymeleaf.context.Context;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.GeneralHelper;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.LocationHelper;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DailyCauseListHelper.preprocessArtefactForThymeLeafConverter;
 
+@Slf4j
 public final class EtFortnightlyPressListHelper {
     private static final String COURT_ROOM = "courtRoom";
     private static final String SITTING_DATE = "sittingDate";
     private static final String SITTINGS = "sittings";
     private static final String LEGAL_ADVISOR = "Legal Advisor: ";
     private static final String REP = "rep";
+    private static final String SITTING_START = "sittingStart";
 
     private EtFortnightlyPressListHelper() {
     }
@@ -73,15 +84,37 @@ public final class EtFortnightlyPressListHelper {
     }
 
     private static Set<String> findUniqueSittingDate(JsonNode courtRooms) {
-        Set<String> uniqueDates = new HashSet<>();
+        Map<Date, String> sittingDateTimes = new ConcurrentHashMap<>();
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.UK);
+
         courtRooms.forEach(courtRoom -> {
             courtRoom.get("session").forEach(session -> {
                 session.get(SITTINGS).forEach(sitting -> {
-                    uniqueDates.add(GeneralHelper.findAndReturnNodeText(sitting, SITTING_DATE));
+                    try {
+                        sittingDateTimes.put(sf.parse(sitting.get(SITTING_START).asText()),
+                                            GeneralHelper.findAndReturnNodeText(sitting, SITTING_DATE));
+                    } catch (ParseException e) {
+                        log.error(e.getMessage());
+                    }
                 });
             });
         });
+
+        Map<Date,String> sortedSittingDateTimes = sortByDateTime(sittingDateTimes);
+
+        Set<String> uniqueDates = new HashSet<>();
+        for (String value : sortedSittingDateTimes.values()) {
+            uniqueDates.add(value);
+        }
         return uniqueDates;
+    }
+
+    @SuppressWarnings({"PMD.LawOfDemeter"})
+    private static Map<Date,String> sortByDateTime(Map<Date, String> dateTimeValueString) {
+        return dateTimeValueString.entrySet().stream()
+            .sorted(Map.Entry.comparingByKey(Comparator.naturalOrder()))
+            .collect(Collectors.toMap(
+                Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
     public static void etFortnightlyListFormatted(JsonNode artefact, Map<String, Object> language) {
@@ -90,7 +123,7 @@ public final class EtFortnightlyPressListHelper {
                 courtRoom.get("session").forEach(session -> {
                     session.get(SITTINGS).forEach(sitting -> {
                         String sittingDate = DateHelper.formatTimeStampToBstHavingWeekDay(
-                            sitting.get("sittingStart").asText(),
+                            sitting.get(SITTING_START).asText(),
                             "dd MMMM yyyy", Language.ENGLISH);
                         ((ObjectNode)sitting).put(SITTING_DATE, sittingDate);
                         sitting.get("hearing").forEach(hearing -> {
@@ -165,10 +198,10 @@ public final class EtFortnightlyPressListHelper {
     }
 
     private static void formatCaseTime(JsonNode sitting, JsonNode hearing) {
-        if (!GeneralHelper.findAndReturnNodeText(sitting, "sittingStart").isEmpty()) {
+        if (!GeneralHelper.findAndReturnNodeText(sitting, SITTING_START).isEmpty()) {
             ((ObjectNode)hearing).put("time",
                 DateHelper.timeStampToBstTimeWithFormat(GeneralHelper
-                .findAndReturnNodeText(sitting, "sittingStart"), "h:mma"));
+                .findAndReturnNodeText(sitting, SITTING_START), "h:mma"));
         }
     }
 }
