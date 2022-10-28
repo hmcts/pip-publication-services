@@ -26,7 +26,7 @@ class EtDailyListTest {
 
             softly.assertThat(output)
                 .as("Incorrect start time")
-                .contains("Start Time: 09:30am");
+                .contains("Start Time: 9:30am");
 
             softly.assertThat(output)
                 .as("Incorrect duration")
