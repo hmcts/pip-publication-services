@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
@@ -16,6 +18,7 @@ class DateHelperTest {
 
     private static final String ERR_MSG = "Helper method doesn't seem to be working correctly";
     private static final String TEST_DATETIME = "2022-08-19T09:30:00Z";
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
     void testLocalTimeMethod() {
@@ -199,5 +202,40 @@ class DateHelperTest {
         assertThat(DateHelper.timeStampToBstTimeWithFormat("2022-08-19T10:30:00Z", "hh:mma"))
             .as(ERR_MSG)
             .isEqualTo("11:30am");
+    }
+
+    @Test
+    void testCalculateDurationInDays() {
+        ObjectNode sittingNode = MAPPER.createObjectNode();
+        sittingNode.put("sittingStart", "2022-12-10T10:00:52.123Z");
+        sittingNode.put("sittingEnd", "2022-12-12T12:30:52.123Z");
+
+        DateHelper.calculateDuration(sittingNode, Language.ENGLISH, true);
+        assertThat(sittingNode.get("formattedDuration").asText())
+            .as(ERR_MSG)
+            .isEqualTo("2 days");
+    }
+
+    @Test
+    void testCalculateDurationInHoursAndMinutes() {
+        ObjectNode sittingNode = MAPPER.createObjectNode();
+        sittingNode.put("sittingStart", "2022-12-10T10:00:52.123Z");
+        sittingNode.put("sittingEnd", "2022-12-10T12:30:52.123Z");
+
+        DateHelper.calculateDuration(sittingNode, Language.ENGLISH, true);
+        assertThat(sittingNode.get("formattedDuration").asText())
+            .as(ERR_MSG)
+            .isEqualTo("2 hours 30 mins");
+    }
+
+    @Test
+    void testFormatStartTime() {
+        ObjectNode sittingNode = MAPPER.createObjectNode();
+        sittingNode.put("sittingStart", "2022-12-10T15:30:52.123Z");
+
+        DateHelper.formatStartTime(sittingNode, "h:mma");
+        assertThat(sittingNode.get("time").asText())
+            .as(ERR_MSG)
+            .isEqualTo("3:30pm");
     }
 }

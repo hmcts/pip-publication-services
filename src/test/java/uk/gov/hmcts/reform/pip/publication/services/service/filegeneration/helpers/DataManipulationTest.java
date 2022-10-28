@@ -87,7 +87,7 @@ class DataManipulationTest {
                        .get(SITTINGS).get(0)
                        .get("time").asText())
             .as("Unable to get hearing time")
-            .isEqualTo("10:30");
+            .isEqualTo("10:30am");
     }
 
     @Test

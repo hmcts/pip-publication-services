@@ -38,7 +38,12 @@ public final class GeneralHelper {
 
     public static void appendToStringBuilder(StringBuilder builder, String text, JsonNode node,
                                              String nodeName) {
-        builder.append('\n')
+        appendToStringBuilderWithPrefix(builder, text, node, nodeName, "\n");
+    }
+
+    public static void appendToStringBuilderWithPrefix(StringBuilder builder, String text, JsonNode node,
+                                                       String nodeName, String prefix) {
+        builder.append(prefix)
             .append(text)
             .append(GeneralHelper.findAndReturnNodeText(node, nodeName));
     }
