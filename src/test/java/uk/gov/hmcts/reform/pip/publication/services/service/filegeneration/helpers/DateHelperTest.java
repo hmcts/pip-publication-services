@@ -232,11 +232,11 @@ class DateHelperTest {
     @Test
     void testFormatStartTime() {
         ObjectNode sittingNode = MAPPER.createObjectNode();
-        sittingNode.put("sittingStart", "2022-12-10T10:30:52.123Z");
+        sittingNode.put("sittingStart", "2022-12-10T15:30:52.123Z");
 
-        DateHelper.formatStartTime(sittingNode, "HH:mma");
+        DateHelper.formatStartTime(sittingNode, "h:mma");
         assertThat(sittingNode.get("time").asText())
             .as(ERR_MSG)
-            .isEqualTo("10:30am");
+            .isEqualTo("3:30pm");
     }
 }

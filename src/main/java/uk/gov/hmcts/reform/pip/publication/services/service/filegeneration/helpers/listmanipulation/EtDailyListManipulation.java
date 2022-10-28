@@ -28,7 +28,7 @@ public final class EtDailyListManipulation {
                 courtRoom.get("session").forEach(session -> {
                     session.get("sittings").forEach(sitting -> {
                         DateHelper.calculateDuration(sitting, language);
-                        DateHelper.formatStartTime(sitting,"HH:mma");
+                        DateHelper.formatStartTime(sitting,"h:mma");
                         DataManipulation.findAndConcatenateHearingPlatform(sitting, session);
                         sitting.get("hearing").forEach(hearing -> {
                             handleParties(hearing);
