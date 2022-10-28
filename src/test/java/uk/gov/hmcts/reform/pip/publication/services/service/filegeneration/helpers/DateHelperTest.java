@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.help
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
