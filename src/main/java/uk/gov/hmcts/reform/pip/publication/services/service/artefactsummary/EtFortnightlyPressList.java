@@ -18,7 +18,7 @@ public class EtFortnightlyPressList {
         JsonNode node = new ObjectMapper().readTree(payload);
         Map<String, Object> language =
             Map.of("rep", "Rep: ",
-                   "noRep", "No Representative");
+                   "noRep", "Rep: ");
         DataManipulation.manipulatedDailyListData(node, Language.ENGLISH, true);
         EtFortnightlyPressListHelper.etFortnightlyListFormatted(node, language);
         EtFortnightlyPressListHelper.splitByCourtAndDate(node);

@@ -31,7 +31,7 @@ class EtFortnightlyPressListHelperTest {
     public static final String PROVENANCE = "provenance";
     Map<String, Object> language =
             Map.of("rep", "Rep: ",
-                   "noRep", "No Representative");
+                   "noRep", "Rep: ");
 
     Map<String, String> metadataMap = Map.of("contentDate", Instant.now().toString(),
                                              PROVENANCE, PROVENANCE,

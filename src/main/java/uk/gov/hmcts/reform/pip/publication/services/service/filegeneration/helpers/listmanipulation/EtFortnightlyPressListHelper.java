@@ -21,6 +21,7 @@ public final class EtFortnightlyPressListHelper {
     private static final String SITTING_DATE = "sittingDate";
     private static final String SITTINGS = "sittings";
     private static final String LEGAL_ADVISOR = "Legal Advisor: ";
+    private static final String REP = "rep";
 
     private EtFortnightlyPressListHelper() {
     }
@@ -134,9 +135,9 @@ public final class EtFortnightlyPressListHelper {
     private static String getClaimantRepresentative(String claimantRepresentative,
         Map<String, Object> language) {
         if (claimantRepresentative.isEmpty()) {
-            return (String) language.get("noRep");
+            return (String) language.get(REP);
         } else {
-            return language.get("rep")
+            return language.get(REP)
                 + claimantRepresentative;
         }
     }
@@ -153,11 +154,11 @@ public final class EtFortnightlyPressListHelper {
                                                        Map<String, Object> language) {
         if (respondentRepresentative.indexOf(LEGAL_ADVISOR) > 0) {
             return GeneralHelper.trimAnyCharacterFromStringEnd(
-                language.get("rep") + respondentRepresentative.substring(respondentRepresentative
+                language.get(REP) + respondentRepresentative.substring(respondentRepresentative
                      .indexOf(LEGAL_ADVISOR) + LEGAL_ADVISOR.length()));
         }
         if (respondentRepresentative.isEmpty()) {
-            return (String) language.get("noRep");
+            return (String) language.get(REP);
         }
 
         return respondentRepresentative;
