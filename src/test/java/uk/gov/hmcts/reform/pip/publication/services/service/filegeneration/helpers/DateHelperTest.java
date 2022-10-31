@@ -211,6 +211,7 @@ class DateHelperTest {
             TEST_DATETIME_2, "dd MMMM yyyy", Language.ENGLISH))
             .as(ERR_MSG)
             .isEqualTo("Tuesday 26 July 2022");
+    }
 
     @Test
     void testCalculateDurationInDays() {

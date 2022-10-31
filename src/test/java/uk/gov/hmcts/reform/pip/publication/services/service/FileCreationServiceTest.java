@@ -98,7 +98,6 @@ class FileCreationServiceTest {
         "sscsDailyList.json", "etFortnightlyPressList.json"})
     void testAllPdfListsAccessible(String filePath) throws IOException {
         ListType listType = LIST_TYPE_LOOKUP.get(filePath);
-        Artefact artefact = preBuiltArtefact(listType);
         UUID uuid = UUID.randomUUID();
         Artefact artefact = preBuiltArtefact(listType);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(getInput("/mocks/" + filePath));
@@ -115,7 +114,6 @@ class FileCreationServiceTest {
         "sscsDailyList.json", "etFortnightlyPressList.json"})
     void testAllPdfListsNonAccessible(String filePath) throws IOException {
         ListType listType = LIST_TYPE_LOOKUP.get(filePath);
-        Artefact artefact = preBuiltArtefact(listType);
         UUID uuid = UUID.randomUUID();
         Artefact artefact = preBuiltArtefact(listType);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(getInput("/mocks/" + filePath));
