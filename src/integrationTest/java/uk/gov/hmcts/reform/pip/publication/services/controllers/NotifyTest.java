@@ -171,6 +171,11 @@ class NotifyTest {
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
+    private static final String VALID_ET_DAILY_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
+        + "  \"artefactId\": \"14f17281-e6ea-44e1-bbd5-6e2cd6d3d354\",\n"
+        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
+        + SUBSCRIPTION_REQUEST;
+
     private static final String VALID_MEDIA_VERIFICATION_EMAIL_BODY =
         "{\"fullName\": \"fullName\", \"email\": \"test@email.com\"}";
 
@@ -426,6 +431,7 @@ class NotifyTest {
             Arguments.of("Civil and Family Daily Cause List", VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL),
             Arguments.of("Civil Daily Cause List", VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL),
             Arguments.of("Primary Health Tribunal Hearing List", VALID_PRIMARY_HEALTH_TRIBUNAL_LIST_SUBS_EMAIL),
+            Arguments.of("ET Daily List", VALID_ET_DAILY_LIST_SUBS_EMAIL),
             Arguments.of("Care Standards Tribunal Hearing List", VALID_CARE_STANDARDS_TRIBUNAL_LIST_SUBS_EMAIL),
             Arguments.of("Crown Daily List", VALID_CROWN_DAILY_LIST_SUBS_EMAIL)
         );

@@ -46,6 +46,9 @@ public class ArtefactSummaryService {
     @Autowired
     EtFortnightlyPressList etFortnightlyPressList;
 
+    @Autowired
+    EtDailyList etDailyList;
+
     /**
      * Parent class to route based on list types.
      *
@@ -80,6 +83,8 @@ public class ArtefactSummaryService {
                 return tribunalNationalLists.artefactSummaryTribunalNationalLists(payload);
             case ET_FORTNIGHTLY_PRESS_LIST:
                 return etFortnightlyPressList.artefactSummaryEtFortnightlyPressList(payload);
+            case ET_DAILY_LIST:
+                return etDailyList.artefactSummaryEtDailyList(payload);
             default:
                 return "";
         }

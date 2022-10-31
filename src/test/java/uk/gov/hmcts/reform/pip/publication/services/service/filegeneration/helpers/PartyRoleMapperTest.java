@@ -41,16 +41,14 @@ class PartyRoleMapperTest {
 
     @Test
     void testConvertPartyRoleApplicantRepMethod() {
-        assertThat(PartyRoleMapper
-                    .convertPartyRole(APPLICANT_PETITIONER_REPRESENTATIVE))
+        assertThat(PartyRoleMapper.convertPartyRole(APPLICANT_PETITIONER_REPRESENTATIVE))
             .as(ERR_MSG)
             .isEqualTo(APPLICANT_PETITIONER_REPRESENTATIVE);
     }
 
     @Test
     void testConvertPartyRoleRespondentRepMethod() {
-        assertThat(PartyRoleMapper
-                    .convertPartyRole(RESPONDENT_REPRESENTATIVE))
+        assertThat(PartyRoleMapper.convertPartyRole(RESPONDENT_REPRESENTATIVE))
             .as(ERR_MSG)
             .isEqualTo(RESPONDENT_REPRESENTATIVE);
     }

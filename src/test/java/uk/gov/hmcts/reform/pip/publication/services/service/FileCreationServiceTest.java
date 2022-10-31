@@ -26,6 +26,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -55,7 +56,6 @@ class FileCreationServiceTest {
 
     public static final String TEST_STRING = "test";
     public static final String ONE_TWO_THREE_FOUR = "1234";
-    private static final Location LOCATION = new Location();
 
     private static final Map<String, ListType> LIST_TYPE_LOOKUP = Map.of(
         "civilAndFamilyDailyCauseList.json", ListType.CIVIL_DAILY_CAUSE_LIST,
@@ -67,6 +67,8 @@ class FileCreationServiceTest {
         "sscsDailyList.json", ListType.SSCS_DAILY_LIST,
         "etFortnightlyPressList.json", ListType.ET_FORTNIGHTLY_PRESS_LIST
     );
+
+    private static Location location = new Location();
 
     private String getInput(String resourcePath) throws IOException {
         try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
@@ -85,9 +87,9 @@ class FileCreationServiceTest {
     }
 
     @BeforeAll
-    public static void setup() {
-        LOCATION.setName(TEST_STRING);
-        LOCATION.setRegion(List.of(TEST_STRING));
+    public static void setup()  {
+        location.setName(TEST_STRING);
+        location.setRegion(Collections.singletonList(TEST_STRING));
     }
 
     @ParameterizedTest
@@ -96,11 +98,12 @@ class FileCreationServiceTest {
         "sscsDailyList.json", "etFortnightlyPressList.json"})
     void testAllPdfListsAccessible(String filePath) throws IOException {
         ListType listType = LIST_TYPE_LOOKUP.get(filePath);
+        Artefact artefact = preBuiltArtefact(listType);
         UUID uuid = UUID.randomUUID();
         Artefact artefact = preBuiltArtefact(listType);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(getInput("/mocks/" + filePath));
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
-        when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(LOCATION);
+        when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(location);
         String htmlOutput = fileCreationService.jsonToHtml(uuid);
         byte[] outputPdf = fileCreationService.generatePdfFromHtml(htmlOutput, true);
         assertNotNull(outputPdf, "Output PDF is not a valid file. Did the generation process work?");
@@ -112,11 +115,12 @@ class FileCreationServiceTest {
         "sscsDailyList.json", "etFortnightlyPressList.json"})
     void testAllPdfListsNonAccessible(String filePath) throws IOException {
         ListType listType = LIST_TYPE_LOOKUP.get(filePath);
+        Artefact artefact = preBuiltArtefact(listType);
         UUID uuid = UUID.randomUUID();
         Artefact artefact = preBuiltArtefact(listType);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(getInput("/mocks/" + filePath));
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
-        when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(LOCATION);
+        when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(location);
         String htmlOutput = fileCreationService.jsonToHtml(uuid);
         byte[] outputPdf = fileCreationService.generatePdfFromHtml(htmlOutput, false);
         assertNotNull(outputPdf, "Output PDF is not a valid file. Did the generation process work?");
@@ -170,7 +174,7 @@ class FileCreationServiceTest {
         String inputJson = "{\"document\":{\"value1\":\"x\",\"value2\":\"hiddenTestString\"}}";
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(inputJson);
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
-        when(dataManagementService.getLocation("1")).thenReturn(LOCATION);
+        when(dataManagementService.getLocation("1")).thenReturn(location);
 
         byte[] outputPdf = fileCreationService.generatePdfFromHtml(fileCreationService.jsonToHtml(uuid), accessibility);
         try (PDDocument doc = PDDocument.load(outputPdf)) {
