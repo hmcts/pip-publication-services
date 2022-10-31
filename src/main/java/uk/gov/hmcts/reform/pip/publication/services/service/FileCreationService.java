@@ -72,6 +72,7 @@ public class FileCreationService {
             "contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
             "provenance", artefact.getProvenance(),
             "locationName", locationName,
+            "regionName", String.join(", ", location.getRegion()),
             "region", String.join(", ", location.getRegion()),
             "language", languageEntry.toString()
         );

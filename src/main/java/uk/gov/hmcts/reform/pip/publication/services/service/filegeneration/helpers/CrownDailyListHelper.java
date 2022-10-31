@@ -24,7 +24,7 @@ public final class CrownDailyListHelper {
     public static Context preprocessArtefactForCrownDailyListThymeLeafConverter(
         JsonNode artefact, Map<String, String> metadata, Map<String, Object> language) {
         Context context;
-        context = preprocessArtefactForThymeLeafConverter(artefact, metadata, language);
+        context = preprocessArtefactForThymeLeafConverter(artefact, metadata, language, false);
         manipulatedCrownDailyListData(artefact);
         findUnallocatedCasesInCrownDailyListData(artefact);
         formattedCourtRoomName(artefact);
