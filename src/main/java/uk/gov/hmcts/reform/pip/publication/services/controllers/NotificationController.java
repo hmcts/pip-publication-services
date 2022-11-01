@@ -208,7 +208,6 @@ public class NotificationController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "MI data reporting email successfully sent with "
             + "referenceId: {Id}"),
-        @ApiResponse(code = 400, message = BAD_PAYLOAD_ERROR_MESSAGE),
         @ApiResponse(code = 400, message = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     })
     @ApiOperation("Send email with MI report")
