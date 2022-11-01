@@ -64,7 +64,8 @@ class FileCreationServiceTest {
         "familyDailyCauseList.json", ListType.FAMILY_DAILY_CAUSE_LIST,
         "sjpPressMockJul22.json", ListType.SJP_PRESS_LIST,
         "sjpPublicList.json", ListType.SJP_PUBLIC_LIST,
-        "sscsDailyList.json", ListType.SSCS_DAILY_LIST
+        "sscsDailyList.json", ListType.SSCS_DAILY_LIST,
+        "etFortnightlyPressList.json", ListType.ET_FORTNIGHTLY_PRESS_LIST
     );
 
     private static Location location = new Location();
@@ -94,11 +95,11 @@ class FileCreationServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"civilAndFamilyDailyCauseList.json", "civilDailyCauseList.json",
         "copDailyCauseList.json", "familyDailyCauseList.json", "sjpPressMockJul22.json", "sjpPublicList.json",
-        "sscsDailyList.json"})
+        "sscsDailyList.json", "etFortnightlyPressList.json"})
     void testAllPdfListsAccessible(String filePath) throws IOException {
         ListType listType = LIST_TYPE_LOOKUP.get(filePath);
-        Artefact artefact = preBuiltArtefact(listType);
         UUID uuid = UUID.randomUUID();
+        Artefact artefact = preBuiltArtefact(listType);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(getInput("/mocks/" + filePath));
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
         when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(location);
@@ -110,11 +111,11 @@ class FileCreationServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"civilAndFamilyDailyCauseList.json", "civilDailyCauseList.json",
         "copDailyCauseList.json", "familyDailyCauseList.json", "sjpPressMockJul22.json", "sjpPublicList.json",
-        "sscsDailyList.json"})
+        "sscsDailyList.json", "etFortnightlyPressList.json"})
     void testAllPdfListsNonAccessible(String filePath) throws IOException {
         ListType listType = LIST_TYPE_LOOKUP.get(filePath);
-        Artefact artefact = preBuiltArtefact(listType);
         UUID uuid = UUID.randomUUID();
+        Artefact artefact = preBuiltArtefact(listType);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(getInput("/mocks/" + filePath));
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
         when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(location);

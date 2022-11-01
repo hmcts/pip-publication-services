@@ -22,7 +22,7 @@ public class CrownDailyList {
     public String artefactSummaryCrownDailyList(String payload) throws JsonProcessingException {
         JsonNode node = new ObjectMapper().readTree(payload);
 
-        DataManipulation.manipulatedDailyListData(node, Language.ENGLISH);
+        DataManipulation.manipulatedDailyListData(node, Language.ENGLISH, false);
         CrownDailyListHelper.manipulatedCrownDailyListData(node);
         CrownDailyListHelper.findUnallocatedCasesInCrownDailyListData(node);
 

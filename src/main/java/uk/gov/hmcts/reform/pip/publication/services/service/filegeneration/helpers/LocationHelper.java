@@ -12,7 +12,7 @@ public final class LocationHelper {
     private static final String TOWN = "town";
     private static final String COUNTY = "county";
     private static final String POSTCODE = "postCode";
-    static final String COURT_HOUSE = "courtHouse";
+    public static final String COURT_HOUSE = "courtHouse";
 
     private LocationHelper() {
         throw new UnsupportedOperationException();

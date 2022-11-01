@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.Locale;
 
 @SuppressWarnings("PMD.TooManyMethods")
@@ -36,6 +38,16 @@ public final class DateHelper {
                                                       dateFormat);
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern, Locale.UK);
         return dtf.format(zonedDateTime);
+    }
+
+    public static String formatTimeStampToBstHavingWeekDay(String timestamp, String dateFormat,
+                                                           Language language) {
+        String formattedDate = formatTimeStampToBst(timestamp, language,
+            false, false, dateFormat);
+        ZonedDateTime zonedDateTime = convertStringToBst(timestamp);
+        DayOfWeek dayofWeek = zonedDateTime.getDayOfWeek();
+        String day = dayofWeek.getDisplayName(TextStyle.FULL, Locale.UK);
+        return day + ' ' + formattedDate;
     }
 
     private static String getDateTimeFormat(ZonedDateTime zonedDateTime, Boolean isTimeOnly,

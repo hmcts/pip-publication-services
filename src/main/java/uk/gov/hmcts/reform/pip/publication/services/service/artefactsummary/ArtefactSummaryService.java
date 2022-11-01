@@ -44,6 +44,9 @@ public class ArtefactSummaryService {
     TribunalNationalLists tribunalNationalLists;
 
     @Autowired
+    EtFortnightlyPressList etFortnightlyPressList;
+
+    @Autowired
     EtDailyList etDailyList;
 
     /**
@@ -78,6 +81,8 @@ public class ArtefactSummaryService {
             case PRIMARY_HEALTH_LIST:
             case CARE_STANDARDS_LIST:
                 return tribunalNationalLists.artefactSummaryTribunalNationalLists(payload);
+            case ET_FORTNIGHTLY_PRESS_LIST:
+                return etFortnightlyPressList.artefactSummaryEtFortnightlyPressList(payload);
             case ET_DAILY_LIST:
                 return etDailyList.artefactSummaryEtDailyList(payload);
             default:

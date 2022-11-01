@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DataManipulation;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.DateHelper;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.GeneralHelper;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.helpers.PartyRoleHelper;
 
 import java.io.IOException;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class IacDailyListConverter implements Converter {
                         DataManipulation.findAndConcatenateHearingPlatform(sitting, session);
 
                         sitting.get("hearing").forEach(hearing -> {
-                            DataManipulation.findAndManipulatePartyInformation(hearing, language);
+                            PartyRoleHelper.findAndManipulatePartyInformation(hearing, language, false);
                             hearing.get("case").forEach(this::formatLinkedCases);
                         });
                     });

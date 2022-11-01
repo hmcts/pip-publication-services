@@ -17,7 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DateHelperTest {
 
     private static final String ERR_MSG = "Helper method doesn't seem to be working correctly";
-    private static final String TEST_DATETIME = "2022-08-19T09:30:00Z";
+    private static final String TEST_DATETIME_1 = "2022-08-19T09:30:00Z";
+    private static final String TEST_DATETIME_2 = "2022-07-26T16:04:43.416924Z";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
@@ -31,7 +32,7 @@ class DateHelperTest {
     @Test
     void testZonedDateMethod() {
         assertThat(DateHelper.formatTimeStampToBst(
-            "2022-07-26T16:04:43.416924Z", Language.ENGLISH, false, false))
+            TEST_DATETIME_2, Language.ENGLISH, false, false))
             .as(ERR_MSG)
             .isEqualTo("26 July 2022");
     }
@@ -39,7 +40,7 @@ class DateHelperTest {
     @Test
     void testZonedDateMethodWithDateFormat() {
         assertThat(DateHelper.formatTimeStampToBst(
-            "2022-07-26T16:04:43.416924Z", Language.ENGLISH, false, false, "dd MMMM"))
+            TEST_DATETIME_2, Language.ENGLISH, false, false, "dd MMMM"))
             .as(ERR_MSG)
             .isEqualTo("26 July");
     }
@@ -63,21 +64,21 @@ class DateHelperTest {
     @Test
     void testZonedDateTimeMethod() {
         assertThat(DateHelper.formatTimeStampToBst(
-            "2022-07-26T16:04:43.416924Z",Language.ENGLISH, false, true))
+            TEST_DATETIME_2,Language.ENGLISH, false, true))
             .as(ERR_MSG)
             .isEqualTo("26 July 2022 at 17:04");
     }
 
     @Test
     void testConvertStringToBstMethod() {
-        assertThat(DateHelper.convertStringToBst(TEST_DATETIME).toLocalDateTime())
+        assertThat(DateHelper.convertStringToBst(TEST_DATETIME_1).toLocalDateTime())
             .as(ERR_MSG)
             .isEqualTo("2022-08-19T10:30");
     }
 
     @Test
     void testConvertTimeToMinutesMethod() {
-        ZonedDateTime startTime = DateHelper.convertStringToBst(TEST_DATETIME);
+        ZonedDateTime startTime = DateHelper.convertStringToBst(TEST_DATETIME_1);
         ZonedDateTime endTime = DateHelper.convertStringToBst("2022-08-19T10:55:00Z");
 
         assertThat(DateHelper.convertTimeToMinutes(startTime, endTime))
@@ -164,7 +165,7 @@ class DateHelperTest {
 
     @Test
     void testTimeStampToBstTimeMethod() {
-        assertThat(DateHelper.timeStampToBstTime(TEST_DATETIME))
+        assertThat(DateHelper.timeStampToBstTime(TEST_DATETIME_1))
             .as(ERR_MSG)
             .isEqualTo("10:30");
     }
@@ -178,7 +179,7 @@ class DateHelperTest {
 
     @Test
     void testTimeStampToBstTimeWithFormatForAmMethod() {
-        assertThat(DateHelper.timeStampToBstTimeWithFormat(TEST_DATETIME, "h:mma"))
+        assertThat(DateHelper.timeStampToBstTimeWithFormat(TEST_DATETIME_1, "h:mma"))
             .as(ERR_MSG)
             .isEqualTo("10:30am");
     }
@@ -202,6 +203,14 @@ class DateHelperTest {
         assertThat(DateHelper.timeStampToBstTimeWithFormat("2022-08-19T10:30:00Z", "hh:mma"))
             .as(ERR_MSG)
             .isEqualTo("11:30am");
+    }
+
+    @Test
+    void testFormatTimeStampToBstHavingWeekDay() {
+        assertThat(DateHelper.formatTimeStampToBstHavingWeekDay(
+            TEST_DATETIME_2, "dd MMMM yyyy", Language.ENGLISH))
+            .as(ERR_MSG)
+            .isEqualTo("Tuesday 26 July 2022");
     }
 
     @Test
