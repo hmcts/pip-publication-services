@@ -16,6 +16,8 @@ class PartyRoleMapperTest {
         "APPLICANT_PETITIONER_REPRESENTATIVE";
     private static final String RESPONDENT_REPRESENTATIVE =
         "RESPONDENT_REPRESENTATIVE";
+    private static final String DEFENDANT = "DEFENDANT";
+    private static final String PROSECUTING_AUTHORITY = "PROSECUTING_AUTHORITY";
 
     private static final String CLAIMANT =
         "CLAIMANT_PETITIONER";
@@ -39,16 +41,14 @@ class PartyRoleMapperTest {
 
     @Test
     void testConvertPartyRoleApplicantRepMethod() {
-        assertThat(PartyRoleMapper
-                    .convertPartyRole(APPLICANT_PETITIONER_REPRESENTATIVE))
+        assertThat(PartyRoleMapper.convertPartyRole(APPLICANT_PETITIONER_REPRESENTATIVE))
             .as(ERR_MSG)
             .isEqualTo(APPLICANT_PETITIONER_REPRESENTATIVE);
     }
 
     @Test
     void testConvertPartyRoleRespondentRepMethod() {
-        assertThat(PartyRoleMapper
-                    .convertPartyRole(RESPONDENT_REPRESENTATIVE))
+        assertThat(PartyRoleMapper.convertPartyRole(RESPONDENT_REPRESENTATIVE))
             .as(ERR_MSG)
             .isEqualTo(RESPONDENT_REPRESENTATIVE);
     }
@@ -95,6 +95,20 @@ class PartyRoleMapperTest {
         assertThat(PartyRoleMapper.convertPartyRole("RREP"))
             .as(ERR_MSG)
             .isEqualTo(RESPONDENT_REPRESENTATIVE);
+    }
+
+    @Test
+    void testConvertPartyRoleDefendantMethod() {
+        assertThat(PartyRoleMapper.convertPartyRole(DEFENDANT))
+            .as(ERR_MSG)
+            .isEqualTo(DEFENDANT);
+    }
+
+    @Test
+    void testConvertPartyRoleProsecutingAuthorityMethod() {
+        assertThat(PartyRoleMapper.convertPartyRole(PROSECUTING_AUTHORITY))
+            .as(ERR_MSG)
+            .isEqualTo(PROSECUTING_AUTHORITY);
     }
 
     @Test

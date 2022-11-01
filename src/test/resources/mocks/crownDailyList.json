@@ -1,0 +1,425 @@
+{
+  "document": {
+    "version": "",
+    "publicationDate":"2020-09-13T23:30:00Z"
+  },
+  "venue": {
+    "venueName": "PRESTON",
+    "venueContact": {
+      "venueTelephone":"01772 844700",
+      "venueEmail": "court1@moj.gov.u"
+    },
+    "venueAddress": {
+      "line": [
+        "THE LAW COURTS"
+      ],
+      "postCode": "PR1 2LL"
+    }
+  },
+  "@schemaLocation": "",
+  "courtLists": [
+    {
+      "courtHouse": {
+        "courtHouseName": "Court A",
+        "courtHouseAddress": {
+          "line": [
+            "Address Line 1",
+            "Address Line 2"
+          ],
+          "town": "Town A",
+          "county": "County A",
+          "postCode": "AA1 AA1"
+        },
+        "courtRoom": [
+          {
+            "courtRoomName": "1",
+            "session": [
+              {
+                "sessionStartTime": "",
+                "sessionChannel": [
+                  "VIDEO HEARING"
+                ],
+                "judiciary": [
+                  {
+                    "johTitle": "Mr",
+                    "johKnownAs": "Firstname1 Surname1"
+                  },
+                  {
+                    "johKnownAs": "Firstname2 Surname2"
+                  }
+                ],
+                "sittings": [
+                  {
+                    "sittingStart": "2022-07-27T09:40:00Z",
+                    "sittingEnd": "2022-07-27T10:45:00Z",
+                    "hearing": [
+                      {
+                        "hearingType": "FHDRA1 (First Hearing and Dispute Resolution Appointment)",
+                        "case": [
+                          {
+                            "caseName": "A1 Vs B1",
+                            "caseNumber": "12345678",
+                            "caseSequenceIndicator": "[2 of 3]",
+                            "caseLinked":[
+                              {
+                                "caseId": "caseid111",
+                                "name": "casename111"
+                              },
+                              {
+                                "caseId": "caseid222",
+                                "name": "casename333"
+                              }
+                            ]
+                          },
+                          {
+                            "caseName": "A2 Vs B2",
+                            "caseNumber": "112233445"
+                          }
+                        ],
+                        "party":[
+                          {
+                            "partyRole":"PROSECUTING_AUTHORITY",
+                            "individualDetails":{
+                              "individualForenames":"Pro_Auth_FN",
+                              "individualSurname":"Pro_Auth_SN"
+                            }
+                          },
+                          {
+                            "partyRole":"DEFENDANT",
+                            "individualDetails":{
+                              "individualForenames":"Defendant_FN",
+                              "individualSurname":"Defendant_SN"
+                            }
+                          }
+                        ],
+                        "listingDetails": {
+                          "listingRepDeadline":"Listing details text"
+                        }
+                      },
+                      {
+                        "hearingType": "FHDRA1 (First Hearing and Dispute Resolution Appointment)",
+                        "case": [
+                          {
+                            "caseName": "A2 Vs B2",
+                            "caseNumber": "112233445"
+                          }
+                        ]
+                      }
+                    ],
+                    "channel": [
+                      "Remote",
+                      "Teams"
+                    ]
+                  },
+                  {
+                    "sittingStart": "2022-01-27T08:05:00Z",
+                    "sittingEnd": "2022-01-27T10:45:00Z",
+                    "hearing": [
+                      {
+                        "hearingType": "FHDRA1 (First Hearing and Dispute Resolution Appointment)",
+                        "case": [
+                          {
+                            "caseName": "A1 Vs B1",
+                            "caseNumber": "12345678"
+                          }
+                        ]
+                      },
+                      {
+                        "hearingType": "FHDRA1 (First Hearing and Dispute Resolution Appointment)",
+                        "case": [
+                          {
+                            "caseName": "A2 Vs B2",
+                            "caseNumber": "112233445"
+                          }
+                        ]
+                      }
+                    ],
+                    "duration": "",
+                    "startTime": "9.40am",
+                    "durationAsHours": 1,
+                    "durationAsMinutes": 5
+                  }
+                ]
+              }
+            ],
+            "totalHearing": 2
+          },
+          {
+            "courtRoomName": "to be allocated",
+            "session": [
+              {
+                "sessionStartTime": "",
+                "sessionChannel": [
+                  "VIDEO HEARING"
+                ],
+                "judiciary": [
+                  {
+                    "johTitle": "Mr",
+                    "johKnownAs": "Firstname1 Surname1"
+                  },
+                  {
+                    "johKnownAs": "Firstname2 Surname2"
+                  }
+                ],
+                "sittings": [
+                  {
+                    "sittingStart": "2022-07-27T09:40:00Z",
+                    "sittingEnd": "2022-07-27T10:45:00Z",
+                    "hearing": [
+                      {
+                        "hearingType": "FHDRA1 (First Hearing and Dispute Resolution Appointment)",
+                        "case": [
+                          {
+                            "caseName": "A1 Vs B1",
+                            "caseNumber": "12345678",
+                            "caseSequenceIndicator": "[2 of 3]",
+                            "caseLinked":[
+                              {
+                                "caseId": "caseid111",
+                                "name": "casename111"
+                              },
+                              {
+                                "caseId": "caseid222",
+                                "name": "casename333"
+                              }
+                            ]
+                          },
+                          {
+                            "caseName": "A2 Vs B2",
+                            "caseNumber": "112233445"
+                          }
+                        ],
+                        "party":[
+                          {
+                            "partyRole":"PROSECUTING_AUTHORITY",
+                            "individualDetails":{
+                              "individualSurname":"PROSECUTING_AUTHORITY"
+                            }
+                          },
+                          {
+                            "partyRole":"DEFENDANT",
+                            "individualDetails":{
+                              "individualSurname":"DEFENDANT"
+                            }
+                          }
+                        ],
+                        "listingDetails": {
+                          "listingRepDeadline":"Listing details text"
+                        }
+                      },
+                      {
+                        "hearingType": "FHDRA1 (First Hearing and Dispute Resolution Appointment)",
+                        "case": [
+                          {
+                            "caseName": "A2 Vs B2",
+                            "caseNumber": "112233445"
+                          }
+                        ]
+                      }
+                    ],
+                    "channel": [
+                      "Remote",
+                      "Teams"
+                    ]
+                  },
+                  {
+                    "sittingStart": "2022-01-27T08:05:00Z",
+                    "sittingEnd": "2022-01-27T10:45:00Z",
+                    "hearing": [
+                      {
+                        "hearingType": "FHDRA1 (First Hearing and Dispute Resolution Appointment)",
+                        "case": [
+                          {
+                            "caseName": "A1 Vs B1",
+                            "caseNumber": "12345678"
+                          }
+                        ]
+                      },
+                      {
+                        "hearingType": "FHDRA1 (First Hearing and Dispute Resolution Appointment)",
+                        "case": [
+                          {
+                            "caseName": "A2 Vs B2",
+                            "caseNumber": "112233445"
+                          }
+                        ]
+                      }
+                    ],
+                    "duration": "",
+                    "startTime": "9.40am",
+                    "durationAsHours": 1,
+                    "durationAsMinutes": 5
+                  }
+                ]
+              }
+            ],
+            "totalHearing": 2
+          }
+        ]
+      }
+    },
+    {
+      "courtHouse": {
+        "courtHouseName": "Court B",
+        "courtHouseAddress": {
+          "line": [
+            "Address Line 1",
+            "Address Line 2"
+          ],
+          "town": "Town B",
+          "county": "County B",
+          "postCode": "BB1 BB1"
+        },
+        "courtRoom": [
+          {
+            "courtRoomName": "CourtRoom 1",
+            "session": [
+              {
+                "sessionStartTime": "",
+                "sessionChannel": [
+                  "VIDEO HEARING"
+                ],
+                "sittings": [
+                  {
+                    "sittingStart": "2022-01-27T09:00:00Z",
+                    "sittingEnd": "2022-01-27T10:30:00Z",
+                    "hearing": [
+                      {
+                        "hearingType": "FHDRA1 (First Hearing and Dispute Resolution Appointment)",
+                        "case": [
+                          {
+                            "caseName": "A1 Vs B1",
+                            "caseNumber": "12345678",
+                            "caseSequenceIndicator": "[2 of 3]"
+                          }
+                        ]
+                      }
+                    ],
+                    "channel": [
+                      "Remote",
+                      "Teams"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "totalHearing": 2
+          }
+        ]
+      }
+    },
+    {
+      "courtHouse": {
+        "courtHouseName": "Court B",
+        "courtHouseAddress": {
+          "line": [
+            "Address Line 1",
+            "Address Line 2"
+          ],
+          "town": "Town B",
+          "county": "County B",
+          "postCode": "BB1 BB1"
+        },
+        "courtRoom": [
+          {
+            "courtRoomName": "1",
+            "session": [
+              {
+                "sessionStartTime": "",
+                "sessionChannel": [
+                  "VIDEO HEARING"
+                ],
+                "judiciary": [
+                  {
+                    "johTitle": "Mr",
+                    "johKnownAs": "Firstname1 Surname1"
+                  }
+                ],
+                "sittings": [
+                  {
+                    "sittingStart": "2022-01-27T13:00:00Z",
+                    "sittingEnd": "2022-01-27T14:00:00Z",
+                    "hearing": [
+                      {
+                        "hearingType": "FHDRA1 (First Hearing and Dispute Resolution Appointment)",
+                        "case": [
+                          {
+                            "caseName": "A1 Vs B1",
+                            "caseNumber": "12345678",
+                            "caseSequenceIndicator": "[2 of 3]"
+                          }
+                        ]
+                      }
+                    ],
+                    "channel": [
+                      "Remote",
+                      "Teams"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "totalHearing": 2
+          }
+        ]
+      }
+    },
+    {
+      "courtHouse": {
+        "courtHouseName": "Court B",
+        "courtHouseAddress": {
+          "line": [
+            "Address Line 1",
+            "Address Line 2"
+          ],
+          "town": "Town B",
+          "county": "County B",
+          "postCode": "BB1 BB1"
+        },
+        "courtRoom": [
+          {
+            "courtRoomName": "1",
+            "session": [
+              {
+                "sessionStartTime": "",
+                "sessionChannel": [
+                  "VIDEO HEARING"
+                ],
+                "judiciary": [
+                  {
+                    "johTitle": "Mr",
+                    "johKnownAs": "Firstname1 Surname1"
+                  }
+                ],
+                "sittings": [
+                  {
+                    "sittingStart": "2022-01-27T15:00:00Z",
+                    "sittingEnd": "2022-01-27T15:30:00Z",
+                    "hearing": [
+                      {
+                        "hearingType": "FHDRA1 (First Hearing and Dispute Resolution Appointment)",
+                        "case": [
+                          {
+                            "caseName": "A1 Vs B1",
+                            "caseNumber": "12345678",
+                            "caseSequenceIndicator": "[2 of 3]"
+                          }
+                        ]
+                      }
+                    ],
+                    "channel": [
+                      "Remote",
+                      "Teams"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "totalHearing": 2
+          }
+        ]
+      }
+    }
+  ]
+}
+

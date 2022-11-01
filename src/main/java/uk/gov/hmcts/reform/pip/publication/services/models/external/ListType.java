@@ -8,6 +8,9 @@ import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.conve
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CivilDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.Converter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CopDailyCauseListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.CrownDailyListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.EtDailyListConverter;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.EtFortnightlyPressListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.FamilyDailyCauseListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.IacDailyListConverter;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.converters.PrimaryHealthListConverter;
@@ -25,7 +28,7 @@ public enum ListType {
     SJP_PUBLIC_LIST(new SjpPublicListConverter()),
     SJP_PRESS_LIST(new SjpPressListConverter()),
     SJP_PRESS_REGISTER,
-    CROWN_DAILY_LIST,
+    CROWN_DAILY_LIST(new CrownDailyListConverter()),
     CROWN_FIRM_LIST,
     CROWN_WARNED_LIST,
     MAGISTRATES_PUBLIC_LIST,
@@ -38,8 +41,8 @@ public enum ListType {
     SSCS_DAILY_LIST(new SscsDailyListConverter()),
     PRIMARY_HEALTH_LIST(new PrimaryHealthListConverter()),
     CARE_STANDARDS_LIST(new CareStandardsListConverter()),
-    ET_DAILY_LIST,
-    ET_FORTNIGHTLY_PRESS_LIST;
+    ET_FORTNIGHTLY_PRESS_LIST(new EtFortnightlyPressListConverter()),
+    ET_DAILY_LIST(new EtDailyListConverter());
 
     private Converter converter;
 }

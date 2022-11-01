@@ -36,9 +36,24 @@ class ArtefactSummaryServiceTest {
 
     @Test
     void notImplementedListTest() throws IOException {
-        String body = readMockJsonFile("mocks/copDailyCauseList.json");
-        assertThat(artefactSummaryService.artefactSummary(body, ListType.CROWN_DAILY_LIST))
+        String body = readMockJsonFile("mocks/crownDailyList.json");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.CROWN_FIRM_LIST))
             .as(MISSING_DATA_RETURN).isEqualTo("");
+    }
+
+    @Test
+    void crownDailyList() throws IOException {
+        try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream("mocks/crownDailyList.json")) {
+            assertThat(mockFile).as(NULL_FILE).isNotNull();
+            String body = new String(mockFile.readAllBytes());
+            assertThat(body).as(BODY_WRONG).contains("sitting");
+            assertThat(artefactSummaryService.artefactSummary(
+                body,
+                ListType.CROWN_DAILY_LIST
+            )).as(MISSING_DATA_RETURN).contains(
+                "Case Reference - 12345678");
+        }
     }
 
     @Test
@@ -141,6 +156,14 @@ class ArtefactSummaryServiceTest {
     }
 
     @Test
+    void etFortnightlyPressListTest() throws IOException {
+        String body = readMockJsonFile("mocks/etFortnightlyPressList.json");
+        assertThat(body).as(BODY_WRONG).contains("12341234");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.ET_FORTNIGHTLY_PRESS_LIST))
+            .as(MISSING_DATA_RETURN).contains(CASE_ID);
+    }
+
+    @Test
     void magsPublicList() throws IOException {
         try (InputStream mockFile = Thread.currentThread().getContextClassLoader()
             .getResourceAsStream("mocks/familyDailyCauseList.json")) {
@@ -157,5 +180,17 @@ class ArtefactSummaryServiceTest {
         assertThat(body).as(BODY_WRONG).contains(CASE_NAME);
         assertThat(artefactSummaryService.artefactSummary(body, ListType.CARE_STANDARDS_LIST))
             .as(MISSING_DATA_RETURN).contains(CASE_NAME);
+    }
+
+    @Test
+    void etDailyListTest() throws IOException {
+        String body = readMockJsonFile("mocks/etDailyList.json");
+        assertThat(body)
+            .as(BODY_WRONG)
+            .contains("Anderson")
+            .contains("Hargreaves");
+        assertThat(artefactSummaryService.artefactSummary(body, ListType.ET_DAILY_LIST))
+            .as(MISSING_DATA_RETURN)
+            .contains("Claimant: HRH G Anderson, Rep: Mr R Hargreaves");
     }
 }

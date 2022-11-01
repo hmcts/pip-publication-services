@@ -77,15 +77,22 @@ class GeneralHelperTest {
     void testAppendToStringBuilderMethod() {
         StringBuilder builder = new StringBuilder();
         builder.append("Test1");
-        GeneralHelper.appendToStringBuilder(builder,"Test2", inputJson.get("venue"),
+        GeneralHelper.appendToStringBuilder(builder,"Test2 ", inputJson.get("venue"),
                                             "venueName");
         assertThat(builder.toString())
             .as(ERR_MSG)
-            .contains("Test2");
+            .isEqualTo("Test1\nTest2 This is the venue name");
+    }
 
+    @Test
+    void testAppendToStringBuilderWithPrefix() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Test1");
+        GeneralHelper.appendToStringBuilderWithPrefix(builder,"Test2: ", inputJson.get("venue"),
+                                                      "venueName", "\t\t");
         assertThat(builder.toString())
             .as(ERR_MSG)
-            .contains("This is the venue name");
+            .isEqualTo("Test1\t\tTest2: This is the venue name");
     }
 
     @Test
