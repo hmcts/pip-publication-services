@@ -1,0 +1,33 @@
+{
+  "serviceName": "Gwasanaeth Gwrandawiadau llys a thribiwnlys",
+  "pdfAccessibility": " Tudalen PDF/UA ",
+  "of": " o ",
+  "listName": "Tribiwnlysoedd Cyflogaeth",
+  "listType": "Rhestr Ddyddiol",
+  "listFor": "Rhestr ar gyfer ",
+  "lastUpdated": "Diweddarwyd ddiwethaf ",
+  "at": " yn ",
+  "importantInformationHeading": "Gwybodaeth Bwysig",
+  "importantInformation1": "Mae cyfiawnder agored yn egwyddor hanfodol yn system y llysoedd a’r tribiwnlysoedd, a bydd hyn yn parhau wrth i ni ddefnyddio mwy ar dechnoleg sain a fideo.",
+  "importantInformation2": "Wrth ystyried defnyddio technoleg ffôn a fideo, bydd y farnwriaeth yn rhoi sylw i egwyddorion cyfiawnder agored. Gall barnwyr benderfynu cynnal gwrandawiad yn breifat os oes angen hynny er mwyn sicrhau'r broses o weinyddu cyfiawnder yn briodol.",
+  "importantInformation3": "Nid yw'r ffaith bod achos wedi ei gynnwys yn Rhestr y Wasg yn gwarantu na fydd yn destun gorchymyn adrodd cyfyngedig.  Dylai aelodau'r Wasg sicrhau nad oes gorchymyn yn bodoli ar achos unigol cyn cyflwyno deunydd i'w gyhoeddi.",
+  "importantInformation4": "Dylai'r cyfryngau ac aelodau'r cyhoedd wneud cais i arsylwi gwrandawiad o bell ymlaen llaw i: ",
+  "importantInformation5": "Dylai'r confensiwn enwi ym mhennawd neges e-bost nodi:",
+  "importantInformation6": "\"MEDIA OR PUBLIC ACCESS REQUEST - AN Other v AN Other - Hearing Date.\"",
+  "venue": "Lleoliad: ",
+  "tableHeadings": [
+    "Amser Cychwyn",
+    "Hyd",
+    "Cyfeirnod yr Achos",
+    "Hawlydd",
+    "Atebydd",
+    "Math o Wrandawiad",
+    "Awdurdodaeth",
+    "Sianel y Gwrandawiad"
+  ],
+  "rep": " Cynrychiolydd: ",
+  "dataSource": "Ffynhonnell y Data: ",
+  "legal1": "Noder bod y ddogfen hon yn cynnwys Data Categori Arbennig fel y’i diffinnir yn Neddf Gwarchod Data 2018, a elwid gynt yn Ddata Personol Sensitif, a dylid ei drin yn y ffordd briodol.",
+  "legal2": "Mae’r ddogfen hon yn cynnwys gwybodaeth a fwriedir i gynorthwyo i roi adroddiad manwl-gywir am achosion llys. Mae’n hanfodol eich bod yn sicrhau eich bod yn gwarchod y Data Categori Arbennig sydd ynddi ac yn cadw at gyfyngiadau adrodd (er enghraifft yn achos dioddefwyr a phlant). Bydd GLlTEM yn rhoi’r gorau i anfon y data os cyfyd pryder ynghylch sut y’i defnyddir.",
+  "endText": "Diolch am ddarllen y ddogfen hon yn fanwl."
+}

@@ -80,10 +80,13 @@ public class FileCreationService {
         JsonNode topLevelNode = new ObjectMapper().readTree(rawJson);
         Language languageEntry = artefact.getLanguage();
         String locationName = (languageEntry == Language.ENGLISH) ? location.getName() : location.getWelshName();
+
         Map<String, String> metadataMap = Map.of(
             "contentDate", DateHelper.formatLocalDateTimeToBst(artefact.getContentDate()),
             "provenance", artefact.getProvenance(),
             "locationName", locationName,
+            "regionName", String.join(", ", location.getRegion()),
+            "region", String.join(", ", location.getRegion()),
             "language", languageEntry.toString()
         );
 

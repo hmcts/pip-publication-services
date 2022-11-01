@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -26,6 +27,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -76,8 +78,11 @@ class FileCreationServiceTest {
         "familyDailyCauseList.json", ListType.FAMILY_DAILY_CAUSE_LIST,
         "sjpPressMockJul22.json", ListType.SJP_PRESS_LIST,
         "sjpPublicList.json", ListType.SJP_PUBLIC_LIST,
-        "sscsDailyList.json", ListType.SSCS_DAILY_LIST
+        "sscsDailyList.json", ListType.SSCS_DAILY_LIST,
+        "etFortnightlyPressList.json", ListType.ET_FORTNIGHTLY_PRESS_LIST
     );
+
+    private static Location location = new Location();
 
     private String getInput(String resourcePath) throws IOException {
         try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
@@ -95,17 +100,20 @@ class FileCreationServiceTest {
         return artefact;
     }
 
+    @BeforeAll
+    public static void setup()  {
+        location.setName(TEST_STRING);
+        location.setRegion(Collections.singletonList(TEST_STRING));
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"civilAndFamilyDailyCauseList.json", "civilDailyCauseList.json",
         "copDailyCauseList.json", "familyDailyCauseList.json", "sjpPressMockJul22.json", "sjpPublicList.json",
-        "sscsDailyList.json"})
+        "sscsDailyList.json", "etFortnightlyPressList.json"})
     void testAllPdfListsAccessible(String filePath) throws IOException {
         ListType listType = LIST_TYPE_LOOKUP.get(filePath);
-        Artefact artefact = preBuiltArtefact(listType);
-        Location location = new Location();
-        location.setName(TEST_STRING);
         UUID uuid = UUID.randomUUID();
+        Artefact artefact = preBuiltArtefact(listType);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(getInput("/mocks/" + filePath));
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
         when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(location);
@@ -117,13 +125,11 @@ class FileCreationServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"civilAndFamilyDailyCauseList.json", "civilDailyCauseList.json",
         "copDailyCauseList.json", "familyDailyCauseList.json", "sjpPressMockJul22.json", "sjpPublicList.json",
-        "sscsDailyList.json"})
+        "sscsDailyList.json", "etFortnightlyPressList.json"})
     void testAllPdfListsNonAccessible(String filePath) throws IOException {
         ListType listType = LIST_TYPE_LOOKUP.get(filePath);
-        Artefact artefact = preBuiltArtefact(listType);
-        Location location = new Location();
-        location.setName(TEST_STRING);
         UUID uuid = UUID.randomUUID();
+        Artefact artefact = preBuiltArtefact(listType);
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(getInput("/mocks/" + filePath));
         when(dataManagementService.getArtefact(uuid)).thenReturn(artefact);
         when(dataManagementService.getLocation(ONE_TWO_THREE_FOUR)).thenReturn(location);
@@ -176,8 +182,6 @@ class FileCreationServiceTest {
         artefact.setProvenance("france");
         artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.MAGISTRATES_STANDARD_LIST);
-        Location location = new Location();
-        location.setName("locationName");
         UUID uuid = UUID.randomUUID();
         String inputJson = "{\"document\":{\"value1\":\"x\",\"value2\":\"hiddenTestString\"}}";
         when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn(inputJson);

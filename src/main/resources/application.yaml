@@ -93,3 +93,7 @@ third-party:
   certificate: ${THIRD_PARTY_CERTIFICATE:abcd}
 
 envName: ${ENV_NAME:local}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui/

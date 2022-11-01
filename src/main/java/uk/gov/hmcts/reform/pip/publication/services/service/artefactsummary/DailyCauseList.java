@@ -21,7 +21,7 @@ public class DailyCauseList {
     public String artefactSummaryDailyCause(String payload) throws JsonProcessingException {
         JsonNode node = new ObjectMapper().readTree(payload);
 
-        DataManipulation.manipulatedDailyListData(node, Language.ENGLISH);
+        DataManipulation.manipulatedDailyListData(node, Language.ENGLISH, false);
 
         return this.processDailyCauseList(node);
     }
