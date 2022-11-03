@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Language;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelGenerationService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,19 +32,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @Slf4j
 @SpringBootTest
 @ActiveProfiles("test")
+@SuppressWarnings("PMD.ExcessiveImports")
 class FileCreationServiceTest {
 
     @Mock
     private DataManagementService dataManagementService;
+
+    @Mock
+    private AccountManagementService accountManagementService;
+
+    @Mock
+    private SubscriptionManagementService subscriptionManagementService;
+
+    @Mock
+    private ExcelGenerationService excelGenerationService;
 
     @InjectMocks
     private FileCreationService fileCreationService;
@@ -56,6 +69,7 @@ class FileCreationServiceTest {
 
     public static final String TEST_STRING = "test";
     public static final String ONE_TWO_THREE_FOUR = "1234";
+    private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
     private static final Map<String, ListType> LIST_TYPE_LOOKUP = Map.of(
         "civilAndFamilyDailyCauseList.json", ListType.CIVIL_DAILY_CAUSE_LIST,
@@ -204,5 +218,17 @@ class FileCreationServiceTest {
             fileCreationService.createMediaApplicationReportingCsv(MEDIA_APPLICATION_LIST),
             "Csv creation should not return null"
         );
+    }
+
+    @Test
+    void testGenerateMiReportSuccess() throws IOException {
+        String data = "1,2,3";
+        when(dataManagementService.getMiData()).thenReturn(data);
+        when(accountManagementService.getMiData()).thenReturn(data);
+        when(subscriptionManagementService.getAllMiData()).thenReturn(data);
+        when(subscriptionManagementService.getLocationMiData()).thenReturn(data);
+        when(excelGenerationService.generateMultiSheetWorkBook(any())).thenReturn(TEST_BYTE);
+
+        assertThat(fileCreationService.generateMiReport()).isEqualTo(TEST_BYTE);
     }
 }

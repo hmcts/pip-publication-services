@@ -62,5 +62,4 @@ public class WebClientConfigurationTest {
         HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(sslContext));
         return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient));
     }
-
 }

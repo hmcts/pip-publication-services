@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Service
 @Slf4j
+@SuppressWarnings("PMD.TooManyMethods")
 public class NotificationService {
 
     private static final String SUCCESS_MESSAGE = "Successfully sent list to %s";
@@ -204,6 +205,16 @@ public class NotificationService {
         EmailToSend email = emailService
             .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template);
 
+        return emailService.sendEmail(email).getReference().orElse(null);
+    }
+
+    /**
+     * Handles the incoming request for sending out email with MI data report.
+     *
+     * @return The ID that references the MI data reporting email.
+     */
+    public String handleMiDataForReporting() {
+        EmailToSend email = emailService.buildMiDataReportingEmail(Templates.MI_DATA_REPORTING_EMAIL.template);
         return emailService.sendEmail(email).getReference().orElse(null);
     }
 }

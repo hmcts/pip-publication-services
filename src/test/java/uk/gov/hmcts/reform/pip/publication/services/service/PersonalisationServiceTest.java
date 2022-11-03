@@ -4,11 +4,14 @@ import org.jose4j.base64url.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
@@ -22,6 +25,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
+import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,11 +36,13 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -75,6 +82,7 @@ class PersonalisationServiceTest {
     private static final String LOCATION_MESSAGE = "Location not as expected";
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
     private static final String CONTENTS = "Contents";
+    private static final String ERROR_MESSAGE = "error message";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -479,5 +487,35 @@ class PersonalisationServiceTest {
                 LAST_SIGNED_IN_DATE,
                 "https://pip-frontend.staging.platform.hmcts.net/admin-dashboard"
             );
+    }
+
+    @Test
+    void testBuildMiDataReportingPersonalisation() throws IOException {
+        when(fileCreationService.generateMiReport()).thenReturn(TEST_BYTE);
+        assertThat(personalisationService.buildMiDataReportingPersonalisation())
+            .as("Personalisation data does not match")
+            .hasSize(2)
+            .extracting(p -> ((JSONObject) p.get(LINK_TO_FILE)).get(FILE))
+            .isEqualTo(Base64.encode(TEST_BYTE));
+    }
+
+    @Test
+    void testBuildMiDataReportingWithExcelCreationException() throws IOException {
+        when(fileCreationService.generateMiReport()).thenThrow(new IOException(ERROR_MESSAGE));
+        assertThatThrownBy(() -> personalisationService.buildMiDataReportingPersonalisation())
+            .isInstanceOf(ExcelCreationException.class)
+            .hasMessage(ERROR_MESSAGE);
+    }
+
+    @Test
+    void testBuildMiDataReportingWithNotifyException() throws IOException {
+        when(fileCreationService.generateMiReport()).thenReturn(TEST_BYTE);
+        try (MockedStatic mockStatic = mockStatic(NotificationClient.class)) {
+            mockStatic.when(() -> EmailClient.prepareUpload(TEST_BYTE))
+                .thenThrow(new NotificationClientException(ERROR_MESSAGE));
+            assertThatThrownBy(() -> personalisationService.buildMiDataReportingPersonalisation())
+                .isInstanceOf(NotifyException.class)
+                .hasMessage(ERROR_MESSAGE);
+        }
     }
 }

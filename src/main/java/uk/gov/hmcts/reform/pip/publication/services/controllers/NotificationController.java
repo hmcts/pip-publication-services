@@ -31,6 +31,7 @@ import javax.validation.Valid;
 @Tag(name = "Publication Services notification API")
 @RequestMapping("/notify")
 @IsAdmin
+@SuppressWarnings("PMD.TooManyMethods")
 public class NotificationController {
 
     @Autowired
@@ -194,6 +195,20 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "Inactive user sign-in notification email successfully sent with referenceId: %s",
             notificationService.inactiveUserNotificationEmailRequest(body)
+        ));
+    }
+
+    @ApiResponses({
+        @ApiResponse(responseCode = OK_RESPONSE, description = "MI data reporting email successfully sent with "
+            + "referenceId: {Id}"),
+        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    })
+    @Operation(summary = "Send email with MI report")
+    @PostMapping("/mi/report")
+    public ResponseEntity<String> sendMiReportingEmail() {
+        return ResponseEntity.ok(String.format(
+            "MI data reporting email successfully sent with referenceId: %s",
+            notificationService.handleMiDataForReporting()
         ));
     }
 }
