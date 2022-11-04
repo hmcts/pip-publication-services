@@ -66,7 +66,6 @@ public class EmailService {
                                  .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
     }
 
-
     protected EmailToSend buildUnidentifiedBlobsEmail(Map<String, String> locationMap, String template) {
         return generateEmail(piTeamEmail, template,
                              personalisationService
@@ -81,6 +80,11 @@ public class EmailService {
     protected EmailToSend buildInactiveUserNotificationEmail(InactiveUserNotificationEmail body, String template) {
         return generateEmail(body.getEmail(), template,
                              personalisationService.buildInactiveUserNotificationPersonalisation(body));
+    }
+
+    protected EmailToSend buildMiDataReportingEmail(String template) {
+        return generateEmail(piTeamEmail, template,
+                             personalisationService.buildMiDataReportingPersonalisation());
     }
 
     private EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {

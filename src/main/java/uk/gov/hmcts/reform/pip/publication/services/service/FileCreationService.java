@@ -2,14 +2,19 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelGenerationService;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
-
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Service to create files to send in emails.
@@ -18,6 +23,18 @@ import java.util.List;
 @Service
 @SuppressWarnings("PMD.PreserveStackTrace")
 public class FileCreationService {
+
+    @Autowired
+    private DataManagementService dataManagementService;
+
+    @Autowired
+    private AccountManagementService accountManagementService;
+
+    @Autowired
+    private SubscriptionManagementService subscriptionManagementService;
+
+    @Autowired
+    private ExcelGenerationService excelGenerationService;
 
     private static final String[] HEADINGS = {"Full name", "Email", "Employer",
         "Request date", "Status", "Status date"};
@@ -38,5 +55,57 @@ public class FileCreationService {
         } catch (IOException e) {
             throw new CsvCreationException(e.getMessage());
         }
+    }
+
+    /**
+     * Calls out to data management, account management and subscription management services to get the MI data and
+     * generates an Excel spreadsheet returned as a byte array.
+     *
+     * @return a byte array of the Excel spreadsheet.
+     * @throws IOException if an error appears during Excel generation.
+     */
+    public byte[] generateMiReport() throws IOException {
+        return excelGenerationService.generateMultiSheetWorkBook(extractMiData());
+    }
+
+    private Map<String, List<String[]>> extractMiData() {
+        Map<String, List<String[]>> data = new ConcurrentHashMap<>();
+
+        List<String[]> artefactData = formatData(dataManagementService.getMiData());
+        if (!artefactData.isEmpty()) {
+            data.put("Publications", artefactData);
+        }
+
+        List<String[]> userData = formatData(accountManagementService.getMiData());
+        if (!userData.isEmpty()) {
+            data.put("User accounts", userData);
+        }
+
+        List<String[]> allSubscriptionData = formatData(subscriptionManagementService.getAllMiData());
+        if (!allSubscriptionData.isEmpty()) {
+            data.put("All subscriptions", allSubscriptionData);
+        }
+
+        List<String[]> locationSubscriptionData = formatData(subscriptionManagementService.getLocationMiData());
+        if (!locationSubscriptionData.isEmpty()) {
+            data.put("Location subscriptions", locationSubscriptionData);
+        }
+        return data;
+    }
+
+    private List<String[]> formatData(String data) {
+        List<String[]> values = data.lines()
+            .map(l -> l.split(","))
+            .collect(Collectors.toList());
+
+        // Remove the values for the 'court_name' field to allow PowerBI to populate with real court names
+        String[] header = values.get(0);
+        int index = ArrayUtils.indexOf(header, "court_name");
+        if (index != -1) {
+            values.stream()
+                .skip(1)
+                .forEach(l -> l[index] = "");
+        }
+        return values;
     }
 }

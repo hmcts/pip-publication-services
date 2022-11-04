@@ -58,6 +58,7 @@ class NotifyTest {
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
     private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
+    private static final String MI_REPORTING_EMAIL_URL = "/notify/mi/report";
     private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY =
         "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"70494df0-31c1-4290-bbd2-7bfe7acfeb81\"}";
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY =
@@ -488,5 +489,11 @@ class NotifyTest {
                             .content("invalid content")
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testSendMiReportingEmail() throws Exception {
+        mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
+            .andExpect(status().isOk());
     }
 }
