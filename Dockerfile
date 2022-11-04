@@ -5,7 +5,6 @@ ARG APP
 
 # Application image
 COPY lib/AI-Agent.xml /opt/app/
-COPY lib/gdsFont.ttf /opt/app/
 COPY build/libs/$APP /opt/app/
 
 EXPOSE 8081

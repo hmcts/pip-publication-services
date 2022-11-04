@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Exc
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
-import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static uk.gov.hmcts.reform.pip.publication.services.Environments.convertEnvironmentName;
+import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.convertEnvironmentName;
 
 /**
  * This class handles any personalisation for the emails.
@@ -44,13 +44,13 @@ public class PersonalisationService {
     DataManagementService dataManagementService;
 
     @Autowired
-    ArtefactSummaryService artefactSummaryService;
+    NotifyConfigProperties notifyConfigProperties;
+
+    @Autowired
+    ChannelManagementService channelManagementService;
 
     @Autowired
     FileCreationService fileCreationService;
-
-    @Autowired
-    NotifyConfigProperties notifyConfigProperties;
 
     @Value("${env-name}")
     private String envName;
@@ -116,7 +116,6 @@ public class PersonalisationService {
      */
     public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body,
                                                                        Artefact artefact) {
-
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
@@ -136,13 +135,12 @@ public class PersonalisationService {
 
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
-            String html = fileCreationService.jsonToHtml(artefact.getArtefactId());
-            byte[] artefactPdf = fileCreationService.generatePdfFromHtml(html, true);
-            int maxSize = 2_000_000;
-            if (artefactPdf.length > maxSize) {
-                artefactPdf = fileCreationService.generatePdfFromHtml(html, false);
-            }
-            byte[] artefactExcel = fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId());
+            Map<FileType, byte[]> publicationFiles =
+                channelManagementService.getArtefactFiles(artefact.getArtefactId());
+
+            byte[] artefactPdf = publicationFiles.get(FileType.PDF);
+            byte[] artefactExcel = publicationFiles.get(FileType.EXCEL);
+
             boolean pdfWithinSize = artefactPdf.length < 2_000_000 && artefactPdf.length > 0;
             boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;
 
@@ -152,15 +150,9 @@ public class PersonalisationService {
             personalisation.put("display_excel", excelWithinSize);
             personalisation.put("excel_link_to_file", excelWithinSize ? EmailClient.prepareUpload(artefactExcel) : "");
 
-            String summary =
-                artefactSummaryService.artefactSummary(
-                    dataManagementService
-                        .getArtefactJsonBlob(artefact.getArtefactId()),
-                    artefact.getListType()
-                );
-            personalisation.put("testing_of_array", summary);
+            personalisation.put("testing_of_array",
+                                channelManagementService.getArtefactSummary(artefact.getArtefactId()));
 
-            log.info("Personalisation map created");
             return personalisation;
         } catch (Exception e) {
             log.warn("Error adding attachment to raw data email {}. Artefact ID: {}",

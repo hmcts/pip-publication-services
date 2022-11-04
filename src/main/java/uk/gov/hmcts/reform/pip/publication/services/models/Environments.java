@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services;
+package uk.gov.hmcts.reform.pip.publication.services.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

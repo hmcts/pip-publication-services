@@ -94,8 +94,7 @@ jacocoTestReport {
 
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 
-def sonarExclusions = ["src/main/java/uk/gov/hmcts/reform/pip/publication/services/config/WebClientConfiguration.java",
-                       "**/PdfCreationService.java"]
+def sonarExclusions = ["src/main/java/uk/gov/hmcts/reform/pip/publication/services/config/WebClientConfiguration.java"]
 
 sonarqube {
   properties {
@@ -178,7 +177,6 @@ dependencies {
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.19.0'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.19.0'
-  implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.7.1'
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
 
@@ -201,7 +199,6 @@ dependencies {
   testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.10.0'
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp-tls', version: '4.10.0'
-  testImplementation group: 'org.jsoup', name: 'jsoup', version: '1.15.3'
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath

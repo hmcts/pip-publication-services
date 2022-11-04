@@ -10,9 +10,6 @@ import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 
@@ -30,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -114,79 +109,11 @@ class NotifyTest {
         + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
         + SUBSCRIPTION_REQUEST;
 
-    private static final String VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL = "{\n"
-        + "  \"artefactId\": \"4d1e88f5-8457-4d93-8d11-1744a4bc16bd\",\n"
-        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
-        + "  \"subscriptions\": {\n"
-        + "    \"LOCATION_ID\": [\n"
-        + "      \"2\"\n"
-        + "    ]\n"
-        + "  }\n"
-        + "}";
-
-    private static final String VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"f94f0d2d-27e6-46f1-8528-e33eeac5728d\",\n"
-        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
-        + SUBSCRIPTION_REQUEST;
-
-    private static final String VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"af77ae82-b0c2-4515-8bc0-dc3fed1853d8\",\n"
-        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
-        + SUBSCRIPTION_REQUEST;
-
-    private static final String VALID_SJP_PUBLIC_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"31889528-ad90-4535-a02d-b7dcc9de1102\",\n"
-        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
-        + SUBSCRIPTION_REQUEST;
-
-    private static final String VALID_SJP_PRESS_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"email\": \"test_account_verified@hmcts.net\",\n"
-        + "  \"artefactId\": \"41ab3903-c87c-42b5-994f-9b55f6dcad48\",\n"
-        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
-        + SUBSCRIPTION_REQUEST;
-
-    private static final String VALID_COP_CAUSE_SUBS_EMAIL = "{\n"
-        + "  \"artefactId\": \"887d58b1-c177-4564-b6b2-da47bf899747\",\n"
-        + "  \"email\": \"test_account_verified@hmcts.net\",\n"
-        + "  \"subscriptions\": {\n"
-        + "    \"CASE_URN\": [\n"
-        + "      \"123\"\n"
-        + "    ]\n"
-        + "  }\n"
-        + "}";
-
-    private static final String VALID_SCSS_DAILY_LIST_SUBS_EMAIL =
-        "{\n  \"artefactId\": \"468ff616-449a-4fed-bc77-62f6640c2067\",\n"
-            + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
-            + "  \"subscriptions\": {\n"
-            + "    \"CASE_URN\": [\n"
-            + "      \"123\"\n]\n}\n}";
-
-    private static final String VALID_PRIMARY_HEALTH_TRIBUNAL_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"43bf6e71-9666-4a1d-98c2-fe2283395d49\",\n"
-        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
-        + SUBSCRIPTION_REQUEST;
-
-    private static final String VALID_CARE_STANDARDS_TRIBUNAL_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"4cb375f7-bed9-47be-9055-684f95b378d5\",\n"
-        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
-        + SUBSCRIPTION_REQUEST;
-
-    private static final String VALID_ET_DAILY_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"14f17281-e6ea-44e1-bbd5-6e2cd6d3d354\",\n"
-        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
-        + SUBSCRIPTION_REQUEST;
-
     private static final String VALID_MEDIA_VERIFICATION_EMAIL_BODY =
         "{\"fullName\": \"fullName\", \"email\": \"test@email.com\"}";
 
     private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY =
         "{\"email\": \"test@test.com\", \"fullName\": \"testName\", \"lastSignedInDate\": \"01 May 2022\"}";
-
-    private static final String VALID_CROWN_DAILY_LIST_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"b8c0fc62-eb51-404e-bf34-19ca7b80fc22\",\n"
-        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
-        + SUBSCRIPTION_REQUEST;
 
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
@@ -409,33 +336,6 @@ class NotifyTest {
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(NONEXISTENT_BLOB_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadGateway());
-    }
-
-    @ParameterizedTest
-    @MethodSource("parameters")
-    void testValidPayloadForAllSubsEmailTypesReturnsOk(String listType, String listSubscription) throws Exception {
-        MvcResult value = mockMvc.perform(post(SUBSCRIPTION_URL)
-                                              .content(listSubscription)
-                                              .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-            .andReturn();
-        assertThat(value.getResponse().getContentAsString()).as("Failed - List type = " + listType)
-            .contains(SUBS_EMAIL_SUCCESS);
-    }
-
-    private static Stream<Arguments> parameters() {
-        return Stream.of(
-            Arguments.of("SSCS Daily List", VALID_SCSS_DAILY_LIST_SUBS_EMAIL),
-            Arguments.of("SJP Public List", VALID_SJP_PUBLIC_SUBS_EMAIL),
-            Arguments.of("SJP Press List", VALID_SJP_PRESS_SUBS_EMAIL),
-            Arguments.of("COP Daily List", VALID_COP_CAUSE_SUBS_EMAIL),
-            Arguments.of("Family Daily Cause List", VALID_FAMILY_CAUSE_LIST_SUBS_EMAIL),
-            Arguments.of("Civil and Family Daily Cause List", VALID_CIVIL_AND_FAMILY_CAUSE_LIST_SUBS_EMAIL),
-            Arguments.of("Civil Daily Cause List", VALID_CIVIL_CAUSE_LIST_SUBS_EMAIL),
-            Arguments.of("Primary Health Tribunal Hearing List", VALID_PRIMARY_HEALTH_TRIBUNAL_LIST_SUBS_EMAIL),
-            Arguments.of("ET Daily List", VALID_ET_DAILY_LIST_SUBS_EMAIL),
-            Arguments.of("Care Standards Tribunal Hearing List", VALID_CARE_STANDARDS_TRIBUNAL_LIST_SUBS_EMAIL),
-            Arguments.of("Crown Daily List", VALID_CROWN_DAILY_LIST_SUBS_EMAIL)
-        );
     }
 
     @Test
