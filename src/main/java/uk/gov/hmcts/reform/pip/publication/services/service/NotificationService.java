@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.AdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
@@ -215,6 +216,13 @@ public class NotificationService {
      */
     public String handleMiDataForReporting() {
         EmailToSend email = emailService.buildMiDataReportingEmail(Templates.MI_DATA_REPORTING_EMAIL.template);
+        return emailService.sendEmail(email).getReference().orElse(null);
+    }
+
+    public String sendSystemAdminUpdateEmailRequest(AdminActionEmail body) {
+        EmailToSend email = emailService
+            .buildSystemAdminUpdateEmailEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
+
         return emailService.sendEmail(email).getReference().orElse(null);
     }
 }

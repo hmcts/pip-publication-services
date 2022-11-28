@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.AdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
@@ -77,6 +78,10 @@ public class PersonalisationService {
     private static final String ARRAY_OF_IDS = "array_of_ids";
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
     private static final String ENV_NAME = "env_name";
+    private static final String REQUESTER_NAME = "requestor_name";
+    private static final String CHANGE_TYPE = "change-type";
+    private static final String ACTION_RESULT = "attempted/succeeded";
+    private static final String ADDITIONAL_DETAILS = "Additional_change_detail";
 
     /**
      * Handles the personalisation for the Welcome email.
@@ -261,6 +266,16 @@ public class PersonalisationService {
         personalisation.put(FULL_NAME, body.getFullName());
         personalisation.put(LAST_SIGNED_IN_DATE, body.getLastSignedInDate());
         personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadAdminSignInPageLink());
+        return personalisation;
+    }
+
+    public Map<String, Object> buildSystemAdminUpdateEmailPersonalisation(AdminActionEmail body) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(REQUESTER_NAME, body.getName());
+        personalisation.put(ACTION_RESULT, body.getActionResult());
+        personalisation.put(CHANGE_TYPE, body.getChangeType());
+        personalisation.put(ADDITIONAL_DETAILS, body.getAdditionalInformation());
+
         return personalisation;
     }
 
