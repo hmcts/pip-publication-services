@@ -1,24 +1,15 @@
 package uk.gov.hmcts.reform.pip.publication.services.models.request;
 
 import lombok.Data;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
+import lombok.Value;
 
 @Data
-public class AdminActionEmail {
-    @Email
-    @NotNull
+@Value
+public class SystemAdminActionEmail {
+
     private String email;
-
-    @NotNull
     private String name;
-
-    @NotNull
     private String changeType;
-
-    @NotNull
     private String actionResult;
-
     private String additionalInformation;
 }

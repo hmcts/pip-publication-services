@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserN
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -82,6 +83,10 @@ class PersonalisationServiceTest {
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
     private static final String CONTENTS = "Contents";
     private static final String ERROR_MESSAGE = "error message";
+    private static final String REQUESTER_NAME = "requestor_name";
+    private static final String CHANGE_TYPE = "change-type";
+    private static final String ACTION_RESULT = "attempted/succeeded";
+    private static final String ADDITIONAL_DETAILS = "Additional_change_detail";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -495,5 +500,41 @@ class PersonalisationServiceTest {
                 .isInstanceOf(NotifyException.class)
                 .hasMessage(ERROR_MESSAGE);
         }
+    }
+
+    @Test
+    void testBuildSystemAdminUpdateEmailPersonalisation() {
+
+        SystemAdminActionEmail systemAdminActionEmail =
+            new SystemAdminActionEmail(EMAIL, FULL_NAME, "DELETE COURT",
+                                       "ATTEMPTED", "ADDITIONAL_INFORMATION");
+
+        Map<String, Object> personalisation =
+            personalisationService.buildSystemAdminUpdateEmailPersonalisation(systemAdminActionEmail);
+
+        Object requesterName = personalisation.get(REQUESTER_NAME);
+        assertNotNull(requesterName, "No Requester name found");
+        assertEquals(systemAdminActionEmail.getName(), requesterName,
+                     "Name does not match requester name"
+        );
+
+        Object changeType = personalisation.get(CHANGE_TYPE);
+        assertNotNull(changeType, "No change type found");
+        assertEquals(systemAdminActionEmail.getChangeType(), changeType,
+                     "Change Type does not match"
+        );
+
+        Object actionResult = personalisation.get(ACTION_RESULT);
+        assertNotNull(actionResult, "No action result found");
+        assertEquals(systemAdminActionEmail.getActionResult(), actionResult,
+                     "Action result does not match"
+        );
+
+        Object additionalDetails = personalisation.get(ADDITIONAL_DETAILS);
+        assertNotNull(additionalDetails, "No additional information found");
+        assertEquals(systemAdminActionEmail.getAdditionalInformation(), additionalDetails,
+                     "Additional information result does not match"
+        );
+
     }
 }

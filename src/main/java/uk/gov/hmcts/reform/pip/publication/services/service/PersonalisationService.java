@@ -14,13 +14,13 @@ import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.AdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -269,7 +269,7 @@ public class PersonalisationService {
         return personalisation;
     }
 
-    public Map<String, Object> buildSystemAdminUpdateEmailPersonalisation(AdminActionEmail body) {
+    public Map<String, Object> buildSystemAdminUpdateEmailPersonalisation(SystemAdminActionEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(REQUESTER_NAME, body.getName());
         personalisation.put(ACTION_RESULT, body.getActionResult());

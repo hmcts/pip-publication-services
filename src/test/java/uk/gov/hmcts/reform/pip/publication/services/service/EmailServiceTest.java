@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserN
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
@@ -307,5 +308,24 @@ class EmailServiceTest {
                 personalisation,
                 Templates.MI_DATA_REPORTING_EMAIL.template
             );
+    }
+
+    @Test
+    void buildSystemAdminUpdateEmailEmailReturnsSuccess() {
+        SystemAdminActionEmail systemAdminActionEmail = new SystemAdminActionEmail(EMAIL, FULL_NAME,
+            "Delete court", "Attempted", "additional information");
+
+        when(personalisationService.buildSystemAdminUpdateEmailPersonalisation(systemAdminActionEmail))
+            .thenReturn(personalisation);
+
+        EmailToSend systemAdminEmail = emailService.buildSystemAdminUpdateEmailEmail(
+            systemAdminActionEmail, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
+
+        assertEquals(EMAIL, systemAdminEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, systemAdminEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
+        assertNotNull(systemAdminEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
+        assertEquals(Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template, systemAdminEmail.getTemplate(),
+                     TEMPLATE_MESSAGE
+        );
     }
 }

@@ -8,12 +8,12 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.AdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -219,7 +219,7 @@ public class NotificationService {
         return emailService.sendEmail(email).getReference().orElse(null);
     }
 
-    public String sendSystemAdminUpdateEmailRequest(AdminActionEmail body) {
+    public String sendSystemAdminUpdateEmailRequest(SystemAdminActionEmail body) {
         EmailToSend email = emailService
             .buildSystemAdminUpdateEmailEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
 

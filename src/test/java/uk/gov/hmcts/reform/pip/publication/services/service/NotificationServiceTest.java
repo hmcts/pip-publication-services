@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserN
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -87,6 +88,15 @@ class NotificationServiceTest {
         Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template,
         personalisationMap,
         SUCCESS_REF_ID
+    );
+
+    private static final String REQUESTER_NAME = "Name";
+    private static final String ACTION = "Delete court";
+    private static final String ACTION_RESULT = "Attempted";
+    private static final String ADDITIONAL_INFO = "Additional information";
+
+    private static final SystemAdminActionEmail VALID_BODY_ADMIN_ACTION_EMAIL = new SystemAdminActionEmail(
+        REQUESTER_NAME, EMAIL, ACTION, ACTION_RESULT, ADDITIONAL_INFO
     );
 
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
@@ -322,5 +332,16 @@ class NotificationServiceTest {
 
         assertEquals(SUCCESS_REF_ID, notificationService.handleMiDataForReporting(),
                      "Handling MI data reporting notification should return successful reference ID");
+    }
+
+    @Test
+    void testValidPayloadReturnsSuccessSystemAdminUpdateEmail() {
+        when(emailService.buildSystemAdminUpdateEmailEmail(VALID_BODY_ADMIN_ACTION_EMAIL,
+                                                           Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template))
+            .thenReturn(validEmailBodyForEmailClient);
+        assertEquals(SUCCESS_REF_ID, notificationService
+                         .sendSystemAdminUpdateEmailRequest(VALID_BODY_ADMIN_ACTION_EMAIL),
+                     EXISTING_REFERENCE_ID
+        );
     }
 }

@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -63,6 +64,7 @@ class NotificationControllerTest {
     private MediaVerificationEmail mediaVerificationEmail;
     private InactiveUserNotificationEmail inactiveUserNotificationEmail;
     private ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
+    private SystemAdminActionEmail systemAdminActionEmail;
 
     @Mock
     private NotificationService notificationService;
@@ -94,6 +96,9 @@ class NotificationControllerTest {
         createMediaSetupEmail.setEmail("a@b.com");
         createMediaSetupEmail.setFullName("testName");
 
+        systemAdminActionEmail = new SystemAdminActionEmail(VALID_EMAIL, FULL_NAME, "Action",
+                                                            "Action result",
+                                                            "additional information");
 
         when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
         when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
@@ -115,6 +120,7 @@ class NotificationControllerTest {
             .thenReturn(SUCCESS_ID);
         when(notificationService.inactiveUserNotificationEmailRequest(inactiveUserNotificationEmail))
             .thenReturn(SUCCESS_ID);
+        when(notificationService.sendSystemAdminUpdateEmailRequest(systemAdminActionEmail)).thenReturn(SUCCESS_ID);
     }
 
     @Test
@@ -257,5 +263,22 @@ class NotificationControllerTest {
                 HttpStatus.OK,
                 "MI data reporting email successfully sent with referenceId: " + SUCCESS_ID
             );
+    }
+
+    @Test
+    void testSendSystemAdminUpdateShouldReturnSuccessMessage() {
+        assertTrue(
+            notificationController.sendSystemAdminUpdate(systemAdminActionEmail).getBody()
+                .contains("Send notification email email successfully to all system admin with referenceId"),
+            MESSAGES_MATCH
+        );
+    }
+
+    @Test
+    void testSendSystemAdminUpdateShouldReturnOkResponse() {
+        assertEquals(HttpStatus.OK, notificationController
+                         .sendSystemAdminUpdate(systemAdminActionEmail).getStatusCode(),
+                     STATUS_CODES_MATCH
+        );
     }
 }
