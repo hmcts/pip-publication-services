@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
+import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
+import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
@@ -24,7 +27,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserN
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -505,34 +507,37 @@ class PersonalisationServiceTest {
     @Test
     void testBuildSystemAdminUpdateEmailPersonalisation() {
 
-        SystemAdminActionEmail systemAdminActionEmail =
-            new SystemAdminActionEmail(EMAIL, FULL_NAME, "DELETE COURT",
-                                       "ATTEMPTED", "ADDITIONAL_INFORMATION");
+        DeleteLocationAction systemAdminAction = new DeleteLocationAction();
+        systemAdminAction.setRequesterName(FULL_NAME);
+        systemAdminAction.setEmailList(List.of(EMAIL));
+        systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
+        systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
+        systemAdminAction.setDetailString("Testing details");
 
         Map<String, Object> personalisation =
-            personalisationService.buildSystemAdminUpdateEmailPersonalisation(systemAdminActionEmail);
+            personalisationService.buildSystemAdminUpdateEmailPersonalisation(systemAdminAction);
 
         Object requesterName = personalisation.get(REQUESTER_NAME);
         assertNotNull(requesterName, "No Requester name found");
-        assertEquals(systemAdminActionEmail.getName(), requesterName,
+        assertEquals(systemAdminAction.getRequesterName(), requesterName,
                      "Name does not match requester name"
         );
 
         Object changeType = personalisation.get(CHANGE_TYPE);
         assertNotNull(changeType, "No change type found");
-        assertEquals(systemAdminActionEmail.getChangeType(), changeType,
+        assertEquals(systemAdminAction.getChangeType().label, changeType,
                      "Change Type does not match"
         );
 
         Object actionResult = personalisation.get(ACTION_RESULT);
         assertNotNull(actionResult, "No action result found");
-        assertEquals(systemAdminActionEmail.getActionResult(), actionResult,
+        assertEquals(systemAdminAction.getActionResult().label, actionResult,
                      "Action result does not match"
         );
 
         Object additionalDetails = personalisation.get(ADDITIONAL_DETAILS);
         assertNotNull(additionalDetails, "No additional information found");
-        assertEquals(systemAdminActionEmail.getAdditionalInformation(), additionalDetails,
+        assertEquals(systemAdminAction.getDetailString(), additionalDetails,
                      "Additional information result does not match"
         );
 

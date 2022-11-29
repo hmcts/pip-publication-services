@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserN
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -269,12 +269,12 @@ public class PersonalisationService {
         return personalisation;
     }
 
-    public Map<String, Object> buildSystemAdminUpdateEmailPersonalisation(SystemAdminActionEmail body) {
+    public Map<String, Object> buildSystemAdminUpdateEmailPersonalisation(SystemAdminAction body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put(REQUESTER_NAME, body.getName());
-        personalisation.put(ACTION_RESULT, body.getActionResult());
-        personalisation.put(CHANGE_TYPE, body.getChangeType());
-        personalisation.put(ADDITIONAL_DETAILS, body.getAdditionalInformation());
+        personalisation.put(REQUESTER_NAME, body.getRequesterName());
+        personalisation.put(ACTION_RESULT, body.getActionResult().label);
+        personalisation.put(CHANGE_TYPE, body.getChangeType().label);
+        personalisation.put(ADDITIONAL_DETAILS, body.createAdditionalChangeDetail());
 
         return personalisation;
     }

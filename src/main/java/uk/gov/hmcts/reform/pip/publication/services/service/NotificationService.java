@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
@@ -13,12 +14,12 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -219,10 +220,15 @@ public class NotificationService {
         return emailService.sendEmail(email).getReference().orElse(null);
     }
 
-    public String sendSystemAdminUpdateEmailRequest(SystemAdminActionEmail body) {
-        EmailToSend email = emailService
+    public List<String> sendSystemAdminUpdateEmailRequest(SystemAdminAction body) {
+        List<EmailToSend> email = emailService
             .buildSystemAdminUpdateEmailEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
 
-        return emailService.sendEmail(email).getReference().orElse(null);
+        var sentEmails = new ArrayList<String>();
+        email.forEach(emailToSend -> {
+            sentEmails.add(emailService.sendEmail(emailToSend).getReference().orElse(null));
+
+        });
+        return sentEmails;
     }
 }

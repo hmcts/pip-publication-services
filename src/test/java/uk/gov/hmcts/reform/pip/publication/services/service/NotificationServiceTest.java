@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
+import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
+import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
+import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
@@ -17,7 +21,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserN
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -37,7 +40,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@SuppressWarnings({"PMD.TooManyMethods"})
+@SuppressWarnings({"PMD"})
 class NotificationServiceTest {
     private final Map<String, Object> personalisationMap = Map.ofEntries(
         entry("email", VALID_BODY_AAD.getEmail()),
@@ -90,14 +93,7 @@ class NotificationServiceTest {
         SUCCESS_REF_ID
     );
 
-    private static final String REQUESTER_NAME = "Name";
-    private static final String ACTION = "Delete court";
-    private static final String ACTION_RESULT = "Attempted";
-    private static final String ADDITIONAL_INFO = "Additional information";
-
-    private static final SystemAdminActionEmail VALID_BODY_ADMIN_ACTION_EMAIL = new SystemAdminActionEmail(
-        REQUESTER_NAME, EMAIL, ACTION, ACTION_RESULT, ADDITIONAL_INFO
-    );
+    private SystemAdminAction systemAdminActionEmailBody;
 
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
 
@@ -128,6 +124,12 @@ class NotificationServiceTest {
     void setup() {
         LOCATIONS_MAP.put("test", "1234");
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
+        systemAdminActionEmailBody = new DeleteLocationAction();
+        systemAdminActionEmailBody.setRequesterName(FULL_NAME);
+        systemAdminActionEmailBody.setEmailList(List.of(EMAIL));
+        systemAdminActionEmailBody.setChangeType(ChangeType.DELETE_LOCATION);
+        systemAdminActionEmailBody.setActionResult(ActionResult.ATTEMPTED);
+
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
         when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
         when(emailService.sendEmail(validEmailBodyForDuplicateMediaUserClient)).thenReturn(sendEmailResponse);
@@ -336,11 +338,11 @@ class NotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessSystemAdminUpdateEmail() {
-        when(emailService.buildSystemAdminUpdateEmailEmail(VALID_BODY_ADMIN_ACTION_EMAIL,
+        when(emailService.buildSystemAdminUpdateEmailEmail(systemAdminActionEmailBody,
                                                            Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template))
-            .thenReturn(validEmailBodyForEmailClient);
-        assertEquals(SUCCESS_REF_ID, notificationService
-                         .sendSystemAdminUpdateEmailRequest(VALID_BODY_ADMIN_ACTION_EMAIL),
+            .thenReturn(List.of(validEmailBodyForEmailClient));
+        assertEquals(List.of(SUCCESS_REF_ID), notificationService
+                         .sendSystemAdminUpdateEmailRequest(systemAdminActionEmailBody),
                      EXISTING_REFERENCE_ID
         );
     }

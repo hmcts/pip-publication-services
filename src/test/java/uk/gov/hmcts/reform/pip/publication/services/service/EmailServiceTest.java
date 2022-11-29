@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
+import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
+import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientConfigurationTest;
@@ -18,7 +21,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserN
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
@@ -36,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings({"PMD.TooManyMethods"})
+@SuppressWarnings({"PMD"})
 @SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
 @ActiveProfiles("test")
 class EmailServiceTest {
@@ -312,19 +314,22 @@ class EmailServiceTest {
 
     @Test
     void buildSystemAdminUpdateEmailEmailReturnsSuccess() {
-        SystemAdminActionEmail systemAdminActionEmail = new SystemAdminActionEmail(EMAIL, FULL_NAME,
-            "Delete court", "Attempted", "additional information");
+        DeleteLocationAction systemAdminAction = new DeleteLocationAction();
+        systemAdminAction.setRequesterName(FULL_NAME);
+        systemAdminAction.setEmailList(List.of(EMAIL));
+        systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
+        systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
-        when(personalisationService.buildSystemAdminUpdateEmailPersonalisation(systemAdminActionEmail))
+        when(personalisationService.buildSystemAdminUpdateEmailPersonalisation(systemAdminAction))
             .thenReturn(personalisation);
 
-        EmailToSend systemAdminEmail = emailService.buildSystemAdminUpdateEmailEmail(
-            systemAdminActionEmail, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
+        List<EmailToSend> systemAdminEmail = emailService.buildSystemAdminUpdateEmailEmail(
+            systemAdminAction, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
 
-        assertEquals(EMAIL, systemAdminEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
-        assertEquals(personalisation, systemAdminEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
-        assertNotNull(systemAdminEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
-        assertEquals(Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template, systemAdminEmail.getTemplate(),
+        assertEquals(EMAIL, systemAdminEmail.get(0).getEmailAddress(), GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, systemAdminEmail.get(0).getPersonalisation(), PERSONALISATION_MESSAGE);
+        assertNotNull(systemAdminEmail.get(0).getReferenceId(), REFERENCE_ID_MESSAGE);
+        assertEquals(Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template, systemAdminEmail.get(0).getTemplate(),
                      TEMPLATE_MESSAGE
         );
     }

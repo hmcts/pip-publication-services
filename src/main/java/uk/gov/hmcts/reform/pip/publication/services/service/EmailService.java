@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
@@ -13,11 +14,12 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -83,19 +85,31 @@ public class EmailService {
                              personalisationService.buildInactiveUserNotificationPersonalisation(body));
     }
 
-    protected EmailToSend buildSystemAdminUpdateEmailEmail(SystemAdminActionEmail body, String template) {
-        return generateEmail(body.getEmail(), template,
+    protected List<EmailToSend> buildSystemAdminUpdateEmailEmail(SystemAdminAction body, String template) {
+        return generateEmail(body.getEmailList(), template,
                              personalisationService.buildSystemAdminUpdateEmailPersonalisation(body));
     }
 
-    protected EmailToSend buildMiDataReportingEmail(String template) {
-        return generateEmail(piTeamEmail, template,
-                             personalisationService.buildMiDataReportingPersonalisation());
+    private List<EmailToSend> generateEmail(List<String> email, String template, Map<String, Object> personalisation) {
+
+        var createdEmails = new ArrayList<EmailToSend>();
+
+        for (String notifyEmail : email) {
+            String referenceId = UUID.randomUUID().toString();
+            createdEmails.add(new EmailToSend(notifyEmail, template, personalisation, referenceId));
+        }
+
+        return createdEmails;
     }
 
     private EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {
         String referenceId = UUID.randomUUID().toString();
         return new EmailToSend(email, template, personalisation, referenceId);
+    }
+
+    protected EmailToSend buildMiDataReportingEmail(String template) {
+        return generateEmail(piTeamEmail, template,
+                             personalisationService.buildMiDataReportingPersonalisation());
     }
 
     public SendEmailResponse sendEmail(EmailToSend emailToSend) {

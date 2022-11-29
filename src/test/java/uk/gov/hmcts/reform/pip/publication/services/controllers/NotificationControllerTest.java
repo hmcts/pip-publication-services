@@ -8,6 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
+import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
+import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
+import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
@@ -15,7 +19,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SystemAdminActionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -64,7 +67,7 @@ class NotificationControllerTest {
     private MediaVerificationEmail mediaVerificationEmail;
     private InactiveUserNotificationEmail inactiveUserNotificationEmail;
     private ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
-    private SystemAdminActionEmail systemAdminActionEmail;
+    private SystemAdminAction systemAdminAction;
 
     @Mock
     private NotificationService notificationService;
@@ -96,9 +99,11 @@ class NotificationControllerTest {
         createMediaSetupEmail.setEmail("a@b.com");
         createMediaSetupEmail.setFullName("testName");
 
-        systemAdminActionEmail = new SystemAdminActionEmail(VALID_EMAIL, FULL_NAME, "Action",
-                                                            "Action result",
-                                                            "additional information");
+        systemAdminAction = new DeleteLocationAction();
+        systemAdminAction.setRequesterName(FULL_NAME);
+        systemAdminAction.setEmailList(List.of(VALID_EMAIL));
+        systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
+        systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
         when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
         when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
@@ -120,7 +125,7 @@ class NotificationControllerTest {
             .thenReturn(SUCCESS_ID);
         when(notificationService.inactiveUserNotificationEmailRequest(inactiveUserNotificationEmail))
             .thenReturn(SUCCESS_ID);
-        when(notificationService.sendSystemAdminUpdateEmailRequest(systemAdminActionEmail)).thenReturn(SUCCESS_ID);
+        when(notificationService.sendSystemAdminUpdateEmailRequest(systemAdminAction)).thenReturn(List.of());
     }
 
     @Test
@@ -268,7 +273,7 @@ class NotificationControllerTest {
     @Test
     void testSendSystemAdminUpdateShouldReturnSuccessMessage() {
         assertTrue(
-            notificationController.sendSystemAdminUpdate(systemAdminActionEmail).getBody()
+            notificationController.sendSystemAdminUpdate(systemAdminAction).getBody()
                 .contains("Send notification email email successfully to all system admin with referenceId"),
             MESSAGES_MATCH
         );
@@ -277,7 +282,7 @@ class NotificationControllerTest {
     @Test
     void testSendSystemAdminUpdateShouldReturnOkResponse() {
         assertEquals(HttpStatus.OK, notificationController
-                         .sendSystemAdminUpdate(systemAdminActionEmail).getStatusCode(),
+                         .sendSystemAdminUpdate(systemAdminAction).getStatusCode(),
                      STATUS_CODES_MATCH
         );
     }
