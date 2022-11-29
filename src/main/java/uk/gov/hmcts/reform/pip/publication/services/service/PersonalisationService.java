@@ -54,6 +54,9 @@ public class PersonalisationService {
     @Value("${env-name}")
     private String envName;
 
+    @Value("${file-retention-weeks}")
+    private String fileRetentionWeeks;
+
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
@@ -76,7 +79,6 @@ public class PersonalisationService {
     private static final String ARRAY_OF_IDS = "array_of_ids";
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
     private static final String ENV_NAME = "env_name";
-    private static final String FILE_RETENTION_WEEKS = "78 weeks";
 
     /**
      * Handles the personalisation for the Welcome email.
@@ -146,11 +148,11 @@ public class PersonalisationService {
 
             personalisation.put("display_pdf", pdfWithinSize);
             personalisation.put(LINK_TO_FILE, pdfWithinSize ? prepareUpload(artefactPdf, false,
-                                false, FILE_RETENTION_WEEKS) : "");
+                                false, fileRetentionWeeks) : "");
 
             personalisation.put("display_excel", excelWithinSize);
             personalisation.put("excel_link_to_file", excelWithinSize ? prepareUpload(artefactExcel,
-                        false, false, FILE_RETENTION_WEEKS) : "");
+                        false, false, fileRetentionWeeks) : "");
 
             personalisation.put("testing_of_array",
                                 channelManagementService.getArtefactSummary(artefact.getArtefactId()));
@@ -186,8 +188,8 @@ public class PersonalisationService {
             String sourceArtefactId = artefact.getSourceArtefactId();
             JSONObject uploadedFile = !Strings.isNullOrEmpty(sourceArtefactId) && sourceArtefactId.endsWith(".csv")
                 ? prepareUpload(artefactData, true,
-                                                   false, FILE_RETENTION_WEEKS)
-                : prepareUpload(artefactData, false, false, FILE_RETENTION_WEEKS);
+                                                   false, fileRetentionWeeks)
+                : prepareUpload(artefactData, false, false, fileRetentionWeeks);
 
             personalisation.put(LINK_TO_FILE, uploadedFile);
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
@@ -212,7 +214,7 @@ public class PersonalisationService {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             personalisation.put(LINK_TO_FILE, prepareUpload(csvMediaApplications, true,
-                                                                        false, FILE_RETENTION_WEEKS));
+                                                                        false, fileRetentionWeeks));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
             return personalisation;
         } catch (NotificationClientException e) {
@@ -313,7 +315,7 @@ public class PersonalisationService {
         try {
             byte[] excel = fileCreationService.generateMiReport();
             personalisation.put(LINK_TO_FILE, prepareUpload(excel, false,
-                false, FILE_RETENTION_WEEKS));
+                false, fileRetentionWeeks));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
         } catch (IOException e) {
             log.warn("Error generating excel file attachment");
