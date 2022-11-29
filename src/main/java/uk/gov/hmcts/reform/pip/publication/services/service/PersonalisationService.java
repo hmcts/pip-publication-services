@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
-import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
@@ -31,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.convertEnvironmentName;
+import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 /**
  * This class handles any personalisation for the emails.
@@ -146,11 +145,11 @@ public class PersonalisationService {
             boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;
 
             personalisation.put("display_pdf", pdfWithinSize);
-            personalisation.put(LINK_TO_FILE, pdfWithinSize ? EmailClient.prepareUpload(artefactPdf, false,
+            personalisation.put(LINK_TO_FILE, pdfWithinSize ? prepareUpload(artefactPdf, false,
                                 false, FILE_RETENTION_WEEKS) : "");
 
             personalisation.put("display_excel", excelWithinSize);
-            personalisation.put("excel_link_to_file", excelWithinSize ? EmailClient.prepareUpload(artefactExcel,
+            personalisation.put("excel_link_to_file", excelWithinSize ? prepareUpload(artefactExcel,
                         false, false, FILE_RETENTION_WEEKS) : "");
 
             personalisation.put("testing_of_array",
@@ -186,9 +185,9 @@ public class PersonalisationService {
 
             String sourceArtefactId = artefact.getSourceArtefactId();
             JSONObject uploadedFile = !Strings.isNullOrEmpty(sourceArtefactId) && sourceArtefactId.endsWith(".csv")
-                ? NotificationClient.prepareUpload(artefactData, true,
+                ? prepareUpload(artefactData, true,
                                                    false, FILE_RETENTION_WEEKS)
-                : NotificationClient.prepareUpload(artefactData, false, false, FILE_RETENTION_WEEKS);
+                : prepareUpload(artefactData, false, false, FILE_RETENTION_WEEKS);
 
             personalisation.put(LINK_TO_FILE, uploadedFile);
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
@@ -212,7 +211,7 @@ public class PersonalisationService {
     public Map<String, Object> buildMediaApplicationsReportingPersonalisation(byte[] csvMediaApplications) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
-            personalisation.put(LINK_TO_FILE, EmailClient.prepareUpload(csvMediaApplications, true,
+            personalisation.put(LINK_TO_FILE, prepareUpload(csvMediaApplications, true,
                                                                         false, FILE_RETENTION_WEEKS));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
             return personalisation;
@@ -313,7 +312,7 @@ public class PersonalisationService {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         try {
             byte[] excel = fileCreationService.generateMiReport();
-            personalisation.put(LINK_TO_FILE, EmailClient.prepareUpload(excel, false,
+            personalisation.put(LINK_TO_FILE, prepareUpload(excel, false,
                 false, FILE_RETENTION_WEEKS));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
         } catch (IOException e) {
