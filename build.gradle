@@ -140,7 +140,7 @@ repositories {
 def versions = [
   junit           : '5.9.1',
   junitPlatform   : '1.9.1',
-  reformLogging   : '5.1.9',
+  reformLogging   : '6.0.1',
   springBoot      : springBoot.class.package.implementationVersion,
 ]
 
@@ -170,6 +170,8 @@ dependencies {
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.12'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
+  implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.2'
+
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.3-RELEASE'
   implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '1.2.1', {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
