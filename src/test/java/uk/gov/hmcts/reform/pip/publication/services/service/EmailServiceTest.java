@@ -323,7 +323,7 @@ class EmailServiceTest {
         when(personalisationService.buildSystemAdminUpdateEmailPersonalisation(systemAdminAction))
             .thenReturn(personalisation);
 
-        List<EmailToSend> systemAdminEmail = emailService.buildSystemAdminUpdateEmailEmail(
+        List<EmailToSend> systemAdminEmail = emailService.buildSystemAdminUpdateEmail(
             systemAdminAction, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
 
         assertEquals(EMAIL, systemAdminEmail.get(0).getEmailAddress(), GENERATED_EMAIL_MESSAGE);

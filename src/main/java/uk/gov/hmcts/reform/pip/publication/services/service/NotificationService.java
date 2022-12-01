@@ -222,7 +222,7 @@ public class NotificationService {
 
     public List<String> sendSystemAdminUpdateEmailRequest(SystemAdminAction body) {
         List<EmailToSend> email = emailService
-            .buildSystemAdminUpdateEmailEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
+            .buildSystemAdminUpdateEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
 
         var sentEmails = new ArrayList<String>();
         email.forEach(emailToSend -> {

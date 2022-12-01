@@ -85,7 +85,7 @@ public class EmailService {
                              personalisationService.buildInactiveUserNotificationPersonalisation(body));
     }
 
-    protected List<EmailToSend> buildSystemAdminUpdateEmailEmail(SystemAdminAction body, String template) {
+    protected List<EmailToSend> buildSystemAdminUpdateEmail(SystemAdminAction body, String template) {
         return generateEmail(body.getEmailList(), template,
                              personalisationService.buildSystemAdminUpdateEmailPersonalisation(body));
     }

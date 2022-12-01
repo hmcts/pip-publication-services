@@ -338,7 +338,7 @@ class NotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessSystemAdminUpdateEmail() {
-        when(emailService.buildSystemAdminUpdateEmailEmail(systemAdminActionEmailBody,
+        when(emailService.buildSystemAdminUpdateEmail(systemAdminActionEmailBody,
                                                            Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template))
             .thenReturn(List.of(validEmailBodyForEmailClient));
         assertEquals(List.of(SUCCESS_REF_ID), notificationService
