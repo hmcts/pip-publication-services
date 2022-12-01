@@ -28,6 +28,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -272,9 +273,10 @@ public class PersonalisationService {
     public Map<String, Object> buildSystemAdminUpdateEmailPersonalisation(SystemAdminAction body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(REQUESTER_NAME, body.getRequesterName());
-        personalisation.put(ACTION_RESULT, body.getActionResult().label);
+        personalisation.put(ACTION_RESULT, body.getActionResult().label.toLowerCase(Locale.ENGLISH));
         personalisation.put(CHANGE_TYPE, body.getChangeType().label);
         personalisation.put(ADDITIONAL_DETAILS, body.createAdditionalChangeDetail());
+        personalisation.put(ENV_NAME, convertEnvironmentName(envName));
 
         return personalisation;
     }
