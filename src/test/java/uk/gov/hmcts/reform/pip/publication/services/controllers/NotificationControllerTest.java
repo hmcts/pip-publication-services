@@ -242,4 +242,21 @@ class NotificationControllerTest {
                 "Inactive user sign-in notification email successfully sent with referenceId: SuccessId"
             );
     }
+
+    @Test
+    @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
+    void testSendMiReportingEmailReturnsOk() {
+        when(notificationService.handleMiDataForReporting()).thenReturn(SUCCESS_ID);
+
+        assertThat(notificationController.sendMiReportingEmail())
+            .as("Response does not match")
+            .extracting(
+                ResponseEntity::getStatusCode,
+                ResponseEntity::getBody
+            )
+            .contains(
+                HttpStatus.OK,
+                "MI data reporting email successfully sent with referenceId: " + SUCCESS_ID
+            );
+    }
 }

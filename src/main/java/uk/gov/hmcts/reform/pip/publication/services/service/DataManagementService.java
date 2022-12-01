@@ -71,4 +71,14 @@ public class DataManagementService {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
     }
+
+    public String getMiData() {
+        try {
+            return webClient.get().uri(String.format("%s/publication/mi-data", url))
+                .retrieve()
+                .bodyToMono(String.class).block();
+        } catch (WebClientResponseException ex) {
+            throw new ServiceToServiceException(SERVICE, ex.getMessage());
+        }
+    }
 }

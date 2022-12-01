@@ -4,14 +4,18 @@ import org.jose4j.base64url.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
@@ -21,7 +25,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
-import uk.gov.hmcts.reform.pip.publication.services.service.artefactsummary.ArtefactSummaryService;
+import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,11 +36,12 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -75,6 +81,7 @@ class PersonalisationServiceTest {
     private static final String LOCATION_MESSAGE = "Location not as expected";
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
     private static final String CONTENTS = "Contents";
+    private static final String ERROR_MESSAGE = "error message";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -86,10 +93,10 @@ class PersonalisationServiceTest {
     DataManagementService dataManagementService;
 
     @MockBean
-    FileCreationService fileCreationService;
+    ChannelManagementService channelManagementService;
 
     @MockBean
-    ArtefactSummaryService artefactSummaryService;
+    FileCreationService fileCreationService;
 
     private static Location location;
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
@@ -99,6 +106,11 @@ class PersonalisationServiceTest {
 
     private static final Map<SubscriptionTypes, List<String>> SUBSCRIPTIONS = new ConcurrentHashMap<>();
     private static final SubscriptionEmail SUBSCRIPTIONS_EMAIL = new SubscriptionEmail();
+
+    private static final Map<FileType, byte[]> FILES_MAP = new ConcurrentHashMap<>();
+
+
+    private static final byte[] TEST_BYTE_ARRAY = HELLO.getBytes();
 
     @BeforeAll
     public static void setup() {
@@ -114,6 +126,9 @@ class PersonalisationServiceTest {
         SUBSCRIPTIONS_EMAIL.setEmail(EMAIL);
         SUBSCRIPTIONS_EMAIL.setArtefactId(ARTEFACT_ID);
         SUBSCRIPTIONS_EMAIL.setSubscriptions(SUBSCRIPTIONS);
+
+        FILES_MAP.put(FileType.PDF, TEST_BYTE_ARRAY);
+        FILES_MAP.put(FileType.EXCEL, TEST_BYTE_ARRAY);
     }
 
     @Test
@@ -174,18 +189,13 @@ class PersonalisationServiceTest {
     }
 
     @Test
-    void buildRawDataWhenAllPresent() throws IOException {
+    void buildRawDataWhenAllPresent() {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
-
-        byte[] testByteArray = HELLO.getBytes();
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("<Placeholder>");
-        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(testByteArray);
-        when(fileCreationService.generatePdfFromHtml(any(), eq(true))).thenReturn(testByteArray);
-        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
+        when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
+        when(channelManagementService.getArtefactFiles(any())).thenReturn(FILES_MAP);
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
@@ -205,12 +215,12 @@ class PersonalisationServiceTest {
         assertEquals(ListType.SJP_PUBLIC_LIST, personalisation.get("list_type"),
                      LIST_TYPE_MESSAGE
         );
-        assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
+        assertEquals(Base64.encode(TEST_BYTE_ARRAY), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
                      LINK_TO_FILE_MESSAGE
         );
-        assertEquals(Base64.encode(testByteArray), ((JSONObject) personalisation.get(EXCEL_LINK_TO_FILE)).get(FILE),
+        assertEquals(Base64.encode(TEST_BYTE_ARRAY), ((JSONObject) personalisation.get(EXCEL_LINK_TO_FILE)).get(FILE),
                      LINK_TO_FILE_MESSAGE);
-        assertEquals("hi", personalisation.get("testing_of_array"),
+        assertEquals(HELLO, personalisation.get("testing_of_array"),
                      "testing_of_array does not match expected value"
         );
 
@@ -220,22 +230,6 @@ class PersonalisationServiceTest {
         assertEquals(personalisationLinks.getStartPageLink(), startPageLink,
                      "Start page link does not match expected link"
         );
-    }
-
-    @Test
-    void buildRawDataFileWhenUploadFails() throws IOException {
-        Artefact artefact = new Artefact();
-        artefact.setArtefactId(UUID.randomUUID());
-        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
-        byte[] overSizeArray = new byte[2_100_000];
-        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(fileCreationService.generatePdfFromHtml(HELLO, true)).thenReturn(overSizeArray);
-        when(fileCreationService.generateExcelSpreadsheet(UUID.randomUUID())).thenReturn(overSizeArray);
-
-        assertThrows(NotifyException.class, () ->
-            personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact), "desired "
-                         + "exception was not thrown");
     }
 
     @Test
@@ -338,7 +332,7 @@ class PersonalisationServiceTest {
     }
 
     @Test
-    void testLocationMissing() throws IOException {
+    void testLocationMissing() {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN_VALUE));
         subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of(CASE_NUMBER_VALUE));
@@ -351,11 +345,9 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
-        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
-        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(fileCreationService.generatePdfFromHtml(HELLO, true)).thenReturn(HELLO.getBytes());
-        when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(new byte[0]);
-        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
+
+        when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
+        when(channelManagementService.getArtefactFiles(any())).thenReturn(FILES_MAP);
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
@@ -367,7 +359,7 @@ class PersonalisationServiceTest {
     }
 
     @Test
-    void testNonLocationMissing() throws IOException {
+    void testNonLocationMissing() {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of(CASE_URN));
         subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID));
@@ -378,19 +370,13 @@ class PersonalisationServiceTest {
         subscriptionEmail.setArtefactId(uuid);
         subscriptionEmail.setSubscriptions(subscriptions);
 
-
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
-        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
-        when(fileCreationService.jsonToHtml(artefact.getArtefactId())).thenReturn(HELLO);
-        when(fileCreationService.generatePdfFromHtml(HELLO, true)).thenReturn(HELLO.getBytes());
-        when(fileCreationService.generateExcelSpreadsheet(artefact.getArtefactId())).thenReturn(new byte[0]);
-        when(dataManagementService.getArtefactJsonBlob(uuid)).thenReturn("h");
-        when(artefactSummaryService.artefactSummary(any(), any())).thenReturn("hi");
+        when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
+        when(channelManagementService.getArtefactFiles(any())).thenReturn(FILES_MAP);
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
@@ -481,5 +467,35 @@ class PersonalisationServiceTest {
                 "https://pip-frontend.staging.platform.hmcts.net/admin-dashboard",
                 "https://pip-frontend.staging.platform.hmcts.net/cft-login"
             );
+    }
+
+    @Test
+    void testBuildMiDataReportingPersonalisation() throws IOException {
+        when(fileCreationService.generateMiReport()).thenReturn(TEST_BYTE);
+        assertThat(personalisationService.buildMiDataReportingPersonalisation())
+            .as("Personalisation data does not match")
+            .hasSize(2)
+            .extracting(p -> ((JSONObject) p.get(LINK_TO_FILE)).get(FILE))
+            .isEqualTo(Base64.encode(TEST_BYTE));
+    }
+
+    @Test
+    void testBuildMiDataReportingWithExcelCreationException() throws IOException {
+        when(fileCreationService.generateMiReport()).thenThrow(new IOException(ERROR_MESSAGE));
+        assertThatThrownBy(() -> personalisationService.buildMiDataReportingPersonalisation())
+            .isInstanceOf(ExcelCreationException.class)
+            .hasMessage(ERROR_MESSAGE);
+    }
+
+    @Test
+    void testBuildMiDataReportingWithNotifyException() throws IOException {
+        when(fileCreationService.generateMiReport()).thenReturn(TEST_BYTE);
+        try (MockedStatic mockStatic = mockStatic(NotificationClient.class)) {
+            mockStatic.when(() -> EmailClient.prepareUpload(TEST_BYTE))
+                .thenThrow(new NotificationClientException(ERROR_MESSAGE));
+            assertThatThrownBy(() -> personalisationService.buildMiDataReportingPersonalisation())
+                .isInstanceOf(NotifyException.class)
+                .hasMessage(ERROR_MESSAGE);
+        }
     }
 }

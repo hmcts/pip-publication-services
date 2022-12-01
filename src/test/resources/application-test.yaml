@@ -12,7 +12,9 @@ notify:
   pi-team-email: test@email.com
 service-to-service:
   data-management: localhost:8081
-
+  channel-management: localhost:8181
+  subscription-management: localhost:8081
+  account-management: localhost:8081
 error-handling:
   num-of-retries: 3
   backoff: 2

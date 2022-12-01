@@ -329,4 +329,12 @@ class NotificationServiceTest {
                      "Inactive user notification should return successful reference ID");
     }
 
+    @Test
+    void testHandleMiDataReportingReturnsSuccess() {
+        when(emailService.buildMiDataReportingEmail(Templates.MI_DATA_REPORTING_EMAIL.template))
+            .thenReturn(validEmailBodyForEmailClient);
+
+        assertEquals(SUCCESS_REF_ID, notificationService.handleMiDataForReporting(),
+                     "Handling MI data reporting notification should return successful reference ID");
+    }
 }
