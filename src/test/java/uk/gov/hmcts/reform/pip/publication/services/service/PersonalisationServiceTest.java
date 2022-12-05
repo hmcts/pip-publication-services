@@ -491,7 +491,8 @@ class PersonalisationServiceTest {
     void testBuildMiDataReportingWithNotifyException() throws IOException {
         when(fileCreationService.generateMiReport()).thenReturn(TEST_BYTE);
         try (MockedStatic mockStatic = mockStatic(NotificationClient.class)) {
-            mockStatic.when(() -> EmailClient.prepareUpload(TEST_BYTE))
+            mockStatic.when(() -> EmailClient.prepareUpload(TEST_BYTE, false,
+                                                            false, "78 weeks"))
                 .thenThrow(new NotificationClientException(ERROR_MESSAGE));
             assertThatThrownBy(() -> personalisationService.buildMiDataReportingPersonalisation())
                 .isInstanceOf(NotifyException.class)

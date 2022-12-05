@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
-import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
@@ -31,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.convertEnvironmentName;
+import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 /**
  * This class handles any personalisation for the emails.
@@ -54,6 +53,9 @@ public class PersonalisationService {
 
     @Value("${env-name}")
     private String envName;
+
+    @Value("${file-retention-weeks}")
+    private String fileRetentionWeeks;
 
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String START_PAGE_LINK = "start_page_link";
@@ -146,10 +148,12 @@ public class PersonalisationService {
             boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;
 
             personalisation.put("display_pdf", pdfWithinSize);
-            personalisation.put(LINK_TO_FILE, pdfWithinSize ? EmailClient.prepareUpload(artefactPdf) : "");
+            personalisation.put(LINK_TO_FILE, pdfWithinSize ? prepareUpload(artefactPdf, false,
+                                false, fileRetentionWeeks) : "");
 
             personalisation.put("display_excel", excelWithinSize);
-            personalisation.put("excel_link_to_file", excelWithinSize ? EmailClient.prepareUpload(artefactExcel) : "");
+            personalisation.put("excel_link_to_file", excelWithinSize ? prepareUpload(artefactExcel,
+                        false, false, fileRetentionWeeks) : "");
 
             personalisation.put("testing_of_array",
                                 channelManagementService.getArtefactSummary(artefact.getArtefactId()));
@@ -184,8 +188,9 @@ public class PersonalisationService {
 
             String sourceArtefactId = artefact.getSourceArtefactId();
             JSONObject uploadedFile = !Strings.isNullOrEmpty(sourceArtefactId) && sourceArtefactId.endsWith(".csv")
-                ? NotificationClient.prepareUpload(artefactData, true)
-                : NotificationClient.prepareUpload(artefactData);
+                ? prepareUpload(artefactData, true,
+                                                   false, fileRetentionWeeks)
+                : prepareUpload(artefactData, false, false, fileRetentionWeeks);
 
             personalisation.put(LINK_TO_FILE, uploadedFile);
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
@@ -209,7 +214,8 @@ public class PersonalisationService {
     public Map<String, Object> buildMediaApplicationsReportingPersonalisation(byte[] csvMediaApplications) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
-            personalisation.put(LINK_TO_FILE, EmailClient.prepareUpload(csvMediaApplications, true));
+            personalisation.put(LINK_TO_FILE, prepareUpload(csvMediaApplications, true,
+                                                                        false, fileRetentionWeeks));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
             return personalisation;
         } catch (NotificationClientException e) {
@@ -310,7 +316,8 @@ public class PersonalisationService {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         try {
             byte[] excel = fileCreationService.generateMiReport();
-            personalisation.put(LINK_TO_FILE, EmailClient.prepareUpload(excel));
+            personalisation.put(LINK_TO_FILE, prepareUpload(excel, false,
+                false, fileRetentionWeeks));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
         } catch (IOException e) {
             log.warn("Error generating excel file attachment");

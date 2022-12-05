@@ -80,3 +80,5 @@ envName: ${ENV_NAME:local}
 springdoc:
   swagger-ui:
     path: /swagger-ui/
+
+fileRetentionWeeks: 78 weeks
