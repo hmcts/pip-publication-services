@@ -202,8 +202,14 @@ public class NotificationService {
      * @return The ID that references the inactive user notification email.
      */
     public String inactiveUserNotificationEmailRequest(InactiveUserNotificationEmail body) {
-        EmailToSend email = emailService
-            .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template);
+        EmailToSend email;
+        if ("PI_AAD".equals(body.getUserProvenance())) {
+            email = emailService
+                .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD.template);
+        } else {
+            email = emailService
+                .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT.template);
+        }
 
         return emailService.sendEmail(email).getReference().orElse(null);
     }

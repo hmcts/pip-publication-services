@@ -78,6 +78,7 @@ public class PersonalisationService {
     private static final String NO = "No";
     private static final String ARRAY_OF_IDS = "array_of_ids";
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
+    private static final String CFT_SIGN_IN_LINK = "cft_sign_in_link";
     private static final String ENV_NAME = "env_name";
 
     /**
@@ -267,6 +268,7 @@ public class PersonalisationService {
         personalisation.put(FULL_NAME, body.getFullName());
         personalisation.put(LAST_SIGNED_IN_DATE, body.getLastSignedInDate());
         personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadAdminSignInPageLink());
+        personalisation.put(CFT_SIGN_IN_LINK, notifyConfigProperties.getLinks().getCftSignInPageLink());
         return personalisation;
     }
 
