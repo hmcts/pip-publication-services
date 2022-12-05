@@ -60,8 +60,11 @@ class NotificationServiceTest {
     private static final MediaVerificationEmail MEDIA_VERIFICATION_EMAIL = new MediaVerificationEmail(
         EMAIL, FULL_NAME);
 
-    private static final InactiveUserNotificationEmail INACTIVE_USER_NOTIFICATION_EMAIL =
-        new InactiveUserNotificationEmail(EMAIL, FULL_NAME, LAST_SIGNED_IN_DATE);
+    private static final InactiveUserNotificationEmail INACTIVE_USER_NOTIFICATION_EMAIL_AAD =
+        new InactiveUserNotificationEmail(EMAIL, FULL_NAME, "PI_AAD", LAST_SIGNED_IN_DATE);
+
+    private static final InactiveUserNotificationEmail INACTIVE_USER_NOTIFICATION_EMAIL_CFT =
+        new InactiveUserNotificationEmail(EMAIL, FULL_NAME, "CFT_IDAM", LAST_SIGNED_IN_DATE);
 
     private static final String TEST_EMAIL = "test@email.com";
     private static final String SUCCESS_REF_ID = "successRefId";
@@ -305,13 +308,24 @@ class NotificationServiceTest {
     }
 
     @Test
-    void testValidPayloadReturnsSuccessInactiveUserNotification() {
-        when(emailService.buildInactiveUserNotificationEmail(INACTIVE_USER_NOTIFICATION_EMAIL,
-                                                             Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template))
+    void testValidPayloadReturnsSuccessInactiveUserNotificationForAad() {
+        when(emailService.buildInactiveUserNotificationEmail(INACTIVE_USER_NOTIFICATION_EMAIL_AAD,
+                                                             Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD.template))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, notificationService.inactiveUserNotificationEmailRequest(
-            INACTIVE_USER_NOTIFICATION_EMAIL),
+            INACTIVE_USER_NOTIFICATION_EMAIL_AAD),
+                     "Inactive user notification should return successful reference ID");
+    }
+
+    @Test
+    void testValidPayloadReturnsSuccessInactiveUserNotificationForCft() {
+        when(emailService.buildInactiveUserNotificationEmail(INACTIVE_USER_NOTIFICATION_EMAIL_CFT,
+                                                             Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT.template))
+            .thenReturn(validEmailBodyForEmailClient);
+
+        assertEquals(SUCCESS_REF_ID, notificationService.inactiveUserNotificationEmailRequest(
+            INACTIVE_USER_NOTIFICATION_EMAIL_CFT),
                      "Inactive user notification should return successful reference ID");
     }
 
