@@ -17,5 +17,8 @@ public class InactiveUserNotificationEmail {
     String fullName;
 
     @NotNull
+    String userProvenance;
+
+    @NotNull
     String lastSignedInDate;
 }

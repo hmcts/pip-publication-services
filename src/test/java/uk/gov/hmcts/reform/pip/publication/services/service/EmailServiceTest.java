@@ -269,13 +269,13 @@ class EmailServiceTest {
     @Test
     void testInactiveUserNotificationEmailReturnsSuccess() {
         InactiveUserNotificationEmail inactiveUserNotificationEmail = new InactiveUserNotificationEmail(
-            EMAIL, FULL_NAME, LAST_SIGNED_IN_DATE
+            EMAIL, FULL_NAME, "PI_AAD", LAST_SIGNED_IN_DATE
         );
         when(personalisationService.buildInactiveUserNotificationPersonalisation(inactiveUserNotificationEmail))
             .thenReturn(personalisation);
 
         EmailToSend email = emailService.buildInactiveUserNotificationEmail(
-            inactiveUserNotificationEmail, Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template);
+            inactiveUserNotificationEmail, Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD.template);
 
         assertThat(email)
             .extracting(
@@ -286,7 +286,7 @@ class EmailServiceTest {
             .containsExactly(
                 EMAIL,
                 personalisation,
-                Templates.INACTIVE_USER_NOTIFICATION_EMAIL.template
+                Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD.template
             );
 
     }
