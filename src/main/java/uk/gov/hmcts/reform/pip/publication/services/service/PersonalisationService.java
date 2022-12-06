@@ -6,9 +6,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
-import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
