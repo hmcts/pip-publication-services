@@ -17,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
+import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 
@@ -86,6 +88,8 @@ class NotifyTest {
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
     private static final String MEDIA_VERIFICATION_EMAIL_URL = "/notify/media/verification";
     private static final String INACTIVE_USER_NOTIFICATION_EMAIL_URL = "/notify/user/sign-in";
+    //
+    private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
     private static final String FULL_NAME = "Test user";
@@ -103,6 +107,14 @@ class NotifyTest {
         + "    ]\n\n"
         + "  }\n\n"
         + "}\"";
+
+    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY = NEW_LINE_WITH_BRACKET
+        + "  \"requesterName\": \"reqName\",\n"
+        + "  \"actionResult\": \"" + ActionResult.ATTEMPTED + "\",\n"
+        + "  \"changeType\": \"" + ChangeType.DELETE_LOCATION + "\",\n"
+        + "  \"emailList\": [\"ashwini.venkatesha@justice.gov.uk\"],\n"
+        + "  \"detailString\": \"test\"\n"
+        + "}";
 
     private static final String NONEXISTENT_BLOB_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
         + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
@@ -496,4 +508,23 @@ class NotifyTest {
         mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
             .andExpect(status().isOk());
     }
+
+    @Test
+    void testSendSystemAdminUpdate() throws Exception {
+        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
+                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Send notification email email successfully to all system admin with referenceId")));
+    }
+
+    @Test
+    void testSendSystemAdminBadPayload() throws Exception {
+        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
+                            .content("content")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
 }
