@@ -516,7 +516,7 @@ class NotifyTest {
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString(
-                "Send notification email email successfully to all system admin with referenceId")));
+                "Send notification email successfully to all system admin with referenceId")));
     }
 
     @Test
