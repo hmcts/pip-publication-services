@@ -215,14 +215,13 @@ public class NotificationController {
 
     @ApiResponses({
         @ApiResponse(responseCode = OK_RESPONSE, description = "System Admin user email notification"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     })
     @Operation(summary = "Send notification email to system admin about update")
     @PostMapping("/sysadmin/update")
     public ResponseEntity<String> sendSystemAdminUpdate(@RequestBody SystemAdminAction body) {
         return ResponseEntity.ok(String.format(
-            "Send notification email email successfully to all system admin with referenceId: %s",
+            "Send notification email successfully to all system admin with referenceId: %s",
             notificationService.sendSystemAdminUpdateEmailRequest(body)
         ));
     }

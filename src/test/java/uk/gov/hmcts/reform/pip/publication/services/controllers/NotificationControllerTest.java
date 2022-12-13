@@ -275,7 +275,7 @@ class NotificationControllerTest {
     void testSendSystemAdminUpdateShouldReturnSuccessMessage() {
         assertTrue(
             notificationController.sendSystemAdminUpdate(systemAdminAction).getBody()
-                .contains("Send notification email email successfully to all system admin with referenceId"),
+                .contains("Send notification email successfully to all system admin with referenceId"),
             MESSAGES_MATCH
         );
     }
