@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
@@ -209,6 +210,19 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "MI data reporting email successfully sent with referenceId: %s",
             notificationService.handleMiDataForReporting()
+        ));
+    }
+
+    @ApiResponses({
+        @ApiResponse(responseCode = OK_RESPONSE, description = "System Admin user email notification"),
+        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    })
+    @Operation(summary = "Send notification email to system admin about update")
+    @PostMapping("/sysadmin/update")
+    public ResponseEntity<String> sendSystemAdminUpdate(@RequestBody SystemAdminAction body) {
+        return ResponseEntity.ok(String.format(
+            "Send notification email successfully to all system admin with referenceId: %s",
+            notificationService.sendSystemAdminUpdateEmailRequest(body)
         ));
     }
 }

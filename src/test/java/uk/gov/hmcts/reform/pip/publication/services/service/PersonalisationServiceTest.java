@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
+import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
+import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
@@ -31,6 +34,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -82,6 +86,10 @@ class PersonalisationServiceTest {
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
     private static final String CONTENTS = "Contents";
     private static final String ERROR_MESSAGE = "error message";
+    private static final String REQUESTER_NAME = "requestor_name";
+    private static final String CHANGE_TYPE = "change-type";
+    private static final String ACTION_RESULT = "attempted/succeeded";
+    private static final String ADDITIONAL_DETAILS = "Additional_change_detail";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -498,5 +506,44 @@ class PersonalisationServiceTest {
                 .isInstanceOf(NotifyException.class)
                 .hasMessage(ERROR_MESSAGE);
         }
+    }
+
+    @Test
+    void testBuildSystemAdminUpdateEmailPersonalisation() {
+
+        DeleteLocationAction systemAdminAction = new DeleteLocationAction();
+        systemAdminAction.setRequesterName(FULL_NAME);
+        systemAdminAction.setEmailList(List.of(EMAIL));
+        systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
+        systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
+        systemAdminAction.setDetailString("Testing details");
+
+        Map<String, Object> personalisation =
+            personalisationService.buildSystemAdminUpdateEmailPersonalisation(systemAdminAction);
+
+        Object requesterName = personalisation.get(REQUESTER_NAME);
+        assertNotNull(requesterName, "No Requester name found");
+        assertEquals(systemAdminAction.getRequesterName(), requesterName,
+                     "Name does not match requester name"
+        );
+
+        Object changeType = personalisation.get(CHANGE_TYPE);
+        assertNotNull(changeType, "No change type found");
+        assertEquals(systemAdminAction.getChangeType().label, changeType,
+                     "Change Type does not match"
+        );
+
+        Object actionResult = personalisation.get(ACTION_RESULT);
+        assertNotNull(actionResult, "No action result found");
+        assertEquals(systemAdminAction.getActionResult().label.toLowerCase(Locale.ENGLISH), actionResult,
+                     "Action result does not match"
+        );
+
+        Object additionalDetails = personalisation.get(ADDITIONAL_DETAILS);
+        assertNotNull(additionalDetails, "No additional information found");
+        assertEquals(systemAdminAction.getDetailString(), additionalDetails,
+                     "Additional information result does not match"
+        );
+
     }
 }
