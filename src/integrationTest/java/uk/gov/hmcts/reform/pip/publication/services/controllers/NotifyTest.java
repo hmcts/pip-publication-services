@@ -112,7 +112,7 @@ class NotifyTest {
         + "  \"requesterName\": \"reqName\",\n"
         + "  \"actionResult\": \"" + ActionResult.ATTEMPTED + "\",\n"
         + "  \"changeType\": \"" + ChangeType.DELETE_LOCATION + "\",\n"
-        + "  \"emailList\": [\"ashwini.venkatesha@justice.gov.uk\"],\n"
+        + "  \"emailList\": [\"test.system.admin@justice.gov.uk\"],\n"
         + "  \"detailString\": \"test\"\n"
         + "}";
 
