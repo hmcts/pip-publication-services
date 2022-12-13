@@ -8,6 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
+import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
+import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
+import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
@@ -63,6 +67,7 @@ class NotificationControllerTest {
     private MediaVerificationEmail mediaVerificationEmail;
     private InactiveUserNotificationEmail inactiveUserNotificationEmail;
     private ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
+    private SystemAdminAction systemAdminAction;
 
     @Mock
     private NotificationService notificationService;
@@ -95,6 +100,11 @@ class NotificationControllerTest {
         createMediaSetupEmail.setEmail("a@b.com");
         createMediaSetupEmail.setFullName("testName");
 
+        systemAdminAction = new DeleteLocationAction();
+        systemAdminAction.setRequesterName(FULL_NAME);
+        systemAdminAction.setEmailList(List.of(VALID_EMAIL));
+        systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
+        systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
         when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
         when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
@@ -116,6 +126,7 @@ class NotificationControllerTest {
             .thenReturn(SUCCESS_ID);
         when(notificationService.inactiveUserNotificationEmailRequest(inactiveUserNotificationEmail))
             .thenReturn(SUCCESS_ID);
+        when(notificationService.sendSystemAdminUpdateEmailRequest(systemAdminAction)).thenReturn(List.of());
     }
 
     @Test
@@ -258,5 +269,22 @@ class NotificationControllerTest {
                 HttpStatus.OK,
                 "MI data reporting email successfully sent with referenceId: " + SUCCESS_ID
             );
+    }
+
+    @Test
+    void testSendSystemAdminUpdateShouldReturnSuccessMessage() {
+        assertTrue(
+            notificationController.sendSystemAdminUpdate(systemAdminAction).getBody()
+                .contains("Send notification email successfully to all system admin with referenceId"),
+            MESSAGES_MATCH
+        );
+    }
+
+    @Test
+    void testSendSystemAdminUpdateShouldReturnOkResponse() {
+        assertEquals(HttpStatus.OK, notificationController
+                         .sendSystemAdminUpdate(systemAdminAction).getStatusCode(),
+                     STATUS_CODES_MATCH
+        );
     }
 }

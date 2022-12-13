@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySub
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -222,5 +224,17 @@ public class NotificationService {
     public String handleMiDataForReporting() {
         EmailToSend email = emailService.buildMiDataReportingEmail(Templates.MI_DATA_REPORTING_EMAIL.template);
         return emailService.sendEmail(email).getReference().orElse(null);
+    }
+
+    public List<String> sendSystemAdminUpdateEmailRequest(SystemAdminAction body) {
+        List<EmailToSend> email = emailService
+            .buildSystemAdminUpdateEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
+
+        var sentEmails = new ArrayList<String>();
+        email.forEach(emailToSend -> {
+            sentEmails.add(emailService.sendEmail(emailToSend).getReference().orElse(null));
+
+        });
+        return sentEmails;
     }
 }

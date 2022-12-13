@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
@@ -25,6 +26,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -80,6 +82,10 @@ public class PersonalisationService {
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
     private static final String CFT_SIGN_IN_LINK = "cft_sign_in_link";
     private static final String ENV_NAME = "env_name";
+    private static final String REQUESTER_NAME = "requestor_name";
+    private static final String CHANGE_TYPE = "change-type";
+    private static final String ACTION_RESULT = "attempted/succeeded";
+    private static final String ADDITIONAL_DETAILS = "Additional_change_detail";
 
     /**
      * Handles the personalisation for the Welcome email.
@@ -269,6 +275,17 @@ public class PersonalisationService {
         personalisation.put(LAST_SIGNED_IN_DATE, body.getLastSignedInDate());
         personalisation.put(AAD_SIGN_IN_LINK, notifyConfigProperties.getLinks().getAadAdminSignInPageLink());
         personalisation.put(CFT_SIGN_IN_LINK, notifyConfigProperties.getLinks().getCftSignInPageLink());
+        return personalisation;
+    }
+
+    public Map<String, Object> buildSystemAdminUpdateEmailPersonalisation(SystemAdminAction body) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(REQUESTER_NAME, body.getRequesterName());
+        personalisation.put(ACTION_RESULT, body.getActionResult().label.toLowerCase(Locale.ENGLISH));
+        personalisation.put(CHANGE_TYPE, body.getChangeType().label);
+        personalisation.put(ADDITIONAL_DETAILS, body.createAdditionalChangeDetail());
+        personalisation.put(ENV_NAME, convertEnvironmentName(envName));
+
         return personalisation;
     }
 
