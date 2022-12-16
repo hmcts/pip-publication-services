@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientConfigurationTest;
+import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings({"PMD"})
-@SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
+@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @ActiveProfiles("test")
 class EmailServiceTest {
 

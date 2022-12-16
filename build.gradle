@@ -40,6 +40,14 @@ sourceSets {
   }
 }
 
+configurations {
+  functionalTestImplementation.extendsFrom testImplementation
+  functionalTestRuntimeOnly.extendsFrom runtimeOnly
+
+  smokeTestImplementation.extendsFrom testImplementation
+  smokeTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
@@ -76,12 +84,12 @@ task smoke(type: Test) {
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '8.29'
+  toolVersion = '10.5.0'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
 pmd {
-  toolVersion = "6.46.0"
+  toolVersion = "6.52.0"
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
@@ -207,12 +215,6 @@ dependencies {
   testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.10.0'
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp-tls', version: '4.10.0'
-
-  functionalTestImplementation sourceSets.main.runtimeClasspath
-  functionalTestImplementation sourceSets.test.runtimeClasspath
-
-  smokeTestImplementation sourceSets.main.runtimeClasspath
-  smokeTestImplementation sourceSets.test.runtimeClasspath
 }
 
 mainClassName = 'uk.gov.hmcts.reform.pip.publication.services.Application'

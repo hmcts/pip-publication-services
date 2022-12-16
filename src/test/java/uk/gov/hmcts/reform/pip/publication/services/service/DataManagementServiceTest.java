@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientConfigurationTest;
+import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("PMD.TooManyMethods")
-@SpringBootTest(classes = {Application.class, WebClientConfigurationTest.class})
+@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @ActiveProfiles("test")
 class DataManagementServiceTest {
 
