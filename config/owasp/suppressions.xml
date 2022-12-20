@@ -33,4 +33,8 @@
     <packageUrl regex="true">^pkg:maven/org.apache.commons/commons-[a-z1-9]+@[^\n]+</packageUrl>
     <cve>CVE-2021-37533</cve>
   </suppress>
+  <suppress>
+    <notes>Netty - Will be fixed when upgrading to springboot 3</notes>
+    <cve>CVE-2022-41881</cve>
+  </suppress>
 </suppressions>

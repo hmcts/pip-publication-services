@@ -23,7 +23,7 @@ import javax.net.ssl.SSLException;
 
 @Configuration
 @Profile("functional")
-public class WebClientConfigurationTest {
+public class WebClientTestConfiguration {
 
     @Bean
     public OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clients) {

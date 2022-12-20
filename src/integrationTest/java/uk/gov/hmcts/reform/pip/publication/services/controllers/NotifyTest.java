@@ -17,8 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
-import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 
@@ -46,49 +44,90 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("functional")
 class NotifyTest {
 
-    private static final String VALID_WELCOME_REQUEST_BODY_EXISTING =
-        "{\"email\": \"test@email.com\", \"isExisting\": \"true\", \"fullName\": \"fullName\"}";
-    private static final String VALID_WELCOME_REQUEST_BODY_NEW =
-        "{\"email\": \"test@email.com\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
-    private static final String VALID_ADMIN_CREATION_REQUEST_BODY =
-        "{\"email\": \"test@email.com\", \"surname\": \"surname\", \"forename\": \"forename\"}";
-    private static final String INVALID_JSON_BODY = "{\"email\": \"test@email.com\", \"isExisting\":}";
-    private static final String VALID_DUPLICATE_MEDIA_REQUEST_BODY =
-        "{\"email\": \"test@email.com\", \"fullName\": \"fullName\"}";
-    private static final String DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY =
-        "{\"email\": \"test@email.com\", \"fullName\":}";
+    private static final String VALID_WELCOME_REQUEST_BODY_EXISTING = """
+        {
+            "email": "test@email.com",
+            "isExisting": "true",
+            "fullName": "fullName"
+        }
+        """;
+    private static final String VALID_WELCOME_REQUEST_BODY_NEW = """
+        {
+            "email": "test@email.com",
+            "isExisting": "false",
+            "fullName": "fullName"
+        }
+        """;
+    private static final String VALID_ADMIN_CREATION_REQUEST_BODY = """
+        {
+            "email": "test@email.com",
+            "surname": "surname",
+            "forename": "forename"
+        };
+        """;
+    private static final String INVALID_JSON_BODY = """
+        {
+            "email": "test@email.com",
+            "isExisting":
+        }
+        """;
+    private static final String VALID_DUPLICATE_MEDIA_REQUEST_BODY = """
+        {
+            "email": "test@email.com",
+            "fullName": "fullName"
+        };
+        """;
+    private static final String DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY = """
+        {
+            "email": "test@email.com",
+            "fullName":
+        }
+        """;
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
     private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
     private static final String MI_REPORTING_EMAIL_URL = "/notify/mi/report";
-    private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY =
-        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"70494df0-31c1-4290-bbd2-7bfe7acfeb81\"}";
-    private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY =
-        "{\"apiDestination\": \"https://localhost:4444\", \"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
-    private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY =
-        "{\"apiDestination\": \"http://localhost:4444\", \"artefactId\": \"1e565487-23e4-4a25-9364-43277a5180d4\"}";
-    private static final String THIRD_PARTY_SUBSCRIPTION_ARTEFACT_BODY = "{\n"
-        + "  \"apiDestination\": \"https://localhost:4444\",\n"
-        + "  \"artefact\": {\n"
-        + "    \"artefactId\": \"70494df0-31c1-4290-bbd2-7bfe7acfeb81\",\n"
-        + "    \"listType\": \"CIVIL_DAILY_CAUSE_LIST\",\n"
-        + "    \"locationId\": \"2\",\n"
-        + "    \"provenance\": \"MANUAL_UPLOAD\",\n"
-        + "    \"type\": \"LIST\",\n"
-        + "    \"contentDate\": \"2022-06-09T07:36:35\",\n"
-        + "    \"sensitivity\": \"PUBLIC\",\n"
-        + "    \"language\": \"ENGLISH\",\n"
-        + "    \"displayFrom\": \"2022-02-16T07:36:35\",\n"
-        + "    \"displayTo\": \"2099-06-02T07:36:35\"\n"
-        + "  }\n"
-        + "}";
-
+    private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY = """
+        {
+            "apiDestination": "https://localhost:4444",
+            "artefactId": "70494df0-31c1-4290-bbd2-7bfe7acfeb81"
+        }
+        """;
+    private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY = """
+        {
+            "apiDestination": "https://localhost:4444",
+            "artefactId": "79f5c9ae-a951-44b5-8856-3ad6b7454b0e"
+        }
+        """;
+    private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY = """
+        {
+            "apiDestination": "http://localhost:4444",
+            "artefactId": "1e565487-23e4-4a25-9364-43277a5180d4"
+        }
+        """;
+    private static final String THIRD_PARTY_SUBSCRIPTION_ARTEFACT_BODY = """
+        {
+            "apiDestination": "https://localhost:4444",
+            "artefact": {
+                "artefactId": "70494df0-31c1-4290-bbd2-7bfe7acfeb81",
+                "listType": "CIVIL_DAILY_CAUSE_LIST",
+                "locationId": "2",
+                "provenance": "MANUAL_UPLOAD",
+                "type": "LIST",
+                "contentDate": "2022-06-09T07:36:35",
+                "sensitivity": "PUBLIC",
+                "language": "ENGLISH",
+                "displayFrom": "2022-02-16T07:36:35",
+                "displayTo": "2099-06-02T07:36:35"
+            }
+        }
+        """;
     private static final String API_SUBSCRIPTION_URL = "/notify/api";
     private static final String EXTERNAL_PAYLOAD = "test";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
     private static final String MEDIA_VERIFICATION_EMAIL_URL = "/notify/media/verification";
     private static final String INACTIVE_USER_NOTIFICATION_EMAIL_URL = "/notify/user/sign-in";
-    //
+
     private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
@@ -98,35 +137,43 @@ class NotifyTest {
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String IMAGE_NAME = "test-image.png";
-    public static final String SUBS_EMAIL_SUCCESS = "Subscription email successfully sent to";
 
-    private static final String NEW_LINE_WITH_BRACKET = "{\n";
-    private static final String SUBSCRIPTION_REQUEST = "\"subscriptions\": {\n\n"
-        + "    \"CASE_URN\": [\n\n"
-        + "      \"123\"\n\n"
-        + "    ]\n\n"
-        + "  }\n\n"
-        + "}\"";
-
-    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY = NEW_LINE_WITH_BRACKET
-        + "  \"requesterName\": \"reqName\",\n"
-        + "  \"actionResult\": \"" + ActionResult.ATTEMPTED + "\",\n"
-        + "  \"changeType\": \"" + ChangeType.DELETE_LOCATION + "\",\n"
-        + "  \"emailList\": [\"test.system.admin@justice.gov.uk\"],\n"
-        + "  \"detailString\": \"test\"\n"
-        + "}";
-
-    private static final String NONEXISTENT_BLOB_SUBS_EMAIL = NEW_LINE_WITH_BRACKET
-        + "  \"artefactId\": \"b190522a-5d9b-4089-a8c8-6918721c93df\",\n"
-        + "  \"email\": \"test_account_admin@justice.gov.uk\",\n"
-        + SUBSCRIPTION_REQUEST;
-
-    private static final String VALID_MEDIA_VERIFICATION_EMAIL_BODY =
-        "{\"fullName\": \"fullName\", \"email\": \"test@email.com\"}";
-
+    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY = """
+        {
+            "requesterName": "reqName",
+            "actionResult": "ATTEMPTED",
+            "changeType": "DELETE_LOCATION",
+            "emailList": [
+                "test.system.admin@justice.gov.uk"
+            ],
+            "detailString": "test"
+        }
+        """;
+    private static final String NONEXISTENT_BLOB_SUBS_EMAIL = """
+        {
+            "artefactId": "b190522a-5d9b-4089-a8c8-6918721c93df",
+            "email": "test_account_admin@justice.gov.uk",
+            "subscriptions": {
+                "CASE_URN": [
+                    "123"
+                ]
+            }
+        }
+        """;
+    private static final String VALID_MEDIA_VERIFICATION_EMAIL_BODY = """
+        {
+            "fullName": "fullName",
+            "email": "test@email.com"
+        }
+        """;
     private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY =
-        "{\"email\": \"test@test.com\", \"fullName\": \"testName\", \"lastSignedInDate\": \"01 May 2022\"}";
-
+        """
+        {
+            "email": "test@test.com",
+            "fullName": "testName",
+            "lastSignedInDate": "01 May 2022"
+        }
+        """;
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
