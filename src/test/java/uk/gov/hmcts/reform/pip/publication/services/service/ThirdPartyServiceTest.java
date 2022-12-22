@@ -44,7 +44,11 @@ class ThirdPartyServiceTest {
     private static final String PAYLOAD = "test payload";
     private static final byte[] BYTE_ARRAY_PAYLOAD = {1, 2, 3};
     private static final String SUCCESS_NOTIFICATION = "Successfully sent list to Courtel at: %s";
+    private static final String DELETE_SUCCESS_NOTIFICATION = "Successfully sent deleted notification to Courtel at: %s";
+    private static final String PDF_SUCCESS_NOTIFICATION = "Successfully sent PDF to Courtel at: %s";
+    private static final String FAILED_REQUEST_NOTIFICATION = "Third party request to: %s failed";
     private static final String RETURN_MATCH = "Returned messages should match";
+    private static final String EXCEPTION_MESSAGE = "Should throw ThirdPartyException";
     private static MockWebServer mockPublicationServicesEndpoint;
 
     private final Artefact artefact = new Artefact();
@@ -85,8 +89,7 @@ class ThirdPartyServiceTest {
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
         String response = thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, artefact, location);
-        assertEquals(String.format(SUCCESS_NOTIFICATION, API), response,
-                     RETURN_MATCH);
+        assertEquals(String.format(SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
     @Test
@@ -96,8 +99,7 @@ class ThirdPartyServiceTest {
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
         String response = thirdPartyService.handleFlatFileThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
-        assertEquals(String.format(SUCCESS_NOTIFICATION, API), response,
-                     RETURN_MATCH);
+        assertEquals(String.format(SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
     @Test
@@ -107,8 +109,17 @@ class ThirdPartyServiceTest {
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
         String response = thirdPartyService.handleDeleteThirdPartyCall(API, artefact, location);
-        assertEquals(String.format("Successfully sent deleted notification to Courtel at: %s", API), response,
-                     RETURN_MATCH);
+        assertEquals(String.format(DELETE_SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
+    }
+
+    @Test
+    void testHandleCourtelCallReturnsOkWhenSendingPdf() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                    .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+                                                    .setBody(PAYLOAD)
+                                                    .setResponseCode(200));
+        String response = thirdPartyService.handlePdfThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
+        assertEquals(String.format(PDF_SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
     @Test
@@ -119,10 +130,8 @@ class ThirdPartyServiceTest {
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
-            thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, null, null),
-                                                     "Should throw ThirdPartyException");
-        assertTrue(ex.getMessage().contains(String.format("Third party request to: %s failed", API)),
-                   RETURN_MATCH);
+            thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, null, null), EXCEPTION_MESSAGE);
+        assertTrue(ex.getMessage().contains(String.format(FAILED_REQUEST_NOTIFICATION, API)), RETURN_MATCH);
     }
 
     @Test
@@ -135,9 +144,8 @@ class ThirdPartyServiceTest {
         ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
                                                          thirdPartyService.handleFlatFileThirdPartyCall(
                                                              API, BYTE_ARRAY_PAYLOAD, artefact, null),
-                                                     "Should throw ThirdPartyException");
-        assertTrue(ex.getMessage().contains(String.format("Third party request to: %s failed", API)),
-                   RETURN_MATCH);
+                                                     EXCEPTION_MESSAGE);
+        assertTrue(ex.getMessage().contains(String.format(FAILED_REQUEST_NOTIFICATION, API)), RETURN_MATCH);
     }
 
     @Test
@@ -149,9 +157,22 @@ class ThirdPartyServiceTest {
 
         ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
                                                          thirdPartyService.handleDeleteThirdPartyCall(API, null, null),
-                                                     "Should throw ThirdPartyException");
-        assertTrue(ex.getMessage().contains(String.format("Third party request to: %s failed", API)),
-                   RETURN_MATCH);
+                                                     EXCEPTION_MESSAGE);
+        assertTrue(ex.getMessage().contains(String.format(FAILED_REQUEST_NOTIFICATION, API)), RETURN_MATCH);
+    }
+
+    @Test
+    void testHandleCourtelCallReturnsFailedWhenSendingPdf() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+        ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
+                                                         thirdPartyService.handlePdfThirdPartyCall(
+                                                             API, BYTE_ARRAY_PAYLOAD, artefact, null),
+                                                     EXCEPTION_MESSAGE);
+        assertTrue(ex.getMessage().contains(String.format(FAILED_REQUEST_NOTIFICATION, API)), RETURN_MATCH);
     }
 
     @Test
@@ -163,8 +184,7 @@ class ThirdPartyServiceTest {
                                                     .setBody(PAYLOAD));
 
         String response = thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, artefact, location);
-        assertEquals(String.format("Successfully sent list to Courtel at: %s", API), response,
-                     RETURN_MATCH);
+        assertEquals(String.format(SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
     @Test
@@ -176,8 +196,7 @@ class ThirdPartyServiceTest {
                                                     .setBody(PAYLOAD));
 
         String response = thirdPartyService.handleFlatFileThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
-        assertEquals(String.format("Successfully sent list to Courtel at: %s", API), response,
-                     RETURN_MATCH);
+        assertEquals(String.format(SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
     @Test
@@ -189,7 +208,17 @@ class ThirdPartyServiceTest {
                                                     .setBody(PAYLOAD));
 
         String response = thirdPartyService.handleDeleteThirdPartyCall(API, artefact, location);
-        assertEquals(String.format("Successfully sent deleted notification to Courtel at: %s", API), response,
-                     RETURN_MATCH);
+        assertEquals(String.format(DELETE_SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
+    }
+
+    @Test
+    void testHandleCourtelCallReturnsOkAfterRetryWhenSendingPdf() {
+        mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockPublicationServicesEndpoint.enqueue(new MockResponse()
+                                                    .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+                                                    .setBody(PAYLOAD)
+                                                    .setResponseCode(200));
+        String response = thirdPartyService.handlePdfThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
+        assertEquals(String.format(PDF_SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 }
