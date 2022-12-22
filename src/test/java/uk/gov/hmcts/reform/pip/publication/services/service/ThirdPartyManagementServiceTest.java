@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class ThirdPartyManagementServiceTest {
+class ThirdPartyManagementServiceTest {
     private static final String API_DESTINATION = "testUrl";
     private static final String MESSAGES_MATCH = "Messages should match";
     private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
@@ -98,6 +98,7 @@ public class ThirdPartyManagementServiceTest {
         assertEquals(SUCCESS_API_SENT, thirdPartyManagementService.handleThirdParty(subscription),
                      "Api subscription with json file should return successful referenceId.");
     }
+
     @Test
     void testHandleThirdPartyJsonWithEmptyPdf() {
         ARTEFACT.setIsFlatFile(false);

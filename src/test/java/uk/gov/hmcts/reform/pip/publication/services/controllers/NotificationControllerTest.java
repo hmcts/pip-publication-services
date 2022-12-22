@@ -38,9 +38,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings({"PMD.TooManyMethods"})
 @SpringBootTest
 @ActiveProfiles("test")
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
 class NotificationControllerTest {
 
     private static final String VALID_EMAIL = "test@email.com";

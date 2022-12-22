@@ -44,7 +44,8 @@ class ThirdPartyServiceTest {
     private static final String PAYLOAD = "test payload";
     private static final byte[] BYTE_ARRAY_PAYLOAD = {1, 2, 3};
     private static final String SUCCESS_NOTIFICATION = "Successfully sent list to Courtel at: %s";
-    private static final String DELETE_SUCCESS_NOTIFICATION = "Successfully sent deleted notification to Courtel at: %s";
+    private static final String DELETE_SUCCESS_NOTIFICATION =
+        "Successfully sent deleted notification to Courtel at: %s";
     private static final String PDF_SUCCESS_NOTIFICATION = "Successfully sent PDF to Courtel at: %s";
     private static final String FAILED_REQUEST_NOTIFICATION = "Third party request to: %s failed";
     private static final String RETURN_MATCH = "Returned messages should match";
