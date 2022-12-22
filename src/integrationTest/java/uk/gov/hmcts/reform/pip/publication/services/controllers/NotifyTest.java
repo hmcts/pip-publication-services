@@ -90,7 +90,7 @@ class NotifyTest {
     private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY = """
         {
             "apiDestination": "https://localhost:4444",
-            "artefactId": "70494df0-31c1-4290-bbd2-7bfe7acfeb81"
+            "artefactId": "007b103a-07df-488d-8129-ca9afda1368c"
         }
         """;
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY = """
@@ -296,10 +296,11 @@ class NotifyTest {
     @Test
     void testNotifyApiSubscribersJson() throws Exception {
         externalApiMockServer.enqueue(new MockResponse()
-                                          .addHeader(
-                                              "Content-Type",
-                                              ContentType.APPLICATION_JSON
-                                          )
+                                          .addHeader("Content-Type", ContentType.APPLICATION_JSON)
+                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setResponseCode(200));
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .addHeader("Content-Type", ContentType.MULTIPART_FORM_DATA)
                                           .setBody(EXTERNAL_PAYLOAD)
                                           .setResponseCode(200));
 
@@ -314,10 +315,7 @@ class NotifyTest {
     @Test
     void testNotifyApiSubscribersFile() throws Exception {
         externalApiMockServer.enqueue(new MockResponse()
-                                          .addHeader(
-                                              "Content-Type",
-                                              ContentType.APPLICATION_JSON
-                                          )
+                                          .addHeader("Content-Type", ContentType.MULTIPART_FORM_DATA)
                                           .setBody(EXTERNAL_PAYLOAD)
                                           .setResponseCode(200));
 
