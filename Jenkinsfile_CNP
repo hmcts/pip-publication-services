@@ -20,6 +20,7 @@ def setupTestSecrets() {
       secret('app-pip-subscription-management-scope', 'SUBSCRIPTION_MANAGEMENT_AZ_API'),
       secret('app-pip-publication-services-scope', 'PUBLICATION_SERVICES_AZ_API'),
       secret('app-pip-account-management-scope', 'ACCOUNT_MANAGEMENT_AZ_API'),
+      secret('app-pip-channel-management-scope', 'CHANNEL_MANAGEMENT_AZ_API'),
       secret('app-tenant', 'TENANT_ID')
     ]) {
     env.NOTIFY_API_KEY = "${NOTIFY_API_KEY}"
