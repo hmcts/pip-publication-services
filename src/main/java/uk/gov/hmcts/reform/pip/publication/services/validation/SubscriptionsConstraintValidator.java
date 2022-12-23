@@ -10,11 +10,6 @@ import javax.validation.ConstraintValidatorContext;
 public class SubscriptionsConstraintValidator implements ConstraintValidator<SubscriptionsConstraint,
     Map<SubscriptionTypes, List<String>>> {
 
-    @Override
-    public void initialize(SubscriptionsConstraint subscriptionsConstraint) {
-
-    }
-
     /**
      * Validates that the map has at least one element that has a subscription value.
      */
