@@ -231,10 +231,9 @@ public class NotificationService {
             .buildSystemAdminUpdateEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
 
         var sentEmails = new ArrayList<String>();
-        email.forEach(emailToSend -> {
-            sentEmails.add(emailService.sendEmail(emailToSend).getReference().orElse(null));
-
-        });
+        email.forEach(emailToSend -> sentEmails.add(
+            emailService.sendEmail(emailToSend).getReference().orElse(null)
+        ));
         return sentEmails;
     }
 }

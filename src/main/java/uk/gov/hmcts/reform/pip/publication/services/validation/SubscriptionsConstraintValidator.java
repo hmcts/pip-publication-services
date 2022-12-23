@@ -20,7 +20,7 @@ public class SubscriptionsConstraintValidator implements ConstraintValidator<Sub
      */
     @Override
     public boolean isValid(Map<SubscriptionTypes, List<String>> subscriptions, ConstraintValidatorContext cxt) {
-        return subscriptions.values().stream().anyMatch(value -> value.size() > 0);
+        return subscriptions.values().stream().anyMatch(value -> !value.isEmpty());
     }
 
 }

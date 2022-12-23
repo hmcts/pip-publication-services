@@ -10,7 +10,7 @@ public class ThirdPartyServiceException extends RuntimeException {
     private static final long serialVersionUID = -8090232438292245181L;
 
     private static final String MESSAGE = "Third party request to: %s failed after 3 retries due to: %s";
-    private int statusCodeResponse;
+    private final int statusCodeResponse;
 
     public ThirdPartyServiceException(Throwable throwable, String api) {
         super(String.format(MESSAGE, api, throwable.getMessage()));

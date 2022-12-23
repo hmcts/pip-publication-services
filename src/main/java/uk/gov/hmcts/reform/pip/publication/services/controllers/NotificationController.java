@@ -54,13 +54,11 @@ public class NotificationController {
      *             example@email.com, isExisting: true}
      * @return HTTP status upon completion
      */
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description = "Welcome email successfully "
-            + "sent with referenceId abc123-123-432-4456"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE),
-        @ApiResponse(responseCode = AUTH_RESPONSE, description = "User has not been authorized"),
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Welcome email successfully "
+        + "sent with referenceId abc123-123-432-4456")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    @ApiResponse(responseCode = AUTH_RESPONSE, description = "User has not been authorized")
     @Operation(summary = "Send welcome email to new or existing subscribed users",
         description = "Use the bool isExisting as 'false' to send new user emails or 'true' to "
             + "send existing user emails ")
@@ -72,12 +70,10 @@ public class NotificationController {
         ));
     }
 
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description = "Created admin welcome email "
-            + "successfully sent with referenceId {Id}"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Created admin welcome email "
+        + "successfully sent with referenceId {Id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     @Operation(summary = "Send welcome email to new Azure Active Directory (AAD) user.")
     @PostMapping("/created/admin")
     public ResponseEntity<String> sendAdminAccountWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
@@ -87,13 +83,11 @@ public class NotificationController {
         ));
     }
 
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description = "Media applications report "
-            + "email sent successfully with referenceId {Id}"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = "CsvCreationException error message")
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Media applications report "
+        + "email sent successfully with referenceId {Id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = "CsvCreationException error message")
     @Operation(summary = "Send the media application report to the P&I team")
     @PostMapping("/media/report")
     public ResponseEntity<String> sendMediaReportingEmail(@RequestBody List<MediaApplication> mediaApplicationList) {
@@ -103,12 +97,10 @@ public class NotificationController {
                     mediaApplicationList)));
     }
 
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description =
-            "Subscription email successfully sent to email: {recipientEmail} with reference id: {reference id}"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Subscription email successfully sent to email: "
+        + "{recipientEmail} with reference id: {reference id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     @Operation(summary = "Send subscription email to user")
     @PostMapping("/subscription")
     public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody SubscriptionEmail body) {
@@ -118,12 +110,10 @@ public class NotificationController {
         ));
     }
 
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description = "Unidentified blob email "
-            + "successfully sent with referenceId: {Id}"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Unidentified blob email "
+        + "successfully sent with referenceId: {Id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     @Operation(summary = "Send the unidentified blob report to the P&I team")
     @PostMapping("/unidentified-blob")
     public ResponseEntity<String> sendUnidentifiedBlobEmail(@RequestBody Map<String, String> locationMap) {
@@ -133,12 +123,10 @@ public class NotificationController {
         ));
     }
 
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description = "Duplicate media account email "
-            + "successfully sent with referenceId {Id}"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Duplicate media account email "
+        + "successfully sent with referenceId {Id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     @Operation(summary = "Send duplicate email to new media account user.")
     @PostMapping("/duplicate/media")
     public ResponseEntity<String> sendDuplicateMediaAccountEmail(@RequestBody DuplicatedMediaEmail body) {
@@ -148,32 +136,25 @@ public class NotificationController {
         ));
     }
 
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description = "Successfully sent list to {thirdParty} at: {api}"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_EXCEPTION_MESSAGE)
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Successfully sent list to {thirdParty} at: {api}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_EXCEPTION_MESSAGE)
     @Operation(summary = "Send list to third party publisher")
     @PostMapping("/api")
     public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscription body) {
         return ResponseEntity.ok(notificationService.handleThirdParty(body));
     }
 
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description = "Successfully sent empty "
-            + "list to {thirdParty} at: {api}"),
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Successfully sent empty list to {thirdParty} at: {api}")
     @Operation(summary = "Send empty list to third party after being deleted from P&I")
     @PutMapping("/api")
     public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscriptionArtefact body) {
         return ResponseEntity.ok(notificationService.handleThirdParty(body));
     }
 
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description = "Media user verification email "
-            + "successfully sent with referenceId: {Id}"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Media user verification email successfully "
+        + "sent with referenceId: {Id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     @Operation(summary = "Send a media user a verification email")
     @PostMapping("/media/verification")
     public ResponseEntity<String> sendMediaUserVerificationEmail(@RequestBody MediaVerificationEmail body) {
@@ -183,13 +164,10 @@ public class NotificationController {
         ));
     }
 
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description = "Inactive user sign-in notification"
-            + " email successfully sent with "
-            + "referenceId: {Id}"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Inactive user sign-in notification email "
+        + "successfully sent with referenceId: {Id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     @Operation(summary = "Send notification email to inactive users to remind them to sign in")
     @PostMapping("/user/sign-in")
     public ResponseEntity<String> sendNotificationToInactiveUsers(@RequestBody InactiveUserNotificationEmail body) {
@@ -199,11 +177,9 @@ public class NotificationController {
         ));
     }
 
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description = "MI data reporting email successfully sent with "
-            + "referenceId: {Id}"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "MI data reporting email successfully sent with "
+        + "referenceId: {Id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     @Operation(summary = "Send email with MI report")
     @PostMapping("/mi/report")
     public ResponseEntity<String> sendMiReportingEmail() {
@@ -213,10 +189,8 @@ public class NotificationController {
         ));
     }
 
-    @ApiResponses({
-        @ApiResponse(responseCode = OK_RESPONSE, description = "System Admin user email notification"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
-    })
+    @ApiResponse(responseCode = OK_RESPONSE, description = "System Admin user email notification")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     @Operation(summary = "Send notification email to system admin about update")
     @PostMapping("/sysadmin/update")
     public ResponseEntity<String> sendSystemAdminUpdate(@RequestBody SystemAdminAction body) {
