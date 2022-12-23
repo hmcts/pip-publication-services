@@ -55,7 +55,7 @@ public class ThirdPartyManagementService {
      * @param body Request body of ThirdParty subscription containing the deleted artefact and the destination api.
      * @return String of successful PUT.
      */
-    public String handleThirdParty(ThirdPartySubscriptionArtefact body) {
+    public String notifyThirdPartyForArtefactDeletion(ThirdPartySubscriptionArtefact body) {
         Artefact artefact = body.getArtefact();
         Location location = dataManagementService.getLocation(artefact.getLocationId());
 

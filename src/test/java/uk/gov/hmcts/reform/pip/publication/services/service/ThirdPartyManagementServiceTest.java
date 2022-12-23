@@ -133,7 +133,7 @@ class ThirdPartyManagementServiceTest {
         subscription.setArtefact(ARTEFACT);
         subscription.setApiDestination(API_DESTINATION);
 
-        assertEquals(EMPTY_API_SENT, thirdPartyManagementService.handleThirdParty(subscription),
+        assertEquals(EMPTY_API_SENT, thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(subscription),
                      MESSAGES_MATCH);
     }
 }

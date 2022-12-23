@@ -168,8 +168,8 @@ public class NotificationController {
     })
     @Operation(summary = "Send empty list to third party after being deleted from P&I")
     @PutMapping("/api")
-    public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscriptionArtefact body) {
-        return ResponseEntity.ok(thirdPartyManagementService.handleThirdParty(body));
+    public ResponseEntity<String> notifyThirdPartyForArtefactDeletion(@Valid @RequestBody ThirdPartySubscriptionArtefact body) {
+        return ResponseEntity.ok(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(body));
     }
 
     @ApiResponses({
