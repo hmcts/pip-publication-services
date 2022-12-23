@@ -121,7 +121,8 @@ class NotificationControllerTest {
         when(notificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody)).thenReturn(SUCCESS_ID);
         when(thirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
         when(notificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);
-        when(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact)).thenReturn(SUCCESS_ID);
+        when(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact))
+            .thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
         when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
@@ -226,7 +227,8 @@ class NotificationControllerTest {
     @Test
     void testSendThirdPartySubscriptionEmptyListReturnsOk() {
         assertEquals(HttpStatus.OK,
-                     notificationController.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact).getStatusCode(),
+                     notificationController.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact)
+                         .getStatusCode(),
                      STATUS_CODES_MATCH);
     }
 
