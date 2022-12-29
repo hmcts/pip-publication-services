@@ -103,7 +103,7 @@ public class NotificationService {
                                         EmailHelper.maskEmail(body.getEmail()))));
 
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
-        if (artefact.getIsFlatFile()) {
+        if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
             return emailService.sendEmail(emailService.buildFlatFileSubscriptionEmail(
                                                   body, artefact,
                                                   Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
@@ -152,7 +152,7 @@ public class NotificationService {
     public String handleThirdParty(ThirdPartySubscription body) {
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
         Location location = dataManagementService.getLocation(artefact.getLocationId());
-        if (artefact.getIsFlatFile()) {
+        if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
             log.info(thirdPartyService.handleFlatFileThirdPartyCall(body.getApiDestination(),
                                                             dataManagementService.getArtefactFlatFile(
                                                                 artefact.getArtefactId()), artefact, location));
