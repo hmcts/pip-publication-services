@@ -181,7 +181,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
 
   implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '4.4.1'
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.13'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.14'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.2'
