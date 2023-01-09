@@ -14,7 +14,6 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Service to create files to send in emails.
@@ -96,7 +95,7 @@ public class FileCreationService {
     private List<String[]> formatData(String data) {
         List<String[]> values = data.lines()
             .map(l -> l.split(","))
-            .collect(Collectors.toList());
+            .toList();
 
         // Remove the values for the 'court_name' field to allow PowerBI to populate with real court names
         String[] header = values.get(0);

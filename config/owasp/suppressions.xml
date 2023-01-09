@@ -13,17 +13,6 @@
     <cve>CVE-2016-1000027</cve>
   </suppress>
   <suppress>
-    <notes>A new vulnerability flagged. Needing to suppress until a new version of spring boot is released</notes>
-    <packageUrl regex="true">^pkg:maven/org.springframework.security/.*@5.7.4$</packageUrl>
-    <cve>CVE-2022-31692</cve>
-    <cve>CVE-2022-31690</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[file name: jackson-databind-2.13.4.jar]]></notes>
-    <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4</packageUrl>
-    <cve>CVE-2022-42003</cve>
-  </suppress>
-  <suppress>
     <notes>Suppressing as vulnerability is still present even with latest version. Will need to wait for dependencies to update</notes>
     <packageUrl regex="true">^pkg:maven/commons-[a-z1-9]+/commons-[a-z1-9]+@[^\n]+</packageUrl>
     <cve>CVE-2021-37533</cve>
@@ -32,5 +21,10 @@
     <notes>Suppressing as vulnerability is still present even with latest version. Will need to wait for dependencies to update</notes>
     <packageUrl regex="true">^pkg:maven/org.apache.commons/commons-[a-z1-9]+@[^\n]+</packageUrl>
     <cve>CVE-2021-37533</cve>
+  </suppress>
+  <suppress>
+    <notes>Netty - Will be fixed when upgrading to springboot 3</notes>
+    <cve>CVE-2022-41881</cve>
+    <cve>CVE-2022-41915</cve>
   </suppress>
 </suppressions>
