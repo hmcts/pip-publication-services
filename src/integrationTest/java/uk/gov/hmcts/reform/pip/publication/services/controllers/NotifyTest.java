@@ -166,14 +166,13 @@ class NotifyTest {
             "email": "test@email.com"
         }
         """;
-    private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY =
-        """
-            {
-                "email": "test@test.com",
-                "fullName": "testName",
-                "lastSignedInDate": "01 May 2022"
-            }
-            """;
+    private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY = """
+        {
+            "email": "test@test.com",
+            "fullName": "testName",
+            "lastSignedInDate": "01 May 2022"
+        }
+        """;
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
@@ -490,9 +489,18 @@ class NotifyTest {
     @Test
     @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
     void testUnauthorizedSendSubscriptionEmail() throws Exception {
-        String validBody =
-            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"4\"]},"
-                + "\"artefactId\": \"8545507a-e985-4931-bba2-76be0e6ac396\"}";
+        String validBody = """
+            {
+                "artefactId": "8545507a-e985-4931-bba2-76be0e6ac396",
+                "email": "test_account_admin@justice.gov.uk",
+                "subscriptions": {
+                    "LOCATION_ID": [
+                        "4"
+                    ]
+                }
+            }
+            """;
+
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(validBody)
                             .contentType(MediaType.APPLICATION_JSON))
