@@ -42,6 +42,7 @@ public class NotificationController {
 
     private static final String BAD_PAYLOAD_ERROR_MESSAGE = "BadPayloadException error message";
     private static final String NOTIFY_EXCEPTION_ERROR_MESSAGE = "NotifyException error message";
+    private static final String NOT_AUTHORIZED_MESSAGE = "User has not been authorized";
 
     private static final String OK_RESPONSE = "200";
     private static final String AUTH_RESPONSE = "403";
@@ -59,7 +60,7 @@ public class NotificationController {
             + "sent with referenceId abc123-123-432-4456"),
         @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
         @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE),
-        @ApiResponse(responseCode = AUTH_RESPONSE, description = "User has not been authorized"),
+        @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE),
     })
     @Operation(summary = "Send welcome email to new or existing subscribed users",
         description = "Use the bool isExisting as 'false' to send new user emails or 'true' to "
@@ -76,7 +77,8 @@ public class NotificationController {
         @ApiResponse(responseCode = OK_RESPONSE, description = "Created admin welcome email "
             + "successfully sent with referenceId {Id}"),
         @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE),
+        @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     })
     @Operation(summary = "Send welcome email to new Azure Active Directory (AAD) user.")
     @PostMapping("/created/admin")
@@ -92,7 +94,8 @@ public class NotificationController {
             + "email sent successfully with referenceId {Id}"),
         @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
         @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = "CsvCreationException error message")
+        @ApiResponse(responseCode = BAD_REQUEST, description = "CsvCreationException error message"),
+        @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     })
     @Operation(summary = "Send the media application report to the P&I team")
     @PostMapping("/media/report")
@@ -122,7 +125,8 @@ public class NotificationController {
         @ApiResponse(responseCode = OK_RESPONSE, description = "Unidentified blob email "
             + "successfully sent with referenceId: {Id}"),
         @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE),
+        @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     })
     @Operation(summary = "Send the unidentified blob report to the P&I team")
     @PostMapping("/unidentified-blob")
@@ -137,7 +141,8 @@ public class NotificationController {
         @ApiResponse(responseCode = OK_RESPONSE, description = "Duplicate media account email "
             + "successfully sent with referenceId {Id}"),
         @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE),
+        @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     })
     @Operation(summary = "Send duplicate email to new media account user.")
     @PostMapping("/duplicate/media")
@@ -161,6 +166,7 @@ public class NotificationController {
     @ApiResponses({
         @ApiResponse(responseCode = OK_RESPONSE, description = "Successfully sent empty "
             + "list to {thirdParty} at: {api}"),
+        @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     })
     @Operation(summary = "Send empty list to third party after being deleted from P&I")
     @PutMapping("/api")
@@ -172,7 +178,8 @@ public class NotificationController {
         @ApiResponse(responseCode = OK_RESPONSE, description = "Media user verification email "
             + "successfully sent with referenceId: {Id}"),
         @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE),
+        @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     })
     @Operation(summary = "Send a media user a verification email")
     @PostMapping("/media/verification")
@@ -188,7 +195,8 @@ public class NotificationController {
             + " email successfully sent with "
             + "referenceId: {Id}"),
         @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE),
+        @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     })
     @Operation(summary = "Send notification email to inactive users to remind them to sign in")
     @PostMapping("/user/sign-in")
@@ -202,7 +210,8 @@ public class NotificationController {
     @ApiResponses({
         @ApiResponse(responseCode = OK_RESPONSE, description = "MI data reporting email successfully sent with "
             + "referenceId: {Id}"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE),
+        @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     })
     @Operation(summary = "Send email with MI report")
     @PostMapping("/mi/report")
@@ -215,7 +224,8 @@ public class NotificationController {
 
     @ApiResponses({
         @ApiResponse(responseCode = OK_RESPONSE, description = "System Admin user email notification"),
-        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
+        @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     })
     @Operation(summary = "Send notification email to system admin about update")
     @PostMapping("/sysadmin/update")
