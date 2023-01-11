@@ -68,8 +68,9 @@ class ChannelManagementServiceTest {
     void testGetArtefactSummaryError() {
         mockChannelManagementMockEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
+        UUID artefactId = UUID.randomUUID();
         ServiceToServiceException exception = assertThrows(ServiceToServiceException.class,
-            () -> channelManagementService.getArtefactSummary(UUID.randomUUID()), "Exception");
+            () -> channelManagementService.getArtefactSummary(artefactId), "Exception");
 
         assertTrue(exception.getMessage().contains("404"), "Exception didn't contain correct message");
     }
@@ -95,8 +96,9 @@ class ChannelManagementServiceTest {
     void testGetArtefactFilesError() {
         mockChannelManagementMockEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
+        UUID artefactId = UUID.randomUUID();
         ServiceToServiceException exception = assertThrows(ServiceToServiceException.class,
-            () -> channelManagementService.getArtefactFiles(UUID.randomUUID()), "Exception");
+            () -> channelManagementService.getArtefactFiles(artefactId), "Exception");
 
         assertTrue(exception.getMessage().contains("404"), "Exception didn't contain correct message");
     }

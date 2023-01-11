@@ -10,17 +10,12 @@ import javax.validation.ConstraintValidatorContext;
 public class SubscriptionsConstraintValidator implements ConstraintValidator<SubscriptionsConstraint,
     Map<SubscriptionTypes, List<String>>> {
 
-    @Override
-    public void initialize(SubscriptionsConstraint subscriptionsConstraint) {
-
-    }
-
     /**
      * Validates that the map has at least one element that has a subscription value.
      */
     @Override
     public boolean isValid(Map<SubscriptionTypes, List<String>> subscriptions, ConstraintValidatorContext cxt) {
-        return subscriptions.values().stream().anyMatch(value -> value.size() > 0);
+        return subscriptions.values().stream().anyMatch(value -> !value.isEmpty());
     }
 
 }
