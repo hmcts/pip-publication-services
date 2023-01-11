@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySub
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
+import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,9 @@ public class NotificationController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private ThirdPartyManagementService thirdPartyManagementService;
 
     private static final String BAD_PAYLOAD_EXCEPTION_MESSAGE = "BadPayloadException error message";
 
@@ -160,7 +164,7 @@ public class NotificationController {
     @Operation(summary = "Send list to third party publisher")
     @PostMapping("/api")
     public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscription body) {
-        return ResponseEntity.ok(notificationService.handleThirdParty(body));
+        return ResponseEntity.ok(thirdPartyManagementService.handleThirdParty(body));
     }
 
     @ApiResponses({
@@ -170,8 +174,9 @@ public class NotificationController {
     })
     @Operation(summary = "Send empty list to third party after being deleted from P&I")
     @PutMapping("/api")
-    public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscriptionArtefact body) {
-        return ResponseEntity.ok(notificationService.handleThirdParty(body));
+    public ResponseEntity<String> notifyThirdPartyForArtefactDeletion(
+        @Valid @RequestBody ThirdPartySubscriptionArtefact body) {
+        return ResponseEntity.ok(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(body));
     }
 
     @ApiResponses({

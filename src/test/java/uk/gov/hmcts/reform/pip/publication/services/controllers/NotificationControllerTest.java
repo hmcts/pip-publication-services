@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySub
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
+import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -37,9 +38,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings({"PMD.TooManyMethods"})
 @SpringBootTest
 @ActiveProfiles("test")
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
 class NotificationControllerTest {
 
     private static final String VALID_EMAIL = "test@email.com";
@@ -71,6 +72,9 @@ class NotificationControllerTest {
 
     @Mock
     private NotificationService notificationService;
+
+    @Mock
+    private ThirdPartyManagementService thirdPartyManagementService;
 
     @InjectMocks
     private NotificationController notificationController;
@@ -115,9 +119,10 @@ class NotificationControllerTest {
         testUnidentifiedBlobMap.put("Test2", "123");
 
         when(notificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody)).thenReturn(SUCCESS_ID);
-        when(notificationService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
+        when(thirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
         when(notificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);
-        when(notificationService.handleThirdParty(thirdPartySubscriptionArtefact)).thenReturn(SUCCESS_ID);
+        when(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact))
+            .thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
         when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
@@ -222,13 +227,14 @@ class NotificationControllerTest {
     @Test
     void testSendThirdPartySubscriptionEmptyListReturnsOk() {
         assertEquals(HttpStatus.OK,
-                     notificationController.sendThirdPartySubscription(thirdPartySubscriptionArtefact).getStatusCode(),
+                     notificationController.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact)
+                         .getStatusCode(),
                      STATUS_CODES_MATCH);
     }
 
     @Test
     void testSendThirdPartySubscriptionEmptyList() {
-        assertTrue(notificationController.sendThirdPartySubscription(thirdPartySubscriptionArtefact).getBody()
+        assertTrue(notificationController.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact).getBody()
                        .contains(SUCCESS_ID), MESSAGES_MATCH);
     }
 
