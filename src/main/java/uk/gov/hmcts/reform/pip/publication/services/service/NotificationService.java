@@ -92,7 +92,7 @@ public class NotificationService {
                                         EmailHelper.maskEmail(body.getEmail()))));
 
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
-        if (artefact.getIsFlatFile()) {
+        if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
             return emailService.sendEmail(emailService.buildFlatFileSubscriptionEmail(
                                                   body, artefact,
                                                   Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
@@ -129,6 +129,48 @@ public class NotificationService {
             .buildUnidentifiedBlobsEmail(locationMap, Templates.BAD_BLOB_EMAIL.template);
 
         return emailService.sendEmail(email).getReference().orElse(null);
+    }
+
+    /**
+     * Handles the incoming request for sending lists out to third party publishers, uses the artefact id from body
+     * to retrieve Artefact from Data Management and then gets the file or json payload to then send out.
+     *
+     * @param body Request body of ThirdParty subscription containing artefact id and the destination api.
+     * @return String of successful POST.
+     */
+    public String handleThirdParty(ThirdPartySubscription body) {
+        Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
+        Location location = dataManagementService.getLocation(artefact.getLocationId());
+        if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
+            log.info(thirdPartyService.handleFlatFileThirdPartyCall(body.getApiDestination(),
+                                                            dataManagementService.getArtefactFlatFile(
+                                                                artefact.getArtefactId()), artefact, location));
+        } else {
+            log.info(thirdPartyService.handleJsonThirdPartyCall(
+                body.getApiDestination(),
+                dataManagementService.getArtefactJsonBlob(
+                    artefact.getArtefactId()), artefact, location
+            ));
+        }
+        return String.format(SUCCESS_MESSAGE, body.getApiDestination());
+    }
+
+    /**
+     * Handles the incoming request for sending out an empty list to third party API with the deleted artefact
+     * information in the request headers.
+     *
+     * @param body Request body of ThirdParty subscription containing the deleted artefact and the destination api.
+     * @return String of successful PUT.
+     */
+    public String handleThirdParty(ThirdPartySubscriptionArtefact body) {
+        Artefact artefact = body.getArtefact();
+        Location location = dataManagementService.getLocation(artefact.getLocationId());
+
+        log.info(writeLog("Sending blank payload to third party"));
+        log.info(writeLog(thirdPartyService.handleDeleteThirdPartyCall(body.getApiDestination(),
+                                                                       artefact,
+                                                                       location)));
+        return String.format(EMPTY_SUCCESS_MESSAGE, body.getApiDestination());
     }
 
     /**
@@ -178,10 +220,9 @@ public class NotificationService {
             .buildSystemAdminUpdateEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
 
         var sentEmails = new ArrayList<String>();
-        email.forEach(emailToSend -> {
-            sentEmails.add(emailService.sendEmail(emailToSend).getReference().orElse(null));
-
-        });
+        email.forEach(emailToSend -> sentEmails.add(
+            emailService.sendEmail(emailToSend).getReference().orElse(null)
+        ));
         return sentEmails;
     }
 }
