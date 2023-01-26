@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
@@ -94,18 +93,8 @@ public class FileCreationService {
     }
 
     private List<String[]> formatData(String data) {
-        List<String[]> values = data.lines()
+        return data.lines()
             .map(l -> l.split(","))
             .toList();
-
-        // Remove the values for the 'court_name' field to allow PowerBI to populate with real court names
-        String[] header = values.get(0);
-        int index = ArrayUtils.indexOf(header, "court_name");
-        if (index != -1) {
-            values.stream()
-                .skip(1)
-                .forEach(l -> l[index] = "");
-        }
-        return values;
     }
 }
