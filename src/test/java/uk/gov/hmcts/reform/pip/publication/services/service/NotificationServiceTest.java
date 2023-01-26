@@ -21,8 +21,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserN
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
@@ -72,9 +70,6 @@ class NotificationServiceTest {
 
     private static final String TEST_EMAIL = "test@email.com";
     private static final String SUCCESS_REF_ID = "successRefId";
-    private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
-
-    private static final String EMPTY_API_SENT = "Successfully sent empty list to testUrl";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
     private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
@@ -83,9 +78,6 @@ class NotificationServiceTest {
                                                                              personalisationMap,
                                                                              SUCCESS_REF_ID);
     private static final UUID RAND_UUID = UUID.randomUUID();
-    private static final String API_DESTINATION = "testUrl";
-    private static final String MESSAGES_MATCH = "Messages should match";
-
     private static final Integer LOCATION_ID = 1;
     private static final String LOCATION_NAME = "Location Name";
 
@@ -119,9 +111,6 @@ class NotificationServiceTest {
 
     @MockBean
     private DataManagementService dataManagementService;
-
-    @MockBean
-    private ThirdPartyService thirdPartyService;
 
     @BeforeEach
     void setup() {
@@ -254,59 +243,6 @@ class NotificationServiceTest {
         assertEquals(SUCCESS_REF_ID, notificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail),
                      EXISTING_REFERENCE_ID
         );
-    }
-
-    @Test
-    void testHandleThirdPartyFlatFile() {
-        artefact.setArtefactId(RAND_UUID);
-        artefact.setIsFlatFile(true);
-
-        byte[] file = new byte[10];
-        when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
-        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
-        when(dataManagementService.getArtefactFlatFile(RAND_UUID)).thenReturn(file);
-        when(thirdPartyService.handleFlatFileThirdPartyCall(API_DESTINATION, file, artefact, location))
-            .thenReturn(SUCCESS_REF_ID);
-
-        ThirdPartySubscription subscription = new ThirdPartySubscription();
-        subscription.setArtefactId(RAND_UUID);
-        subscription.setApiDestination(API_DESTINATION);
-
-        assertEquals(SUCCESS_API_SENT, notificationService.handleThirdParty(subscription),
-                     "Api subscription with flat file should return successful referenceId.");
-    }
-
-    @Test
-    void testHandleThirdPartyJson() {
-        artefact.setArtefactId(RAND_UUID);
-        artefact.setIsFlatFile(false);
-        location.setName(LOCATION_NAME);
-        String jsonPayload = "test";
-        when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
-        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
-        when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
-        when(thirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, artefact, location))
-            .thenReturn(SUCCESS_REF_ID);
-
-        ThirdPartySubscription subscription = new ThirdPartySubscription();
-        subscription.setArtefactId(RAND_UUID);
-        subscription.setApiDestination(API_DESTINATION);
-
-        assertEquals(SUCCESS_API_SENT, notificationService.handleThirdParty(subscription),
-                     "Api subscription with flat file should return successful referenceId.");
-    }
-
-    @Test
-    void testHandleThirdPartyEmpty() {
-        when(thirdPartyService.handleDeleteThirdPartyCall(API_DESTINATION, artefact, location))
-            .thenReturn(SUCCESS_REF_ID);
-
-        ThirdPartySubscriptionArtefact subscription = new ThirdPartySubscriptionArtefact();
-        subscription.setArtefact(artefact);
-        subscription.setApiDestination(API_DESTINATION);
-
-        assertEquals(EMPTY_API_SENT, notificationService.handleThirdParty(subscription),
-                     MESSAGES_MATCH);
     }
 
     @Test

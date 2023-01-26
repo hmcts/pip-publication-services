@@ -8,14 +8,11 @@ import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
@@ -27,12 +24,7 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Service
 @Slf4j
-@SuppressWarnings("PMD.TooManyMethods")
 public class NotificationService {
-
-    private static final String SUCCESS_MESSAGE = "Successfully sent list to %s";
-    private static final String EMPTY_SUCCESS_MESSAGE = "Successfully sent empty list to %s";
-
     @Autowired
     private EmailService emailService;
 
@@ -41,9 +33,6 @@ public class NotificationService {
 
     @Autowired
     private DataManagementService dataManagementService;
-
-    @Autowired
-    private ThirdPartyService thirdPartyService;
 
     /**
      * Handles the incoming request for welcome emails, checks the json payload and builds and sends the email.

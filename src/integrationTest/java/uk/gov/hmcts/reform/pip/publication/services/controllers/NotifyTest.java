@@ -90,7 +90,7 @@ class NotifyTest {
     private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY = """
         {
             "apiDestination": "https://localhost:4444",
-            "artefactId": "70494df0-31c1-4290-bbd2-7bfe7acfeb81"
+            "artefactId": "007b103a-07df-488d-8129-ca9afda1368c"
         }
         """;
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY = """
@@ -166,8 +166,7 @@ class NotifyTest {
             "email": "test@email.com"
         }
         """;
-    private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY =
-        """
+    private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY = """
         {
             "email": "test@test.com",
             "fullName": "testName",
@@ -240,7 +239,7 @@ class NotifyTest {
     }
 
     @Test
-    void testValidPayloadReturnsSuccessDuplicateMedia() throws Exception {
+    void testSendDuplicateMediaAccountEmail() throws Exception {
         mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
                             .content(VALID_DUPLICATE_MEDIA_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -250,7 +249,7 @@ class NotifyTest {
     }
 
     @Test
-    void testInvalidPayloadReturnsBadRequestDuplicateMedia() throws Exception {
+    void testSendDuplicateMediaAccountEmailBadRequest() throws Exception {
         mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
                             .content(DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -258,7 +257,17 @@ class NotifyTest {
     }
 
     @Test
-    void testValidPayloadReturnsSuccessAdminCreation() throws Exception {
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
+    void testUnauthorizedDuplicateMediaAccountEmail() throws Exception {
+        mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
+                            .content(VALID_DUPLICATE_MEDIA_REQUEST_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+    }
+
+
+    @Test
+    void testSendAdminAccountWelcomeEmail() throws Exception {
         mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
                             .content(VALID_ADMIN_CREATION_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -268,7 +277,7 @@ class NotifyTest {
     }
 
     @Test
-    void testInvalidPayloadReturnsBadRequestAdminCreation() throws Exception {
+    void testSendAdminAccountWelcomeEmailBadRequest() throws Exception {
         mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
                             .content(INVALID_JSON_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -277,16 +286,7 @@ class NotifyTest {
 
     @Test
     @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
-    void testUnauthorizedRequestWelcomeEmail() throws Exception {
-        mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(VALID_WELCOME_REQUEST_BODY_EXISTING)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
-    void testUnauthorizedRequestAdminEmail() throws Exception {
+    void testUnauthorizedSendAdminAccountWelcomeEmail() throws Exception {
         mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
                             .content(VALID_ADMIN_CREATION_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -294,12 +294,22 @@ class NotifyTest {
     }
 
     @Test
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
+    void testUnauthorizedSendWelcomeEmail() throws Exception {
+        mockMvc.perform(post(WELCOME_EMAIL_URL)
+                            .content(VALID_WELCOME_REQUEST_BODY_EXISTING)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testNotifyApiSubscribersJson() throws Exception {
         externalApiMockServer.enqueue(new MockResponse()
-                                          .addHeader(
-                                              "Content-Type",
-                                              ContentType.APPLICATION_JSON
-                                          )
+                                          .addHeader("Content-Type", ContentType.APPLICATION_JSON)
+                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setResponseCode(200));
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .addHeader("Content-Type", ContentType.MULTIPART_FORM_DATA)
                                           .setBody(EXTERNAL_PAYLOAD)
                                           .setResponseCode(200));
 
@@ -312,12 +322,18 @@ class NotifyTest {
     }
 
     @Test
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
+    void testUnauthorizedSendThirdPartySubscription() throws Exception {
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                            .content(THIRD_PARTY_SUBSCRIPTION_JSON_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testNotifyApiSubscribersFile() throws Exception {
         externalApiMockServer.enqueue(new MockResponse()
-                                          .addHeader(
-                                              "Content-Type",
-                                              ContentType.APPLICATION_JSON
-                                          )
+                                          .addHeader("Content-Type", ContentType.MULTIPART_FORM_DATA)
                                           .setBody(EXTERNAL_PAYLOAD)
                                           .setResponseCode(200));
 
@@ -363,7 +379,7 @@ class NotifyTest {
     }
 
     @Test
-    void testValidPayloadMediaReportingEmail() throws Exception {
+    void testSendMediaReportingEmail() throws Exception {
         mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
                             .content(validMediaReportingJson)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -371,11 +387,20 @@ class NotifyTest {
     }
 
     @Test
-    void testInvalidPayloadMediaReportingEmail() throws Exception {
+    void testSendMediaReportingEmailBadRequest() throws Exception {
         mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
                             .content("invalid content")
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
+    void testUnauthorizedSendMediaReportingEmail() throws Exception {
+        mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
+                            .content(validMediaReportingJson)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
     }
 
     @Test
@@ -460,6 +485,27 @@ class NotifyTest {
     }
 
     @Test
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
+    void testUnauthorizedSendSubscriptionEmail() throws Exception {
+        String validBody = """
+            {
+                "artefactId": "8545507a-e985-4931-bba2-76be0e6ac396",
+                "email": "test_account_admin@justice.gov.uk",
+                "subscriptions": {
+                    "LOCATION_ID": [
+                        "4"
+                    ]
+                }
+            }
+            """;
+
+        mockMvc.perform(post(SUBSCRIPTION_URL)
+                            .content(validBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testDeletePayloadThirdParty() throws Exception {
         externalApiMockServer.enqueue(new MockResponse()
                                           .addHeader(
@@ -498,7 +544,7 @@ class NotifyTest {
     }
 
     @Test
-    void testValidPayloadUnidentifiedBlobEmail() throws Exception {
+    void testSendUnidentifiedBlobEmail() throws Exception {
         mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
                             .content(validLocationsMapJson)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -507,11 +553,20 @@ class NotifyTest {
     }
 
     @Test
-    void testInvalidPayloadUnidentifiedBlobEmail() throws Exception {
+    void testSendUnidentifiedBlobEmailBadRequest() throws Exception {
         mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
                             .content("invalid content")
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
+    void testUnauthorizedSendUnidentifiedBlobEmail() throws Exception {
+        mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
+                            .content(validLocationsMapJson)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
     }
 
     @Test
@@ -525,6 +580,15 @@ class NotifyTest {
     }
 
     @Test
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
+    void testUnauthorizedSendMediaUserVerificationEmail() throws Exception {
+        mockMvc.perform(post(MEDIA_VERIFICATION_EMAIL_URL)
+                            .content(VALID_MEDIA_VERIFICATION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testInvalidPayloadMediaVerificationEmail() throws Exception {
         mockMvc.perform(post(MEDIA_VERIFICATION_EMAIL_URL)
                             .content("invalid content")
@@ -533,7 +597,7 @@ class NotifyTest {
     }
 
     @Test
-    void testValidPayloadInactiveUserNotificationEmail() throws Exception {
+    void testSendNotificationToInactiveUsers() throws Exception {
         mockMvc.perform(post(INACTIVE_USER_NOTIFICATION_EMAIL_URL)
                             .content(VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -543,7 +607,16 @@ class NotifyTest {
     }
 
     @Test
-    void testInvalidPayloadMInactiveUserNotificationEmail() throws Exception {
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
+    void testUnauthorizedSendNotificationToInactiveUsers() throws Exception {
+        mockMvc.perform(post(INACTIVE_USER_NOTIFICATION_EMAIL_URL)
+                            .content(VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testSendNotificationToInactiveUsersBadRequest() throws Exception {
         mockMvc.perform(post(INACTIVE_USER_NOTIFICATION_EMAIL_URL)
                             .content("invalid content")
                             .contentType(MediaType.APPLICATION_JSON))
@@ -554,6 +627,13 @@ class NotifyTest {
     void testSendMiReportingEmail() throws Exception {
         mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
+    void testUnauthorizedSendMiReportingEmail() throws Exception {
+        mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
+            .andExpect(status().isForbidden());
     }
 
     @Test
@@ -572,6 +652,15 @@ class NotifyTest {
                             .content("content")
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "unknown_user", authorities = {"APPROLE_api.request.unknown"})
+    void testUnauthorizedSendSystemAdminUpdate() throws Exception {
+        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
+                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
     }
 
 }
