@@ -415,7 +415,7 @@ class PersonalisationServiceTest {
 
         Object fullNameObject = personalisation.get("full_name");
         assertNotNull(fullNameObject, "No full name found");
-        assertEquals(fullNameObject, FULL_NAME,
+        assertEquals(FULL_NAME, fullNameObject,
                      "Full name does not match");
 
         Object mediaSignInPageLink = personalisation.get(AAD_SIGN_IN_LINK);
@@ -445,7 +445,7 @@ class PersonalisationServiceTest {
 
         Object fullNameObject = personalisation.get("full_name");
         assertNotNull(fullNameObject, "No full name found");
-        assertEquals(fullNameObject, FULL_NAME, "Full name does not match");
+        assertEquals(FULL_NAME, fullNameObject, "Full name does not match");
 
         Object mediaVerificationLink = personalisation.get(VERIFICATION_PAGE_LINK);
         assertNotNull(mediaVerificationLink, "No media verification link key found");
