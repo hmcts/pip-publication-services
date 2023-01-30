@@ -18,7 +18,7 @@ public final class MultiPartHelper {
      * @param parts list of the part body containing the part name, the byte array data and the filename
      * @return multi part body
      */
-    public static MultiValueMap<String, HttpEntity<?>> createMultiPartByteArrayBody(
+    public static MultiValueMap<String, HttpEntity<?>> createMultiPartByteArrayBody(//NOSONAR
         List<Triple<String, byte[], String>> parts
     ) {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
