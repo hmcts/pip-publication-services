@@ -34,27 +34,28 @@ public class ThirdPartyService {
 
     private static final String SUCCESS_MESSAGE = "Successfully sent list to %s at: %s";
     private static final String SUCCESS_DELETE_MESSAGE = "Successfully sent deleted notification to %s at: %s";
+    private static final String PDF_SUCCESS_MESSAGE = "Successfully sent PDF to %s at: %s";
     private static final String COURTEL = "Courtel";
+    private static final String CATH_PROVENANCE = "CATH";
 
     @Autowired
     private WebClient.Builder webClient;
 
     /**
      * Third party call for Flat File publications.
-     * @param api The API to send the publciation to.
+     * @param api The API to send the publication to.
      * @param payload The payload to send.
      * @param artefact The artefact to publish.
      * @param location The location to publish.
      * @return A message representing the response.
      */
-    public String handleFlatFileThirdPartyCall(String api, byte[] payload,
-                                       Artefact artefact, Location location) {
+    public String handleFlatFileThirdPartyCall(String api, byte[] payload, Artefact artefact, Location location) {
         MultiValueMap<String, HttpEntity<?>> multiPartValues = MultiPartHelper.createMultiPartByteArrayBody(
             Collections.singletonList(Triple.of("file", payload, artefact.getSourceArtefactId()))
         );
 
         webClient.build().post().uri(api)
-            .headers(this.getHttpHeadersFromArtefact(artefact, location))
+            .headers(this.getHttpHeadersFromArtefact(artefact, location, false))
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .body(BodyInserters.fromMultipartData(multiPartValues))
             .retrieve()
@@ -72,10 +73,9 @@ public class ThirdPartyService {
      * @param location The location to publish.
      * @return A message representing the response.
      */
-    public String handleJsonThirdPartyCall(String api, Object payload,
-                                               Artefact artefact, Location location) {
+    public String handleJsonThirdPartyCall(String api, Object payload, Artefact artefact, Location location) {
         webClient.build().post().uri(api)
-            .headers(this.getHttpHeadersFromArtefact(artefact, location))
+            .headers(this.getHttpHeadersFromArtefact(artefact, location, false))
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
             .bodyValue(payload)
             .retrieve()
@@ -94,7 +94,7 @@ public class ThirdPartyService {
      */
     public String handleDeleteThirdPartyCall(String api, Artefact artefact, Location location) {
         webClient.build().post().uri(api)
-            .headers(this.getHttpHeadersFromArtefact(artefact, location))
+            .headers(this.getHttpHeadersFromArtefact(artefact, location, false))
             .retrieve()
             .bodyToMono(Void.class)
             .retryWhen(handleRetry(api))
@@ -102,14 +102,38 @@ public class ThirdPartyService {
         return String.format(SUCCESS_DELETE_MESSAGE, COURTEL, api);
     }
 
-    private Consumer<HttpHeaders> getHttpHeadersFromArtefact(Artefact artefact,
-                                                             Location location) {
+    /**
+     * Third party call for sending PDF for JSON publications.
+     * @param api The API to send the publication to.
+     * @param payload The payload to send.
+     * @param artefact The artefact to publish.
+     * @param location The location to publish.
+     * @return A message representing the response.
+     */
+    public String handlePdfThirdPartyCall(String api, byte[] payload, Artefact artefact, Location location) {
+        MultiValueMap<String, HttpEntity<?>> multiPartValues = MultiPartHelper.createMultiPartByteArrayBody(
+            Collections.singletonList(Triple.of("file", payload, artefact.getArtefactId() + ".pdf"))
+        );
+
+        webClient.build().post().uri(api)
+            .headers(this.getHttpHeadersFromArtefact(artefact, location, true))
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .body(BodyInserters.fromMultipartData(multiPartValues))
+            .retrieve()
+            .bodyToMono(Void.class)
+            .retryWhen(handleRetry(api))
+            .block();
+        return String.format(PDF_SUCCESS_MESSAGE, COURTEL, api);
+    }
+
+    private Consumer<HttpHeaders> getHttpHeadersFromArtefact(Artefact artefact, Location location,
+                                                             boolean isSendingPdf) {
         if (artefact == null || location == null) {
             return httpHeaders -> { };
         }
 
         return httpHeaders -> {
-            httpHeaders.add("x-provenance", artefact.getProvenance());
+            httpHeaders.add("x-provenance", isSendingPdf ? CATH_PROVENANCE : artefact.getProvenance());
             httpHeaders.add("x-source-artefact-id", artefact.getSourceArtefactId());
             httpHeaders.add("x-type", artefact.getType().toString());
             httpHeaders.add("x-list-type", artefact.getListType().toString());
