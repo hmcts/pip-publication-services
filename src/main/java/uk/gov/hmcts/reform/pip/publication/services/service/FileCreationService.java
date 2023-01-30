@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.Excel
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,10 +48,9 @@ public class FileCreationService {
      */
     public byte[] createMediaApplicationReportingCsv(List<MediaApplication> mediaApplicationList) {
         try (StringWriter sw = new StringWriter(); CSVWriter csvWriter = new CSVWriter(sw)) {
-            csvWriter.writeNext(HEADINGS);
-            mediaApplicationList.forEach(application ->
-                                             csvWriter.writeNext(application.toCsvStringArray()));
-
+            List<String[]> data = new ArrayList<>(Collections.singleton(HEADINGS));
+            mediaApplicationList.forEach(application -> data.add(application.toCsvStringArray()));
+            csvWriter.writeAll(data);
             return sw.toString().getBytes(StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new CsvCreationException(e.getMessage());
