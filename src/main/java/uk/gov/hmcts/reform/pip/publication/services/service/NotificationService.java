@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -176,6 +177,24 @@ public class NotificationService {
     public List<String> sendSystemAdminUpdateEmailRequest(SystemAdminAction body) {
         List<EmailToSend> email = emailService
             .buildSystemAdminUpdateEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
+
+        var sentEmails = new ArrayList<String>();
+        email.forEach(emailToSend -> {
+            sentEmails.add(emailService.sendEmail(emailToSend).getReference().orElse(null));
+
+        });
+        return sentEmails;
+    }
+
+    /**
+     * This method handles the sending the email to all the subscribers who are subscribe to a location.
+     *
+     * @param body The body of the location subscription notification email.
+     * @return The ID that references the location subscription notification email.
+     */
+    public List<String> sendDeleteLocationSubscriptionEmail(LocationSubscriptionDeletion body) {
+        List<EmailToSend> email = emailService
+            .buildDeleteLocationSubscriptionEmail(body, Templates.DELETE_LOCATION_SUBSCRIPTION.template);
 
         var sentEmails = new ArrayList<String>();
         email.forEach(emailToSend -> {

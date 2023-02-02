@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -86,6 +87,7 @@ public class PersonalisationService {
     private static final String CHANGE_TYPE = "change-type";
     private static final String ACTION_RESULT = "attempted/succeeded";
     private static final String ADDITIONAL_DETAILS = "Additional_change_detail";
+    private static final String LOCATION_NAME = "location-name";
 
     /**
      * Handles the personalisation for the Welcome email.
@@ -343,6 +345,14 @@ public class PersonalisationService {
             log.warn("Error adding attachment to MI data reporting email");
             throw new NotifyException(e.getMessage());
         }
+        return personalisation;
+    }
+
+    public Map<String, Object> buildDeleteLocationSubscriptionEmailPersonalisation(
+        LocationSubscriptionDeletion body) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(LOCATION_NAME, body.getLocationName());
+
         return personalisation;
     }
 }

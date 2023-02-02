@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
@@ -238,6 +239,23 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "Send notification email successfully to all system admin with referenceId: %s",
             notificationService.sendSystemAdminUpdateEmailRequest(body)
+        ));
+    }
+
+    @ApiResponses({
+        @ApiResponse(responseCode = OK_RESPONSE, description = "Unidentified blob email "
+            + "successfully sent with referenceId: {Id}"),
+        @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE),
+        @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE),
+        @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
+    })
+    @Operation(summary = "Send the location subscription deletion email to all the subscribers")
+    @PostMapping("/location-subscription-delete")
+    public ResponseEntity<String> sendDeleteLocationSubscriptionEmail(
+        @RequestBody LocationSubscriptionDeletion locationSubscriptionDeletion) {
+        return ResponseEntity.ok(String.format(
+            "Location subscription email successfully sent with reference id: %s",
+            notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion)
         ));
     }
 }
