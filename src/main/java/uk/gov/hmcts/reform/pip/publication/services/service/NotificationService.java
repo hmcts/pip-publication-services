@@ -93,7 +93,7 @@ public class NotificationService {
                                         EmailHelper.maskEmail(body.getEmail()))));
 
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
-        if (artefact.getIsFlatFile()) {
+        if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
             return emailService.sendEmail(emailService.buildFlatFileSubscriptionEmail(
                                                   body, artefact,
                                                   Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
@@ -179,10 +179,9 @@ public class NotificationService {
             .buildSystemAdminUpdateEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
 
         var sentEmails = new ArrayList<String>();
-        email.forEach(emailToSend -> {
-            sentEmails.add(emailService.sendEmail(emailToSend).getReference().orElse(null));
-
-        });
+        email.forEach(emailToSend -> sentEmails.add(
+            emailService.sendEmail(emailToSend).getReference().orElse(null)
+        ));
         return sentEmails;
     }
 

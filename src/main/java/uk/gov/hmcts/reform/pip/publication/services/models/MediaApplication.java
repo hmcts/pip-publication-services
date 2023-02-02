@@ -13,6 +13,8 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class MediaApplication {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
     private UUID id;
 
     private String fullName;
@@ -37,16 +39,13 @@ public class MediaApplication {
      * @return An array of strings
      */
     public String[] toCsvStringArray() {
-        DateTimeFormatter formatter =
-            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-
         return new String[] {
             this.fullName,
             this.email,
             this.employer,
-            this.requestDate.format(formatter),
+            this.requestDate.format(DATE_TIME_FORMATTER),
             this.status,
-            this.statusDate.format(formatter)
+            this.statusDate.format(DATE_TIME_FORMATTER)
         };
     }
 }
