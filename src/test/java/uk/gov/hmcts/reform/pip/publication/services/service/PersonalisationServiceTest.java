@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -90,6 +91,7 @@ class PersonalisationServiceTest {
     private static final String CHANGE_TYPE = "change-type";
     private static final String ACTION_RESULT = "attempted/succeeded";
     private static final String ADDITIONAL_DETAILS = "Additional_change_detail";
+    private static final String LOCATION_NAME = "location-name";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -545,5 +547,22 @@ class PersonalisationServiceTest {
                      "Additional information result does not match"
         );
 
+    }
+
+    @Test
+    void testBuildDeleteLocationSubscriptionEmailPersonalisation() {
+
+        LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion();
+        locationSubscriptionDeletion.setLocationName(LOCATIONS);
+        locationSubscriptionDeletion.setSubscriberEmails(List.of(EMAIL));
+
+        Map<String, Object> personalisation =
+            personalisationService.buildDeleteLocationSubscriptionEmailPersonalisation(locationSubscriptionDeletion);
+
+        Object locationName = personalisation.get(LOCATION_NAME);
+        assertNotNull(locationName, "No location name found");
+        assertEquals(locationSubscriptionDeletion.getLocationName(), locationName,
+                     "Name does not match location name"
+        );
     }
 }
