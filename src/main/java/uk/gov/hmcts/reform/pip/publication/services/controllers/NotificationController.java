@@ -219,7 +219,7 @@ public class NotificationController {
         ));
     }
 
-    @ApiResponse(responseCode = OK_RESPONSE, description = "Unidentified blob email "
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Location subscription email "
         + "successfully sent with referenceId: {Id}")
     @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
