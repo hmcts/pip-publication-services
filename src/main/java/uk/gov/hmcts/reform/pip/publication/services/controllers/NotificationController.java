@@ -221,7 +221,6 @@ public class NotificationController {
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Location subscription email "
         + "successfully sent with referenceId: {Id}")
-    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     @Operation(summary = "Send the location subscription deletion email to all the subscribers")
