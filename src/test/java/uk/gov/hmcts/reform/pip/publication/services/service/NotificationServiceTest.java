@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -72,7 +74,7 @@ class NotificationServiceTest {
     private static final String SUCCESS_REF_ID = "successRefId";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
-    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
+    private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
                                                                              Templates.BAD_BLOB_EMAIL.template,
                                                                              personalisationMap,
@@ -114,7 +116,7 @@ class NotificationServiceTest {
 
     @BeforeEach
     void setup() {
-        LOCATIONS_MAP.put("test", "1234");
+        NO_MATCH_ARTEFACT_LIST.add(new NoMatchArtefact(UUID.randomUUID(), "TEST", "1234"));
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
         systemAdminActionEmailBody = new DeleteLocationAction();
         systemAdminActionEmailBody.setRequesterName(FULL_NAME);
@@ -177,11 +179,11 @@ class NotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessUnidentifiedBlob() {
-        when(emailService.buildUnidentifiedBlobsEmail(LOCATIONS_MAP,
+        when(emailService.buildUnidentifiedBlobsEmail(NO_MATCH_ARTEFACT_LIST,
                                                       Templates.BAD_BLOB_EMAIL.template))
             .thenReturn(validEmailBodyForEmailClient);
 
-        assertEquals(SUCCESS_REF_ID, notificationService.unidentifiedBlobEmailRequest(LOCATIONS_MAP),
+        assertEquals(SUCCESS_REF_ID, notificationService.unidentifiedBlobEmailRequest(NO_MATCH_ARTEFACT_LIST),
                      "Unidentified blob with valid payload should return successful referenceId.");
     }
 

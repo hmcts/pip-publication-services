@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigPropertie
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
@@ -234,16 +235,15 @@ public class PersonalisationService {
     /**
      * Handles the personalisation for the unidentified blob email.
      *
-     * @param locationMap A map of location Ids and provenances associated with unidentified blobs.
+     * @param noMatchArtefactList A list of no match artefacts for the unidentified blob email.
      * @return The personalisation map for the unidentified blob email.
      */
-    public Map<String, Object> buildUnidentifiedBlobsPersonalisation(Map<String, String> locationMap) {
+    public Map<String, Object> buildUnidentifiedBlobsPersonalisation(List<NoMatchArtefact> noMatchArtefactList) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         List<String> listOfUnmatched = new ArrayList<>();
 
-        locationMap.forEach((key, value) ->
-                                listOfUnmatched.add(String.format("%s - %s", key, value)));
-
+        noMatchArtefactList.forEach(noMatchArtefact -> listOfUnmatched.add(String.format("%s - %s (%s)",
+            noMatchArtefact.getLocationId(), noMatchArtefact.getProvenance(), noMatchArtefact.getArtefactId())));
 
         personalisation.put(ARRAY_OF_IDS, listOfUnmatched);
         personalisation.put(ENV_NAME, convertEnvironmentName(envName));
