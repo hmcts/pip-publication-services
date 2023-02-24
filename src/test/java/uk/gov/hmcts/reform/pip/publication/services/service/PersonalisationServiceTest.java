@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
@@ -112,7 +113,7 @@ class PersonalisationServiceTest {
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
 
     private static final String HELLO = "hello";
-    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
+    private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
 
     private static final Map<SubscriptionTypes, List<String>> SUBSCRIPTIONS = new ConcurrentHashMap<>();
     private static final SubscriptionEmail SUBSCRIPTIONS_EMAIL = new SubscriptionEmail();
@@ -124,7 +125,7 @@ class PersonalisationServiceTest {
 
     @BeforeAll
     public static void setup() {
-        LOCATIONS_MAP.put("test", "1234");
+        NO_MATCH_ARTEFACT_LIST.add(new NoMatchArtefact(ARTEFACT_ID, "TEST", "1234"));
 
         location = new Location();
         location.setName("Location Name");
@@ -430,9 +431,9 @@ class PersonalisationServiceTest {
     @Test
     void testBuildUnidentifiedBlobsPersonalisation() {
         Map<String, Object> personalisation = personalisationService
-            .buildUnidentifiedBlobsPersonalisation(LOCATIONS_MAP);
+            .buildUnidentifiedBlobsPersonalisation(NO_MATCH_ARTEFACT_LIST);
         List<String> expectedData = new ArrayList<>();
-        expectedData.add("test - 1234");
+        expectedData.add(String.format("1234 - TEST (%s)", ARTEFACT_ID));
 
         assertEquals(expectedData, personalisation.get(ARRAY_OF_IDS),
                      "Locations map not as expected");

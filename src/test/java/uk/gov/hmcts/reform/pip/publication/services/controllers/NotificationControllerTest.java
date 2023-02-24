@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
@@ -28,12 +29,11 @@ import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagement
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,7 +63,7 @@ class NotificationControllerTest {
     private WelcomeEmail validRequestBodyTrue;
     private List<MediaApplication> validMediaApplicationList;
     private SubscriptionEmail subscriptionEmail;
-    private final Map<String, String> testUnidentifiedBlobMap = new ConcurrentHashMap<>();
+    private final List<NoMatchArtefact> noMatchArtefactList = new ArrayList<>();
     private CreatedAdminWelcomeEmail createdAdminWelcomeEmailValidBody;
     private DuplicatedMediaEmail createMediaSetupEmail;
     private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
@@ -121,8 +121,8 @@ class NotificationControllerTest {
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
 
-        testUnidentifiedBlobMap.put("Test", "500");
-        testUnidentifiedBlobMap.put("Test2", "123");
+        noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test", "500"));
+        noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test2", "123"));
 
         when(userNotificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody))
             .thenReturn(SUCCESS_ID);
@@ -132,7 +132,7 @@ class NotificationControllerTest {
             .thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
-        when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
+        when(notificationService.unidentifiedBlobEmailRequest(noMatchArtefactList))
             .thenReturn(SUCCESS_ID);
         when(userNotificationService.mediaUserVerificationEmailRequest(mediaVerificationEmail))
             .thenReturn(SUCCESS_ID);
@@ -219,7 +219,7 @@ class NotificationControllerTest {
     @Test
     void testSendUnidentifiedBlobEmailReturnsSuccessMessage() {
         assertTrue(
-            notificationController.sendUnidentifiedBlobEmail(testUnidentifiedBlobMap).getBody()
+            notificationController.sendUnidentifiedBlobEmail(noMatchArtefactList).getBody()
                 .contains("Unidentified blob email successfully sent with reference id: SuccessId"),
             MESSAGES_MATCH);
     }
@@ -227,7 +227,7 @@ class NotificationControllerTest {
     @Test
     void testSendUnidentifiedBlobEmailReturnsOkResponse() {
         assertEquals(HttpStatus.OK, notificationController
-            .sendUnidentifiedBlobEmail(testUnidentifiedBlobMap).getStatusCode(),
+            .sendUnidentifiedBlobEmail(noMatchArtefactList).getStatusCode(),
                      STATUS_CODES_MATCH);
     }
 
