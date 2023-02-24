@@ -19,13 +19,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -193,9 +194,9 @@ class NotifyTest {
 
 
     String validMediaReportingJson;
-    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
+    private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
 
-    String validLocationsMapJson;
+    String validLocationsListJson;
 
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
     private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
@@ -209,7 +210,12 @@ class NotifyTest {
 
     @BeforeEach
     void setup() throws IOException {
-        LOCATIONS_MAP.put("test", "1234");
+        NO_MATCH_ARTEFACT_LIST.add(new NoMatchArtefact(
+            UUID.randomUUID(),
+            "TEST",
+            "1234"
+        ));
+
         HandshakeCertificates handshakeCertificates = localhost();
         externalApiMockServer = new MockWebServer();
         externalApiMockServer.useHttps(handshakeCertificates.sslSocketFactory(), false);
@@ -218,7 +224,7 @@ class NotifyTest {
         ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
 
         validMediaReportingJson = ow.writeValueAsString(MEDIA_APPLICATION_LIST);
-        validLocationsMapJson = ow.writeValueAsString(LOCATIONS_MAP);
+        validLocationsListJson = ow.writeValueAsString(NO_MATCH_ARTEFACT_LIST);
     }
 
     @AfterEach
@@ -560,7 +566,7 @@ class NotifyTest {
     @Test
     void testSendUnidentifiedBlobEmail() throws Exception {
         mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
-                            .content(validLocationsMapJson)
+                            .content(validLocationsListJson)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk()).andExpect(content().string(
                 containsString("Unidentified blob email successfully sent with reference id:")));
@@ -578,7 +584,7 @@ class NotifyTest {
     @WithMockUser(username = UNAUTHORIZED_USERNAME, authorities = {UNAUTHORIZED_ROLE})
     void testUnauthorizedSendUnidentifiedBlobEmail() throws Exception {
         mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
-                            .content(validLocationsMapJson)
+                            .content(validLocationsListJson)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
     }

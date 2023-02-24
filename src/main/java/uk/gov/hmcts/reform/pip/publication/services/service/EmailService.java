@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
@@ -70,10 +71,10 @@ public class EmailService {
                                  .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
     }
 
-    protected EmailToSend buildUnidentifiedBlobsEmail(Map<String, String> locationMap, String template) {
+    protected EmailToSend buildUnidentifiedBlobsEmail(List<NoMatchArtefact> noMatchArtefactList, String template) {
         return generateEmail(piTeamEmail, template,
                              personalisationService
-                                .buildUnidentifiedBlobsPersonalisation(locationMap));
+                                .buildUnidentifiedBlobsPersonalisation(noMatchArtefactList));
     }
 
     protected EmailToSend buildMediaUserVerificationEmail(MediaVerificationEmail body, String template) {

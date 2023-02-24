@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
@@ -27,7 +28,6 @@ import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagement
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
 import java.util.List;
-import java.util.Map;
 import javax.validation.Valid;
 
 @RestController
@@ -128,10 +128,10 @@ public class NotificationController {
     @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     @Operation(summary = "Send the unidentified blob report to the P&I team")
     @PostMapping("/unidentified-blob")
-    public ResponseEntity<String> sendUnidentifiedBlobEmail(@RequestBody Map<String, String> locationMap) {
+    public ResponseEntity<String> sendUnidentifiedBlobEmail(@RequestBody List<NoMatchArtefact> noMatchArtefactList) {
         return ResponseEntity.ok(String.format(
             "Unidentified blob email successfully sent with reference id: %s",
-            notificationService.unidentifiedBlobEmailRequest(locationMap)
+            notificationService.unidentifiedBlobEmailRequest(noMatchArtefactList)
         ));
     }
 

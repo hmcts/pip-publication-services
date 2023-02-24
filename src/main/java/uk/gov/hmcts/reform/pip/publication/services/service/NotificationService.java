@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
@@ -71,12 +71,12 @@ public class NotificationService {
     /**
      * This method handles the sending of the unidentified blobs email.
      *
-     * @param locationMap A map of location Ids and provenances associated with unidentified blobs
+     * @param noMatchArtefactList A list of no match artefacts.
      * @return The ID that references the unidentified blobs email.
      */
-    public String unidentifiedBlobEmailRequest(Map<String, String> locationMap) {
+    public String unidentifiedBlobEmailRequest(List<NoMatchArtefact> noMatchArtefactList) {
         EmailToSend email = emailService
-            .buildUnidentifiedBlobsEmail(locationMap, Templates.BAD_BLOB_EMAIL.template);
+            .buildUnidentifiedBlobsEmail(noMatchArtefactList, Templates.BAD_BLOB_EMAIL.template);
 
         return emailService.sendEmail(email).getReference().orElse(null);
     }
