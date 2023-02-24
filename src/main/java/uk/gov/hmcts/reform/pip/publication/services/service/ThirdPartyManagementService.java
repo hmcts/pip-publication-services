@@ -38,7 +38,7 @@ public class ThirdPartyManagementService {
     public String handleThirdParty(ThirdPartySubscription body) {
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
         Location location = dataManagementService.getLocation(artefact.getLocationId());
-        if (artefact.getIsFlatFile()) {
+        if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
             log.info(writeLog(thirdPartyService.handleFlatFileThirdPartyCall(
                 body.getApiDestination(), dataManagementService.getArtefactFlatFile(artefact.getArtefactId()),
                 artefact, location)));
