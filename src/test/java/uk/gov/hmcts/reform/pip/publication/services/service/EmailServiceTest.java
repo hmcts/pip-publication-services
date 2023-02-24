@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -330,6 +331,26 @@ class EmailServiceTest {
         assertEquals(personalisation, systemAdminEmail.get(0).getPersonalisation(), PERSONALISATION_MESSAGE);
         assertNotNull(systemAdminEmail.get(0).getReferenceId(), REFERENCE_ID_MESSAGE);
         assertEquals(Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template, systemAdminEmail.get(0).getTemplate(),
+                     TEMPLATE_MESSAGE
+        );
+    }
+
+    @Test
+    void buildDeleteLocationSubscriptionEmailReturnsSuccess() {
+        LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion();
+        locationSubscriptionDeletion.setLocationName("locationName");
+        locationSubscriptionDeletion.setSubscriberEmails(List.of(EMAIL));
+
+        when(personalisationService.buildDeleteLocationSubscriptionEmailPersonalisation(locationSubscriptionDeletion))
+            .thenReturn(personalisation);
+
+        List<EmailToSend> systemAdminEmail = emailService.buildDeleteLocationSubscriptionEmail(
+            locationSubscriptionDeletion, Templates.DELETE_LOCATION_SUBSCRIPTION.template);
+
+        assertEquals(EMAIL, systemAdminEmail.get(0).getEmailAddress(), GENERATED_EMAIL_MESSAGE);
+        assertEquals(personalisation, systemAdminEmail.get(0).getPersonalisation(), PERSONALISATION_MESSAGE);
+        assertNotNull(systemAdminEmail.get(0).getReferenceId(), REFERENCE_ID_MESSAGE);
+        assertEquals(Templates.DELETE_LOCATION_SUBSCRIPTION.template, systemAdminEmail.get(0).getTemplate(),
                      TEMPLATE_MESSAGE
         );
     }
