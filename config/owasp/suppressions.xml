@@ -13,29 +13,13 @@
     <cve>CVE-2016-1000027</cve>
   </suppress>
   <suppress>
-    <notes>Suppressing as vulnerability is still present even with latest version. Will need to wait for dependencies to update</notes>
-    <packageUrl regex="true">^pkg:maven/commons-[a-z1-9]+/commons-[a-z1-9]+@[^\n]+</packageUrl>
-    <cve>CVE-2021-37533</cve>
-  </suppress>
-  <suppress>
-    <notes>Suppressing as vulnerability is still present even with latest version. Will need to wait for dependencies to update</notes>
-    <packageUrl regex="true">^pkg:maven/org.apache.commons/commons-[a-z1-9]+@[^\n]+</packageUrl>
-    <cve>CVE-2021-37533</cve>
-  </suppress>
-  <suppress>
-    <notes>Netty - Will be fixed when upgrading to springboot 3</notes>
-    <cve>CVE-2022-41881</cve>
-    <cve>CVE-2022-41915</cve>
-  </suppress>
-  <suppress>
-    <notes>Already on latest version, and part of spring therefore needing to suppress</notes>
-    <packageUrl>pkg:maven/org.latencyutils/LatencyUtils@2.0.3</packageUrl>
-    <cve>CVE-2021-4277</cve>
-  </suppress>
-  <suppress>
     <notes>Already on latest version</notes>
-    <packageUrl>pkg:maven/org.yaml/snakeyaml@1.33</packageUrl>
-    <cve>CVE-2022-3064</cve>
-    <cve>CVE-2021-4235</cve>
+    <packageUrl>pkg:maven/net.minidev/json-smart@2.4.8</packageUrl>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
+  <suppress>
+    <notes>Already on latest version of 2.x.x spring. Waiting for 3.x.x upgrade</notes>
+    <packageUrl>pkg:maven/com.fasterxml.jackson.core/jackson-core@2.13.5</packageUrl>
+    <cve>CVE-2022-45688</cve>
   </suppress>
 </suppressions>
