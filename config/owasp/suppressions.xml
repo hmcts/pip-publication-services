@@ -18,6 +18,11 @@
     <cve>CVE-2022-45688</cve>
   </suppress>
   <suppress>
+    <notes>Already on latest version</notes>
+    <packageUrl>pkg:maven/org.json/json@20210307</packageUrl>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
+  <suppress>
     <notes>Already on latest version of 2.x.x spring. Waiting for 3.x.x upgrade</notes>
     <packageUrl>pkg:maven/com.fasterxml.jackson.core/jackson-core@2.13.5</packageUrl>
     <cve>CVE-2022-45688</cve>
