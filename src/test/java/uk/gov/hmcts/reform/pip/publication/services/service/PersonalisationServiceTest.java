@@ -34,6 +34,7 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -203,6 +204,7 @@ class PersonalisationServiceTest {
     void buildRawDataWhenAllPresent() {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
+        artefact.setContentDate(LocalDateTime.now());
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
@@ -248,6 +250,7 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setContentDate(LocalDateTime.now());
         artefact.setSourceArtefactId("sourceArtefact.pdf");
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
@@ -285,6 +288,7 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setContentDate(LocalDateTime.now());
         artefact.setSourceArtefactId("sourceArtefact.csv");
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
@@ -309,6 +313,7 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setContentDate(LocalDateTime.now());
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
@@ -355,6 +360,7 @@ class PersonalisationServiceTest {
 
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
+        artefact.setContentDate(LocalDateTime.now());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
@@ -384,6 +390,7 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setContentDate(LocalDateTime.now());
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
