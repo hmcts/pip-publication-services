@@ -22,6 +22,8 @@ import static org.springframework.security.oauth2.client.web.reactive.function.c
 public class ChannelManagementService {
 
     private static final String SERVICE = "Channel Management";
+    private static final String SYSTEM_HEADER = "x-system";
+    private static final String TRUE = "true";
 
     @Value("${service-to-service.channel-management}")
     private String url;
@@ -53,6 +55,7 @@ public class ChannelManagementService {
     public Map<FileType, byte[]> getArtefactFiles(UUID artefactId) {
         try {
             return webClient.get().uri(String.format("%s/publication/%s", url, artefactId))
+                .header(SYSTEM_HEADER, TRUE)
                 .attributes(clientRegistrationId("channelManagementApi"))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
