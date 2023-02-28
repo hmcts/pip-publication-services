@@ -13,12 +13,11 @@ import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -26,6 +25,7 @@ import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -51,28 +51,16 @@ class NotificationServiceTest {
 
     private static final String FULL_NAME = "fullName";
     private static final String EMAIL = "test@email.com";
-    private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
-    private static final WelcomeEmail VALID_BODY_EXISTING = new WelcomeEmail(
-        EMAIL, true, FULL_NAME);
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
         EMAIL, false, FULL_NAME);
     private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
         EMAIL, "test_forename", "test_surname");
 
-    private static final MediaVerificationEmail MEDIA_VERIFICATION_EMAIL = new MediaVerificationEmail(
-        EMAIL, FULL_NAME);
-
-    private static final InactiveUserNotificationEmail INACTIVE_USER_NOTIFICATION_EMAIL_AAD =
-        new InactiveUserNotificationEmail(EMAIL, FULL_NAME, "PI_AAD", LAST_SIGNED_IN_DATE);
-
-    private static final InactiveUserNotificationEmail INACTIVE_USER_NOTIFICATION_EMAIL_CFT =
-        new InactiveUserNotificationEmail(EMAIL, FULL_NAME, "CFT_IDAM", LAST_SIGNED_IN_DATE);
-
     private static final String TEST_EMAIL = "test@email.com";
     private static final String SUCCESS_REF_ID = "successRefId";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
 
-    private static final Map<String, String> LOCATIONS_MAP = new ConcurrentHashMap<>();
+    private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
                                                                              Templates.BAD_BLOB_EMAIL.template,
                                                                              personalisationMap,
@@ -89,6 +77,8 @@ class NotificationServiceTest {
     );
 
     private SystemAdminAction systemAdminActionEmailBody;
+    private LocationSubscriptionDeletion locationSubscriptionDeletionBody =
+         new LocationSubscriptionDeletion();
 
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
 
@@ -114,7 +104,7 @@ class NotificationServiceTest {
 
     @BeforeEach
     void setup() {
-        LOCATIONS_MAP.put("test", "1234");
+        NO_MATCH_ARTEFACT_LIST.add(new NoMatchArtefact(UUID.randomUUID(), "TEST", "1234"));
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
         systemAdminActionEmailBody = new DeleteLocationAction();
         systemAdminActionEmailBody.setRequesterName(FULL_NAME);
@@ -128,33 +118,6 @@ class NotificationServiceTest {
 
         location.setLocationId(LOCATION_ID);
         location.setName(LOCATION_NAME);
-    }
-
-    @Test
-    void testValidPayloadReturnsSuccessExisting() {
-        when(emailService.buildWelcomeEmail(VALID_BODY_EXISTING, Templates.EXISTING_USER_WELCOME_EMAIL.template))
-            .thenReturn(validEmailBodyForEmailClient);
-        assertEquals(SUCCESS_REF_ID, notificationService.handleWelcomeEmailRequest(VALID_BODY_EXISTING),
-                     EXISTING_REFERENCE_ID
-        );
-    }
-
-    @Test
-    void testValidPayloadReturnsSuccessNew() {
-        when(emailService.buildWelcomeEmail(VALID_BODY_NEW, Templates.MEDIA_NEW_ACCOUNT_SETUP.template))
-            .thenReturn(validEmailBodyForEmailClient);
-        assertEquals(SUCCESS_REF_ID, notificationService.handleWelcomeEmailRequest(VALID_BODY_NEW),
-                     EXISTING_REFERENCE_ID
-        );
-    }
-
-    @Test
-    void testValidPayloadReturnsSuccessAzure() {
-        when(emailService.buildCreatedAdminWelcomeEmail(VALID_BODY_AAD,
-                                                        Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template))
-            .thenReturn(validEmailBodyForEmailClient);
-        assertEquals(SUCCESS_REF_ID, notificationService.azureNewUserEmailRequest(VALID_BODY_AAD),
-                     "Azure user with valid JSON should return successful referenceId.");
     }
 
     @Test
@@ -177,11 +140,11 @@ class NotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessUnidentifiedBlob() {
-        when(emailService.buildUnidentifiedBlobsEmail(LOCATIONS_MAP,
+        when(emailService.buildUnidentifiedBlobsEmail(NO_MATCH_ARTEFACT_LIST,
                                                       Templates.BAD_BLOB_EMAIL.template))
             .thenReturn(validEmailBodyForEmailClient);
 
-        assertEquals(SUCCESS_REF_ID, notificationService.unidentifiedBlobEmailRequest(LOCATIONS_MAP),
+        assertEquals(SUCCESS_REF_ID, notificationService.unidentifiedBlobEmailRequest(NO_MATCH_ARTEFACT_LIST),
                      "Unidentified blob with valid payload should return successful referenceId.");
     }
 
@@ -230,54 +193,6 @@ class NotificationServiceTest {
     }
 
     @Test
-    void testValidPayloadReturnsSuccessDuplicateMediaAccount() {
-        DuplicatedMediaEmail createMediaSetupEmail = new DuplicatedMediaEmail();
-        createMediaSetupEmail.setFullName("test_forename");
-        createMediaSetupEmail.setEmail(EMAIL);
-
-        when(emailService.buildDuplicateMediaSetupEmail(
-            createMediaSetupEmail,
-            Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template
-        ))
-            .thenReturn(validEmailBodyForDuplicateMediaUserClient);
-        assertEquals(SUCCESS_REF_ID, notificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail),
-                     EXISTING_REFERENCE_ID
-        );
-    }
-
-    @Test
-    void testValidPayloadReturnsSuccessMediaVerification() {
-        when(emailService.buildMediaUserVerificationEmail(MEDIA_VERIFICATION_EMAIL,
-                                                      Templates.MEDIA_USER_VERIFICATION_EMAIL.template))
-            .thenReturn(validEmailBodyForEmailClient);
-
-        assertEquals(SUCCESS_REF_ID, notificationService.mediaUserVerificationEmailRequest(MEDIA_VERIFICATION_EMAIL),
-                     "Media user verification email successfully sent with referenceId: referenceId.");
-    }
-
-    @Test
-    void testValidPayloadReturnsSuccessInactiveUserNotificationForAad() {
-        when(emailService.buildInactiveUserNotificationEmail(INACTIVE_USER_NOTIFICATION_EMAIL_AAD,
-                                                             Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD.template))
-            .thenReturn(validEmailBodyForEmailClient);
-
-        assertEquals(SUCCESS_REF_ID, notificationService.inactiveUserNotificationEmailRequest(
-            INACTIVE_USER_NOTIFICATION_EMAIL_AAD),
-                     "Inactive user notification should return successful reference ID");
-    }
-
-    @Test
-    void testValidPayloadReturnsSuccessInactiveUserNotificationForCft() {
-        when(emailService.buildInactiveUserNotificationEmail(INACTIVE_USER_NOTIFICATION_EMAIL_CFT,
-                                                             Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT.template))
-            .thenReturn(validEmailBodyForEmailClient);
-
-        assertEquals(SUCCESS_REF_ID, notificationService.inactiveUserNotificationEmailRequest(
-            INACTIVE_USER_NOTIFICATION_EMAIL_CFT),
-                     "Inactive user notification should return successful reference ID");
-    }
-
-    @Test
     void testHandleMiDataReportingReturnsSuccess() {
         when(emailService.buildMiDataReportingEmail(Templates.MI_DATA_REPORTING_EMAIL.template))
             .thenReturn(validEmailBodyForEmailClient);
@@ -293,6 +208,19 @@ class NotificationServiceTest {
             .thenReturn(List.of(validEmailBodyForEmailClient));
         assertEquals(List.of(SUCCESS_REF_ID), notificationService
                          .sendSystemAdminUpdateEmailRequest(systemAdminActionEmailBody),
+                     EXISTING_REFERENCE_ID
+        );
+    }
+
+    @Test
+    void testValidPayloadReturnsDeleteLocationSubscriptionEmail() {
+        locationSubscriptionDeletionBody.setLocationName(LOCATION_NAME);
+        locationSubscriptionDeletionBody.setSubscriberEmails(List.of(EMAIL));
+        when(emailService.buildDeleteLocationSubscriptionEmail(locationSubscriptionDeletionBody,
+                                                      Templates.DELETE_LOCATION_SUBSCRIPTION.template))
+            .thenReturn(List.of(validEmailBodyForEmailClient));
+        assertEquals(List.of(SUCCESS_REF_ID), notificationService
+            .sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletionBody),
                      EXISTING_REFERENCE_ID
         );
     }

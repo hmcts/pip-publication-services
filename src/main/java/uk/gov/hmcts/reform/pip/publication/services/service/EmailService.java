@@ -8,10 +8,12 @@ import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -69,10 +71,10 @@ public class EmailService {
                                  .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
     }
 
-    protected EmailToSend buildUnidentifiedBlobsEmail(Map<String, String> locationMap, String template) {
+    protected EmailToSend buildUnidentifiedBlobsEmail(List<NoMatchArtefact> noMatchArtefactList, String template) {
         return generateEmail(piTeamEmail, template,
                              personalisationService
-                                .buildUnidentifiedBlobsPersonalisation(locationMap));
+                                .buildUnidentifiedBlobsPersonalisation(noMatchArtefactList));
     }
 
     protected EmailToSend buildMediaUserVerificationEmail(MediaVerificationEmail body, String template) {
@@ -125,5 +127,11 @@ public class EmailService {
                                                        + "Reason: %s", emailToSend.getReferenceId(), e)));
             throw new NotifyException(e.getMessage());
         }
+    }
+
+    protected List<EmailToSend> buildDeleteLocationSubscriptionEmail(
+        LocationSubscriptionDeletion body, String template) {
+        return generateEmail(body.getSubscriberEmails(), template,
+                             personalisationService.buildDeleteLocationSubscriptionEmailPersonalisation(body));
     }
 }

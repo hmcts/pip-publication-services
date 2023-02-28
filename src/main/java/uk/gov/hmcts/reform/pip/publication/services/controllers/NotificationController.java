@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.authentication.roles.IsAdmin;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
@@ -23,9 +25,9 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySub
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
+import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
 import java.util.List;
-import java.util.Map;
 import javax.validation.Valid;
 
 @RestController
@@ -40,6 +42,9 @@ public class NotificationController {
 
     @Autowired
     private ThirdPartyManagementService thirdPartyManagementService;
+
+    @Autowired
+    private UserNotificationService userNotificationService;
 
     private static final String BAD_PAYLOAD_EXCEPTION_MESSAGE = "BadPayloadException error message";
 
@@ -70,7 +75,7 @@ public class NotificationController {
     public ResponseEntity<String> sendWelcomeEmail(@RequestBody WelcomeEmail body) {
         return ResponseEntity.ok(String.format(
             "Welcome email successfully sent with referenceId %s",
-            notificationService.handleWelcomeEmailRequest(body)
+            userNotificationService.handleWelcomeEmailRequest(body)
         ));
     }
 
@@ -84,7 +89,7 @@ public class NotificationController {
     public ResponseEntity<String> sendAdminAccountWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
         return ResponseEntity.ok(String.format(
             "Created admin welcome email successfully sent with referenceId %s",
-            notificationService.azureNewUserEmailRequest(body)
+            userNotificationService.azureNewUserEmailRequest(body)
         ));
     }
 
@@ -123,10 +128,10 @@ public class NotificationController {
     @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     @Operation(summary = "Send the unidentified blob report to the P&I team")
     @PostMapping("/unidentified-blob")
-    public ResponseEntity<String> sendUnidentifiedBlobEmail(@RequestBody Map<String, String> locationMap) {
+    public ResponseEntity<String> sendUnidentifiedBlobEmail(@RequestBody List<NoMatchArtefact> noMatchArtefactList) {
         return ResponseEntity.ok(String.format(
             "Unidentified blob email successfully sent with reference id: %s",
-            notificationService.unidentifiedBlobEmailRequest(locationMap)
+            notificationService.unidentifiedBlobEmailRequest(noMatchArtefactList)
         ));
     }
 
@@ -140,7 +145,7 @@ public class NotificationController {
     public ResponseEntity<String> sendDuplicateMediaAccountEmail(@RequestBody DuplicatedMediaEmail body) {
         return ResponseEntity.ok(String.format(
             "Duplicate media account email successfully sent with referenceId %s",
-            notificationService.mediaDuplicateUserEmailRequest(body)
+            userNotificationService.mediaDuplicateUserEmailRequest(body)
         ));
     }
 
@@ -171,7 +176,7 @@ public class NotificationController {
     public ResponseEntity<String> sendMediaUserVerificationEmail(@RequestBody MediaVerificationEmail body) {
         return ResponseEntity.ok(String.format(
             "Media user verification email successfully sent with referenceId: %s",
-            notificationService.mediaUserVerificationEmailRequest(body)
+            userNotificationService.mediaUserVerificationEmailRequest(body)
         ));
     }
 
@@ -185,7 +190,7 @@ public class NotificationController {
     public ResponseEntity<String> sendNotificationToInactiveUsers(@RequestBody InactiveUserNotificationEmail body) {
         return ResponseEntity.ok(String.format(
             "Inactive user sign-in notification email successfully sent with referenceId: %s",
-            notificationService.inactiveUserNotificationEmailRequest(body)
+            userNotificationService.inactiveUserNotificationEmailRequest(body)
         ));
     }
 
@@ -211,6 +216,20 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "Send notification email successfully to all system admin with referenceId: %s",
             notificationService.sendSystemAdminUpdateEmailRequest(body)
+        ));
+    }
+
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Location subscription email "
+        + "successfully sent with referenceId: {Id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
+    @Operation(summary = "Send the location subscription deletion email to all the subscribers")
+    @PostMapping("/location-subscription-delete")
+    public ResponseEntity<String> sendDeleteLocationSubscriptionEmail(
+        @RequestBody LocationSubscriptionDeletion locationSubscriptionDeletion) {
+        return ResponseEntity.ok(String.format(
+            "Location subscription email successfully sent with reference id: %s",
+            notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion)
         ));
     }
 }

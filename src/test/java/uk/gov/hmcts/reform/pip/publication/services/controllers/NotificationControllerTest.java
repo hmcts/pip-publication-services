@@ -13,10 +13,12 @@ import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
+import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
@@ -24,14 +26,14 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySub
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
+import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.TooManyFields"})
 class NotificationControllerTest {
 
     private static final String VALID_EMAIL = "test@email.com";
@@ -61,7 +63,7 @@ class NotificationControllerTest {
     private WelcomeEmail validRequestBodyTrue;
     private List<MediaApplication> validMediaApplicationList;
     private SubscriptionEmail subscriptionEmail;
-    private final Map<String, String> testUnidentifiedBlobMap = new ConcurrentHashMap<>();
+    private final List<NoMatchArtefact> noMatchArtefactList = new ArrayList<>();
     private CreatedAdminWelcomeEmail createdAdminWelcomeEmailValidBody;
     private DuplicatedMediaEmail createMediaSetupEmail;
     private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
@@ -69,9 +71,13 @@ class NotificationControllerTest {
     private InactiveUserNotificationEmail inactiveUserNotificationEmail;
     private ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
     private SystemAdminAction systemAdminAction;
+    private LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion();
 
     @Mock
     private NotificationService notificationService;
+
+    @Mock
+    private UserNotificationService userNotificationService;
 
     @Mock
     private ThirdPartyManagementService thirdPartyManagementService;
@@ -110,26 +116,27 @@ class NotificationControllerTest {
         systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
-        when(notificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
+        when(userNotificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
         when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
 
-        testUnidentifiedBlobMap.put("Test", "500");
-        testUnidentifiedBlobMap.put("Test2", "123");
+        noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test", "500"));
+        noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test2", "123"));
 
-        when(notificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody)).thenReturn(SUCCESS_ID);
+        when(userNotificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody))
+            .thenReturn(SUCCESS_ID);
         when(thirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
-        when(notificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);
+        when(userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);
         when(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact))
             .thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
-        when(notificationService.unidentifiedBlobEmailRequest(testUnidentifiedBlobMap))
+        when(notificationService.unidentifiedBlobEmailRequest(noMatchArtefactList))
             .thenReturn(SUCCESS_ID);
-        when(notificationService.mediaUserVerificationEmailRequest(mediaVerificationEmail))
+        when(userNotificationService.mediaUserVerificationEmailRequest(mediaVerificationEmail))
             .thenReturn(SUCCESS_ID);
-        when(notificationService.inactiveUserNotificationEmailRequest(inactiveUserNotificationEmail))
+        when(userNotificationService.inactiveUserNotificationEmailRequest(inactiveUserNotificationEmail))
             .thenReturn(SUCCESS_ID);
         when(notificationService.sendSystemAdminUpdateEmailRequest(systemAdminAction)).thenReturn(List.of());
     }
@@ -212,7 +219,7 @@ class NotificationControllerTest {
     @Test
     void testSendUnidentifiedBlobEmailReturnsSuccessMessage() {
         assertTrue(
-            notificationController.sendUnidentifiedBlobEmail(testUnidentifiedBlobMap).getBody()
+            notificationController.sendUnidentifiedBlobEmail(noMatchArtefactList).getBody()
                 .contains("Unidentified blob email successfully sent with reference id: SuccessId"),
             MESSAGES_MATCH);
     }
@@ -220,7 +227,7 @@ class NotificationControllerTest {
     @Test
     void testSendUnidentifiedBlobEmailReturnsOkResponse() {
         assertEquals(HttpStatus.OK, notificationController
-            .sendUnidentifiedBlobEmail(testUnidentifiedBlobMap).getStatusCode(),
+            .sendUnidentifiedBlobEmail(noMatchArtefactList).getStatusCode(),
                      STATUS_CODES_MATCH);
     }
 
@@ -290,6 +297,23 @@ class NotificationControllerTest {
     void testSendSystemAdminUpdateShouldReturnOkResponse() {
         assertEquals(HttpStatus.OK, notificationController
                          .sendSystemAdminUpdate(systemAdminAction).getStatusCode(),
+                     STATUS_CODES_MATCH
+        );
+    }
+
+    @Test
+    void testSendDeleteLocationSubscriptionEmailShouldReturnSuccessMessage() {
+        assertTrue(
+            notificationController.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion).getBody()
+                .contains("Location subscription email successfully sent with reference id"),
+            MESSAGES_MATCH
+        );
+    }
+
+    @Test
+    void testSendDeleteLocationSubscriptionEmailShouldReturnOkResponse() {
+        assertEquals(HttpStatus.OK, notificationController
+                         .sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion).getStatusCode(),
                      STATUS_CODES_MATCH
         );
     }
