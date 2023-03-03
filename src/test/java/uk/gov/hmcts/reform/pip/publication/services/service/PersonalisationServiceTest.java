@@ -34,6 +34,7 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -93,6 +94,8 @@ class PersonalisationServiceTest {
     private static final String ACTION_RESULT = "attempted/succeeded";
     private static final String ADDITIONAL_DETAILS = "Additional_change_detail";
     private static final String LOCATION_NAME = "location-name";
+    private static final String CONTENT_DATE = "content_date";
+    private static final String CONTENT_DATE_ASSERT_MESSAGE = "No content date found";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -203,6 +206,7 @@ class PersonalisationServiceTest {
     void buildRawDataWhenAllPresent() {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
+        artefact.setContentDate(LocalDateTime.now());
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
@@ -241,6 +245,9 @@ class PersonalisationServiceTest {
         assertEquals(personalisationLinks.getStartPageLink(), startPageLink,
                      "Start page link does not match expected link"
         );
+
+        Object contentDate = personalisation.get(CONTENT_DATE);
+        assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
     }
 
     @Test
@@ -248,6 +255,7 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setContentDate(LocalDateTime.now());
         artefact.setSourceArtefactId("sourceArtefact.pdf");
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
@@ -278,6 +286,9 @@ class PersonalisationServiceTest {
         assertEquals(personalisationLinks.getStartPageLink(), startPageLink,
                      "Start page link does not match expected link"
         );
+
+        Object contentDate = personalisation.get(CONTENT_DATE);
+        assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
     }
 
     @Test
@@ -285,6 +296,7 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setContentDate(LocalDateTime.now());
         artefact.setSourceArtefactId("sourceArtefact.csv");
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
@@ -302,6 +314,9 @@ class PersonalisationServiceTest {
         assertEquals(true, ((JSONObject) personalisation.get(LINK_TO_FILE)).get(IS_CSV),
                      "File has not been marked as a CSV when it is"
         );
+
+        Object contentDate = personalisation.get(CONTENT_DATE);
+        assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
     }
 
     @Test
@@ -309,6 +324,7 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setContentDate(LocalDateTime.now());
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
 
@@ -325,6 +341,9 @@ class PersonalisationServiceTest {
         assertEquals(false, ((JSONObject) personalisation.get(LINK_TO_FILE)).get(IS_CSV),
                      "File has been marked as a CSV when it's not"
         );
+
+        Object contentDate = personalisation.get(CONTENT_DATE);
+        assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
     }
 
     @Test
@@ -355,6 +374,7 @@ class PersonalisationServiceTest {
 
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
+        artefact.setContentDate(LocalDateTime.now());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
@@ -367,6 +387,9 @@ class PersonalisationServiceTest {
         assertEquals("", personalisation.get(LOCATIONS),
                      LOCATION_MESSAGE
         );
+
+        Object contentDate = personalisation.get(CONTENT_DATE);
+        assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
     }
 
     @Test
@@ -384,6 +407,7 @@ class PersonalisationServiceTest {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setContentDate(LocalDateTime.now());
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
@@ -396,6 +420,9 @@ class PersonalisationServiceTest {
         assertEquals("", personalisation.get(CASE_NUMBERS),
                      "Case number not as expected"
         );
+
+        Object contentDate = personalisation.get(CONTENT_DATE);
+        assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
     }
 
     @Test

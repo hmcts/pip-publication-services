@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -89,6 +90,7 @@ public class PersonalisationService {
     private static final String ACTION_RESULT = "attempted/succeeded";
     private static final String ADDITIONAL_DETAILS = "Additional_change_detail";
     private static final String LOCATION_NAME = "location-name";
+
 
     /**
      * Handles the personalisation for the Welcome email.
@@ -167,6 +169,9 @@ public class PersonalisationService {
             personalisation.put("testing_of_array",
                                 channelManagementService.getArtefactSummary(artefact.getArtefactId()));
 
+            personalisation.put("content_date", artefact.getContentDate()
+                .format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
+
             return personalisation;
         } catch (Exception e) {
             log.warn("Error adding attachment to raw data email {}. Artefact ID: {}",
@@ -203,6 +208,9 @@ public class PersonalisationService {
 
             personalisation.put(LINK_TO_FILE, uploadedFile);
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
+
+            personalisation.put("content_date", artefact.getContentDate()
+                .format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
 
             return personalisation;
         } catch (NotificationClientException e) {
