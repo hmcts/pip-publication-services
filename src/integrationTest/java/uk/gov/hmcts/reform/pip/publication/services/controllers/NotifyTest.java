@@ -97,7 +97,7 @@ class NotifyTest {
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY = """
         {
             "apiDestination": "https://localhost:4444",
-            "artefactId": "79f5c9ae-a951-44b5-8856-3ad6b7454b0e"
+            "artefactId": "39f915df-c045-44d2-9692-778baa326cd0"
         }
         """;
     private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY = """
@@ -483,8 +483,8 @@ class NotifyTest {
     @Test
     void testValidFlatFileRequest() throws Exception {
         String validBody =
-            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"9\"]},"
-                + "\"artefactId\": \"79f5c9ae-a951-44b5-8856-3ad6b7454b0e\"}";
+            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"999\"]},"
+                + "\"artefactId\": \"39f915df-c045-44d2-9692-778baa326cd0\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(validBody)
@@ -495,8 +495,8 @@ class NotifyTest {
     @Test
     void testValidFlatFileRequestCsv() throws Exception {
         String validBody =
-            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"4\"]},"
-                + "\"artefactId\": \"8545507a-e985-4931-bba2-76be0e6ac396\"}";
+            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"999\"]},"
+                + "\"artefactId\": \"01695af1-aa32-411d-a69b-0841810c32a5\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(validBody)
