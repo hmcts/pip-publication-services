@@ -6,10 +6,8 @@ package uk.gov.hmcts.reform.pip.publication.services.notify;
 public enum Templates {
     EXISTING_USER_WELCOME_EMAIL("321cbaa6-2a19-4980-87c6-fe90516db59b"),
     ADMIN_ACCOUNT_CREATION_EMAIL("5609165c-ae4b-4d67-acdb-8dcbd0f5fb64"),
-    MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL("b3e4363f-6c92-433b-8fb5-2582b75eff82"), //TODO change back to original before
-    // merge
-    MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL("7d37900c-24c0-4414-9052-3eee0a1fde90"), //TODO change back to original before
-    // merge
+    MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL("fb7c6bdd-c833-4f26-bb65-0ee4678ffd76"),
+    MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL("2e0f0aca-e10d-4549-beb8-d64e68f1586a"),
     MEDIA_NEW_ACCOUNT_SETUP("e426073b-958c-42a2-a94f-bbdd1a400cb7"),
     MEDIA_DUPLICATE_ACCOUNT_EMAIL("13b058a5-82da-4331-98ff-97d3ebf66f51"),
     MEDIA_APPLICATION_REPORTING_EMAIL("c59c90a3-1806-4649-b4b5-b6bce8f8f72c"),
