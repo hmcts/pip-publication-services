@@ -9,7 +9,7 @@
   </suppress>
   <suppress>
     <notes>Already on latest version of parent dependency</notes>
-    <packageUrl>pkg:maven/org.json/json@20210307</packageUrl>
+    <packageUrl>pkg:maven/org.json/json@20230227</packageUrl>
     <cve>CVE-2022-45688</cve>
   </suppress>
 </suppressions>
