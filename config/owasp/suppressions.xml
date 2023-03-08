@@ -8,7 +8,7 @@
     <cve>CVE-2021-42306</cve>
   </suppress>
   <suppress>
-    <notes>Already on latest version</notes>
+    <notes>Already on latest version of parent dependency</notes>
     <packageUrl>pkg:maven/org.json/json@20210307</packageUrl>
     <cve>CVE-2022-45688</cve>
   </suppress>
