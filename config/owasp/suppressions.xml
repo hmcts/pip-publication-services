@@ -7,24 +7,4 @@
     <packageUrl regex="true">^pkg:maven/com.azure.spring/spring-cloud-azure-starter-active-directory@4.5.0</packageUrl>
     <cve>CVE-2021-42306</cve>
   </suppress>
-  <suppress>
-    <notes><![CDATA[Spring old vuln thats been re-flagged recently, doesnt look like we are impacted]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework/spring.*$</packageUrl>
-    <cve>CVE-2016-1000027</cve>
-  </suppress>
-  <suppress>
-    <notes>Already on latest version</notes>
-    <packageUrl>pkg:maven/net.minidev/json-smart@2.4.8</packageUrl>
-    <cve>CVE-2022-45688</cve>
-  </suppress>
-  <suppress>
-    <notes>Already on latest version</notes>
-    <packageUrl>pkg:maven/org.json/json@20210307</packageUrl>
-    <cve>CVE-2022-45688</cve>
-  </suppress>
-  <suppress>
-    <notes>Already on latest version of 2.x.x spring. Waiting for 3.x.x upgrade</notes>
-    <packageUrl>pkg:maven/com.fasterxml.jackson.core/jackson-core@2.13.5</packageUrl>
-    <cve>CVE-2022-45688</cve>
-  </suppress>
 </suppressions>
