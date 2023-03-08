@@ -7,4 +7,9 @@
     <packageUrl regex="true">^pkg:maven/com.azure.spring/spring-cloud-azure-starter-active-directory@4.5.0</packageUrl>
     <cve>CVE-2021-42306</cve>
   </suppress>
+  <suppress>
+    <notes>Already on latest version</notes>
+    <packageUrl>pkg:maven/org.json/json@20210307</packageUrl>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
 </suppressions>
