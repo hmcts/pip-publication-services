@@ -496,7 +496,7 @@ class NotifyTest {
     void testValidFlatFileRequestCsv() throws Exception {
         String validBody =
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"999\"]},"
-                + "\"artefactId\": \"de4c9010-3619-432f-a4bc-6ec45b1ba983\"}";
+                + "\"artefactId\": \"494fa385-bbe6-4829-9998-07d19e903df2\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(validBody)
