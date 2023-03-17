@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Not
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.CaseSearch;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
@@ -36,6 +37,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -248,6 +250,116 @@ class PersonalisationServiceTest {
 
         Object contentDate = personalisation.get(CONTENT_DATE);
         assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
+    }
+
+    @Test
+    void buildRawDataWithCaseNamePresent() {
+        Map<String, List<Object>> searchCriteria = new HashMap<>();
+
+        CaseSearch caseSearch = new CaseSearch();
+        caseSearch.setCaseName("This is a case name");
+        caseSearch.setCaseNumber(CASE_NUMBER_VALUE);
+
+        searchCriteria.put("cases", List.of(caseSearch));
+
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(UUID.randomUUID());
+        artefact.setContentDate(LocalDateTime.now());
+        artefact.setSearch(searchCriteria);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
+        when(channelManagementService.getArtefactFiles(any())).thenReturn(FILES_MAP);
+
+        Map<String, Object> personalisation =
+            personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
+
+        assertEquals(YES, personalisation.get(DISPLAY_CASE_NUMBERS), "Display case numbers is not Yes");
+        assertEquals(List.of(CASE_NUMBER_VALUE + " (This is a case name)"), personalisation.get(CASE_NUMBERS),
+                     "Case number not as expected"
+        );
+    }
+
+    @Test
+    void buildRawDataWithSearchPresentButNoCaseName() {
+        Map<String, List<Object>> searchCriteria = new HashMap<>();
+
+        CaseSearch caseSearch = new CaseSearch();
+        caseSearch.setCaseName("This is a case name");
+
+        searchCriteria.put("cases", List.of(caseSearch));
+
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(UUID.randomUUID());
+        artefact.setContentDate(LocalDateTime.now());
+        artefact.setSearch(searchCriteria);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
+        when(channelManagementService.getArtefactFiles(any())).thenReturn(FILES_MAP);
+
+        Map<String, Object> personalisation =
+            personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
+
+        assertEquals(YES, personalisation.get(DISPLAY_CASE_NUMBERS), "Display case numbers is not Yes");
+        assertEquals(List.of(CASE_NUMBER_VALUE), personalisation.get(CASE_NUMBERS),
+                     "Case number not as expected"
+        );
+    }
+
+    @Test
+    void buildRawDataWithSearchPresentButDoesNotContainCases() {
+        Map<String, List<Object>> searchCriteria = new HashMap<>();
+
+        CaseSearch caseSearch = new CaseSearch();
+        caseSearch.setCaseName("This is a case name");
+
+        searchCriteria.put("cases2", List.of(caseSearch));
+
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(UUID.randomUUID());
+        artefact.setContentDate(LocalDateTime.now());
+        artefact.setSearch(searchCriteria);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
+        when(channelManagementService.getArtefactFiles(any())).thenReturn(FILES_MAP);
+
+        Map<String, Object> personalisation =
+            personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
+
+        assertEquals(YES, personalisation.get(DISPLAY_CASE_NUMBERS), "Display case numbers is not Yes");
+        assertEquals(List.of(CASE_NUMBER_VALUE), personalisation.get(CASE_NUMBERS),
+                     "Case number not as expected"
+        );
+    }
+
+    @Test
+    void buildRawDataWithCaseNumberPresentButIsEmpty() {
+        Map<String, List<Object>> searchCriteria = new HashMap<>();
+
+        CaseSearch caseSearch = new CaseSearch();
+        caseSearch.setCaseNumber("");
+        caseSearch.setCaseName("This is a case name");
+
+        searchCriteria.put("cases2", List.of(caseSearch));
+
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(UUID.randomUUID());
+        artefact.setContentDate(LocalDateTime.now());
+        artefact.setSearch(searchCriteria);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
+        when(channelManagementService.getArtefactFiles(any())).thenReturn(FILES_MAP);
+
+        Map<String, Object> personalisation =
+            personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
+
+        assertEquals(YES, personalisation.get(DISPLAY_CASE_NUMBERS), "Display case numbers is not Yes");
+        assertEquals(List.of(CASE_NUMBER_VALUE), personalisation.get(CASE_NUMBERS),
+                     "Case number not as expected"
+        );
     }
 
     @Test

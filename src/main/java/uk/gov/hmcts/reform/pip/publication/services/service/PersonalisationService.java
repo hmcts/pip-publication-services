@@ -1,7 +1,14 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.core.dependencies.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +20,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Not
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.external.CaseSearch;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
@@ -31,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.convertEnvironmentName;
@@ -135,13 +144,9 @@ public class PersonalisationService {
 
             Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
 
-            populateGenericPersonalisation(personalisation, DISPLAY_CASE_NUMBERS, CASE_NUMBERS,
-                                           subscriptions.get(SubscriptionTypes.CASE_NUMBER)
-            );
+            populateCaseNumberPersonalisation(artefact, personalisation, subscriptions.get(SubscriptionTypes.CASE_NUMBER));
 
-            populateGenericPersonalisation(personalisation, DISPLAY_CASE_URN, CASE_URN,
-                                           subscriptions.get(SubscriptionTypes.CASE_URN)
-            );
+            populateCaseUrnPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.CASE_URN));
 
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
@@ -299,14 +304,25 @@ public class PersonalisationService {
         return personalisation;
     }
 
-    private void populateGenericPersonalisation(Map<String, Object> personalisation, String display,
-                                                String displayValue, List<String> content) {
+    private void populateCaseUrnPersonalisation(Map<String, Object> personalisation, List<String> content) {
+
         if (content == null || content.isEmpty()) {
-            personalisation.put(display, NO);
-            personalisation.put(displayValue, "");
+            personalisation.put(DISPLAY_CASE_URN, NO);
+            personalisation.put(CASE_URN, "");
         } else {
-            personalisation.put(display, YES);
-            personalisation.put(displayValue, content);
+            personalisation.put(DISPLAY_CASE_URN, YES);
+            personalisation.put(CASE_URN, content);
+        }
+    }
+
+    private void populateCaseNumberPersonalisation(Artefact artefact, Map<String, Object> personalisation, List<String> content) {
+
+        if (content == null || content.isEmpty()) {
+            personalisation.put(DISPLAY_CASE_NUMBERS, NO);
+            personalisation.put(CASE_NUMBERS, "");
+        } else {
+            personalisation.put(DISPLAY_CASE_NUMBERS, YES);
+            personalisation.put(CASE_NUMBERS, populateCaseNamePersonalisation(artefact, content));
         }
     }
 
@@ -319,6 +335,42 @@ public class PersonalisationService {
             personalisation.put(DISPLAY_LOCATIONS, YES);
             personalisation.put(LOCATIONS, subLocation.getName());
         }
+    }
+
+
+    /**
+     * Extracts the associated case name to a case number.
+     * @param artefact The artefact to extract the case name from.
+     * @param content The case numbers that have been searched by.
+     * @return The list of case numbers, and case names if available.
+     */
+    private List<String> populateCaseNamePersonalisation(Artefact artefact, List<String> content) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        if (artefact.getSearch() != null /* DONE */ && artefact.getSearch().containsKey("cases") /* DONE */) {
+            List<CaseSearch> caseSearches = objectMapper.convertValue(artefact.getSearch().get("cases"), new TypeReference<>() {});
+
+            List<String> contentWithCaseNames = new ArrayList<>();
+
+            content.forEach(caseNumber -> {
+                Optional<String> caseName = caseSearches.stream()
+                    .filter(caseSearch -> !Strings.isNullOrEmpty(caseSearch.getCaseNumber())) //DONE
+                    .filter(caseSearch -> caseSearch.getCaseNumber().equals(caseNumber))
+                    .map(CaseSearch::getCaseName)
+                    .filter(name -> !Strings.isNullOrEmpty(name))
+                    .findFirst();
+
+                if (caseName.isPresent()) {
+                    contentWithCaseNames.add(String.format("%s (%s)", caseNumber, caseName.get())); //DONE
+                } else {
+                    contentWithCaseNames.add(caseNumber); //DONE
+                }
+            });
+
+            return contentWithCaseNames;
+        }
+
+        return content;
     }
 
     /**
