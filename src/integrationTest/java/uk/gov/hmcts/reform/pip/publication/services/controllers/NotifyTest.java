@@ -97,7 +97,7 @@ class NotifyTest {
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY = """
         {
             "apiDestination": "https://localhost:4444",
-            "artefactId": "6373f45-e980-444b-a9c8-7bfa3661be1f"
+            "artefactId": "0d838c30-fbde-449a-9f1b-6d5a306193b"
         }
         """;
     private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY = """
@@ -484,7 +484,7 @@ class NotifyTest {
     void testValidFlatFileRequest() throws Exception {
         String validBody =
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"999\"]},"
-                + "\"artefactId\": \"96373f45-e980-444b-a9c8-7bfa3661be1f\"}";
+                + "\"artefactId\": \"0d838c30-fbde-449a-9f1b-6d5a306193b\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(validBody)
