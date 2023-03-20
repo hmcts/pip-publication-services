@@ -91,7 +91,7 @@ class NotifyTest {
     private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY = """
         {
             "apiDestination": "https://localhost:4444",
-            "artefactId": "007b103a-07df-488d-8129-ca9afda1368c"
+            "artefactId": "3d498688-bbad-4a53-b253-a16ddf8737a9"
         }
         """;
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY = """
@@ -427,7 +427,7 @@ class NotifyTest {
     void testMissingEmailForSubscriptionReturnsBadRequest() throws Exception {
 
         String missingEmailJsonBody =
-            "{\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}, \"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+            "{\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}, \"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(missingEmailJsonBody)
@@ -447,7 +447,7 @@ class NotifyTest {
 
         String invalidEmailJsonBody =
             "{\"email\":\"abcd\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
-                + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+                + "\"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(invalidEmailJsonBody)
@@ -472,7 +472,7 @@ class NotifyTest {
 
         String invalidSubscriptionJsonBody =
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[]},"
-                + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+                + "\"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(invalidSubscriptionJsonBody)
@@ -509,7 +509,7 @@ class NotifyTest {
     void testUnauthorizedSendSubscriptionEmail() throws Exception {
         String validBody = """
             {
-                "artefactId": "8545507a-e985-4931-bba2-76be0e6ac396",
+                "artefactId": "3d498688-bbad-4a53-b253-a16ddf8737a9",
                 "email": "test_account_admin@justice.gov.uk",
                 "subscriptions": {
                     "LOCATION_ID": [
