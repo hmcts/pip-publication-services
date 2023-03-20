@@ -4,12 +4,9 @@ import org.assertj.core.util.Strings;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.CaseSearch;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.ListType;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,10 +20,15 @@ class CaseNameHelperTest {
 
     private CaseNameHelper caseNameHelper = new CaseNameHelper();
 
-
     @Test
     void testWithSearchNull() {
-        assertCaseNamePersonalisationIsCorrect(null, CASES, null);
+        Artefact artefact = new Artefact();
+        artefact.setSearch(null);
+
+        List<String> returnedCaseNumbers =
+            caseNameHelper.generateCaseNumberPersonalisation(artefact, List.of(CASE_NUMBER_VALUE));
+
+        assertEquals(List.of(CASE_NUMBER_VALUE), returnedCaseNumbers, "Case number not as expected");
     }
 
     @Test
@@ -77,10 +79,7 @@ class CaseNameHelperTest {
         searchCriteria.put(caseValue, List.of(caseSearch));
 
         Artefact artefact = new Artefact();
-        artefact.setArtefactId(UUID.randomUUID());
-        artefact.setContentDate(LocalDateTime.now());
         artefact.setSearch(searchCriteria);
-        artefact.setListType(ListType.SJP_PUBLIC_LIST);
 
         List<String> returnedCaseNumbers =
             caseNameHelper.generateCaseNumberPersonalisation(artefact, List.of(CASE_NUMBER_VALUE));
