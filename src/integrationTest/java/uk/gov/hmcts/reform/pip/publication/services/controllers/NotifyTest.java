@@ -103,7 +103,7 @@ class NotifyTest {
     private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY = """
         {
             "apiDestination": "http://localhost:4444",
-            "artefactId": "007b103a-07df-488d-8129-ca9afda1368c"
+            "artefactId": "1e565487-23e4-4a25-9364-43277a5180d4"
         }
         """;
     private static final String THIRD_PARTY_SUBSCRIPTION_ARTEFACT_BODY = """
