@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
+import uk.gov.hmcts.reform.pip.publication.services.helpers.CaseNameHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
@@ -108,6 +109,9 @@ class PersonalisationServiceTest {
 
     @MockBean
     ChannelManagementService channelManagementService;
+
+    @MockBean
+    CaseNameHelper caseNameHelper;
 
     @MockBean
     FileCreationService fileCreationService;
@@ -211,6 +215,8 @@ class PersonalisationServiceTest {
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
         when(channelManagementService.getArtefactFiles(any())).thenReturn(FILES_MAP);
+        when(caseNameHelper.generateCaseNumberPersonalisation(any(), any())).thenReturn(
+            SUBSCRIPTIONS.get(SubscriptionTypes.CASE_NUMBER));
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
@@ -528,7 +534,7 @@ class PersonalisationServiceTest {
     @Test
     void testBuildMiDataReportingWithNotifyException() throws IOException {
         when(fileCreationService.generateMiReport()).thenReturn(TEST_BYTE);
-        try (MockedStatic mockStatic = mockStatic(NotificationClient.class)) {
+        try (MockedStatic<NotificationClient> mockStatic = mockStatic(NotificationClient.class)) {
             mockStatic.when(() -> EmailClient.prepareUpload(TEST_BYTE, false,
                                                             false, "78 weeks"))
                 .thenThrow(new NotificationClientException(ERROR_MESSAGE));

@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.pip.publication.services.models.external;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -66,6 +68,11 @@ public class Artefact {
      * Language of publication.
      */
     private Language language;
+
+    /**
+     * Metadata that will be indexed for searching.
+     */
+    private Map<String, List<Object>> search;
 
     /**
      * Date / Time from which the publication will be displayed.
