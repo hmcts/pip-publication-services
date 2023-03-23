@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.core.dependencies.google.common.base.Strings;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.CaseSearch;
 
 import java.util.ArrayList;

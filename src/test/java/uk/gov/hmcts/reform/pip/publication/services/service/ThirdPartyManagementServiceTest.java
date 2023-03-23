@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.FileType;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscriptionArtefact;
+import uk.gov.hmcts.reform.pip.model.location.Location;
+import uk.gov.hmcts.reform.pip.model.publication.Artefact;
+import uk.gov.hmcts.reform.pip.model.publication.FileType;
+import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
 
 import java.util.Map;
 import java.util.UUID;

@@ -97,7 +97,7 @@ class NotifyTest {
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY = """
         {
             "apiDestination": "https://localhost:4444",
-            "artefactId": "0d838c30-fbde-449a-9f1b-6d5a306193b4"
+            "artefactId": "f9e659e3-4584-4f15-859d-174ce4b48cbb"
         }
         """;
     private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY = """
@@ -373,7 +373,7 @@ class NotifyTest {
             .as("Expected data missing in request body")
             .isNotNull()
             .isNotEmpty()
-            .contains("\"publicationDate\": \"2022-04-12T09:30:52.123Z\"");
+            .contains("\"publicationDate\": \"2022-03-25T23:30:52.123Z\"");
     }
 
     @Test
@@ -484,7 +484,7 @@ class NotifyTest {
     void testValidFlatFileRequest() throws Exception {
         String validBody =
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"999\"]},"
-                + "\"artefactId\": \"0d838c30-fbde-449a-9f1b-6d5a306193b4\"}";
+                + "\"artefactId\": \"55995355-466b-4991-a7da-9d016cbaa591\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(validBody)
@@ -496,7 +496,7 @@ class NotifyTest {
     void testValidFlatFileRequestCsv() throws Exception {
         String validBody =
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"999\"]},"
-                + "\"artefactId\": \"83dcce68-ecea-402c-87cb-8066f3aefe13\"}";
+                + "\"artefactId\": \"7ace17ef-0e5c-4db7-ae4a-a7d7953e0073\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(validBody)
