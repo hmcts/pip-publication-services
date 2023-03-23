@@ -91,13 +91,13 @@ class NotifyTest {
     private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY = """
         {
             "apiDestination": "https://localhost:4444",
-            "artefactId": "007b103a-07df-488d-8129-ca9afda1368c"
+            "artefactId": "3d498688-bbad-4a53-b253-a16ddf8737a9"
         }
         """;
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY = """
         {
             "apiDestination": "https://localhost:4444",
-            "artefactId": "0d838c30-fbde-449a-9f1b-6d5a306193b4"
+            "artefactId": "f9e659e3-4584-4f15-859d-174ce4b48cbb"
         }
         """;
     private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY = """
@@ -373,7 +373,7 @@ class NotifyTest {
             .as("Expected data missing in request body")
             .isNotNull()
             .isNotEmpty()
-            .contains("\"publicationDate\": \"2022-04-12T09:30:52.123Z\"");
+            .contains("\"publicationDate\": \"2022-03-25T23:30:52.123Z\"");
     }
 
     @Test
@@ -427,7 +427,7 @@ class NotifyTest {
     void testMissingEmailForSubscriptionReturnsBadRequest() throws Exception {
 
         String missingEmailJsonBody =
-            "{\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}, \"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+            "{\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}, \"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(missingEmailJsonBody)
@@ -447,7 +447,7 @@ class NotifyTest {
 
         String invalidEmailJsonBody =
             "{\"email\":\"abcd\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
-                + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+                + "\"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(invalidEmailJsonBody)
@@ -472,7 +472,7 @@ class NotifyTest {
 
         String invalidSubscriptionJsonBody =
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[]},"
-                + "\"artefactId\": \"12d0ea1e-d7bc-11ec-9d64-0242ac120002\"}";
+                + "\"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(invalidSubscriptionJsonBody)
@@ -483,8 +483,8 @@ class NotifyTest {
     @Test
     void testValidFlatFileRequest() throws Exception {
         String validBody =
-            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"999\"]},"
-                + "\"artefactId\": \"0d838c30-fbde-449a-9f1b-6d5a306193b4\"}";
+            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"998\"]},"
+                + "\"artefactId\": \"55995355-466b-4991-a7da-9d016cbaa591\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(validBody)
@@ -495,8 +495,8 @@ class NotifyTest {
     @Test
     void testValidFlatFileRequestCsv() throws Exception {
         String validBody =
-            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"999\"]},"
-                + "\"artefactId\": \"83dcce68-ecea-402c-87cb-8066f3aefe13\"}";
+            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"998\"]},"
+                + "\"artefactId\": \"7ace17ef-0e5c-4db7-ae4a-a7d7953e0073\"}";
 
         mockMvc.perform(post(SUBSCRIPTION_URL)
                             .content(validBody)
@@ -509,7 +509,7 @@ class NotifyTest {
     void testUnauthorizedSendSubscriptionEmail() throws Exception {
         String validBody = """
             {
-                "artefactId": "8545507a-e985-4931-bba2-76be0e6ac396",
+                "artefactId": "3d498688-bbad-4a53-b253-a16ddf8737a9",
                 "email": "test_account_admin@justice.gov.uk",
                 "subscriptions": {
                     "LOCATION_ID": [
