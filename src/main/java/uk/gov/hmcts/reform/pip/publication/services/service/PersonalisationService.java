@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
+import uk.gov.hmcts.reform.pip.publication.services.helpers.CaseNameHelper;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
@@ -55,6 +56,9 @@ public class PersonalisationService {
 
     @Autowired
     FileCreationService fileCreationService;
+
+    @Autowired
+    CaseNameHelper caseNameHelper;
 
     @Value("${env-name}")
     private String envName;
@@ -135,13 +139,10 @@ public class PersonalisationService {
 
             Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
 
-            populateGenericPersonalisation(personalisation, DISPLAY_CASE_NUMBERS, CASE_NUMBERS,
-                                           subscriptions.get(SubscriptionTypes.CASE_NUMBER)
-            );
+            populateCaseNumberPersonalisation(artefact, personalisation,
+                                              subscriptions.get(SubscriptionTypes.CASE_NUMBER));
 
-            populateGenericPersonalisation(personalisation, DISPLAY_CASE_URN, CASE_URN,
-                                           subscriptions.get(SubscriptionTypes.CASE_URN)
-            );
+            populateCaseUrnPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.CASE_URN));
 
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
@@ -299,14 +300,26 @@ public class PersonalisationService {
         return personalisation;
     }
 
-    private void populateGenericPersonalisation(Map<String, Object> personalisation, String display,
-                                                String displayValue, List<String> content) {
+    private void populateCaseUrnPersonalisation(Map<String, Object> personalisation, List<String> content) {
+
         if (content == null || content.isEmpty()) {
-            personalisation.put(display, NO);
-            personalisation.put(displayValue, "");
+            personalisation.put(DISPLAY_CASE_URN, NO);
+            personalisation.put(CASE_URN, "");
         } else {
-            personalisation.put(display, YES);
-            personalisation.put(displayValue, content);
+            personalisation.put(DISPLAY_CASE_URN, YES);
+            personalisation.put(CASE_URN, content);
+        }
+    }
+
+    private void populateCaseNumberPersonalisation(Artefact artefact, Map<String, Object> personalisation,
+                                                   List<String> content) {
+
+        if (content == null || content.isEmpty()) {
+            personalisation.put(DISPLAY_CASE_NUMBERS, NO);
+            personalisation.put(CASE_NUMBERS, "");
+        } else {
+            personalisation.put(DISPLAY_CASE_NUMBERS, YES);
+            personalisation.put(CASE_NUMBERS, caseNameHelper.generateCaseNumberPersonalisation(artefact, content));
         }
     }
 
