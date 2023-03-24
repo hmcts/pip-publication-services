@@ -49,6 +49,9 @@ All interactions with `pip-publication-services` are performed through the API (
   - Notification emails to all system admin users when a location and its associated publications and subscriptions are being deleted by a system admin.
   - CaTH service team emails containing reports of current data contents and statistics, and when a publication is being uploaded with an unindentified location.
 - Handles forwarding of newly uploaded publications to third party publishers.
+- Secure/Insecure Mode: Use of bearer tokens for authentication with the secure instance (if desired).
+- OpenAPI Spec/Swagger-UI: Documents and allows users or developers to access API resources within the browser.
+- Integration tests using TestContainers for dummy database operations.
 
 ### GOV.UK Notify
 
