@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminW
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -42,8 +43,9 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
  */
 @Component
 @Slf4j
-@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods"})
+@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods", "PMD.ExcessiveImports"})
 public class PersonalisationService {
+
 
     @Autowired
     DataManagementService dataManagementService;
@@ -66,6 +68,7 @@ public class PersonalisationService {
     @Value("${file-retention-weeks}")
     private String fileRetentionWeeks;
 
+    private static final String REJECT_REASONS = "reject_reasons";
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
@@ -271,6 +274,19 @@ public class PersonalisationService {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(FULL_NAME, body.getFullName());
         personalisation.put(VERIFICATION_PAGE_LINK, notifyConfigProperties.getLinks().getMediaVerificationPageLink());
+        return personalisation;
+    }
+
+    /**
+     * Handles the personalisation for the media account rejection email.
+     *
+     * @param body The body of the media account rejection email.
+     * @return The personalisation map for the media rejection email.
+     */
+    public Map<String, Object> buildMediaRejectionPersonalisation(MediaRejectionEmail body) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put(FULL_NAME, body.getFullName());
+        personalisation.put(REJECT_REASONS, body.getReasons());
         return personalisation;
     }
 

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminW
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
@@ -177,6 +178,20 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "Media user verification email successfully sent with referenceId: %s",
             userNotificationService.mediaUserVerificationEmailRequest(body)
+        ));
+    }
+
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Media user rejection email successfully "
+        + "sent with referenceId: {Id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
+    @Operation(summary = "Send a media applicant a rejection email")
+    @PostMapping("/media-account/reject")
+    public ResponseEntity<String> sendMediaUserRejectionEmail(@RequestBody MediaRejectionEmail body) {
+        return ResponseEntity.ok(String.format(
+            "Media user rejection email successfully sent with referenceId: %s",
+            userNotificationService.mediaUserRejectionEmailRequest(body)
         ));
     }
 

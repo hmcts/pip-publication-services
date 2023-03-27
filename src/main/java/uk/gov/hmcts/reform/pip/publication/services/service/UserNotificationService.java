@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
@@ -82,6 +83,19 @@ public class UserNotificationService {
     public String mediaUserVerificationEmailRequest(MediaVerificationEmail body) {
         EmailToSend email = emailService
             .buildMediaUserVerificationEmail(body, Templates.MEDIA_USER_VERIFICATION_EMAIL.template);
+
+        return emailService.sendEmail(email).getReference().orElse(null);
+    }
+
+    /**
+     * This method handles the sending of the media user rejection email.
+     *
+     * @param body The body of the media rejection email.
+     * @return The ID that references the media user rejection email.
+     */
+    public String mediaUserRejectionEmailRequest(MediaRejectionEmail body) {
+        EmailToSend email = emailService
+            .buildMediaApplicationRejectionEmail(body, Templates.MEDIA_USER_REJECTION_EMAIL.template);
 
         return emailService.sendEmail(email).getReference().orElse(null);
     }

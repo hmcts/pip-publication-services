@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminW
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -80,6 +81,11 @@ public class EmailService {
     protected EmailToSend buildMediaUserVerificationEmail(MediaVerificationEmail body, String template) {
         return generateEmail(body.getEmail(), template,
                              personalisationService.buildMediaVerificationPersonalisation(body));
+    }
+
+    protected EmailToSend buildMediaApplicationRejectionEmail(MediaRejectionEmail body, String template) {
+        return generateEmail(body.getEmail(), template,
+                             personalisationService.buildMediaRejectionPersonalisation(body));
     }
 
     protected EmailToSend buildInactiveUserNotificationEmail(InactiveUserNotificationEmail body, String template) {
