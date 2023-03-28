@@ -30,6 +30,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -285,8 +286,11 @@ public class PersonalisationService {
      */
     public Map<String, Object> buildMediaRejectionPersonalisation(MediaRejectionEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
+
         personalisation.put(FULL_NAME, body.getFullName());
-        personalisation.put(REJECT_REASONS, body.getReasons());
+
+        List<String> reasonsList = Arrays.asList(body.getReasons().split(","));
+        personalisation.put(REJECT_REASONS, reasonsList);
         return personalisation;
     }
 

@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminW
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -97,6 +98,8 @@ class PersonalisationServiceTest {
     private static final String LOCATION_NAME = "location-name";
     private static final String CONTENT_DATE = "content_date";
     private static final String CONTENT_DATE_ASSERT_MESSAGE = "No content date found";
+    private static final String REJECT_REASONS = "reject_reasons";
+    private static final String FULL_NAME_LOWERCASE = "full_name";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -147,6 +150,27 @@ class PersonalisationServiceTest {
 
         FILES_MAP.put(FileType.PDF, TEST_BYTE_ARRAY);
         FILES_MAP.put(FileType.EXCEL, TEST_BYTE_ARRAY);
+    }
+
+    @Test
+    void testBuildMediaRejectionPersonalisation() {
+        MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
+            "John Doe",
+            "sausage@fun.com",
+            "Reason 1,Reason 2"
+        );
+
+        Map<String, Object> result = personalisationService.buildMediaRejectionPersonalisation(mediaRejectionEmail);
+
+        assertNotNull(result, "Personalisation map should not be null");
+        assertEquals(2, result.size(), "Personalisation map should contain 2 items");
+        assertEquals("John Doe", result.get(FULL_NAME_LOWERCASE), "Full name should match the value set in "
+            + "MediaRejectionEmail");
+        assertEquals(
+            List.of("Reason 1", "Reason 2"),
+            result.get(REJECT_REASONS),
+            "Reasons should match the value set in MediaRejectionEmail"
+        );
     }
 
     @Test
@@ -240,7 +264,8 @@ class PersonalisationServiceTest {
                      LINK_TO_FILE_MESSAGE
         );
         assertEquals(Base64.encode(TEST_BYTE_ARRAY), ((JSONObject) personalisation.get(EXCEL_LINK_TO_FILE)).get(FILE),
-                     LINK_TO_FILE_MESSAGE);
+                     LINK_TO_FILE_MESSAGE
+        );
         assertEquals(HELLO, personalisation.get("testing_of_array"),
                      "testing_of_array does not match expected value"
         );
@@ -449,16 +474,18 @@ class PersonalisationServiceTest {
         Map<String, Object> personalisation = personalisationService
             .buildDuplicateMediaAccountPersonalisation(duplicatedMediaEmail);
 
-        Object fullNameObject = personalisation.get("full_name");
+        Object fullNameObject = personalisation.get(FULL_NAME_LOWERCASE);
         assertNotNull(fullNameObject, "No full name found");
         assertEquals(FULL_NAME, fullNameObject,
-                     "Full name does not match");
+                     "Full name does not match"
+        );
 
         Object mediaSignInPageLink = personalisation.get(AAD_SIGN_IN_LINK);
         assertNotNull(mediaSignInPageLink, "No media sign page link key found");
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
         assertEquals(personalisationLinks.getAadSignInPageLink(), mediaSignInPageLink,
-                     "Media Sign in page link does not match expected link");
+                     "Media Sign in page link does not match expected link"
+        );
     }
 
     @Test
@@ -469,7 +496,8 @@ class PersonalisationServiceTest {
         expectedData.add(String.format("1234 - TEST (%s)", ARTEFACT_ID));
 
         assertEquals(expectedData, personalisation.get(ARRAY_OF_IDS),
-                     "Locations map not as expected");
+                     "Locations map not as expected"
+        );
     }
 
     @Test
@@ -479,7 +507,7 @@ class PersonalisationServiceTest {
         Map<String, Object> personalisation = personalisationService
             .buildMediaVerificationPersonalisation(mediaVerificationEmail);
 
-        Object fullNameObject = personalisation.get("full_name");
+        Object fullNameObject = personalisation.get(FULL_NAME_LOWERCASE);
         assertNotNull(fullNameObject, "No full name found");
         assertEquals(FULL_NAME, fullNameObject, "Full name does not match");
 
@@ -487,7 +515,8 @@ class PersonalisationServiceTest {
         assertNotNull(mediaVerificationLink, "No media verification link key found");
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
         assertEquals(personalisationLinks.getMediaVerificationPageLink(), mediaVerificationLink,
-                     "Media verification link does not match expected link");
+                     "Media verification link does not match expected link"
+        );
     }
 
     @Test
@@ -500,7 +529,7 @@ class PersonalisationServiceTest {
             .as("Personalisation data does not match")
             .hasSize(4)
             .extracting(
-                p -> p.get("full_name"),
+                p -> p.get(FULL_NAME_LOWERCASE),
                 p -> p.get("last_signed_in_date"),
                 p -> p.get("sign_in_page_link"),
                 p -> p.get("cft_sign_in_link")
@@ -536,7 +565,8 @@ class PersonalisationServiceTest {
         when(fileCreationService.generateMiReport()).thenReturn(TEST_BYTE);
         try (MockedStatic<NotificationClient> mockStatic = mockStatic(NotificationClient.class)) {
             mockStatic.when(() -> EmailClient.prepareUpload(TEST_BYTE, false,
-                                                            false, "78 weeks"))
+                                                            false, "78 weeks"
+                ))
                 .thenThrow(new NotificationClientException(ERROR_MESSAGE));
             assertThatThrownBy(() -> personalisationService.buildMiDataReportingPersonalisation())
                 .isInstanceOf(NotifyException.class)

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -12,22 +13,27 @@ import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class UserNotificationServiceTest {
 
+    private static final String REJECTION_EMAIL_FIRST_LINE_JSON = "\"id\":\"123e4567-e89b-12d3-a456-426614174000\",";
+    private static final String EMAIL = "test@email.com";
     private final Map<String, Object> personalisationMap = Map.ofEntries(
         entry("email", VALID_BODY_AAD.getEmail()),
         entry("surname", VALID_BODY_AAD.getSurname()),
@@ -38,7 +44,6 @@ class UserNotificationServiceTest {
     );
 
     private static final String FULL_NAME = "fullName";
-    private static final String EMAIL = "test@email.com";
     private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
     private static final WelcomeEmail VALID_BODY_EXISTING = new WelcomeEmail(
         EMAIL, true, FULL_NAME);
@@ -58,17 +63,20 @@ class UserNotificationServiceTest {
 
     private static final String SUCCESS_REF_ID = "successRefId";
 
-    private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
-                                                                             Templates.BAD_BLOB_EMAIL.template,
-                                                                             personalisationMap,
-                                                                             SUCCESS_REF_ID);
+    private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(
+        VALID_BODY_NEW.getEmail(),
+        Templates.BAD_BLOB_EMAIL.template,
+        personalisationMap,
+        SUCCESS_REF_ID
+    );
     private static final Integer LOCATION_ID = 1;
     private static final String LOCATION_NAME = "Location Name";
 
 
     private final EmailToSend validEmailBodyForDuplicateMediaUserClient =
         new EmailToSend(VALID_BODY_NEW.getEmail(), Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template,
-            personalisationMap, SUCCESS_REF_ID);
+                        personalisationMap, SUCCESS_REF_ID
+        );
 
     private static final String EXISTING_REFERENCE_ID =
         "Existing user with valid JSON should return successful referenceId.";
@@ -114,11 +122,14 @@ class UserNotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessAzure() {
-        when(emailService.buildCreatedAdminWelcomeEmail(VALID_BODY_AAD,
-                                                        Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template))
+        when(emailService.buildCreatedAdminWelcomeEmail(
+            VALID_BODY_AAD,
+            Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template
+        ))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, userNotificationService.azureNewUserEmailRequest(VALID_BODY_AAD),
-                     "Azure user with valid JSON should return successful referenceId.");
+                     "Azure user with valid JSON should return successful referenceId."
+        );
     }
 
     @Test
@@ -139,34 +150,116 @@ class UserNotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessMediaVerification() {
-        when(emailService.buildMediaUserVerificationEmail(MEDIA_VERIFICATION_EMAIL,
-                                                          Templates.MEDIA_USER_VERIFICATION_EMAIL.template))
+        when(emailService.buildMediaUserVerificationEmail(
+            MEDIA_VERIFICATION_EMAIL,
+            Templates.MEDIA_USER_VERIFICATION_EMAIL.template
+        ))
             .thenReturn(validEmailBodyForEmailClient);
 
-        assertEquals(SUCCESS_REF_ID,
-                     userNotificationService.mediaUserVerificationEmailRequest(MEDIA_VERIFICATION_EMAIL),
-                     "Media user verification email successfully sent with referenceId: referenceId.");
+        assertEquals(
+            SUCCESS_REF_ID,
+            userNotificationService.mediaUserVerificationEmailRequest(MEDIA_VERIFICATION_EMAIL),
+            "Media user verification email successfully sent with referenceId: referenceId."
+        );
     }
 
     @Test
     void testValidPayloadReturnsSuccessInactiveUserNotificationForAad() {
-        when(emailService.buildInactiveUserNotificationEmail(INACTIVE_USER_NOTIFICATION_EMAIL_AAD,
-                                                             Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD.template))
+        when(emailService.buildInactiveUserNotificationEmail(
+            INACTIVE_USER_NOTIFICATION_EMAIL_AAD,
+            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD.template
+        ))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.inactiveUserNotificationEmailRequest(
                          INACTIVE_USER_NOTIFICATION_EMAIL_AAD),
-                     "Inactive user notification should return successful reference ID");
+                     "Inactive user notification should return successful reference ID"
+        );
     }
 
     @Test
     void testValidPayloadReturnsSuccessInactiveUserNotificationForCft() {
-        when(emailService.buildInactiveUserNotificationEmail(INACTIVE_USER_NOTIFICATION_EMAIL_CFT,
-                                                             Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT.template))
+        when(emailService.buildInactiveUserNotificationEmail(
+            INACTIVE_USER_NOTIFICATION_EMAIL_CFT,
+            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT.template
+        ))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.inactiveUserNotificationEmailRequest(
                          INACTIVE_USER_NOTIFICATION_EMAIL_CFT),
-                     "Inactive user notification should return successful reference ID");
+                     "Inactive user notification should return successful reference ID"
+        );
     }
+
+    @Test
+    void testMediaUserRejectionEmailRequestWithValidData() {
+        MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
+            "John Doe",
+            EMAIL,
+            "Reason1,Reason2"
+        );
+        EmailToSend expectedEmail = new EmailToSend(EMAIL, Templates.MEDIA_USER_REJECTION_EMAIL.template,
+                                                    new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"
+        );
+        String jsonResponse = "{"
+            + REJECTION_EMAIL_FIRST_LINE_JSON
+            + "\"reference\":\"123e4567-e89b-12d3-a456-426614174000\","
+            + "\"content\":{"
+            + "\"body\":\"Email body\","
+            + "\"subject\":\"Email subject\","
+            + "\"from_email\":\"from@email.com\""
+            + "},"
+            + "\"template\":{"
+            + REJECTION_EMAIL_FIRST_LINE_JSON
+            + "\"version\":1,"
+            + "\"uri\":\"https://example.com/template_uri\""
+            + "}"
+            + "}";
+        SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
+
+        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(String.class)))
+            .thenReturn(expectedEmail);
+        when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
+
+        String result = userNotificationService.mediaUserRejectionEmailRequest(mediaRejectionEmail);
+
+        assertEquals("123e4567-e89b-12d3-a456-426614174000", result, "Reference ID should match the expected value");
+    }
+
+    @Test
+    void testMediaUserRejectionEmailRequestWithNullReference() {
+        MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
+            "John Doe",
+            EMAIL,
+            "Reason1,Reason2"
+        );
+        EmailToSend expectedEmail = new EmailToSend(EMAIL, Templates.MEDIA_USER_REJECTION_EMAIL.template,
+                                                    new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"
+        );
+        String jsonResponse =
+            "{"
+                + REJECTION_EMAIL_FIRST_LINE_JSON
+                + "\"content\":{"
+                + "\"body\":\"Email body\","
+                + "\"subject\":\"Email subject\","
+                + "\"from_email\":\"from@email.com\""
+                + "},"
+                + "\"template\":{"
+                + REJECTION_EMAIL_FIRST_LINE_JSON
+                + "\"version\":1,"
+                + "\"uri\":\"https://example.com/template_uri\""
+                + "}"
+                + "}";
+        SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
+
+        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(String.class)))
+            .thenReturn(expectedEmail);
+        when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
+
+        String result = userNotificationService.mediaUserRejectionEmailRequest(mediaRejectionEmail);
+
+        Assertions.assertNull(result, "expected null");
+    }
+
+
 }

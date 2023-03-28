@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminW
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.LocationSubscriptionDeletion;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.ThirdPartySubscription;
@@ -68,6 +69,7 @@ class NotificationControllerTest {
     private DuplicatedMediaEmail createMediaSetupEmail;
     private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
     private MediaVerificationEmail mediaVerificationEmail;
+    private MediaRejectionEmail mediaRejectionEmail;
     private InactiveUserNotificationEmail inactiveUserNotificationEmail;
     private ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
     private SystemAdminAction systemAdminAction;
@@ -98,6 +100,7 @@ class NotificationControllerTest {
                                                                  ID_STRING, IMAGE_NAME,
                                                                  DATE_TIME, STATUS, DATE_TIME));
         mediaVerificationEmail = new MediaVerificationEmail(FULL_NAME, VALID_EMAIL);
+        mediaRejectionEmail = new MediaRejectionEmail(FULL_NAME, VALID_EMAIL, "list of reasons");
         inactiveUserNotificationEmail = new InactiveUserNotificationEmail(FULL_NAME, VALID_EMAIL,
                                                                           "PI_AAD", LAST_SIGNED_IN_DATE);
 
@@ -249,6 +252,13 @@ class NotificationControllerTest {
     void testSendMediaVerificationEmailReturnsOk() {
         assertEquals(HttpStatus.OK, notificationController
                          .sendMediaUserVerificationEmail(mediaVerificationEmail).getStatusCode(),
+                     STATUS_CODES_MATCH);
+    }
+
+    @Test
+    void testSendMediaRejectionEmailReturnsOk() {
+        assertEquals(HttpStatus.OK, notificationController
+                         .sendMediaUserRejectionEmail(mediaRejectionEmail).getStatusCode(),
                      STATUS_CODES_MATCH);
     }
 
