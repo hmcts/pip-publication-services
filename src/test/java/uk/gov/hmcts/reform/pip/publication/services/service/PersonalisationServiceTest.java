@@ -98,8 +98,8 @@ class PersonalisationServiceTest {
     private static final String LOCATION_NAME = "location-name";
     private static final String CONTENT_DATE = "content_date";
     private static final String CONTENT_DATE_ASSERT_MESSAGE = "No content date found";
-    private static final String REJECT_REASONS = "reject_reasons";
-    private static final String FULL_NAME_LOWERCASE = "full_name";
+    private static final String REJECT_REASONS = "reject-reasons";
+    private static final String FULL_NAME_LOWERCASE = "full-name";
 
     @Autowired
     PersonalisationService personalisationService;
