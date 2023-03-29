@@ -48,6 +48,7 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 public class PersonalisationService {
 
 
+    private static final String LINK_TO_SERVICE = "link-to-service";
     @Autowired
     DataManagementService dataManagementService;
 
@@ -69,7 +70,8 @@ public class PersonalisationService {
     @Value("${file-retention-weeks}")
     private String fileRetentionWeeks;
 
-    private static final String REJECT_REASONS = "reject_reasons";
+    private static final String REJECT_REASONS = "reject-reasons";
+    private static final String FULL_NAME_LOWERCASE = "full-name";
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
@@ -144,7 +146,8 @@ public class PersonalisationService {
             Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
 
             populateCaseNumberPersonalisation(artefact, personalisation,
-                                              subscriptions.get(SubscriptionTypes.CASE_NUMBER));
+                                              subscriptions.get(SubscriptionTypes.CASE_NUMBER)
+            );
 
             populateCaseUrnPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.CASE_URN));
 
@@ -165,23 +168,28 @@ public class PersonalisationService {
 
             personalisation.put("display_pdf", pdfWithinSize);
             personalisation.put(LINK_TO_FILE, pdfWithinSize ? prepareUpload(artefactPdf, false,
-                                false, fileRetentionWeeks) : "");
+                                                                            false, fileRetentionWeeks
+            ) : "");
 
             personalisation.put("display_excel", excelWithinSize);
             personalisation.put("excel_link_to_file", excelWithinSize ? prepareUpload(artefactExcel,
-                        false, false, fileRetentionWeeks) : "");
+                                                                                      false, false, fileRetentionWeeks
+            ) : "");
 
-            personalisation.put("testing_of_array",
-                                channelManagementService.getArtefactSummary(artefact.getArtefactId()));
+            personalisation.put(
+                "testing_of_array",
+                channelManagementService.getArtefactSummary(artefact.getArtefactId())
+            );
 
             personalisation.put("content_date", artefact.getContentDate()
                 .format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
 
             return personalisation;
         } catch (Exception e) {
-            log.warn("Error adding attachment to raw data email {}. Artefact ID: {}",
-                     EmailHelper.maskEmail(body.getEmail()),
-                     artefact.getArtefactId()
+            log.warn(
+                "Error adding attachment to raw data email {}. Artefact ID: {}",
+                EmailHelper.maskEmail(body.getEmail()),
+                artefact.getArtefactId()
             );
             throw new NotifyException(e.getMessage());
         }
@@ -208,7 +216,8 @@ public class PersonalisationService {
             String sourceArtefactId = artefact.getSourceArtefactId();
             JSONObject uploadedFile = !Strings.isNullOrEmpty(sourceArtefactId) && sourceArtefactId.endsWith(".csv")
                 ? prepareUpload(artefactData, true,
-                                                   false, fileRetentionWeeks)
+                                false, fileRetentionWeeks
+            )
                 : prepareUpload(artefactData, false, false, fileRetentionWeeks);
 
             personalisation.put(LINK_TO_FILE, uploadedFile);
@@ -220,9 +229,11 @@ public class PersonalisationService {
             return personalisation;
         } catch (NotificationClientException e) {
 
-            log.warn("Error adding attachment to flat file email {}. Artefact ID: {}",
-                     EmailHelper.maskEmail(body.getEmail()),
-                     artefact.getArtefactId());
+            log.warn(
+                "Error adding attachment to flat file email {}. Artefact ID: {}",
+                EmailHelper.maskEmail(body.getEmail()),
+                artefact.getArtefactId()
+            );
             throw new NotifyException(e.getMessage());
         }
     }
@@ -237,7 +248,8 @@ public class PersonalisationService {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             personalisation.put(LINK_TO_FILE, prepareUpload(csvMediaApplications, true,
-                                                                        false, fileRetentionWeeks));
+                                                            false, fileRetentionWeeks
+            ));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
             return personalisation;
         } catch (NotificationClientException e) {
@@ -257,8 +269,13 @@ public class PersonalisationService {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         List<String> listOfUnmatched = new ArrayList<>();
 
-        noMatchArtefactList.forEach(noMatchArtefact -> listOfUnmatched.add(String.format("%s - %s (%s)",
-            noMatchArtefact.getLocationId(), noMatchArtefact.getProvenance(), noMatchArtefact.getArtefactId())));
+        noMatchArtefactList
+            .forEach(noMatchArtefact ->
+                         listOfUnmatched.add(String.format("%s - %s (%s)",
+                             noMatchArtefact.getLocationId(),
+                             noMatchArtefact.getProvenance(),
+                             noMatchArtefact.getArtefactId()
+                         )));
 
         personalisation.put(ARRAY_OF_IDS, listOfUnmatched);
         personalisation.put(ENV_NAME, convertEnvironmentName(envName));
@@ -287,10 +304,12 @@ public class PersonalisationService {
     public Map<String, Object> buildMediaRejectionPersonalisation(MediaRejectionEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
-        personalisation.put(FULL_NAME, body.getFullName());
+        personalisation.put(FULL_NAME_LOWERCASE, body.getFullName());
 
         List<String> reasonsList = Arrays.asList(body.getReasons().split(","));
         personalisation.put(REJECT_REASONS, reasonsList);
+        personalisation.put(LINK_TO_SERVICE, notifyConfigProperties.getLinks().getStartPageLink());
+
         return personalisation;
     }
 
@@ -377,7 +396,8 @@ public class PersonalisationService {
         try {
             byte[] excel = fileCreationService.generateMiReport();
             personalisation.put(LINK_TO_FILE, prepareUpload(excel, false,
-                false, fileRetentionWeeks));
+                                                            false, fileRetentionWeeks
+            ));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
         } catch (IOException e) {
             log.warn("Error generating excel file attachment");

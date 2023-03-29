@@ -163,7 +163,7 @@ class PersonalisationServiceTest {
         Map<String, Object> result = personalisationService.buildMediaRejectionPersonalisation(mediaRejectionEmail);
 
         assertNotNull(result, "Personalisation map should not be null");
-        assertEquals(2, result.size(), "Personalisation map should contain 2 items");
+        assertEquals(3, result.size(), "Personalisation map should contain 2 items");
         assertEquals("Test Name", result.get(FULL_NAME_LOWERCASE), "Full name should match the value set in "
             + "MediaRejectionEmail");
         assertEquals(
@@ -474,7 +474,7 @@ class PersonalisationServiceTest {
         Map<String, Object> personalisation = personalisationService
             .buildDuplicateMediaAccountPersonalisation(duplicatedMediaEmail);
 
-        Object fullNameObject = personalisation.get(FULL_NAME_LOWERCASE);
+        Object fullNameObject = personalisation.get("full_name");
         assertNotNull(fullNameObject, "No full name found");
         assertEquals(FULL_NAME, fullNameObject,
                      "Full name does not match"
@@ -507,7 +507,7 @@ class PersonalisationServiceTest {
         Map<String, Object> personalisation = personalisationService
             .buildMediaVerificationPersonalisation(mediaVerificationEmail);
 
-        Object fullNameObject = personalisation.get(FULL_NAME_LOWERCASE);
+        Object fullNameObject = personalisation.get("full_name");
         assertNotNull(fullNameObject, "No full name found");
         assertEquals(FULL_NAME, fullNameObject, "Full name does not match");
 
@@ -529,7 +529,7 @@ class PersonalisationServiceTest {
             .as("Personalisation data does not match")
             .hasSize(4)
             .extracting(
-                p -> p.get(FULL_NAME_LOWERCASE),
+                p -> p.get("full_name"),
                 p -> p.get("last_signed_in_date"),
                 p -> p.get("sign_in_page_link"),
                 p -> p.get("cft_sign_in_link")
