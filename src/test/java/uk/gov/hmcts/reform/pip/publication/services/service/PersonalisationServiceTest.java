@@ -156,7 +156,7 @@ class PersonalisationServiceTest {
     void testBuildMediaRejectionPersonalisation() {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "John Doe",
-            "sausage@fun.com",
+            "completely_and_utterly_unambiguous_test_user_email@address.com",
             "Reason 1,Reason 2"
         );
 
