@@ -296,12 +296,12 @@ class EmailServiceTest {
     @Test
     void testBuildMediaApplicationRejectionEmail() {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
-            "John Doe",
+            "Test Name",
             "completely_and_utterly_unambiguous_test_user_email@address.com",
             "Reason 1,Reason 2"
         );
         Map<String, Object> testPersonalisation = new ConcurrentHashMap<>();
-        testPersonalisation.put("FULL_NAME", "John Doe");
+        testPersonalisation.put("FULL_NAME", "Test Name");
         testPersonalisation.put("REJECT_REASONS", Arrays.asList("Reason 1", "Reason 2"));
 
         when(personalisationService.buildMediaRejectionPersonalisation(mediaRejectionEmail))

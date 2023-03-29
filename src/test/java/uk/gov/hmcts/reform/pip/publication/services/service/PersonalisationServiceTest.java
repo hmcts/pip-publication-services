@@ -155,7 +155,7 @@ class PersonalisationServiceTest {
     @Test
     void testBuildMediaRejectionPersonalisation() {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
-            "John Doe",
+            "Test Name",
             "completely_and_utterly_unambiguous_test_user_email@address.com",
             "Reason 1,Reason 2"
         );
@@ -164,7 +164,7 @@ class PersonalisationServiceTest {
 
         assertNotNull(result, "Personalisation map should not be null");
         assertEquals(2, result.size(), "Personalisation map should contain 2 items");
-        assertEquals("John Doe", result.get(FULL_NAME_LOWERCASE), "Full name should match the value set in "
+        assertEquals("Test Name", result.get(FULL_NAME_LOWERCASE), "Full name should match the value set in "
             + "MediaRejectionEmail");
         assertEquals(
             List.of("Reason 1", "Reason 2"),

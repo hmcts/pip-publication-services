@@ -194,7 +194,7 @@ class UserNotificationServiceTest {
     @Test
     void testMediaUserRejectionEmailRequestWithValidData() {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
-            "John Doe",
+            "Test Name",
             EMAIL,
             "Reason1,Reason2"
         );
@@ -229,7 +229,7 @@ class UserNotificationServiceTest {
     @Test
     void testMediaUserRejectionEmailRequestWithNullReference() {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
-            "John Doe",
+            "Test Name",
             EMAIL,
             "Reason1,Reason2"
         );
