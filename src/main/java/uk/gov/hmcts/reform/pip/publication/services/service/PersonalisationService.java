@@ -326,14 +326,13 @@ public class PersonalisationService {
         Iterator<String> fieldNames = reasonsNode.fieldNames();
         List<String> reasonList = new ArrayList<>();
 
+        StringBuilder output = new StringBuilder();
         while (fieldNames.hasNext()) {
-            StringBuilder output = new StringBuilder();
+            output.setLength(0);
             String fieldName = fieldNames.next();
             JsonNode valuesNode = reasonsNode.get(fieldName);
 
-            output.append(valuesNode.get(0).asText());
-            output.append('\n');
-            output.append(valuesNode.get(1).asText());
+            output.append(valuesNode.get(0).asText()).append('\n').append(valuesNode.get(1).asText());
             reasonList.add(output.toString());
         }
         return reasonList;
