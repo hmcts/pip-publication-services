@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -294,11 +295,20 @@ class EmailServiceTest {
     }
 
     @Test
-    void testBuildMediaApplicationRejectionEmail() {
+    void testBuildMediaApplicationRejectionEmail() throws IOException {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "Test Name",
             "completely_and_utterly_unambiguous_test_user_email@address.com",
-            "Reason 1,Reason 2"
+            "{\"reasons\":"
+                + "{\"notMedia\":"
+                + "[\"The applicant is not an accredited member of the media.\","
+                + "\"You can sign in with an existing MyHMCTS account. Or you can register"
+                + " your organisation at "
+                + "https://www.gov.uk/guidance/myhmcts-online-case-management-for-legal-professionals\"],"
+                + "\"noMatch\":"
+                + "[\"Details provided do not match.\","
+                + "\"The name, email address and Press ID do not match each other."
+                + "\"]}}"
         );
         Map<String, Object> testPersonalisation = new ConcurrentHashMap<>();
         testPersonalisation.put("FULL_NAME", "Test Name");

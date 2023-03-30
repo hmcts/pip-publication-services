@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -256,7 +257,7 @@ class NotificationControllerTest {
     }
 
     @Test
-    void testSendMediaRejectionEmailReturnsOk() {
+    void testSendMediaRejectionEmailReturnsOk() throws IOException {
         assertEquals(HttpStatus.OK, notificationController
                          .sendMediaUserRejectionEmail(mediaRejectionEmail).getStatusCode(),
                      STATUS_CODES_MATCH);

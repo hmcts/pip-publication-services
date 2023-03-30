@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -192,7 +193,7 @@ class UserNotificationServiceTest {
     }
 
     @Test
-    void testMediaUserRejectionEmailRequestWithValidData() {
+    void testMediaUserRejectionEmailRequestWithValidData() throws IOException {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "Test Name",
             EMAIL,
@@ -227,7 +228,7 @@ class UserNotificationServiceTest {
     }
 
     @Test
-    void testMediaUserRejectionEmailRequestWithNullReference() {
+    void testMediaUserRejectionEmailRequestWithNullReference() throws IOException {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "Test Name",
             EMAIL,

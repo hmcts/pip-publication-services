@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,8 @@ public class EmailService {
                              personalisationService.buildMediaVerificationPersonalisation(body));
     }
 
-    protected EmailToSend buildMediaApplicationRejectionEmail(MediaRejectionEmail body, String template) {
+    protected EmailToSend buildMediaApplicationRejectionEmail(MediaRejectionEmail body, String template)
+        throws IOException {
         return generateEmail(body.getEmail(), template,
                              personalisationService.buildMediaRejectionPersonalisation(body));
     }

@@ -153,11 +153,20 @@ class PersonalisationServiceTest {
     }
 
     @Test
-    void testBuildMediaRejectionPersonalisation() {
+    void testBuildMediaRejectionPersonalisation() throws IOException {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "Test Name",
             "completely_and_utterly_unambiguous_test_user_email@address.com",
-            "Reason 1,Reason 2"
+            "{\"reasons\":"
+                + "{\"notMedia\":"
+                + "[\"The applicant is not an accredited member of the media.\","
+                + "\"You can sign in with an existing MyHMCTS account. Or you can register"
+                + " your organisation at "
+                + "https://www.gov.uk/guidance/myhmcts-online-case-management-for-legal-professionals\"],"
+                + "\"noMatch\":"
+                + "[\"Details provided do not match.\","
+                + "\"The name, email address and Press ID do not match each other."
+                + "\"]}}"
         );
 
         Map<String, Object> result = personalisationService.buildMediaRejectionPersonalisation(mediaRejectionEmail);
@@ -167,7 +176,11 @@ class PersonalisationServiceTest {
         assertEquals("Test Name", result.get(FULL_NAME_LOWERCASE), "Full name should match the value set in "
             + "MediaRejectionEmail");
         assertEquals(
-            List.of("Reason 1", "Reason 2"),
+            List.of("The applicant is not an accredited member of the media.\n"
+                + "You can sign in with an existing MyHMCTS account. Or you can register your organisation at "
+                + "https://www.gov.uk/guidance/myhmcts-online-case-management-for-legal-professionals",
+                "Details provided do not match.\n"
+                + "The name, email address and Press ID do not match each other."),
             result.get(REJECT_REASONS),
             "Reasons should match the value set in MediaRejectionEmail"
         );

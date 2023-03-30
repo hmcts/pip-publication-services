@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.core.dependencies.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -30,7 +32,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -138,15 +140,16 @@ public class PersonalisationService {
      * @param artefact The artefact to send in the subscription.
      * @return The personalisation map for the raw data subscription email.
      */
-    public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body,
-                                                                       Artefact artefact) {
+    public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body, Artefact artefact) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
             Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
 
-            populateCaseNumberPersonalisation(artefact, personalisation,
-                                              subscriptions.get(SubscriptionTypes.CASE_NUMBER)
+            populateCaseNumberPersonalisation(
+                artefact,
+                personalisation,
+                subscriptions.get(SubscriptionTypes.CASE_NUMBER)
             );
 
             populateCaseUrnPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.CASE_URN));
@@ -167,22 +170,26 @@ public class PersonalisationService {
             boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;
 
             personalisation.put("display_pdf", pdfWithinSize);
-            personalisation.put(LINK_TO_FILE, pdfWithinSize ? prepareUpload(artefactPdf, false,
-                                                                            false, fileRetentionWeeks
-            ) : "");
+            personalisation.put(
+                LINK_TO_FILE,
+                pdfWithinSize ? prepareUpload(artefactPdf, false, false, fileRetentionWeeks) : ""
+            );
 
             personalisation.put("display_excel", excelWithinSize);
-            personalisation.put("excel_link_to_file", excelWithinSize ? prepareUpload(artefactExcel,
-                                                                                      false, false, fileRetentionWeeks
-            ) : "");
+            personalisation.put(
+                "excel_link_to_file",
+                excelWithinSize ? prepareUpload(artefactExcel, false, false, fileRetentionWeeks) : ""
+            );
 
             personalisation.put(
                 "testing_of_array",
                 channelManagementService.getArtefactSummary(artefact.getArtefactId())
             );
 
-            personalisation.put("content_date", artefact.getContentDate()
-                .format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
+            personalisation.put(
+                "content_date",
+                artefact.getContentDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+            );
 
             return personalisation;
         } catch (Exception e) {
@@ -202,8 +209,7 @@ public class PersonalisationService {
      * @param artefact The artefact to send in the subscription.
      * @return The personalisation map for the flat file subscription email.
      */
-    public Map<String, Object> buildFlatFileSubscriptionPersonalisation(SubscriptionEmail body,
-                                                                        Artefact artefact) {
+    public Map<String, Object> buildFlatFileSubscriptionPersonalisation(SubscriptionEmail body, Artefact artefact) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             List<String> location = body.getSubscriptions().get(SubscriptionTypes.LOCATION_ID);
@@ -215,16 +221,16 @@ public class PersonalisationService {
 
             String sourceArtefactId = artefact.getSourceArtefactId();
             JSONObject uploadedFile = !Strings.isNullOrEmpty(sourceArtefactId) && sourceArtefactId.endsWith(".csv")
-                ? prepareUpload(artefactData, true,
-                                false, fileRetentionWeeks
-            )
-                : prepareUpload(artefactData, false, false, fileRetentionWeeks);
+                ? prepareUpload(artefactData, true, false, fileRetentionWeeks) :
+                prepareUpload(artefactData, false, false, fileRetentionWeeks);
 
             personalisation.put(LINK_TO_FILE, uploadedFile);
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
-            personalisation.put("content_date", artefact.getContentDate()
-                .format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
+            personalisation.put(
+                "content_date",
+                artefact.getContentDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+            );
 
             return personalisation;
         } catch (NotificationClientException e) {
@@ -247,14 +253,14 @@ public class PersonalisationService {
     public Map<String, Object> buildMediaApplicationsReportingPersonalisation(byte[] csvMediaApplications) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
-            personalisation.put(LINK_TO_FILE, prepareUpload(csvMediaApplications, true,
-                                                            false, fileRetentionWeeks
-            ));
+            personalisation.put(LINK_TO_FILE, prepareUpload(csvMediaApplications, true, false, fileRetentionWeeks));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
             return personalisation;
         } catch (NotificationClientException e) {
-            log.error(String.format("Error adding the csv attachment to the media application "
-                                        + "reporting email with error %s", e.getMessage()));
+            log.error(String.format(
+                "Error adding the csv attachment to the media application " + "reporting email with error %s",
+                e.getMessage()
+            ));
             throw new NotifyException(e.getMessage());
         }
     }
@@ -269,13 +275,12 @@ public class PersonalisationService {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         List<String> listOfUnmatched = new ArrayList<>();
 
-        noMatchArtefactList
-            .forEach(noMatchArtefact ->
-                         listOfUnmatched.add(String.format("%s - %s (%s)",
-                             noMatchArtefact.getLocationId(),
-                             noMatchArtefact.getProvenance(),
-                             noMatchArtefact.getArtefactId()
-                         )));
+        noMatchArtefactList.forEach(noMatchArtefact -> listOfUnmatched.add(String.format(
+            "%s - %s (%s)",
+            noMatchArtefact.getLocationId(),
+            noMatchArtefact.getProvenance(),
+            noMatchArtefact.getArtefactId()
+        )));
 
         personalisation.put(ARRAY_OF_IDS, listOfUnmatched);
         personalisation.put(ENV_NAME, convertEnvironmentName(envName));
@@ -301,16 +306,37 @@ public class PersonalisationService {
      * @param body The body of the media account rejection email.
      * @return The personalisation map for the media rejection email.
      */
-    public Map<String, Object> buildMediaRejectionPersonalisation(MediaRejectionEmail body) {
+    public Map<String, Object> buildMediaRejectionPersonalisation(MediaRejectionEmail body) throws IOException {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
         personalisation.put(FULL_NAME_LOWERCASE, body.getFullName());
 
-        List<String> reasonsList = Arrays.asList(body.getReasons().split(","));
-        personalisation.put(REJECT_REASONS, reasonsList);
+        personalisation.put(REJECT_REASONS, formatReasons(body.getReasons()));
         personalisation.put(LINK_TO_SERVICE, notifyConfigProperties.getLinks().getStartPageLink());
 
         return personalisation;
+    }
+
+    private static List<String> formatReasons(String jsonString) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(jsonString);
+        JsonNode reasonsNode = rootNode.get("reasons");
+
+
+        Iterator<String> fieldNames = reasonsNode.fieldNames();
+        List<String> reasonList = new ArrayList<>();
+
+        while (fieldNames.hasNext()) {
+            StringBuilder output = new StringBuilder();
+            String fieldName = fieldNames.next();
+            JsonNode valuesNode = reasonsNode.get(fieldName);
+
+            output.append(valuesNode.get(0).asText());
+            output.append('\n');
+            output.append(valuesNode.get(1).asText());
+            reasonList.add(output.toString());
+        }
+        return reasonList;
     }
 
     /**
@@ -395,9 +421,7 @@ public class PersonalisationService {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         try {
             byte[] excel = fileCreationService.generateMiReport();
-            personalisation.put(LINK_TO_FILE, prepareUpload(excel, false,
-                                                            false, fileRetentionWeeks
-            ));
+            personalisation.put(LINK_TO_FILE, prepareUpload(excel, false, false, fileRetentionWeeks));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
         } catch (IOException e) {
             log.warn("Error generating excel file attachment");
@@ -409,8 +433,7 @@ public class PersonalisationService {
         return personalisation;
     }
 
-    public Map<String, Object> buildDeleteLocationSubscriptionEmailPersonalisation(
-        LocationSubscriptionDeletion body) {
+    public Map<String, Object> buildDeleteLocationSubscriptionEmailPersonalisation(LocationSubscriptionDeletion body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put(LOCATION_NAME, body.getLocationName());
 

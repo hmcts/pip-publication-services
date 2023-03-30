@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
+import java.io.IOException;
 import java.util.List;
 import javax.validation.Valid;
 
@@ -188,7 +189,8 @@ public class NotificationController {
     @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     @Operation(summary = "Send a media applicant a rejection email")
     @PostMapping("/media-account/reject")
-    public ResponseEntity<String> sendMediaUserRejectionEmail(@RequestBody MediaRejectionEmail body) {
+    public ResponseEntity<String> sendMediaUserRejectionEmail(@RequestBody MediaRejectionEmail body)
+        throws IOException {
         return ResponseEntity.ok(String.format(
             "Media user rejection email successfully sent with referenceId: %s",
             userNotificationService.mediaUserRejectionEmailRequest(body)
