@@ -332,7 +332,7 @@ public class PersonalisationService {
             String fieldName = fieldNames.next();
             JsonNode valuesNode = reasonsNode.get(fieldName);
 
-            output.append(valuesNode.get(0).asText()).append("\n^").append(valuesNode.get(1).asText());
+            output.append("#"+valuesNode.get(0).asText()).append("\n^").append(valuesNode.get(1).asText());
             reasonList.add(output.toString());
         }
         return reasonList;
