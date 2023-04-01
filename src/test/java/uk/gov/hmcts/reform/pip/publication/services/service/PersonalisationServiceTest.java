@@ -177,10 +177,10 @@ class PersonalisationServiceTest {
             + "MediaRejectionEmail");
         assertEquals(
             List.of("The applicant is not an accredited member of the media.\n"
-                + "You can sign in with an existing MyHMCTS account. Or you can register your organisation at "
+                + "^You can sign in with an existing MyHMCTS account. Or you can register your organisation at "
                 + "https://www.gov.uk/guidance/myhmcts-online-case-management-for-legal-professionals",
                 "Details provided do not match.\n"
-                + "The name, email address and Press ID do not match each other."),
+                + "^The name, email address and Press ID do not match each other."),
             result.get(REJECT_REASONS),
             "Reasons should match the value set in MediaRejectionEmail"
         );

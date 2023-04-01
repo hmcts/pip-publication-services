@@ -312,7 +312,8 @@ public class PersonalisationService {
         personalisation.put(FULL_NAME_LOWERCASE, body.getFullName());
 
         personalisation.put(REJECT_REASONS, formatReasons(body.getReasons()));
-        personalisation.put(LINK_TO_SERVICE, notifyConfigProperties.getLinks().getStartPageLink() + "/create-media-account");
+        personalisation.put(LINK_TO_SERVICE, notifyConfigProperties.getLinks().getStartPageLink()
+            + "/create-media-account");
 
         return personalisation;
     }
