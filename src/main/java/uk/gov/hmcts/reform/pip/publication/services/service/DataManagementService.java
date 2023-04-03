@@ -7,9 +7,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import uk.gov.hmcts.reform.pip.model.location.Location;
+import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.Location;
 
 import java.util.UUID;
 

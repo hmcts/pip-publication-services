@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.helpers;
 
 import org.assertj.core.util.Strings;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.pip.publication.services.models.external.Artefact;
+import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.external.CaseSearch;
 
 import java.util.List;
