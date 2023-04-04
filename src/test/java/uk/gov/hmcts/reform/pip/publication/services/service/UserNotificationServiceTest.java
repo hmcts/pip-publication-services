@@ -21,8 +21,10 @@ import uk.gov.service.notify.SendEmailResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,6 +45,8 @@ class UserNotificationServiceTest {
         entry("sign_in_page_link", "http://www.google.com"),
         entry("media_sign_in_link", "http://www.google.com")
     );
+
+    private Map<String, List<String>> testReasons;
 
     private static final String FULL_NAME = "fullName";
     private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
@@ -94,6 +98,8 @@ class UserNotificationServiceTest {
 
     @BeforeEach
     void setup() {
+        testReasons = new ConcurrentHashMap<>();
+        testReasons.put("Reason 1", List.of("Reason short description",  "Reason long description"));
 
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
         when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
@@ -197,7 +203,7 @@ class UserNotificationServiceTest {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "Test Name",
             EMAIL,
-            "Reason1,Reason2"
+            testReasons
         );
         EmailToSend expectedEmail = new EmailToSend(EMAIL, Templates.MEDIA_USER_REJECTION_EMAIL.template,
                                                     new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"
@@ -232,7 +238,7 @@ class UserNotificationServiceTest {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "Test Name",
             EMAIL,
-            "Reason1,Reason2"
+            testReasons
         );
         EmailToSend expectedEmail = new EmailToSend(EMAIL, Templates.MEDIA_USER_REJECTION_EMAIL.template,
                                                     new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"

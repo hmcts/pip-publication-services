@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
 
+import java.util.List;
+import java.util.Map;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,6 +18,6 @@ import lombok.Value;
 public class MediaRejectionEmail {
     String fullName;
     String email;
-    String reasons;
+    Map<String, List<String>> reasons;
 
 }

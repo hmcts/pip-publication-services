@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.core.dependencies.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -32,7 +30,6 @@ import uk.gov.service.notify.NotificationClientException;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -318,24 +315,9 @@ public class PersonalisationService {
         return personalisation;
     }
 
-    private static List<String> formatReasons(String jsonString) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(jsonString);
-        JsonNode reasonsNode = rootNode.get("reasons");
-
-
-        Iterator<String> fieldNames = reasonsNode.fieldNames();
+    private static List<String> formatReasons(Map<String, List<String>> reasons) {
         List<String> reasonList = new ArrayList<>();
-
-        StringBuilder output = new StringBuilder();
-        while (fieldNames.hasNext()) {
-            output.setLength(0);
-            String fieldName = fieldNames.next();
-            JsonNode valuesNode = reasonsNode.get(fieldName);
-
-            output.append(valuesNode.get(0).asText()).append("\n^").append(valuesNode.get(1).asText());
-            reasonList.add(output.toString());
-        }
+        reasons.forEach((key, value) -> reasonList.add(String.format("%s\n^%s", value.get(0), value.get(1))));
         return reasonList;
     }
 

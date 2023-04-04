@@ -101,7 +101,7 @@ class NotificationControllerTest {
                                                                  ID_STRING, IMAGE_NAME,
                                                                  DATE_TIME, STATUS, DATE_TIME));
         mediaVerificationEmail = new MediaVerificationEmail(FULL_NAME, VALID_EMAIL);
-        mediaRejectionEmail = new MediaRejectionEmail(FULL_NAME, VALID_EMAIL, "list of reasons");
+        mediaRejectionEmail = new MediaRejectionEmail(FULL_NAME, VALID_EMAIL, new HashMap<>());
         inactiveUserNotificationEmail = new InactiveUserNotificationEmail(FULL_NAME, VALID_EMAIL,
                                                                           "PI_AAD", LAST_SIGNED_IN_DATE);
 

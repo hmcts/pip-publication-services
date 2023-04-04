@@ -154,19 +154,22 @@ class PersonalisationServiceTest {
 
     @Test
     void testBuildMediaRejectionPersonalisation() throws IOException {
+        Map<String, List<String>> reasons = new ConcurrentHashMap<>();
+
+        reasons.put("notMedia", List.of(
+            "The applicant is not an accredited member of the media.",
+            "You can sign in with an existing MyHMCTS account. Or you can register your organisation at "
+                + "https://www.gov.uk/guidance/myhmcts-online-case-management-for-legal-professionals"));
+
+        reasons.put("noMatch", List.of(
+            "Details provided do not match.",
+            "The name, email address and Press ID do not match each other."));
+
+
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "Test Name",
-            "completely_and_utterly_unambiguous_test_user_email@address.com",
-            "{\"reasons\":"
-                + "{\"notMedia\":"
-                + "[\"The applicant is not an accredited member of the media.\","
-                + "\"You can sign in with an existing MyHMCTS account. Or you can register"
-                + " your organisation at "
-                + "https://www.gov.uk/guidance/myhmcts-online-case-management-for-legal-professionals\"],"
-                + "\"noMatch\":"
-                + "[\"Details provided do not match.\","
-                + "\"The name, email address and Press ID do not match each other."
-                + "\"]}}"
+            "test_email@address.com",
+            reasons
         );
 
         Map<String, Object> result = personalisationService.buildMediaRejectionPersonalisation(mediaRejectionEmail);

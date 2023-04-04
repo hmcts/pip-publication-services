@@ -188,7 +188,7 @@ public class NotificationController {
     @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     @Operation(summary = "Send a media applicant a rejection email")
-    @PostMapping("/media-account/reject")
+    @PostMapping("/media/reject")
     public ResponseEntity<String> sendMediaUserRejectionEmail(@RequestBody MediaRejectionEmail body)
         throws IOException {
         return ResponseEntity.ok(String.format(
