@@ -14,12 +14,14 @@ import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +82,12 @@ public class EmailService {
     protected EmailToSend buildMediaUserVerificationEmail(MediaVerificationEmail body, String template) {
         return generateEmail(body.getEmail(), template,
                              personalisationService.buildMediaVerificationPersonalisation(body));
+    }
+
+    protected EmailToSend buildMediaApplicationRejectionEmail(MediaRejectionEmail body, String template)
+        throws IOException {
+        return generateEmail(body.getEmail(), template,
+                             personalisationService.buildMediaRejectionPersonalisation(body));
     }
 
     protected EmailToSend buildInactiveUserNotificationEmail(InactiveUserNotificationEmail body, String template) {

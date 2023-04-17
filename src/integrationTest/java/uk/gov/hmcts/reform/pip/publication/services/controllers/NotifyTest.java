@@ -127,6 +127,7 @@ class NotifyTest {
     private static final String EXTERNAL_PAYLOAD = "test";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
     private static final String MEDIA_VERIFICATION_EMAIL_URL = "/notify/media/verification";
+    private static final String MEDIA_REJECTION_EMAIL_URL = "/notify/media/reject";
     private static final String INACTIVE_USER_NOTIFICATION_EMAIL_URL = "/notify/user/sign-in";
 
     private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
@@ -180,6 +181,41 @@ class NotifyTest {
             "email": "test@email.com"
         }
         """;
+
+    private static final String VALID_MEDIA_REJECTION_EMAIL_BODY = """
+        {
+            "fullName": "fullName",
+            "email": "test@justice.gov.uk",
+            "reasons": {
+                "noMatch": [
+                    "Details provided do not match.",
+                    "The name, email address and Press ID do not match each other."
+                ]
+            }
+        }
+         """;
+
+    private static final String INVALID_MEDIA_REJECTION_EMAIL_BODY = """
+        {
+            "fullName": "fullName",
+            "email": "test@justice.gov.uk",
+            "reasons": "invalid"
+        }
+         """;
+
+    private static final String INVALID_NOTIFY_MEDIA_REJECTION_EMAIL_BODY = """
+        {
+            "fullName": "fullName",
+            "email": "test",
+            "reasons": {
+                "noMatch": [
+                    "Details provided do not match.",
+                    "The name, email address and Press ID do not match each other."
+                ]
+            }
+        }
+         """;
+
     private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY = """
         {
             "email": "test@test.com",
@@ -191,7 +227,6 @@ class NotifyTest {
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
         ));
-
 
     String validMediaReportingJson;
     private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
@@ -208,8 +243,10 @@ class NotifyTest {
     @Autowired
     private MockMvc mockMvc;
 
+
     @BeforeEach
     void setup() throws IOException {
+
         NO_MATCH_ARTEFACT_LIST.add(new NoMatchArtefact(
             UUID.randomUUID(),
             "TEST",
@@ -617,6 +654,42 @@ class NotifyTest {
     }
 
     @Test
+    void testSendMediaUserRejectionEmail() throws Exception {
+
+        mockMvc.perform(post(MEDIA_REJECTION_EMAIL_URL)
+                            .content(VALID_MEDIA_REJECTION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Media user rejection email successfully sent with referenceId")));
+    }
+
+    @Test
+    void testSendMediaUserRejectionEmailBadRequest() throws Exception {
+        mockMvc.perform(post(MEDIA_REJECTION_EMAIL_URL)
+                            .content(INVALID_MEDIA_REJECTION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testSendMediaUserRejectionEmailNotifyBadRequest() throws Exception {
+        mockMvc.perform(post(MEDIA_REJECTION_EMAIL_URL)
+                            .content(INVALID_NOTIFY_MEDIA_REJECTION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = UNAUTHORIZED_USERNAME, authorities = {UNAUTHORIZED_ROLE})
+    void testSendMediaUserRejectionEmailUnauthorized() throws Exception {
+        mockMvc.perform(post(MEDIA_REJECTION_EMAIL_URL)
+                            .content(VALID_MEDIA_REJECTION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testSendNotificationToInactiveUsers() throws Exception {
         mockMvc.perform(post(INACTIVE_USER_NOTIFICATION_EMAIL_URL)
                             .content(VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY)
@@ -683,7 +756,6 @@ class NotifyTest {
             .andExpect(status().isForbidden());
     }
 
-
     @Test
     void testSendDeleteLocationSubscriptionEmail() throws Exception {
         mockMvc.perform(post(NOTIFY_LOCATION_SUBSCRIPTION_DELETE_URL)
@@ -710,5 +782,4 @@ class NotifyTest {
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
     }
-
 }
