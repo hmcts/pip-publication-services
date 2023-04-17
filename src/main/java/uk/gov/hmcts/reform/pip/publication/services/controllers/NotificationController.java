@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
+import java.io.IOException;
 import java.util.List;
 import javax.validation.Valid;
 
@@ -177,6 +179,21 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "Media user verification email successfully sent with referenceId: %s",
             userNotificationService.mediaUserVerificationEmailRequest(body)
+        ));
+    }
+
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Media user rejection email successfully "
+        + "sent with referenceId: {Id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
+    @Operation(summary = "Send a media applicant a rejection email")
+    @PostMapping("/media/reject")
+    public ResponseEntity<String> sendMediaUserRejectionEmail(@RequestBody MediaRejectionEmail body)
+        throws IOException {
+        return ResponseEntity.ok(String.format(
+            "Media user rejection email successfully sent with referenceId: %s",
+            userNotificationService.mediaUserRejectionEmailRequest(body)
         ));
     }
 

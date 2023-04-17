@@ -8,9 +8,12 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
+
+import java.io.IOException;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
@@ -35,7 +38,7 @@ public class UserNotificationService {
      */
     public String handleWelcomeEmailRequest(WelcomeEmail body) {
         log.info(writeLog(String.format("Welcome email being processed for user %s",
-                                        EmailHelper.maskEmail(body.getEmail()))));
+            EmailHelper.maskEmail(body.getEmail()))));
 
         return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
             ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
@@ -50,11 +53,11 @@ public class UserNotificationService {
      */
     public String azureNewUserEmailRequest(CreatedAdminWelcomeEmail body) {
         log.info(writeLog(String.format("New User Welcome email "
-                                            + "being processed for user %s",
-                                        EmailHelper.maskEmail(body.getEmail()))));
+                + "being processed for user %s",
+            EmailHelper.maskEmail(body.getEmail()))));
 
         EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body,
-                                                                       Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
+            Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
         return emailService.sendEmail(email)
             .getReference().orElse(null);
     }
@@ -82,6 +85,19 @@ public class UserNotificationService {
     public String mediaUserVerificationEmailRequest(MediaVerificationEmail body) {
         EmailToSend email = emailService
             .buildMediaUserVerificationEmail(body, Templates.MEDIA_USER_VERIFICATION_EMAIL.template);
+
+        return emailService.sendEmail(email).getReference().orElse(null);
+    }
+
+    /**
+     * This method handles the sending of the media user rejection email.
+     *
+     * @param body The body of the media rejection email.
+     * @return The ID that references the media user rejection email.
+     */
+    public String mediaUserRejectionEmailRequest(MediaRejectionEmail body) throws IOException {
+        EmailToSend email = emailService
+            .buildMediaApplicationRejectionEmail(body, Templates.MEDIA_USER_REJECTION_EMAIL.template);
 
         return emailService.sendEmail(email).getReference().orElse(null);
     }

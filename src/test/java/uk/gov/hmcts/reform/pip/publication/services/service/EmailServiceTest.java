@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -28,7 +29,10 @@ import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -109,7 +113,8 @@ class EmailServiceTest {
         assertEquals(personalisation, aadEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
         assertNotNull(aadEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
         assertEquals(Templates.EXISTING_USER_WELCOME_EMAIL.template, aadEmail.getTemplate(),
-                     TEMPLATE_MESSAGE);
+                     TEMPLATE_MESSAGE
+        );
     }
 
     @Test
@@ -138,7 +143,8 @@ class EmailServiceTest {
         assertEquals(personalisation, aadEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
         assertNotNull(aadEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
         assertEquals(Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template, aadEmail.getTemplate(),
-                     TEMPLATE_MESSAGE);
+                     TEMPLATE_MESSAGE
+        );
     }
 
     @Test
@@ -167,38 +173,46 @@ class EmailServiceTest {
         assertEquals(personalisation, aadEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
         assertNotNull(aadEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
         assertEquals(Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template, aadEmail.getTemplate(),
-                     TEMPLATE_MESSAGE);
+                     TEMPLATE_MESSAGE
+        );
     }
 
     @Test
     void testSendEmailWithSuccess() throws NotificationClientException {
         EmailToSend emailToSend = new EmailToSend(EMAIL, Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template,
-                                                  personalisation, UUID.randomUUID().toString());
+                                                  personalisation, UUID.randomUUID().toString()
+        );
 
         when(emailClient.sendEmail(Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template, EMAIL, personalisation,
-                                   emailToSend.getReferenceId()))
+                                   emailToSend.getReferenceId()
+        ))
             .thenReturn(sendEmailResponse);
 
         assertEquals(sendEmailResponse, emailService.sendEmail(emailToSend),
-                     "Email response does not match expected response");
+                     "Email response does not match expected response"
+        );
     }
 
     @Test
     void testSendEmailWithFailure() throws NotificationClientException {
         String exceptionMessage = "This is an exception";
         EmailToSend emailToSend = new EmailToSend(EMAIL, Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template,
-                                                  personalisation, UUID.randomUUID().toString());
+                                                  personalisation, UUID.randomUUID().toString()
+        );
 
         when(emailClient.sendEmail(Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template, EMAIL, personalisation,
-                                   emailToSend.getReferenceId()))
+                                   emailToSend.getReferenceId()
+        ))
             .thenThrow(new NotificationClientException(exceptionMessage));
 
         NotifyException notificationClientException =
             assertThrows(NotifyException.class, () -> emailService.sendEmail(emailToSend),
-                         "Exception has not been thrown");
+                         "Exception has not been thrown"
+            );
 
         assertEquals(exceptionMessage, notificationClientException.getMessage(),
-                     "Exception message does not match expected exception");
+                     "Exception message does not match expected exception"
+        );
     }
 
     @Test
@@ -217,7 +231,8 @@ class EmailServiceTest {
         assertEquals(personalisation, aadEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
         assertNotNull(aadEmail.getReferenceId(), REFERENCE_ID_MESSAGE);
         assertEquals(Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template, aadEmail.getTemplate(),
-                     TEMPLATE_MESSAGE);
+                     TEMPLATE_MESSAGE
+        );
     }
 
     @Test
@@ -227,12 +242,15 @@ class EmailServiceTest {
             .thenReturn(personalisation);
 
         EmailToSend mediaReportingEmail = emailService
-            .buildMediaApplicationReportingEmail(TEST_BYTE,
-                                                 Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template);
+            .buildMediaApplicationReportingEmail(
+                TEST_BYTE,
+                Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template
+            );
         assertEquals(EMAIL, mediaReportingEmail.getEmailAddress(), GENERATED_EMAIL_MESSAGE);
         assertEquals(personalisation, mediaReportingEmail.getPersonalisation(), PERSONALISATION_MESSAGE);
         assertEquals(Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template, mediaReportingEmail.getTemplate(),
-                     TEMPLATE_MESSAGE);
+                     TEMPLATE_MESSAGE
+        );
     }
 
     @Test
@@ -241,15 +259,20 @@ class EmailServiceTest {
             .thenReturn(personalisation);
 
         EmailToSend unidentifiedBlobEmail = emailService
-            .buildUnidentifiedBlobsEmail(NO_MATCH_ARTEFACT_LIST,
-                                         Templates.BAD_BLOB_EMAIL.template);
+            .buildUnidentifiedBlobsEmail(
+                NO_MATCH_ARTEFACT_LIST,
+                Templates.BAD_BLOB_EMAIL.template
+            );
 
         assertEquals(EMAIL, unidentifiedBlobEmail.getEmailAddress(),
-                     GENERATED_EMAIL_MESSAGE);
+                     GENERATED_EMAIL_MESSAGE
+        );
         assertEquals(personalisation, unidentifiedBlobEmail.getPersonalisation(),
-                     PERSONALISATION_MESSAGE);
+                     PERSONALISATION_MESSAGE
+        );
         assertEquals(Templates.BAD_BLOB_EMAIL.template, unidentifiedBlobEmail.getTemplate(),
-                     TEMPLATE_MESSAGE);
+                     TEMPLATE_MESSAGE
+        );
     }
 
     @Test
@@ -262,11 +285,55 @@ class EmailServiceTest {
             mediaVerificationEmailData, Templates.MEDIA_USER_VERIFICATION_EMAIL.template);
 
         assertEquals(EMAIL, mediaVerificationEmail.getEmailAddress(),
-                     GENERATED_EMAIL_MESSAGE);
+                     GENERATED_EMAIL_MESSAGE
+        );
         assertEquals(personalisation, mediaVerificationEmail.getPersonalisation(),
-                     PERSONALISATION_MESSAGE);
+                     PERSONALISATION_MESSAGE
+        );
         assertEquals(Templates.MEDIA_USER_VERIFICATION_EMAIL.template, mediaVerificationEmail.getTemplate(),
-                     TEMPLATE_MESSAGE);
+                     TEMPLATE_MESSAGE
+        );
+    }
+
+    @Test
+    void testBuildMediaApplicationRejectionEmail() throws IOException {
+        Map<String, List<String>> reasons = new HashMap<>();
+
+        reasons.put("notMedia", List.of(
+            "The applicant is not an accredited member of the media.",
+            "You can sign in with an existing MyHMCTS account. Or you can register your organisation at "
+                + "https://www.gov.uk/guidance/myhmcts-online-case-management-for-legal-professionals"));
+
+        reasons.put("noMatch", List.of(
+            "Details provided do not match.",
+            "The name, email address and Press ID do not match each other."));
+
+
+        MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
+            "Test Name",
+            "test_email@address.com",
+            reasons
+        );
+        Map<String, Object> testPersonalisation = new ConcurrentHashMap<>();
+        testPersonalisation.put("FULL_NAME", "Test Name");
+        testPersonalisation.put("REJECT_REASONS", Arrays.asList("Reason 1", "Reason 2"));
+
+        when(personalisationService.buildMediaRejectionPersonalisation(mediaRejectionEmail))
+            .thenReturn(testPersonalisation);
+
+        String template = "1988bbdd-d223-49bf-912f-ed34cb43e35e";
+        EmailToSend emailToSend = emailService.buildMediaApplicationRejectionEmail(mediaRejectionEmail, template);
+        assertThat(emailToSend)
+            .extracting(
+                EmailToSend::getEmailAddress,
+                EmailToSend::getPersonalisation,
+                EmailToSend::getTemplate
+            )
+            .containsExactly(
+                "test_email@address.com",
+                testPersonalisation,
+                Templates.MEDIA_USER_REJECTION_EMAIL.template
+            );
     }
 
     @Test

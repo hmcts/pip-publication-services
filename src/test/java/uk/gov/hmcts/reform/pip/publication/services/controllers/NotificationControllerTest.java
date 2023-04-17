@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,6 +70,7 @@ class NotificationControllerTest {
     private DuplicatedMediaEmail createMediaSetupEmail;
     private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
     private MediaVerificationEmail mediaVerificationEmail;
+    private MediaRejectionEmail mediaRejectionEmail;
     private InactiveUserNotificationEmail inactiveUserNotificationEmail;
     private ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
     private SystemAdminAction systemAdminAction;
@@ -98,6 +101,7 @@ class NotificationControllerTest {
                                                                  ID_STRING, IMAGE_NAME,
                                                                  DATE_TIME, STATUS, DATE_TIME));
         mediaVerificationEmail = new MediaVerificationEmail(FULL_NAME, VALID_EMAIL);
+        mediaRejectionEmail = new MediaRejectionEmail(FULL_NAME, VALID_EMAIL, new HashMap<>());
         inactiveUserNotificationEmail = new InactiveUserNotificationEmail(FULL_NAME, VALID_EMAIL,
                                                                           "PI_AAD", LAST_SIGNED_IN_DATE);
 
@@ -249,6 +253,13 @@ class NotificationControllerTest {
     void testSendMediaVerificationEmailReturnsOk() {
         assertEquals(HttpStatus.OK, notificationController
                          .sendMediaUserVerificationEmail(mediaVerificationEmail).getStatusCode(),
+                     STATUS_CODES_MATCH);
+    }
+
+    @Test
+    void testSendMediaRejectionEmailReturnsOk() throws IOException {
+        assertEquals(HttpStatus.OK, notificationController
+                         .sendMediaUserRejectionEmail(mediaRejectionEmail).getStatusCode(),
                      STATUS_CODES_MATCH);
     }
 
