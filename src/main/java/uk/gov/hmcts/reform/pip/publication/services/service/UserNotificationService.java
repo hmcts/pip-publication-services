@@ -37,7 +37,7 @@ public class UserNotificationService {
      *             {email: 'example@email.com', isExisting: 'true'}
      */
     public String handleWelcomeEmailRequest(WelcomeEmail body) {
-        log.info(writeLog(String.format("Welcome email being processed for user %s",
+        log.info(writeLog(String.format("Media account welcome email being processed for user %s",
             EmailHelper.maskEmail(body.getEmail()))));
 
         return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
@@ -52,8 +52,7 @@ public class UserNotificationService {
      *             {email: 'example@email.com', forename: 'foo', surname: 'bar'}
      */
     public String azureNewUserEmailRequest(CreatedAdminWelcomeEmail body) {
-        log.info(writeLog(String.format("New User Welcome email "
-                + "being processed for user %s",
+        log.info(writeLog(String.format("Admin account welcome email being processed for user %s",
             EmailHelper.maskEmail(body.getEmail()))));
 
         EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body,

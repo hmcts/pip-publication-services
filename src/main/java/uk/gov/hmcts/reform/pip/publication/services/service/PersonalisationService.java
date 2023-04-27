@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.convertEnvironmentName;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
@@ -190,11 +191,10 @@ public class PersonalisationService {
 
             return personalisation;
         } catch (Exception e) {
-            log.warn(
-                "Error adding attachment to raw data email {}. Artefact ID: {}",
-                EmailHelper.maskEmail(body.getEmail()),
-                artefact.getArtefactId()
-            );
+            log.warn(writeLog(
+                String.format("Error adding attachment to raw data email %s. Artefact ID: %s",
+                              EmailHelper.maskEmail(body.getEmail()), artefact.getArtefactId())
+            ));
             throw new NotifyException(e.getMessage());
         }
     }
@@ -231,12 +231,11 @@ public class PersonalisationService {
 
             return personalisation;
         } catch (NotificationClientException e) {
-
-            log.warn(
+            log.warn(writeLog(String.format(
                 "Error adding attachment to flat file email {}. Artefact ID: {}",
                 EmailHelper.maskEmail(body.getEmail()),
                 artefact.getArtefactId()
-            );
+            )));
             throw new NotifyException(e.getMessage());
         }
     }
@@ -254,10 +253,10 @@ public class PersonalisationService {
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
             return personalisation;
         } catch (NotificationClientException e) {
-            log.error(String.format(
+            log.error(writeLog(String.format(
                 "Error adding the csv attachment to the media application " + "reporting email with error %s",
                 e.getMessage()
-            ));
+            )));
             throw new NotifyException(e.getMessage());
         }
     }
@@ -406,10 +405,10 @@ public class PersonalisationService {
             personalisation.put(LINK_TO_FILE, prepareUpload(excel, false, false, fileRetentionWeeks));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
         } catch (IOException e) {
-            log.warn("Error generating excel file attachment");
+            log.warn(writeLog("Error generating excel file attachment"));
             throw new ExcelCreationException(e.getMessage());
         } catch (NotificationClientException e) {
-            log.warn("Error adding attachment to MI data reporting email");
+            log.warn(writeLog("Error adding attachment to MI data reporting email"));
             throw new NotifyException(e.getMessage());
         }
         return personalisation;
