@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectio
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
@@ -124,11 +125,14 @@ public class EmailService {
 
     public SendEmailResponse sendEmail(EmailToSend emailToSend) {
         try {
-            log.info(writeLog(String.format("Sending email success. Reference ID: %s",
-                                            emailToSend.getReferenceId())));
-            return emailClient.sendEmail(emailToSend.getTemplate(), emailToSend.getEmailAddress(),
-                                         emailToSend.getPersonalisation(), emailToSend.getReferenceId()
-            );
+            SendEmailResponse response = emailClient.sendEmail(emailToSend.getTemplate(), emailToSend.getEmailAddress(),
+                                         emailToSend.getPersonalisation(), emailToSend.getReferenceId());
+            String emailDescription = Templates.get(emailToSend.getTemplate()).getDescription();
+            log.info(writeLog(
+                String.format("%s successfully sent with reference ID: %s",
+                              emailDescription, emailToSend.getReferenceId())
+            ));
+            return response;
         } catch (NotificationClientException e) {
             log.error(writeLog(String.format("Failed to send email. "
                                                        + "Reference ID: %s. "

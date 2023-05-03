@@ -73,7 +73,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handle(BadPayloadException ex) {
 
         log.error(writeLog(
-            String.format("400, invalid payload sent to publication service. Cause: %s", ex.getCause())));
+            String.format("400, invalid payload sent to publication service. Cause: %s", ex.getCause())
+        ));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
@@ -97,7 +98,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ServiceToServiceException.class)
     public ResponseEntity<ExceptionResponse> handle(ServiceToServiceException ex) {
-        log.error(String.format("ServiceToServiceException was thrown with the init cause: %s", ex.getCause()));
+        log.error(writeLog(
+            String.format("ServiceToServiceException was thrown with the init cause: %s", ex.getCause())
+        ));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());
@@ -108,7 +111,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ThirdPartyServiceException.class)
     public ResponseEntity<ExceptionResponse> handle(ThirdPartyServiceException ex) {
-        log.error(ex.getMessage());
+        log.error(writeLog(ex.getMessage()));
 
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(ex.getMessage());

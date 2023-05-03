@@ -59,7 +59,6 @@ public class ThirdPartyManagementService {
         Artefact artefact = body.getArtefact();
         Location location = dataManagementService.getLocation(artefact.getLocationId());
 
-        log.info(writeLog("Sending blank payload to third party"));
         log.info(writeLog(thirdPartyService.handleDeleteThirdPartyCall(body.getApiDestination(),
                                                                        artefact,
                                                                        location)));
