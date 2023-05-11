@@ -153,8 +153,8 @@ repositories {
 }
 
 def versions = [
-  junit           : '5.9.2',
-  junitPlatform   : '1.9.2',
+  junit           : '5.9.3',
+  junitPlatform   : '1.9.3',
   reformLogging   : '6.0.1',
   springBoot      : springBoot.class.package.implementationVersion,
 ]
@@ -180,14 +180,14 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
-  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '4.5.0'
+  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '4.7.0'
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.3'
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.19.1-RELEASE'
-  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.0.2', {
+  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.0.3', {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 
@@ -212,9 +212,9 @@ dependencies {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
-  testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.10.0'
-  testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
-  testImplementation group: 'com.squareup.okhttp3', name: 'okhttp-tls', version: '4.10.0'
+  testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.11.0'
+  testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.11.0'
+  testImplementation group: 'com.squareup.okhttp3', name: 'okhttp-tls', version: '4.11.0'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.pip.publication.services.Application'
