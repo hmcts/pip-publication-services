@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.notify;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TemplatesTest {
 
@@ -51,4 +52,17 @@ class TemplatesTest {
                      SHOULD_MATCH_MESSAGE);
     }
 
+    @Test
+    void testGetEnumFromTemplate() {
+        assertEquals(Templates.EXISTING_USER_WELCOME_EMAIL,
+                     Templates.get(Templates.EXISTING_USER_WELCOME_EMAIL.template),
+                     SHOULD_MATCH_MESSAGE);
+    }
+
+    @Test
+    void testGetEnumFromTemplateNotFound() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+            Templates.get("NotFoundTemplate"), "Expected exception has not been thrown");
+        assertEquals("Template does not exist", ex.getMessage(), "Exception message does not match");
+    }
 }

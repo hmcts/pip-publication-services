@@ -154,7 +154,7 @@ public class ThirdPartyService {
 
     private Retry handleRetry(String api) {
         return Retry.backoff(numOfRetries, Duration.ofSeconds(backoff))
-            .doAfterRetry(signal -> log.info(
+            .doAfterRetry(signal -> log.trace(
                 "Request failed, retrying {}/" + numOfRetries,
                 signal.totalRetries() + 1
             ))
