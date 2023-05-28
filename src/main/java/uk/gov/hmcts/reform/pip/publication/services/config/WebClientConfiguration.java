@@ -29,6 +29,13 @@ import javax.net.ssl.SSLException;
 @Configuration
 @Profile("!test & !functional")
 public class WebClientConfiguration {
+    // Currently we allow a maximum 2MB of PDF/Excel file to be transferred from Channel-management (same as GOV.UK
+    // Notify file size constraint). The file content is sent as a Base64 encoded string which add roughly 33% space
+    // overhead. Hence we increase the service-to-service size constraint to 3MB.
+    private static final ExchangeStrategies STRATEGIES =  ExchangeStrategies.builder()
+        .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
+            .maxInMemorySize(3 * 1024 * 1024))
+        .build();
 
     @Value("${third-party.certificate}")
     private String trustStore;
@@ -56,9 +63,7 @@ public class WebClientConfiguration {
         ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2Client =
             new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
         oauth2Client.setDefaultClientRegistrationId("dataManagementApi");
-        return WebClient.builder().exchangeStrategies(
-            ExchangeStrategies.builder().codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-                                                                  .maxInMemorySize(2 * 1024 * 1024)).build())
+        return WebClient.builder().exchangeStrategies(STRATEGIES)
             .apply(oauth2Client.oauth2Configuration()).build();
     }
 
@@ -77,8 +82,8 @@ public class WebClientConfiguration {
     @Bean
     @Profile("dev")
     public WebClient webClientInsecure() {
-        return WebClient.builder().codecs(clientCodecConfigurer -> clientCodecConfigurer
-            .defaultCodecs().maxInMemorySize(2 * 1024 * 1024)).build();
+        return WebClient.builder()
+            .exchangeStrategies(STRATEGIES)
+            .build();
     }
-
 }

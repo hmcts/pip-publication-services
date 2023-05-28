@@ -22,6 +22,8 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.function.Consumer;
 
+import static uk.gov.hmcts.reform.pip.model.publication.FileType.PDF;
+
 @Service
 @Slf4j
 public class ThirdPartyService {
@@ -112,7 +114,8 @@ public class ThirdPartyService {
      */
     public String handlePdfThirdPartyCall(String api, byte[] payload, Artefact artefact, Location location) {
         MultiValueMap<String, HttpEntity<?>> multiPartValues = MultiPartHelper.createMultiPartByteArrayBody(
-            Collections.singletonList(Triple.of("file", payload, artefact.getArtefactId() + ".pdf"))
+            Collections.singletonList(Triple.of("file", payload,
+                                                artefact.getArtefactId() + PDF.getExtension()))
         );
 
         webClient.build().post().uri(api)

@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
 
-import java.util.Map;
+import java.util.Base64;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -80,12 +80,12 @@ class ThirdPartyManagementServiceTest {
         LOCATION.setName(LOCATION_NAME);
         String jsonPayload = "test";
         byte[] pdfInBytes = "Test byte".getBytes();
-        Map<FileType, byte[]> blobStorageFiles = Map.of(FileType.PDF, pdfInBytes);
+        String base64EncodedPdf = Base64.getEncoder().encodeToString(pdfInBytes);
 
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(ARTEFACT);
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
-        when(channelManagementService.getArtefactFiles(RAND_UUID)).thenReturn(blobStorageFiles);
+        when(channelManagementService.getArtefactFile(RAND_UUID, FileType.PDF)).thenReturn(base64EncodedPdf);
         when(thirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
         when(thirdPartyService.handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION))
@@ -105,12 +105,12 @@ class ThirdPartyManagementServiceTest {
         LOCATION.setName(LOCATION_NAME);
         String jsonPayload = "test";
         byte[] pdfInBytes = new byte[0];
-        Map<FileType, byte[]> blobStorageFiles = Map.of(FileType.PDF, pdfInBytes);
+        String base64EncodedPdf = Base64.getEncoder().encodeToString(pdfInBytes);
 
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(ARTEFACT);
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
-        when(channelManagementService.getArtefactFiles(RAND_UUID)).thenReturn(blobStorageFiles);
+        when(channelManagementService.getArtefactFile(RAND_UUID, FileType.PDF)).thenReturn(base64EncodedPdf);
         when(thirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 

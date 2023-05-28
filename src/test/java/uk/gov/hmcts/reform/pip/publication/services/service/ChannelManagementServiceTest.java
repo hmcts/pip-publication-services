@@ -19,9 +19,7 @@ import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestC
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -76,31 +74,41 @@ class ChannelManagementServiceTest {
     }
 
     @Test
-    void testGetArtefactFiles() throws JsonProcessingException {
-        Map<FileType, byte[]> testMap = new ConcurrentHashMap<>();
-        testMap.put(FileType.PDF, HELLO.getBytes());
-        testMap.put(FileType.EXCEL, HELLO.getBytes());
+    void testGetArtefactFile() throws JsonProcessingException {
+        mockChannelManagementMockEndpoint.enqueue(
+            new MockResponse()
+                .addHeader("Content-Type", ContentType.APPLICATION_JSON)
+                .setBody(ow.writeValueAsString(HELLO))
+        );
 
-        mockChannelManagementMockEndpoint.enqueue(new MockResponse().addHeader(
-            "Content-Type",
-            ContentType.APPLICATION_JSON
-        ).setBody(ow.writeValueAsString(testMap)));
-
-        Map<FileType, byte[]> returnedMap = channelManagementService.getArtefactFiles(UUID.randomUUID());
-
-        assertTrue(returnedMap.get(FileType.PDF).length > 0, "Byte array doesn't exist");
-        assertTrue(returnedMap.get(FileType.EXCEL).length > 0, "Byte array doesn't exist");
+        String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF);
+        assertTrue(response.length() > 0, "Response doesn't exist");
     }
 
     @Test
-    void testGetArtefactFilesError() {
+    void testGetArtefactFileNotFound() {
         mockChannelManagementMockEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        UUID artefactId = UUID.randomUUID();
-        ServiceToServiceException exception = assertThrows(ServiceToServiceException.class,
-            () -> channelManagementService.getArtefactFiles(artefactId), "Exception");
-
-        assertTrue(exception.getMessage().contains("404"), "Exception didn't contain correct message");
+        String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.EXCEL);
+        assertTrue(response.length() == 0, "Response not empty");
     }
 
+    @Test
+    void testGetArtefactFileTooLarge() {
+        mockChannelManagementMockEndpoint.enqueue(new MockResponse().setResponseCode(413));
+
+        String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF);
+        assertTrue(response.length() == 0, "Response not empty");
+    }
+
+    @Test
+    void testGetArtefactFileError() {
+        mockChannelManagementMockEndpoint.enqueue(new MockResponse().setResponseCode(500));
+
+        UUID artefactId = UUID.randomUUID();
+        ServiceToServiceException exception = assertThrows(ServiceToServiceException.class, () ->
+            channelManagementService.getArtefactFile(artefactId, FileType.PDF), "Exception");
+
+        assertTrue(exception.getMessage().contains("500"), "Exception didn't contain correct message");
+    }
 }

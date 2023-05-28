@@ -9,8 +9,6 @@ import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
 
-import java.util.Map;
-
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Service
@@ -69,8 +67,7 @@ public class ThirdPartyManagementService {
         String jsonBlob = dataManagementService.getArtefactJsonBlob(artefact.getArtefactId());
         log.info(writeLog(thirdPartyService.handleJsonThirdPartyCall(api, jsonBlob, artefact, location)));
 
-        Map<FileType, byte[]> publicationFiles = channelManagementService.getArtefactFiles(artefact.getArtefactId());
-        byte[] pdf = publicationFiles.get(FileType.PDF);
+        byte[] pdf = channelManagementService.getArtefactFile(artefact.getArtefactId(), FileType.PDF).getBytes();
         if (pdf.length == 0) {
             log.warn(writeLog("Empty PDF not sent to third party"));
         } else {

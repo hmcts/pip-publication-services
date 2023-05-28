@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,9 +10,10 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
-import java.util.Map;
 import java.util.UUID;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.PAYLOAD_TOO_LARGE;
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
 
 @Slf4j
@@ -23,7 +23,9 @@ public class ChannelManagementService {
 
     private static final String SERVICE = "Channel Management";
     private static final String SYSTEM_HEADER = "x-system";
+    private static final String FILE_TYPE_HEADER = "x-file-type";
     private static final String TRUE = "true";
+    private static final int MAX_FILE_SIZE = 2_000_000;
 
     @Value("${service-to-service.channel-management}")
     private String url;
@@ -41,27 +43,35 @@ public class ChannelManagementService {
             return webClient.get().uri(String.format("%s/publication/summary/%s", url, artefactId))
                 .attributes(clientRegistrationId("channelManagementApi"))
                 .accept(MediaType.APPLICATION_JSON)
-                .retrieve().bodyToMono(String.class).block();
+                .retrieve().bodyToMono(String.class)
+                .block();
         } catch (WebClientResponseException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
     }
 
     /**
-     * Get the stored files (PDF/Excel) for an artefact by the artefact Id.
-     * @param artefactId The artefact Id to get the stored files for.
-     * @return A map of FileType enum to byte array.
+     * Get the stored file (PDF/Excel) for an artefact by the artefact Id.
+     * @param artefactId The artefact Id of the stored file to get.
+     * @param fileType The type of file (PDF/Excel).
+     * @return The byte array of teh stored file.
      */
-    public Map<FileType, byte[]> getArtefactFiles(UUID artefactId) {
+    public String getArtefactFile(UUID artefactId, FileType fileType) {
         try {
-            return webClient.get().uri(String.format("%s/publication/%s", url, artefactId))
+            return webClient.get()
+                .uri(String.format("%s/publication/%s?maxFileSize=%s", url, artefactId, MAX_FILE_SIZE))
                 .header(SYSTEM_HEADER, TRUE)
+                .header(FILE_TYPE_HEADER, fileType.toString())
                 .attributes(clientRegistrationId("channelManagementApi"))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<FileType, byte[]>>() {
-                }).block();
+                .bodyToMono(String.class)
+                .block();
         } catch (WebClientResponseException ex) {
+            if (NOT_FOUND.equals(ex.getStatusCode())
+                || PAYLOAD_TOO_LARGE.equals(ex.getStatusCode())) {
+                return "";
+            }
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
     }
