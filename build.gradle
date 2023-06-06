@@ -180,7 +180,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
-  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '4.7.0'
+  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '4.8.0'
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
