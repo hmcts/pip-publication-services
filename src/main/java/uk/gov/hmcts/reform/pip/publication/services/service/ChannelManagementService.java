@@ -59,7 +59,7 @@ public class ChannelManagementService {
     public String getArtefactFile(UUID artefactId, FileType fileType) {
         try {
             return webClient.get()
-                .uri(String.format("%s/publication/%s?maxFileSize=%s", url, artefactId, MAX_FILE_SIZE))
+                .uri(String.format("%s/publication/v2/%s?maxFileSize=%s", url, artefactId, MAX_FILE_SIZE))
                 .header(SYSTEM_HEADER, TRUE)
                 .header(FILE_TYPE_HEADER, fileType.toString())
                 .attributes(clientRegistrationId("channelManagementApi"))
