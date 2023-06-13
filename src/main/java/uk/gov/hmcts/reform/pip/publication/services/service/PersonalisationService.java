@@ -167,7 +167,8 @@ public class PersonalisationService {
             byte[] artefactExcelBytes = new byte[0];
 
             if (SJP_PUBLIC_LIST.equals(artefact.getListType()) || SJP_PRESS_LIST.equals(artefact.getListType())) {
-                String artefactExcel = channelManagementService.getArtefactFile(artefact.getArtefactId(), FileType.EXCEL);
+                String artefactExcel = channelManagementService.getArtefactFile(artefact.getArtefactId(),
+                                                                                FileType.EXCEL);
                 artefactExcelBytes = Base64.getDecoder().decode(artefactExcel);
             }
 
