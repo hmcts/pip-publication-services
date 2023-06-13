@@ -30,12 +30,15 @@ import uk.gov.service.notify.NotificationClientException;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
+import static uk.gov.hmcts.reform.pip.model.publication.ListType.SJP_PRESS_LIST;
+import static uk.gov.hmcts.reform.pip.model.publication.ListType.SJP_PUBLIC_LIST;
 import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.convertEnvironmentName;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
@@ -47,8 +50,9 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 @SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods", "PMD.ExcessiveImports"})
 public class PersonalisationService {
 
-
+    private static final int MAX_FILE_SIZE = 2_000_000;
     private static final String LINK_TO_SERVICE = "link-to-service";
+
     @Autowired
     DataManagementService dataManagementService;
 
@@ -158,25 +162,29 @@ public class PersonalisationService {
 
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
-            Map<FileType, byte[]> publicationFiles =
-                channelManagementService.getArtefactFiles(artefact.getArtefactId());
+            String artefactPdf = channelManagementService.getArtefactFile(artefact.getArtefactId(), FileType.PDF);
+            byte[] artefactPdfBytes = Base64.getDecoder().decode(artefactPdf);
+            byte[] artefactExcelBytes = new byte[0];
 
-            byte[] artefactPdf = publicationFiles.get(FileType.PDF);
-            byte[] artefactExcel = publicationFiles.get(FileType.EXCEL);
+            if (SJP_PUBLIC_LIST.equals(artefact.getListType()) || SJP_PRESS_LIST.equals(artefact.getListType())) {
+                String artefactExcel = channelManagementService.getArtefactFile(artefact.getArtefactId(),
+                                                                                FileType.EXCEL);
+                artefactExcelBytes = Base64.getDecoder().decode(artefactExcel);
+            }
 
-            boolean pdfWithinSize = artefactPdf.length < 2_000_000 && artefactPdf.length > 0;
-            boolean excelWithinSize = artefactExcel.length < 2_000_000 && artefactExcel.length > 0;
+            boolean pdfWithinSize = artefactPdfBytes.length < MAX_FILE_SIZE && artefactPdfBytes.length > 0;
+            boolean excelWithinSize = artefactExcelBytes.length < MAX_FILE_SIZE && artefactExcelBytes.length > 0;
 
             personalisation.put("display_pdf", pdfWithinSize);
             personalisation.put(
                 LINK_TO_FILE,
-                pdfWithinSize ? prepareUpload(artefactPdf, false, false, fileRetentionWeeks) : ""
+                pdfWithinSize ? prepareUpload(artefactPdfBytes, false, false, fileRetentionWeeks) : ""
             );
 
             personalisation.put("display_excel", excelWithinSize);
             personalisation.put(
                 "excel_link_to_file",
-                excelWithinSize ? prepareUpload(artefactExcel, false, false, fileRetentionWeeks) : ""
+                excelWithinSize ? prepareUpload(artefactExcelBytes, false, false, fileRetentionWeeks) : ""
             );
 
             personalisation.put(

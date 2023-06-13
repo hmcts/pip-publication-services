@@ -11,7 +11,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
-import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
@@ -128,10 +127,8 @@ class PersonalisationServiceTest {
     private static final Map<SubscriptionTypes, List<String>> SUBSCRIPTIONS = new ConcurrentHashMap<>();
     private static final SubscriptionEmail SUBSCRIPTIONS_EMAIL = new SubscriptionEmail();
 
-    private static final Map<FileType, byte[]> FILES_MAP = new ConcurrentHashMap<>();
-
-
     private static final byte[] TEST_BYTE_ARRAY = HELLO.getBytes();
+    private static final String BASE64_ENCODED_TEST_STRING = Base64.encode(TEST_BYTE_ARRAY);
 
     @BeforeAll
     public static void setup() {
@@ -147,9 +144,6 @@ class PersonalisationServiceTest {
         SUBSCRIPTIONS_EMAIL.setEmail(EMAIL);
         SUBSCRIPTIONS_EMAIL.setArtefactId(ARTEFACT_ID);
         SUBSCRIPTIONS_EMAIL.setSubscriptions(SUBSCRIPTIONS);
-
-        FILES_MAP.put(FileType.PDF, TEST_BYTE_ARRAY);
-        FILES_MAP.put(FileType.EXCEL, TEST_BYTE_ARRAY);
     }
 
     @Test
@@ -254,7 +248,7 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
-        when(channelManagementService.getArtefactFiles(any())).thenReturn(FILES_MAP);
+        when(channelManagementService.getArtefactFile(any(), any())).thenReturn(BASE64_ENCODED_TEST_STRING);
         when(caseNameHelper.generateCaseNumberPersonalisation(any(), any())).thenReturn(
             SUBSCRIPTIONS.get(SubscriptionTypes.CASE_NUMBER));
 
@@ -425,7 +419,7 @@ class PersonalisationServiceTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
-        when(channelManagementService.getArtefactFiles(any())).thenReturn(FILES_MAP);
+        when(channelManagementService.getArtefactFile(any(), any())).thenReturn(BASE64_ENCODED_TEST_STRING);
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
@@ -458,7 +452,7 @@ class PersonalisationServiceTest {
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
-        when(channelManagementService.getArtefactFiles(any())).thenReturn(FILES_MAP);
+        when(channelManagementService.getArtefactFile(any(), any())).thenReturn(BASE64_ENCODED_TEST_STRING);
 
         Map<String, Object> personalisation =
             personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact);
