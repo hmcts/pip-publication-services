@@ -180,6 +180,11 @@ dependencies {
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.7.1'
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
 
+  // Force upgrade snakeyaml version for CVE-2022-1471
+  implementation( group: 'org.yaml', name: 'snakeyaml').version {
+    strictly("2.0")
+  }
+
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
   testImplementation(platform('org.junit:junit-bom:5.9.3'))
