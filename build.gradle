@@ -4,7 +4,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.0'
-  id 'org.springframework.boot' version '2.7.12'
+  id 'org.springframework.boot' version '3.0.8'
   id 'org.owasp.dependencycheck' version '8.2.1'
   id 'com.github.ben-manes.versions' version '0.46.0'
   id 'org.sonarqube' version '4.2.0.3129'
@@ -150,22 +150,10 @@ repositories {
 }
 
 def versions = [
-  junit           : '5.9.3',
-  junitPlatform   : '1.9.3',
   reformLogging   : '6.0.1',
   springBoot      : springBoot.class.package.implementationVersion,
 ]
 
-ext.libraries = [
-  junit5: [
-    "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
-    "org.apiguardian:apiguardian-api:1.1.2",
-    "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
-    "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
-  ]
-]
 
 dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -173,11 +161,10 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
-  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '4.8.0'
+  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '5.2.0'
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
@@ -193,18 +180,11 @@ dependencies {
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.7.1'
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
 
-  // Force upgrade snakeyaml version for CVE-2022-38752
-  implementation( group: 'org.yaml', name: 'snakeyaml').version {
-    strictly("1.33")
-  }
-
-  // Force upgrade commons version for CVE-2022-42889
-  implementation( group: 'org.apache.commons', name: 'commons-text').version {
-    strictly("1.10.0")
-  }
-
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
-  testImplementation libraries.junit5
+
+  testImplementation(platform('org.junit:junit-bom:5.9.3'))
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

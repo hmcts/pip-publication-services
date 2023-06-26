@@ -40,7 +40,7 @@ class ThirdPartyServiceTest {
     @Autowired
     WebClient.Builder webClient;
 
-    private static final String API = "localhost:4444";
+    private static final String API = "http://localhost:4444";
     private static final String PAYLOAD = "test payload";
     private static final byte[] BYTE_ARRAY_PAYLOAD = {1, 2, 3};
     private static final String SUCCESS_NOTIFICATION = "Successfully sent list to Courtel at: %s";
