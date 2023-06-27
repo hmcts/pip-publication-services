@@ -17,4 +17,9 @@
     <packageUrl regex="true">^pkg:maven/org.yaml/snakeyaml@1.33</packageUrl>
     <cve>CVE-2022-1471</cve>
   </suppress>
+  <suppress>
+    <notes>The vulnerability exists in the latest version of lib too. Need to wait for new version with the fix</notes>
+    <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.5</packageUrl>
+    <cve>CVE-2023-35116</cve>
+  </suppress>
 </suppressions>
