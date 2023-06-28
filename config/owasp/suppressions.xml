@@ -12,4 +12,9 @@
     <packageUrl>pkg:maven/org.json/json@20230227</packageUrl>
     <cve>CVE-2022-45688</cve>
   </suppress>
+  <suppress>
+    <notes>The vulnerability exists in the latest version of lib too. Need to wait for new version with the fix</notes>
+    <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.5</packageUrl>
+    <cve>CVE-2023-35116</cve>
+  </suppress>
 </suppressions>
