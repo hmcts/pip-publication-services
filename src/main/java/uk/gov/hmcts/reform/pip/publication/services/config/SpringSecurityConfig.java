@@ -26,7 +26,6 @@ public class SpringSecurityConfig {
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
         http.apply(AadResourceServerHttpSecurityConfigurer.aadResourceServer());
-        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
         http.csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
