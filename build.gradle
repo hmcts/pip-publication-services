@@ -103,7 +103,7 @@ jacocoTestReport {
   reports {
     xml.required = true
     csv.required = false
-    xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    xml.outputLocation.set(file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml"))
   }
 }
 
