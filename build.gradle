@@ -47,6 +47,10 @@ configurations {
 
   smokeTestImplementation.extendsFrom testImplementation
   smokeTestRuntimeOnly.extendsFrom runtimeOnly
+
+  all {
+    exclude group: 'commons-logging', 'module': 'commons-logging'
+  }
 }
 
 tasks.withType(JavaCompile) {
@@ -85,7 +89,7 @@ task smoke(type: Test) {
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '10.5.0'
+  toolVersion = '10.12.1'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
@@ -130,16 +134,6 @@ dependencyCheck {
   analyzers {
     // Disable scanning of .NET related binaries
     assemblyEnabled = false
-  }
-}
-
-dependencyManagement {
-  dependencies {
-    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.70'
-    // CVE-2018-10237 - Unbounded memory allocation
-    dependencySet(group: 'com.google.guava', version: '32.0.0-jre') {
-      entry 'guava'
-    }
   }
 }
 
