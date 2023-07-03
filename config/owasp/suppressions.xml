@@ -22,4 +22,9 @@
     <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.5</packageUrl>
     <cve>CVE-2023-35116</cve>
   </suppress>
+  <suppress>
+    <notes>Pull in by spring boot. The latest version of spring boot v3.1.1 is still using netty v4.1.93 where the vulnerability still exists</notes>
+    <packageUrl regex="true">^pkg:maven/io.netty/netty-.*$</packageUrl>
+    <cve>CVE-2023-34462</cve>
+  </suppress>
 </suppressions>
