@@ -35,7 +35,7 @@ class GlobalExceptionHandlerTest {
     static final String BODY_RESPONSE = "Response should contain a body";
     static final String PASSED_IN_MESSAGE = "The message should match the message passed in";
 
-    private  GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
+    private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
     @Mock
     private MethodArgumentNotValidException methodArgumentNotValidException;
