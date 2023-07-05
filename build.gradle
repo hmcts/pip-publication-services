@@ -5,10 +5,10 @@ plugins {
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.0'
   id 'org.springframework.boot' version '2.7.12'
-  id 'org.owasp.dependencycheck' version '8.2.1'
-  id 'com.github.ben-manes.versions' version '0.46.0'
-  id 'org.sonarqube' version '4.2.0.3129'
-  id 'io.freefair.lombok' version '8.0.1'
+  id 'org.owasp.dependencycheck' version '8.3.1'
+  id 'com.github.ben-manes.versions' version '0.47.0'
+  id 'org.sonarqube' version '4.2.1.3168'
+  id 'io.freefair.lombok' version '8.1.0'
 }
 
 apply plugin: 'org.owasp.dependencycheck'
@@ -137,7 +137,7 @@ dependencyManagement {
   dependencies {
     dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.70'
     // CVE-2018-10237 - Unbounded memory allocation
-    dependencySet(group: 'com.google.guava', version: '32.0.0-jre') {
+    dependencySet(group: 'com.google.guava', version: '32.1.1-jre') {
       entry 'guava'
     }
   }
@@ -181,7 +181,7 @@ dependencies {
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
-  implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.3'
+  implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.4'
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '4.1.0-RELEASE'
   implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.0.6', {

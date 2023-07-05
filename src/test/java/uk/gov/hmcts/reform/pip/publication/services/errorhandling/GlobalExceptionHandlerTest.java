@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.pip.publication.services.errorhandling;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,15 +35,10 @@ class GlobalExceptionHandlerTest {
     static final String BODY_RESPONSE = "Response should contain a body";
     static final String PASSED_IN_MESSAGE = "The message should match the message passed in";
 
-    private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
+    private  GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
     @Mock
-    MethodArgumentNotValidException methodArgumentNotValidException;
-
-    @BeforeAll
-    public static void setup() {
-        MockitoAnnotations.openMocks(MethodArgumentNotValidException.class);
-    }
+    private MethodArgumentNotValidException methodArgumentNotValidException;
 
     @Test
     void testHandleSubscriptionNotFound() {
