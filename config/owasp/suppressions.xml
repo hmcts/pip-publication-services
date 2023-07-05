@@ -8,6 +8,11 @@
     <cve>CVE-2021-42306</cve>
   </suppress>
   <suppress>
+    <notes>Already on latest version of parent dependency</notes>
+    <packageUrl>pkg:maven/org.json/json@20230227</packageUrl>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
+  <suppress>
     <notes>Pulled in by a number of dependencies, including spring. We are on the latest 1.x.x version. Will need to wait until parent dependencies update to 2.x.x released in feb, therefore suppressing</notes>
     <packageUrl regex="true">^pkg:maven/org.yaml/snakeyaml@1.33</packageUrl>
     <cve>CVE-2022-1471</cve>
