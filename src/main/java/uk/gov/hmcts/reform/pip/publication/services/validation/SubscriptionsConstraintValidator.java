@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.pip.publication.services.validation;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 
 import java.util.List;
 import java.util.Map;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 public class SubscriptionsConstraintValidator implements ConstraintValidator<SubscriptionsConstraint,
     Map<SubscriptionTypes, List<String>>> {

@@ -15,7 +15,7 @@ public class ThirdPartyServiceException extends RuntimeException {
     public ThirdPartyServiceException(Throwable throwable, String api) {
         super(String.format(MESSAGE, api, throwable.getMessage()));
         WebClientResponseException mappedEx = (WebClientResponseException) throwable;
-        statusCodeResponse = mappedEx.getRawStatusCode();
+        statusCodeResponse = mappedEx.getStatusCode().value();
     }
 
     public int getStatusCode() {
