@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.pip.publication.services.errorhandling;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,12 +38,7 @@ class GlobalExceptionHandlerTest {
     private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
     @Mock
-    MethodArgumentNotValidException methodArgumentNotValidException;
-
-    @BeforeAll
-    public static void setup() {
-        MockitoAnnotations.openMocks(MethodArgumentNotValidException.class);
-    }
+    private MethodArgumentNotValidException methodArgumentNotValidException;
 
     @Test
     void testHandleSubscriptionNotFound() {
