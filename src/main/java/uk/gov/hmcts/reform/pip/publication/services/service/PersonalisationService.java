@@ -158,7 +158,7 @@ public class PersonalisationService {
 
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
-            personalisation.put("list_type", artefact.getListType());
+            personalisation.put("list_type", artefact.getListType().getFriendlyName());
 
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
@@ -220,7 +220,7 @@ public class PersonalisationService {
             List<String> location = body.getSubscriptions().get(SubscriptionTypes.LOCATION_ID);
             populateLocationPersonalisation(personalisation, location);
 
-            personalisation.put("list_type", artefact.getListType());
+            personalisation.put("list_type", artefact.getListType().getFriendlyName());
 
             byte[] artefactData = dataManagementService.getArtefactFlatFile(body.getArtefactId());
 
