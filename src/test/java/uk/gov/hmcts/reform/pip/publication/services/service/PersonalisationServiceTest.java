@@ -267,7 +267,7 @@ class PersonalisationServiceTest {
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
                      LOCATION_MESSAGE
         );
-        assertEquals(ListType.SJP_PUBLIC_LIST, personalisation.get("list_type"),
+        assertEquals("SJP Public List", personalisation.get("list_type"),
                      LIST_TYPE_MESSAGE
         );
         assertEquals(Base64.encode(TEST_BYTE_ARRAY), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
@@ -311,7 +311,7 @@ class PersonalisationServiceTest {
         assertEquals(location.getName(), personalisation.get(LOCATIONS),
                      LOCATION_MESSAGE
         );
-        assertEquals(ListType.CIVIL_DAILY_CAUSE_LIST, personalisation.get("list_type"),
+        assertEquals("Civil Daily Cause List", personalisation.get("list_type"),
                      LIST_TYPE_MESSAGE
         );
         assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
