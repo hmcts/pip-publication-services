@@ -181,7 +181,7 @@ dependencies {
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
-  testImplementation(platform('org.junit:junit-bom:5.9.3'))
+  testImplementation(platform('org.junit:junit-bom:5.10.0'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
