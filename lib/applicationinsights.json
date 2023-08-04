@@ -1,0 +1,6 @@
+{
+  "connectionString": "${file:/mnt/secrets/pip-ss-kv/APP_INSIGHTS_CONNECTION_STRING}",
+  "role": {
+    "name": "pip-publication-services"
+  }
+}
