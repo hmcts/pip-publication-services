@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
+import static uk.gov.hmcts.reform.pip.model.publication.ListType.SJP_DELTA_PRESS_LIST;
 import static uk.gov.hmcts.reform.pip.model.publication.ListType.SJP_PRESS_LIST;
 import static uk.gov.hmcts.reform.pip.model.publication.ListType.SJP_PUBLIC_LIST;
 import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.convertEnvironmentName;
@@ -158,7 +159,7 @@ public class PersonalisationService {
 
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
-            personalisation.put("list_type", artefact.getListType());
+            personalisation.put("list_type", artefact.getListType().getFriendlyName());
 
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
 
@@ -166,7 +167,9 @@ public class PersonalisationService {
             byte[] artefactPdfBytes = Base64.getDecoder().decode(artefactPdf);
             byte[] artefactExcelBytes = new byte[0];
 
-            if (SJP_PUBLIC_LIST.equals(artefact.getListType()) || SJP_PRESS_LIST.equals(artefact.getListType())) {
+            if (SJP_PUBLIC_LIST.equals(artefact.getListType())
+                || SJP_DELTA_PRESS_LIST.equals(artefact.getListType())
+                || SJP_PRESS_LIST.equals(artefact.getListType())) {
                 String artefactExcel = channelManagementService.getArtefactFile(artefact.getArtefactId(),
                                                                                 FileType.EXCEL);
                 artefactExcelBytes = Base64.getDecoder().decode(artefactExcel);
@@ -220,7 +223,7 @@ public class PersonalisationService {
             List<String> location = body.getSubscriptions().get(SubscriptionTypes.LOCATION_ID);
             populateLocationPersonalisation(personalisation, location);
 
-            personalisation.put("list_type", artefact.getListType());
+            personalisation.put("list_type", artefact.getListType().getFriendlyName());
 
             byte[] artefactData = dataManagementService.getArtefactFlatFile(body.getArtefactId());
 
