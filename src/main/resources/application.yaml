@@ -42,9 +42,6 @@ spring:
     import: "optional:configtree:/mnt/secrets/pip-ss-kv/"
   application:
     name: PIP Publication Services
-azure:
-  application-insights:
-    instrumentation-key: ${INSTRUMENTATION_KEY:00000000-0000-0000-0000-000000000000}
 
 service-to-service:
   data-management: ${DATA_MANAGEMENT_URL:https://pip-data-management.staging.platform.hmcts.net}

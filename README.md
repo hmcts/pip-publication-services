@@ -23,6 +23,7 @@
 - [API Documentation](#api-documentation)
 - [Deployment](#deployment)
 - [Monitoring and Logging](#monitoring-and-logging)
+  - [Application Insights](#application-insights)
 - [Security & Quality Considerations](#security--quality-considerations)
 - [Test Suite](#test-suite)
   - [Unit tests](#unit-tests)
@@ -236,6 +237,15 @@ Locally, we use [Log4j](https://logging.apache.org/log4j/2.x/).
 
 In addition, this service is also monitored in production and staging environments by [Dynatrace](https://www.dynatrace.com/). The URL for viewing our specific Dynatrace instance can be had by asking a team member.
 
+### Application Insights
+
+Application insights is configured via the lib/applicationinsights.json file. Alongside this, the Dockerfile is configured to copy in this file and also download the app insights client.
+
+The client at runtime is attached as a javaagent, which allows it to send the logging to app insights.
+
+To connect to app insights a connection string is used. This is configured to read from the KV Secret mounted inside the pod.
+
+It is possible to connect to app insights locally, although somewhat tricky. The easiest way is to get the connection string from azure, set it as an environment variable (APPLICATIONINSIGHTS_CONNECTION_STRING), and add in the javaagent as VM argument. You will also need to remove / comment out the connection string line the config.
 ## Security & Quality Considerations
 We use a few automated tools to ensure quality and security within the service. A few examples can be found below:
 
