@@ -81,7 +81,7 @@ class ChannelManagementServiceTest {
                 .setBody(ow.writeValueAsString(HELLO))
         );
 
-        String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF);
+        String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF, true);
         assertTrue(response.length() > 0, "Response doesn't exist");
     }
 
@@ -89,7 +89,7 @@ class ChannelManagementServiceTest {
     void testGetArtefactFileNotFound() {
         mockChannelManagementMockEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.EXCEL);
+        String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.EXCEL, false);
         assertTrue(response.length() == 0, "Response not empty");
     }
 
@@ -97,7 +97,7 @@ class ChannelManagementServiceTest {
     void testGetArtefactFileTooLarge() {
         mockChannelManagementMockEndpoint.enqueue(new MockResponse().setResponseCode(413));
 
-        String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF);
+        String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF, false);
         assertTrue(response.length() == 0, "Response not empty");
     }
 
@@ -107,7 +107,7 @@ class ChannelManagementServiceTest {
 
         UUID artefactId = UUID.randomUUID();
         ServiceToServiceException exception = assertThrows(ServiceToServiceException.class, () ->
-            channelManagementService.getArtefactFile(artefactId, FileType.PDF), "Exception");
+            channelManagementService.getArtefactFile(artefactId, FileType.PDF, false), "Exception");
 
         assertTrue(exception.getMessage().contains("500"), "Exception didn't contain correct message");
     }

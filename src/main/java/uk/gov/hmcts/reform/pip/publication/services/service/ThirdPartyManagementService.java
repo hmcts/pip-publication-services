@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
+import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
 
@@ -67,7 +68,12 @@ public class ThirdPartyManagementService {
         String jsonBlob = dataManagementService.getArtefactJsonBlob(artefact.getArtefactId());
         log.info(writeLog(thirdPartyService.handleJsonThirdPartyCall(api, jsonBlob, artefact, location)));
 
-        byte[] pdf = channelManagementService.getArtefactFile(artefact.getArtefactId(), FileType.PDF).getBytes();
+        // Retrieve the Welsh copy of PDF to send to third party if the publication language is in Welsh
+        boolean additionalPdf = artefact.getListType().hasAdditionalPdf()
+            && artefact.getLanguage() != Language.ENGLISH;
+
+        byte[] pdf = channelManagementService.getArtefactFile(artefact.getArtefactId(), FileType.PDF, additionalPdf)
+            .getBytes();
         if (pdf.length == 0) {
             log.warn(writeLog("Empty PDF not sent to third party"));
         } else {

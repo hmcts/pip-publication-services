@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -9,13 +12,19 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
+import uk.gov.hmcts.reform.pip.model.publication.Language;
+import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
 
 import java.util.Base64;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,12 +60,14 @@ class ThirdPartyManagementServiceTest {
     @BeforeAll
     static void setup() {
         ARTEFACT.setArtefactId(RAND_UUID);
+
         LOCATION.setLocationId(LOCATION_ID);
         LOCATION.setName(LOCATION_NAME);
     }
 
     @Test
     void testHandleThirdPartyFlatFile() {
+        ARTEFACT.setListType(ListType.COP_DAILY_CAUSE_LIST);
         ARTEFACT.setIsFlatFile(true);
 
         byte[] file = new byte[10];
@@ -74,10 +85,14 @@ class ThirdPartyManagementServiceTest {
                      "Api subscription with flat file should return successful referenceId.");
     }
 
-    @Test
-    void testHandleThirdPartyJson() {
+    @ParameterizedTest
+    @MethodSource("parameters")
+    void testHandleThirdPartyJson(ListType listType, Language language, boolean expectedAdditionalPdf) {
+        ARTEFACT.setListType(listType);
+        ARTEFACT.setLanguage(language);
         ARTEFACT.setIsFlatFile(false);
         LOCATION.setName(LOCATION_NAME);
+
         String jsonPayload = "test";
         byte[] pdfInBytes = "Test byte".getBytes();
         String base64EncodedPdf = Base64.getEncoder().encodeToString(pdfInBytes);
@@ -85,7 +100,7 @@ class ThirdPartyManagementServiceTest {
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(ARTEFACT);
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
-        when(channelManagementService.getArtefactFile(RAND_UUID, FileType.PDF)).thenReturn(base64EncodedPdf);
+        when(channelManagementService.getArtefactFile(eq(RAND_UUID), any(), anyBoolean())).thenReturn(base64EncodedPdf);
         when(thirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
         when(thirdPartyService.handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION))
@@ -97,12 +112,26 @@ class ThirdPartyManagementServiceTest {
 
         assertEquals(SUCCESS_API_SENT, thirdPartyManagementService.handleThirdParty(subscription),
                      "Api subscription with json file should return successful referenceId.");
+
+        verify(channelManagementService).getArtefactFile(RAND_UUID, FileType.PDF, expectedAdditionalPdf);
+    }
+
+    private static Stream<Arguments> parameters() {
+        return Stream.of(
+            Arguments.of(ListType.SJP_PRESS_LIST, Language.ENGLISH, false),
+            Arguments.of(ListType.SJP_PRESS_LIST, Language.WELSH, false),
+            Arguments.of(ListType.COP_DAILY_CAUSE_LIST, Language.ENGLISH, false),
+            Arguments.of(ListType.COP_DAILY_CAUSE_LIST, Language.WELSH, true)
+        );
     }
 
     @Test
     void testHandleThirdPartyJsonWithEmptyPdf() {
+        ARTEFACT.setListType(ListType.COP_DAILY_CAUSE_LIST);
+        ARTEFACT.setLanguage(Language.ENGLISH);
         ARTEFACT.setIsFlatFile(false);
         LOCATION.setName(LOCATION_NAME);
+
         String jsonPayload = "test";
         byte[] pdfInBytes = new byte[0];
         String base64EncodedPdf = Base64.getEncoder().encodeToString(pdfInBytes);
@@ -110,7 +139,7 @@ class ThirdPartyManagementServiceTest {
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(ARTEFACT);
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
-        when(channelManagementService.getArtefactFile(RAND_UUID, FileType.PDF)).thenReturn(base64EncodedPdf);
+        when(channelManagementService.getArtefactFile(RAND_UUID, FileType.PDF, false)).thenReturn(base64EncodedPdf);
         when(thirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 
