@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.pip.model.authentication.roles.IsAdmin;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
@@ -249,10 +248,5 @@ public class NotificationController {
             "Location subscription email successfully sent with reference id: %s",
             notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion)
         ));
-    }
-
-    @PostMapping("/courtel/file")
-    public ResponseEntity test(MultipartFile file) {
-        return ResponseEntity.ok().build();
     }
 }
