@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +52,7 @@ class ThirdPartyManagementServiceTest {
     @BeforeAll
     static void setup() {
         ARTEFACT.setArtefactId(RAND_UUID);
+        ARTEFACT.setLocationId(LOCATION_ID.toString());
         LOCATION.setLocationId(LOCATION_ID);
         LOCATION.setName(LOCATION_NAME);
     }
@@ -97,6 +99,9 @@ class ThirdPartyManagementServiceTest {
 
         assertEquals(SUCCESS_API_SENT, thirdPartyManagementService.handleThirdParty(subscription),
                      "Api subscription with json file should return successful referenceId.");
+
+        verify(thirdPartyService, times(1))
+            .handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION);
     }
 
     @Test
