@@ -60,7 +60,7 @@ class ThirdPartyManagementServiceTest {
     @BeforeAll
     static void setup() {
         ARTEFACT.setArtefactId(RAND_UUID);
-
+        ARTEFACT.setLocationId(LOCATION_ID.toString());
         LOCATION.setLocationId(LOCATION_ID);
         LOCATION.setName(LOCATION_NAME);
     }
@@ -114,6 +114,7 @@ class ThirdPartyManagementServiceTest {
                      "Api subscription with json file should return successful referenceId.");
 
         verify(channelManagementService).getArtefactFile(RAND_UUID, FileType.PDF, expectedAdditionalPdf);
+        verify(thirdPartyService).handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION);
     }
 
     private static Stream<Arguments> parameters() {

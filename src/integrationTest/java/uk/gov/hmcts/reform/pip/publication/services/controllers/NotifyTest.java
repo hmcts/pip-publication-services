@@ -7,6 +7,8 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okhttp3.tls.HandshakeCertificates;
 import org.apache.http.entity.ContentType;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,8 @@ import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -376,6 +380,74 @@ class NotifyTest {
             .andExpect(status().isOk())
             .andExpect(content().string(containsString(
                 "Successfully sent list to https://localhost:4444")));
+
+        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+        assertThat(recordedRequest.getHeader("x-provenance")).as("Incorrect provenance").isEqualTo("MANUAL_UPLOAD");
+        checkDataForThirdPartyRequest(recordedRequest);
+
+        assertThat(new String(recordedRequest.getBody().readByteArray()))
+            .as("Incorrect body")
+            .contains("publicationDate");
+    }
+
+    @Test
+    void testNotifyApiSubscribersJsonGeneratedPdf() throws Exception {
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .addHeader("Content-Type", ContentType.APPLICATION_JSON)
+                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setResponseCode(200));
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .addHeader("Content-Type", ContentType.MULTIPART_FORM_DATA)
+                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setResponseCode(200));
+
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                            .content(THIRD_PARTY_SUBSCRIPTION_JSON_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Successfully sent list to https://localhost:4444")));
+
+        externalApiMockServer.takeRequest();
+        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+        assertThat(recordedRequest.getHeader("x-provenance")).as("Incorrect provenance").isEqualTo("CATH");
+        checkDataForThirdPartyRequest(recordedRequest);
+
+        MultipartStream multipartStream = new MultipartStream(new ByteArrayInputStream(
+            recordedRequest.getBody().readByteArray()), recordedRequest.getHeader("Content-Type")
+            .split("=")[1].getBytes(), 1024, null);
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        multipartStream.readHeaders();
+        multipartStream.readBodyData(output);
+        try (PDDocument document = PDDocument.load(output.toByteArray())) {
+            assertThat(document.getNumberOfPages()).as("Incorrect number of pages").isEqualTo(1);
+        }
+
+    }
+
+    private void checkDataForThirdPartyRequest(RecordedRequest recordedRequest) {
+        assertThat(recordedRequest.getMethod()).as("Incorrect method").isEqualTo("POST");
+        assertThat(recordedRequest.getHeader("x-type")).as("Incorrect type").isEqualTo("LIST");
+        assertThat(recordedRequest.getHeader("x-list-type")).as("Incorrect list type")
+            .isEqualTo("SJP_PUBLIC_LIST");
+        assertThat(recordedRequest.getHeader("x-location-name")).as("Incorrect location name")
+            .isEqualTo("AB - E2E TEST COURT (BACKEND) - DO NOT REMOVE");
+        assertThat(recordedRequest.getHeader("x-location-jurisdiction"))
+            .as("Incorrect location jurisdiction")
+            .isEqualTo("Family,Civil");
+        assertThat(recordedRequest.getHeader("x-location-region")).as("Incorrect location region")
+            .isEqualTo("South East");
+        assertThat(recordedRequest.getHeader("x-content-date")).as("Incorrect content date")
+            .isEqualTo("2023-03-01T00:00");
+        assertThat(recordedRequest.getHeader("x-sensitivity")).as("Incorrect sensitivity")
+            .isEqualTo("PUBLIC");
+        assertThat(recordedRequest.getHeader("x-language")).as("Incorrect language")
+            .isEqualTo("ENGLISH");
+        assertThat(recordedRequest.getHeader("x-display-from")).as("Incorrect display from")
+            .isEqualTo("2022-10-10T10:40");
+        assertThat(recordedRequest.getHeader("x-display-to")).as("Incorrect display to")
+            .isEqualTo("2030-12-31T10:55:12");
     }
 
     @Test

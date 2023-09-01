@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.model.location.Location;
@@ -77,7 +78,10 @@ public class ThirdPartyManagementService {
         if (pdf.length == 0) {
             log.warn(writeLog("Empty PDF not sent to third party"));
         } else {
-            log.info(writeLog(thirdPartyService.handlePdfThirdPartyCall(api, pdf, artefact, location)));
+            // The PDF returned from channel management is returned as Base 64.
+            // This is then decoded here before sending to third parties.
+            log.info(writeLog(thirdPartyService.handlePdfThirdPartyCall(
+                api, Base64.decodeBase64(pdf), artefact, location)));
         }
     }
 }
