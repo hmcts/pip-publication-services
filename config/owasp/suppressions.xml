@@ -17,4 +17,8 @@
     <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.14.3</packageUrl>
     <cve>CVE-2023-35116</cve>
   </suppress>
+  <suppress>
+    <notes>Needing to suppress until new version of spring. An issue with Tomcat pulled in by spring in the latest version</notes>
+    <cve>CVE-2023-41080</cve>
+  </suppress>
 </suppressions>
