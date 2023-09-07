@@ -98,6 +98,23 @@ class NotifyTest {
             "artefactId": "3d498688-bbad-4a53-b253-a16ddf8737a9"
         }
         """;
+    private static final String THIRD_PARTY_SUBSCRIPTION_ARTEFACT = """
+        {
+            "apiDestination": "https://localhost:4444",
+            "artefact": {
+                "artefactId": "3d498688-bbad-4a53-b253-a16ddf8737a9",
+                "provenance": "MANUAL_UPLOAD",
+                "type": "LIST",
+                "sensitivity": "PUBLIC",
+                "language": "ENGLISH",
+                "displayFrom": "2022-10-10T10:40:00Z",
+                "displayTo": "2030-12-31T10:55:12Z",
+                "listType": "SJP_PUBLIC_LIST",
+                "locationId": "998",
+                "contentDate": "2023-03-01T00:00:00Z"
+            }
+        }
+        """;
     private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY = """
         {
             "apiDestination": "https://localhost:4444",
@@ -423,7 +440,27 @@ class NotifyTest {
         try (PDDocument document = PDDocument.load(output.toByteArray())) {
             assertThat(document.getNumberOfPages()).as("Incorrect number of pages").isEqualTo(1);
         }
+    }
 
+    @Test
+    void testNotifyApiSubscribersForArtefactDeletion() throws Exception {
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .setResponseCode(200));
+
+        mockMvc.perform(put(API_SUBSCRIPTION_URL)
+                            .content(THIRD_PARTY_SUBSCRIPTION_ARTEFACT)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Successfully sent empty list to https://localhost:4444")));
+
+        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+        assertThat(recordedRequest.getHeader("x-provenance")).as("Incorrect provenance").isEqualTo("MANUAL_UPLOAD");
+        checkDataForThirdPartyRequest(recordedRequest);
+
+        assertThat(new String(recordedRequest.getBody().readByteArray()))
+            .as("Incorrect body")
+            .isEmpty();
     }
 
     private void checkDataForThirdPartyRequest(RecordedRequest recordedRequest) {
