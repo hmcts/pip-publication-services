@@ -8,6 +8,11 @@
     <cve>CVE-2021-42306</cve>
   </suppress>
   <suppress>
+    <notes>Already on latest version of parent dependency</notes>
+    <packageUrl>pkg:maven/org.json/json@20230227</packageUrl>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
+  <suppress>
     <notes>The vulnerability exists in the latest version of lib too. Need to wait for new version with the fix</notes>
     <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.14.3</packageUrl>
     <cve>CVE-2023-35116</cve>
