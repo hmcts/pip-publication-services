@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
+import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
@@ -37,9 +38,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
-import static uk.gov.hmcts.reform.pip.model.publication.ListType.SJP_DELTA_PRESS_LIST;
-import static uk.gov.hmcts.reform.pip.model.publication.ListType.SJP_PRESS_LIST;
-import static uk.gov.hmcts.reform.pip.model.publication.ListType.SJP_PUBLIC_LIST;
 import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.convertEnvironmentName;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
@@ -48,7 +46,7 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
  */
 @Component
 @Slf4j
-@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.GodClass"})
 public class PersonalisationService {
 
     private static final int MAX_FILE_SIZE = 2_000_000;
@@ -146,7 +144,6 @@ public class PersonalisationService {
     public Map<String, Object> buildRawDataSubscriptionPersonalisation(SubscriptionEmail body, Artefact artefact) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
-
             Map<SubscriptionTypes, List<String>> subscriptions = body.getSubscriptions();
 
             populateCaseNumberPersonalisation(
@@ -156,39 +153,11 @@ public class PersonalisationService {
             );
 
             populateCaseUrnPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.CASE_URN));
-
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
             personalisation.put("list_type", artefact.getListType().getFriendlyName());
-
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
-
-            String artefactPdf = channelManagementService.getArtefactFile(artefact.getArtefactId(), FileType.PDF);
-            byte[] artefactPdfBytes = Base64.getDecoder().decode(artefactPdf);
-            byte[] artefactExcelBytes = new byte[0];
-
-            if (SJP_PUBLIC_LIST.equals(artefact.getListType())
-                || SJP_DELTA_PRESS_LIST.equals(artefact.getListType())
-                || SJP_PRESS_LIST.equals(artefact.getListType())) {
-                String artefactExcel = channelManagementService.getArtefactFile(artefact.getArtefactId(),
-                                                                                FileType.EXCEL);
-                artefactExcelBytes = Base64.getDecoder().decode(artefactExcel);
-            }
-
-            boolean pdfWithinSize = artefactPdfBytes.length < MAX_FILE_SIZE && artefactPdfBytes.length > 0;
-            boolean excelWithinSize = artefactExcelBytes.length < MAX_FILE_SIZE && artefactExcelBytes.length > 0;
-
-            personalisation.put("display_pdf", pdfWithinSize);
-            personalisation.put(
-                LINK_TO_FILE,
-                pdfWithinSize ? prepareUpload(artefactPdfBytes, false, false, fileRetentionWeeks) : ""
-            );
-
-            personalisation.put("display_excel", excelWithinSize);
-            personalisation.put(
-                "excel_link_to_file",
-                excelWithinSize ? prepareUpload(artefactExcelBytes, false, false, fileRetentionWeeks) : ""
-            );
+            personalisation.putAll(populateFilesPersonalisation(artefact));
 
             personalisation.put(
                 "testing_of_array",
@@ -208,6 +177,76 @@ public class PersonalisationService {
             ));
             throw new NotifyException(e.getMessage());
         }
+    }
+
+    private Map<String, Object> populateFilesPersonalisation(Artefact artefact) throws NotificationClientException {
+        Map<String, Object> personalisation = populatePdfPersonalisation(artefact);
+
+        byte[] artefactExcelBytes = new byte[0];
+        if (artefact.getListType().hasExcel()) {
+            String artefactExcel = channelManagementService.getArtefactFile(artefact.getArtefactId(),
+                                                                            FileType.EXCEL, false);
+            artefactExcelBytes = Base64.getDecoder().decode(artefactExcel);
+        }
+
+        boolean excelWithinSize = artefactExcelBytes.length < MAX_FILE_SIZE && artefactExcelBytes.length > 0;
+        if (artefact.getListType().hasExcel()) {
+            String artefactExcel = channelManagementService.getArtefactFile(artefact.getArtefactId(),
+                                                                            FileType.EXCEL, false);
+            artefactExcelBytes = Base64.getDecoder().decode(artefactExcel);
+        }
+
+        personalisation.put("display_excel", excelWithinSize);
+        personalisation.put(
+            "excel_link_to_file",
+            excelWithinSize ? prepareUpload(artefactExcelBytes, false, false, fileRetentionWeeks) : ""
+        );
+
+        return personalisation;
+    }
+
+    private Map<String, Object> populatePdfPersonalisation(Artefact artefact) throws NotificationClientException {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+
+        String artefactPdf = channelManagementService.getArtefactFile(artefact.getArtefactId(), FileType.PDF, false);
+        byte[] artefactPdfBytes = Base64.getDecoder().decode(artefactPdf);
+        boolean pdfWithinSize = artefactPdfBytes.length < MAX_FILE_SIZE && artefactPdfBytes.length > 0;
+
+        boolean hasAdditionalPdf = artefact.getListType().hasAdditionalPdf()
+            && artefact.getLanguage() != Language.ENGLISH;
+        byte[] artefactWelshPdfBytes = new byte[0];
+
+        if (hasAdditionalPdf) {
+            String artefactWelshPdf = channelManagementService.getArtefactFile(artefact.getArtefactId(),
+                                                                               FileType.PDF, true);
+            artefactWelshPdfBytes = Base64.getDecoder().decode(artefactWelshPdf);
+        }
+        boolean welshPdfWithinSize = artefactWelshPdfBytes.length < MAX_FILE_SIZE
+            && artefactWelshPdfBytes.length > 0;
+
+        personalisation.put("display_pdf", !hasAdditionalPdf && pdfWithinSize);
+        personalisation.put("display_english_pdf", hasAdditionalPdf && pdfWithinSize);
+        personalisation.put("display_welsh_pdf", hasAdditionalPdf && welshPdfWithinSize);
+
+        personalisation.put(
+            "pdf_link_to_file",
+            !hasAdditionalPdf && pdfWithinSize
+                ? prepareUpload(artefactPdfBytes, false, false, fileRetentionWeeks) : ""
+        );
+
+        personalisation.put(
+            "english_pdf_link_to_file",
+            hasAdditionalPdf && pdfWithinSize
+                ? prepareUpload(artefactPdfBytes, false, false, fileRetentionWeeks) : ""
+        );
+
+        personalisation.put(
+            "welsh_pdf_link_to_file",
+            hasAdditionalPdf && welshPdfWithinSize
+                ? prepareUpload(artefactWelshPdfBytes, false, false, fileRetentionWeeks) : ""
+        );
+
+        return personalisation;
     }
 
     /**

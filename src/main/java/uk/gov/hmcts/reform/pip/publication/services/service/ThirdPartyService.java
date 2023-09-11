@@ -107,14 +107,14 @@ public class ThirdPartyService {
     /**
      * Third party call for sending PDF for JSON publications.
      * @param api The API to send the publication to.
-     * @param payload The payload to send.
+     * @param pdf The PDF to send.
      * @param artefact The artefact to publish.
      * @param location The location to publish.
      * @return A message representing the response.
      */
-    public String handlePdfThirdPartyCall(String api, byte[] payload, Artefact artefact, Location location) {
+    public String handlePdfThirdPartyCall(String api, byte[] pdf, Artefact artefact, Location location) {
         MultiValueMap<String, HttpEntity<?>> multiPartValues = MultiPartHelper.createMultiPartByteArrayBody(
-            Collections.singletonList(Triple.of("file", payload,
+            Collections.singletonList(Triple.of("file", pdf,
                                                 artefact.getArtefactId() + PDF.getExtension()))
         );
 

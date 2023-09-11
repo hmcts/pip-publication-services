@@ -24,6 +24,7 @@ public class ChannelManagementService {
     private static final String SERVICE = "Channel Management";
     private static final String SYSTEM_HEADER = "x-system";
     private static final String FILE_TYPE_HEADER = "x-file-type";
+    private static final String ADDITIONAL_PDF_HEADER = "x-additional-pdf";
     private static final String TRUE = "true";
     private static final int MAX_FILE_SIZE = 2_000_000;
 
@@ -54,14 +55,16 @@ public class ChannelManagementService {
      * Get the stored file (PDF/Excel) for an artefact by the artefact Id.
      * @param artefactId The artefact Id of the stored file to get.
      * @param fileType The type of file (PDF/Excel).
+     * @param additionalPdf true if getting the additional PDF.
      * @return The byte array of teh stored file.
      */
-    public String getArtefactFile(UUID artefactId, FileType fileType) {
+    public String getArtefactFile(UUID artefactId, FileType fileType, boolean additionalPdf) {
         try {
             return webClient.get()
                 .uri(String.format("%s/publication/v2/%s?maxFileSize=%s", url, artefactId, MAX_FILE_SIZE))
                 .header(SYSTEM_HEADER, TRUE)
                 .header(FILE_TYPE_HEADER, fileType.toString())
+                .header(ADDITIONAL_PDF_HEADER, String.valueOf(additionalPdf))
                 .attributes(clientRegistrationId("channelManagementApi"))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
