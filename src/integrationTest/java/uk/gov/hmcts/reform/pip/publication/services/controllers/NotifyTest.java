@@ -7,6 +7,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okhttp3.tls.HandshakeCertificates;
 import org.apache.http.entity.ContentType;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.junit.jupiter.api.AfterEach;
@@ -437,7 +438,7 @@ class NotifyTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         multipartStream.readHeaders();
         multipartStream.readBodyData(output);
-        try (PDDocument document = PDDocument.load(output.toByteArray())) {
+        try (PDDocument document = Loader.loadPDF(output.toByteArray())) {
             assertThat(document.getNumberOfPages()).as("Incorrect number of pages").isEqualTo(1);
         }
     }
