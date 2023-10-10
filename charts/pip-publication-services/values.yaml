@@ -1,5 +1,4 @@
 java:
-  aadIdentityName: pip
   ingressHost: pip-publication-services.{{ .Values.global.environment }}.platform.hmcts.net
   applicationPort: 8081
   image: 'sdshmctspublic.azurecr.io/pip/publication-services:latest'
