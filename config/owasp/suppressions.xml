@@ -17,4 +17,8 @@
     <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.14.3</packageUrl>
     <cve>CVE-2023-35116</cve>
   </suppress>
+  <suppress>
+    <notes>Suppression for netty. Pulled in by springboot on latest version</notes>
+    <cve>CVE-2023-4586</cve>
+  </suppress>
 </suppressions>
