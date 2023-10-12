@@ -21,4 +21,8 @@
     <notes>Needing to suppress until new version of spring. An issue with Tomcat pulled in by spring in the latest version</notes>
     <cve>CVE-2023-41080</cve>
   </suppress>
+  <suppress>
+    <notes>Suppression for netty. Pulled in by springboot.</notes>
+    <cve>CVE-2023-4586</cve>
+  </suppress>
 </suppressions>
