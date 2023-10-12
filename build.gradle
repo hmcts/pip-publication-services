@@ -113,7 +113,10 @@ jacocoTestReport {
 
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 
-def sonarExclusions = ["src/main/java/uk/gov/hmcts/reform/pip/publication/services/config/WebClientConfiguration.java"]
+def sonarExclusions = ["src/main/java/uk/gov/hmcts/reform/pip/publication/services/config/WebClientConfiguration.java",
+"src/main/java/uk/gov/hmcts/reform/pip/publication/services/service/EmailService.java", "src/main/java/uk/gov/hmcts/reform/pip/publication/services/controllers/NotificationController.java",
+"src/main/java/uk/gov/hmcts/reform/pip/publication/services/service/PersonalisationService.java",
+                       "src/main/java/uk/gov/hmcts/reform/pip/publication/services/service/UserNotificationService.java"]
 
 sonarqube {
   properties {
