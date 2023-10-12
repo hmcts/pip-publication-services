@@ -123,6 +123,10 @@ public class EmailService {
                              personalisationService.buildMiDataReportingPersonalisation());
     }
 
+    protected EmailToSend buildOtpEmail(String email, String otp, String template) {
+        return generateEmail(email, template, personalisationService.buildOtpEmailPersonalisation(otp));
+    }
+
     public SendEmailResponse sendEmail(EmailToSend emailToSend) {
         try {
             SendEmailResponse response = emailClient.sendEmail(emailToSend.getTemplate(), emailToSend.getEmailAddress(),

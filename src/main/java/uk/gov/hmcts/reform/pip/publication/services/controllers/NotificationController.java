@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.model.authentication.roles.IsAdmin;
@@ -247,6 +248,15 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "Location subscription email successfully sent with reference id: %s",
             notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion)
+        ));
+    }
+
+    @PostMapping("/otp")
+    public ResponseEntity<String> sendOtpEmail(@RequestHeader("email") String email,
+                                               @RequestHeader("otp") String otp) {
+        return ResponseEntity.ok(String.format(
+            "OTP email successfully sent with referenceId %s",
+            userNotificationService.handleOtpEmailRequest(email, otp)
         ));
     }
 }
