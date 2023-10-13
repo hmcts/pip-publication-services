@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.model.authentication.roles.IsAdmin;
@@ -24,6 +23,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpRequest;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
@@ -252,11 +252,10 @@ public class NotificationController {
     }
 
     @PostMapping("/otp")
-    public ResponseEntity<String> sendOtpEmail(@RequestHeader("email") String email,
-                                               @RequestHeader("otp") String otp) {
+    public ResponseEntity<String> sendOtpEmail(@RequestBody OtpRequest body) {
         return ResponseEntity.ok(String.format(
             "OTP email successfully sent with referenceId %s",
-            userNotificationService.handleOtpEmailRequest(email, otp)
+            userNotificationService.handleOtpEmailRequest(body)
         ));
     }
 }
