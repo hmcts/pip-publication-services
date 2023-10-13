@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
+import uk.gov.hmcts.reform.pip.publication.services.service.RateLimitingService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
@@ -47,6 +48,9 @@ public class NotificationController {
 
     @Autowired
     private UserNotificationService userNotificationService;
+
+    @Autowired
+    private RateLimitingService rateLimitingService;
 
     private static final String BAD_PAYLOAD_EXCEPTION_MESSAGE = "BadPayloadException error message";
 
@@ -75,6 +79,7 @@ public class NotificationController {
             + "send existing user emails ")
     @PostMapping("/welcome-email")
     public ResponseEntity<String> sendWelcomeEmail(@RequestBody WelcomeEmail body) {
+        rateLimitingService.validate(body.getEmail());
         return ResponseEntity.ok(String.format(
             "Welcome email successfully sent with referenceId %s",
             userNotificationService.handleWelcomeEmailRequest(body)
@@ -89,6 +94,7 @@ public class NotificationController {
     @Operation(summary = "Send welcome email to new Azure Active Directory (AAD) user.")
     @PostMapping("/created/admin")
     public ResponseEntity<String> sendAdminAccountWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
+        rateLimitingService.validate(body.getEmail());
         return ResponseEntity.ok(String.format(
             "Created admin welcome email successfully sent with referenceId %s",
             userNotificationService.azureNewUserEmailRequest(body)
@@ -145,6 +151,7 @@ public class NotificationController {
     @Operation(summary = "Send duplicate email to new media account user.")
     @PostMapping("/duplicate/media")
     public ResponseEntity<String> sendDuplicateMediaAccountEmail(@RequestBody DuplicatedMediaEmail body) {
+        rateLimitingService.validate(body.getEmail());
         return ResponseEntity.ok(String.format(
             "Duplicate media account email successfully sent with referenceId %s",
             userNotificationService.mediaDuplicateUserEmailRequest(body)

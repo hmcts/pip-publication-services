@@ -64,6 +64,8 @@ notify:
     admin-dashboard-link: ${ADMIN_DASHBOARD_LINK:https://pip-frontend.staging.platform.hmcts.net/admin-dashboard}
     cft-sign-in-page-link: ${NOTIFY_CFT_SIGN_IN_LINK:https://pip-frontend.staging.platform.hmcts.net/cft-login}
   pi-team-email: ${PI_TEAM_EMAIL:teamEmail@email.com}
+  email:
+    limit: 5
 
 error-handling:
   num-of-retries: 3
