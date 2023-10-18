@@ -18,7 +18,18 @@
     <cve>CVE-2023-35116</cve>
   </suppress>
   <suppress>
-    <notes>Needing to suppress until new version of spring. An issue with Tomcat pulled in by spring in the latest version</notes>
-    <cve>CVE-2023-41080</cve>
+    <notes>Suppression for netty. Pulled in by springboot on latest version</notes>
+    <cve>CVE-2023-4586</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[file name: azure-identity-1.10.0.jar]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.azure/azure\-identity@.*$</packageUrl>
+    <cve>CVE-2023-36414</cve>
+    <cve>CVE-2023-36415</cve>
+  </suppress>
+  <suppress>
+    <notes>Tomcat vuln, exists on latest version of spring 3.0.x</notes>
+    <cve>CVE-2023-42795</cve>
+    <cve>CVE-2023-45648</cve>
   </suppress>
 </suppressions>
