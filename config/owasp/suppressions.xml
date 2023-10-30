@@ -8,9 +8,10 @@
     <cve>CVE-2021-42306</cve>
   </suppress>
   <suppress>
-    <notes>Already on latest version of parent dependency</notes>
+    <notes>Pulled in by GOV.UK Notify Java Client. Already on latest version of parent dependency</notes>
     <packageUrl>pkg:maven/org.json/json@20230227</packageUrl>
     <cve>CVE-2022-45688</cve>
+    <cve>CVE-2023-5072</cve>
   </suppress>
   <suppress>
     <notes>The vulnerability exists in the latest version of lib too. Need to wait for new version with the fix</notes>
