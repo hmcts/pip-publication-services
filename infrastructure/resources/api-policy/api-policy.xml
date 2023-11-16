@@ -1,0 +1,86 @@
+<policies>
+  <inbound>
+    <base />
+    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+      <openid-config url="https://login.microsoftonline.com/{TENANT_ID}/v2.0/.well-known/openid-configuration" />
+      <required-claims>
+        <claim name="roles" match="any">
+          <value>apim.request.admin</value>
+          <value>api.publisher.user</value>
+          <value>api.publisher.admin</value>
+        </claim>
+      </required-claims>
+    </validate-jwt>
+    <cors>
+      <allowed-origins>
+        <origin>*</origin>
+      </allowed-origins>
+      <allowed-methods>
+        <method>GET</method>
+        <method>POST</method>
+      </allowed-methods>
+    </cors>
+
+    <cache-lookup-value key="pipAuth" variable-name="pipAuthToken" />
+    <choose>
+      <when condition="@(context.Variables.GetValueOrDefault("pipAuthToken","") == "")">
+      <send-request ignore-error="true" timeout="20" response-variable-name="bearerToken" mode="new">
+        <set-url>https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token</set-url>
+        <set-method>POST</set-method>
+        <set-header name="Content-Type" exists-action="override">
+          <value>application/x-www-form-urlencoded</value>
+        </set-header>
+        <set-body>@{
+          return "client_id={CLIENT_ID}&scope={CLIENT_SCOPE}/.default&client_secret={CLIENT_PWD}&grant_type=client_credentials";
+          }</set-body>
+      </send-request>
+      <set-variable name="pipAuthToken" value="@("Bearer " + (String)((IResponse)context.Variables["bearerToken"]).Body.As<JObject>()["access_token"])" />
+      <cache-store-value key="pipAuth" value="@((String)context.Variables["pipAuthToken"])" duration="2700" />
+    </when>
+  </choose>
+  <set-header name="Authorization" exists-action="override">
+    <value>@((String)context.Variables["pipAuthToken"])</value>
+  </set-header>
+</inbound>
+<backend>
+<base />
+</backend>
+<outbound>
+<base />
+<choose>
+  <when condition="@(context.Response.StatusCode == 401)">
+    <cache-remove-value key="pipAuth" />
+    <return-response>
+      <set-status code="502" />
+      <set-header name="Content-Type">
+        <value>application/json</value>
+      </set-header>
+      <set-body>@{
+        return new JObject(
+        new JProperty("message", "Successfully authenticated by SDS PIP APIM, however target system failed to authenticate. Please try again.")
+        ).ToString();
+        }
+      </set-body>
+    </return-response>
+  </when>
+  <when condition="@(context.Response.StatusCode == 403)">
+    <cache-remove-value key="pipAuth" />
+    <return-response>
+      <set-status code="502" />
+      <set-header name="Content-Type">
+        <value>application/json</value>
+      </set-header>
+      <set-body>@{
+        return new JObject(
+        new JProperty("message", "Successfully authorized by SDS PIP APIM, however target system failed to authorize. Please try again.")
+        ).ToString();
+        }
+      </set-body>
+    </return-response>
+  </when>
+</choose>
+</outbound>
+<on-error>
+<base />
+</on-error>
+  </policies>
