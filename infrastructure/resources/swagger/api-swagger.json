@@ -98,9 +98,6 @@
       "OtpEmail": {
         "type": "object",
         "properties": {
-          "bearer": {
-            "type": "string"
-          },
           "otp": {
             "type": "string"
           },
