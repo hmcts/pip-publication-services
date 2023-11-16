@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
@@ -118,5 +119,15 @@ public class UserNotificationService {
         }
 
         return emailService.sendEmail(email).getReference().orElse(null);
+    }
+
+    public String handleOtpEmailRequest(OtpEmail body) {
+        log.info(writeLog(String.format("OTP email being processed for user %s",
+                                        EmailHelper.maskEmail(body.getEmail()))));
+
+        EmailToSend email = emailService.buildOtpEmail(body.getEmail(), body.getOtp(), Templates.OTP_EMAIL.template);
+        return emailService.sendEmail(email)
+            .getReference()
+            .orElse(null);
     }
 }

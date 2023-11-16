@@ -32,7 +32,6 @@ import uk.gov.service.notify.SendEmailResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -45,14 +44,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings({"PMD"})
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @ActiveProfiles("test")
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
 class EmailServiceTest {
 
     private static final String EMAIL = "test@email.com";
     private static final String FULL_NAME = "fullName";
     private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
+    private static final String OTP_VALUE = "123456";
 
     @Autowired
     private EmailService emailService;
@@ -297,17 +297,17 @@ class EmailServiceTest {
 
     @Test
     void testBuildMediaApplicationRejectionEmail() throws IOException {
-        Map<String, List<String>> reasons = new HashMap<>();
-
-        reasons.put("notMedia", List.of(
-            "The applicant is not an accredited member of the media.",
-            "You can sign in with an existing MyHMCTS account. Or you can register your organisation at "
-                + "https://www.gov.uk/guidance/myhmcts-online-case-management-for-legal-professionals"));
-
-        reasons.put("noMatch", List.of(
-            "Details provided do not match.",
-            "The name, email address and Press ID do not match each other."));
-
+        Map<String, List<String>> reasons = Map.of(
+            "notMedia", List.of(
+                "The applicant is not an accredited member of the media.",
+                "You can sign in with an existing MyHMCTS account. Or you can register your organisation at "
+                    + "https://www.gov.uk/guidance/myhmcts-online-case-management-for-legal-professionals"
+            ),
+            "noMatch", List.of(
+                "Details provided do not match.",
+                "The name, email address and Press ID do not match each other."
+            )
+        );
 
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "Test Name",
@@ -422,5 +422,24 @@ class EmailServiceTest {
         assertEquals(Templates.DELETE_LOCATION_SUBSCRIPTION.template, systemAdminEmail.get(0).getTemplate(),
                      TEMPLATE_MESSAGE
         );
+    }
+
+    @Test
+    void buildOtpEmailReturnsSuccess() {
+        Map<String, Object> personalisation = Map.of("otp", OTP_VALUE);
+        when(personalisationService.buildOtpEmailPersonalisation(OTP_VALUE)).thenReturn(personalisation);
+
+        assertThat(emailService.buildOtpEmail(EMAIL, OTP_VALUE, Templates.OTP_EMAIL.template))
+            .as("OTP email values do not match")
+            .extracting(
+                EmailToSend::getEmailAddress,
+                EmailToSend::getPersonalisation,
+                EmailToSend::getTemplate
+            )
+            .containsExactly(
+                EMAIL,
+                personalisation,
+                Templates.OTP_EMAIL.template
+            );
     }
 }

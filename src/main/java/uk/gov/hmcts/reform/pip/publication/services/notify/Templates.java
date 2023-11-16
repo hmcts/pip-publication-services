@@ -41,7 +41,9 @@ public enum Templates {
     INACTIVE_USER_NOTIFICATION_EMAIL_CFT("cca7ea18-4e6f-406f-b4d3-9e017cb53ee9",
                                          "Inactive IDAM account notification email"),
     DELETE_LOCATION_SUBSCRIPTION("929276e1-da85-4f21-9ed4-53492bedff68",
-                                 "Location deletion notification email");
+                                 "Location deletion notification email"),
+    OTP_EMAIL("c51dc591-e956-43b2-8cc2-ac32bbcece3b",
+              "B2C OTP email");
 
     private static final Map<String, Templates> LOOKUP = new ConcurrentHashMap<>();
 

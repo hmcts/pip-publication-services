@@ -146,4 +146,8 @@ public class EmailService {
         return generateEmail(body.getSubscriberEmails(), template,
                              personalisationService.buildDeleteLocationSubscriptionEmailPersonalisation(body));
     }
+
+    protected EmailToSend buildOtpEmail(String email, String otp, String template) {
+        return generateEmail(email, template, personalisationService.buildOtpEmailPersonalisation(otp));
+    }
 }
