@@ -5,7 +5,7 @@ locals {
     "{TENANT_ID}", data.azurerm_client_config.current.tenant_id),
     "{CLIENT_ID}", length(data.azurerm_key_vault_secret.data_client_id) > 0 ? data.azurerm_key_vault_secret.data_client_id[0].value : ""),
     "{CLIENT_PWD}", length(data.azurerm_key_vault_secret.data_client_pwd) > 0 ? data.azurerm_key_vault_secret.data_client_pwd[0].value : ""),
-    "{CLIENT_SCOPE}", length(data.azurerm_key_vault_secret.data_client_scope) > 0 ? data.azurerm_key_vault_secret.data_client_scope[0].value : "")
+    "{SCOPE}", length(data.azurerm_key_vault_secret.data_client_scope) > 0 ? data.azurerm_key_vault_secret.data_client_scope[0].value : "")
 }
 
 module "apim_api" {

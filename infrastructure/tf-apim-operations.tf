@@ -1,11 +1,12 @@
 locals {
-  operation_policies_files = fileset(path.module, "./resources/operation-policy/*.xml")
+  operation_policies_files = fileset(path.module, "./resources/operation-policies/*.xml")
   operation_policies = local.deploy_apim == 0 ? {} : {
     for operation_policies_file in local.operation_policies_files :
     basename(operation_policies_file) => {
       operation_id = replace(basename(operation_policies_file), ".xml", "")
-      xml_content = replace(replace(file("${path.module}/${operation_policies_file}"),
+      xml_content = replace(replace(replace(file("${path.module}/${operation_policies_file}"),
         "{BASE_URL}", local.base_url),
+        "{BASE_PATH}", local.base_path),
         "{TENANT_ID}", data.azurerm_client_config.current.tenant_id)
     }
   }
