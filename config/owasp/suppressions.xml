@@ -26,4 +26,9 @@
     <packageUrl regex="true">^pkg:maven/com\.azure/azure\-identity@.*$</packageUrl>
     <cve>CVE-2023-36415</cve>
   </suppress>
+  <suppress>
+    <notes>This vulnerability exists in various com.azure dependencies pulled in by the latest spring-cloud-azure-starter-active-directory</notes>
+    <packageUrl regex="true">^pkg:maven/com\.azure/azure.*$</packageUrl>
+    <cve>CVE-2023-36052</cve>
+  </suppress>
 </suppressions>
