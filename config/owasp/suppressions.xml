@@ -23,8 +23,9 @@
     <cve>CVE-2023-4586</cve>
   </suppress>
   <suppress>
-    <notes><![CDATA[file name: azure-identity-1.10.0.jar]]></notes>
+    <notes><![CDATA[file name: azure-identity-1.10.4.jar]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.azure/azure\-identity@.*$</packageUrl>
     <cve>CVE-2023-36415</cve>
+    <cve>CVE-2023-36052</cve>
   </suppress>
 </suppressions>
