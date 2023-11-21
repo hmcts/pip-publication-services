@@ -25,7 +25,7 @@
         "tags": [
           "Publication Services notification API"
         ],
-        "summary": "Send email containing B2C one-time password",
+        "summary": "Send email with B2C one-time password",
         "operationId": "sendOtpEmail",
         "requestBody": {
           "content": {

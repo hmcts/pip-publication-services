@@ -1,10 +1,56 @@
 <policies>
   <inbound>
+    <validate-jwt token-value="@( (String) context.Request.Body.As<JObject>(preserveContent: true)["bearer"])" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+      <openid-config url="https://login.microsoftonline.com/{TENANT_ID}/v2.0/.well-known/openid-configuration" />
+      <required-claims>
+        <claim name="roles" match="any">
+          <value>apim.request.admin</value>
+          <value>api.publisher.user</value>
+          <value>api.publisher.admin</value>
+        </claim>
+      </required-claims>
+    </validate-jwt>
+    <cors>
+      <allowed-origins>
+        <origin>*</origin>
+      </allowed-origins>
+      <allowed-methods>
+        <method>GET</method>
+        <method>POST</method>
+      </allowed-methods>
+    </cors>
+    <choose>
+      <when condition="@(context.Request.Body.As<JObject>(preserveContent: true)["otp"] == null)">
+        <return-response>
+          <set-status code="400" />
+          <set-body>@{
+            return new JObject(
+              new JProperty("message", "OTP must be present in the request body.")
+            ).ToString();
+          }</set-body>
+        </return-response>
+      </when>
+      <when condition="@(string.IsNullOrEmpty(context.Request.Body.As<JObject>(preserveContent: true)["otp"].Value<string>()))">
+        <return-response>
+          <set-status code="400" />
+          <set-body>@{
+            return new JObject(
+            new JProperty("message", "OTP value must not be empty.")
+            ).ToString();
+            }</set-body>
+        </return-response>
+      </when>
+    </choose>
     <base />
+    <set-body>@{
+      return new JObject(
+        new JProperty("otp", (String) context.Request.Body.As<JObject>(preserveContent: true)["otp"]),
+        new JProperty("email", (String) context.Request.Body.As<JObject>(preserveContent: true)["email"])
+      ).ToString();
+    }</set-body>
   </inbound>
   <backend>
     <base />
-    <set-backend-service base-url="https://{BASE_URL}/{BASE_PATH}" />
   </backend>
   <outbound>
     <base />
