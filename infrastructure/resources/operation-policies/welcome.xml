@@ -1,6 +1,5 @@
 <policies>
   <inbound>
-    <base />
     <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
       <openid-config url="https://login.microsoftonline.com/{TENANT_ID}/v2.0/.well-known/openid-configuration" />
       <issuers>
@@ -21,10 +20,10 @@
         <method>GET</method>
       </allowed-methods>
     </cors>
+    <base />
   </inbound>
   <backend>
     <base />
-    <set-backend-service base-url="https://{BASE_URL}" />
   </backend>
   <outbound>
     <base />

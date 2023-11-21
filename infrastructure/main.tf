@@ -4,7 +4,6 @@ locals {
   env_subdomain = local.env_long_name == "prod" ? "" : "${local.env_long_name}."
 
   base_url      = "${var.product}-${var.component}.${local.env_subdomain}platform.hmcts.net"
-  base_path     = "notify"
   prefix        = "${var.product}-ss"
 
   apim_name     = "sds-api-mgmt-${local.env}"
