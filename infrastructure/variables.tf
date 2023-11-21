@@ -1,6 +1,10 @@
-variable "product" {}
+variable "product" {
+  default = "pip"
+}
 
-variable "component" {}
+variable "component" {
+  default = "publication-services"
+}
 
 variable "location" {
   default = "UK South"
