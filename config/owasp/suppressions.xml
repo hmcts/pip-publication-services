@@ -6,7 +6,7 @@
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/com.azure.spring/spring-cloud-azure-starter-active-directory@5.7.0</packageUrl>
     <cve>CVE-2021-42306</cve>
-    <cve>CVE-2023-36025</cve>
+    <cve>CVE-2023-36052</cve>
   </suppress>
   <suppress>
     <notes>The vulnerability exists in the latest version of lib too. Need to wait for new version with the fix</notes>
