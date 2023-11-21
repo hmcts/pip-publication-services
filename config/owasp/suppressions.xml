@@ -6,6 +6,7 @@
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/com.azure.spring/spring-cloud-azure-starter-active-directory@5.7.0</packageUrl>
     <cve>CVE-2021-42306</cve>
+    <cve>CVE-2023-36025</cve>
   </suppress>
   <suppress>
     <notes>The vulnerability exists in the latest version of lib too. Need to wait for new version with the fix</notes>
@@ -22,9 +23,8 @@
     <cve>CVE-2023-4586</cve>
   </suppress>
   <suppress>
-    <notes><![CDATA[file name: azure-identity-1.10.4.jar]]></notes>
+    <notes><![CDATA[file name: azure-identity-1.10.0.jar]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.azure/azure\-identity@.*$</packageUrl>
     <cve>CVE-2023-36415</cve>
-    <cve>CVE-2023-36025</cve>
   </suppress>
 </suppressions>
