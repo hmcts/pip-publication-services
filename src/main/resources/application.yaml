@@ -79,3 +79,15 @@ springdoc:
     path: /swagger-ui/
 
 fileRetentionWeeks: 78 weeks
+
+redis:
+  host: ${REDIS_HOST:127.0.0.1}
+  port: ${REDIS_PORT:6379}
+  password: ${REDIS_PASSWORD:}
+
+rate-limit:
+  email:
+    capacity:
+      standard: ${STANDARD_MAX_EMAILS:2}
+      high: ${HIGH_CAPACITY_MAX_EMAILS:5}
+    interval-in-minutes: ${EMAIL_RATE_LIMIT_INTERVAL:1}

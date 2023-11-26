@@ -30,6 +30,7 @@ import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -70,7 +71,7 @@ class UserNotificationServiceTest {
 
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(
         VALID_BODY_NEW.getEmail(),
-        Templates.BAD_BLOB_EMAIL.template,
+        Templates.BAD_BLOB_EMAIL.getTemplate(),
         personalisationMap,
         SUCCESS_REF_ID
     );
@@ -79,7 +80,7 @@ class UserNotificationServiceTest {
 
 
     private final EmailToSend validEmailBodyForDuplicateMediaUserClient =
-        new EmailToSend(VALID_BODY_NEW.getEmail(), Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template,
+        new EmailToSend(VALID_BODY_NEW.getEmail(), Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.getTemplate(),
                         personalisationMap, SUCCESS_REF_ID
         );
 
@@ -111,7 +112,7 @@ class UserNotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessExisting() {
-        when(emailService.buildWelcomeEmail(VALID_BODY_EXISTING, Templates.EXISTING_USER_WELCOME_EMAIL.template))
+        when(emailService.buildWelcomeEmail(VALID_BODY_EXISTING, Templates.EXISTING_USER_WELCOME_EMAIL))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, userNotificationService.handleWelcomeEmailRequest(VALID_BODY_EXISTING),
                      EXISTING_REFERENCE_ID
@@ -120,7 +121,7 @@ class UserNotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessNew() {
-        when(emailService.buildWelcomeEmail(VALID_BODY_NEW, Templates.MEDIA_NEW_ACCOUNT_SETUP.template))
+        when(emailService.buildWelcomeEmail(VALID_BODY_NEW, Templates.MEDIA_NEW_ACCOUNT_SETUP))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, userNotificationService.handleWelcomeEmailRequest(VALID_BODY_NEW),
                      EXISTING_REFERENCE_ID
@@ -131,7 +132,7 @@ class UserNotificationServiceTest {
     void testValidPayloadReturnsSuccessAzure() {
         when(emailService.buildCreatedAdminWelcomeEmail(
             VALID_BODY_AAD,
-            Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template
+            Templates.ADMIN_ACCOUNT_CREATION_EMAIL
         ))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, userNotificationService.azureNewUserEmailRequest(VALID_BODY_AAD),
@@ -147,7 +148,7 @@ class UserNotificationServiceTest {
 
         when(emailService.buildDuplicateMediaSetupEmail(
             createMediaSetupEmail,
-            Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template
+            Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL
         ))
             .thenReturn(validEmailBodyForDuplicateMediaUserClient);
         assertEquals(SUCCESS_REF_ID, userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail),
@@ -159,7 +160,7 @@ class UserNotificationServiceTest {
     void testValidPayloadReturnsSuccessMediaVerification() {
         when(emailService.buildMediaUserVerificationEmail(
             MEDIA_VERIFICATION_EMAIL,
-            Templates.MEDIA_USER_VERIFICATION_EMAIL.template
+            Templates.MEDIA_USER_VERIFICATION_EMAIL
         ))
             .thenReturn(validEmailBodyForEmailClient);
 
@@ -174,7 +175,7 @@ class UserNotificationServiceTest {
     void testValidPayloadReturnsSuccessInactiveUserNotificationForAad() {
         when(emailService.buildInactiveUserNotificationEmail(
             INACTIVE_USER_NOTIFICATION_EMAIL_AAD,
-            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD.template
+            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD
         ))
             .thenReturn(validEmailBodyForEmailClient);
 
@@ -188,7 +189,7 @@ class UserNotificationServiceTest {
     void testValidPayloadReturnsSuccessInactiveUserNotificationForCft() {
         when(emailService.buildInactiveUserNotificationEmail(
             INACTIVE_USER_NOTIFICATION_EMAIL_CFT,
-            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT.template
+            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT
         ))
             .thenReturn(validEmailBodyForEmailClient);
 
@@ -205,7 +206,7 @@ class UserNotificationServiceTest {
             EMAIL,
             testReasons
         );
-        EmailToSend expectedEmail = new EmailToSend(EMAIL, Templates.MEDIA_USER_REJECTION_EMAIL.template,
+        EmailToSend expectedEmail = new EmailToSend(EMAIL, MEDIA_USER_REJECTION_EMAIL.getTemplate(),
                                                     new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"
         );
         String jsonResponse = "{"
@@ -224,7 +225,7 @@ class UserNotificationServiceTest {
             + "}";
         SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
 
-        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(String.class)))
+        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(Templates.class)))
             .thenReturn(expectedEmail);
         when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
 
@@ -240,7 +241,7 @@ class UserNotificationServiceTest {
             EMAIL,
             testReasons
         );
-        EmailToSend expectedEmail = new EmailToSend(EMAIL, Templates.MEDIA_USER_REJECTION_EMAIL.template,
+        EmailToSend expectedEmail = new EmailToSend(EMAIL, MEDIA_USER_REJECTION_EMAIL.getTemplate(),
                                                     new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"
         );
         String jsonResponse =
@@ -259,7 +260,7 @@ class UserNotificationServiceTest {
                 + "}";
         SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
 
-        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(String.class)))
+        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(Templates.class)))
             .thenReturn(expectedEmail);
         when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
 
