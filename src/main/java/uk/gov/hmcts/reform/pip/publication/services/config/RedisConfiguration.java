@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Primary;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;
-import java.util.List;
 
 @Configuration
 public class RedisConfiguration {
