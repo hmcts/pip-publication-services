@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
@@ -13,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
+@DirtiesContext
 @ActiveProfiles("test")
 class RateLimitingServiceTest {
     private static final String TEST_EMAIL = "test1@rateLimit.com";

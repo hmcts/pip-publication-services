@@ -4,8 +4,6 @@ import com.giffing.bucket4j.spring.boot.starter.config.cache.SyncCacheResolver;
 import com.giffing.bucket4j.spring.boot.starter.config.cache.jcache.JCacheCacheResolver;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import io.github.bucket4j.grid.jcache.JCacheProxyManager;
-import org.redisson.Redisson;
-import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.redisson.jcache.configuration.RedissonConfiguration;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,16 +39,14 @@ public class RedisConfiguration {
             + redisPassword + "@" + redisHost + ":" + redisPort;
         Config config = new Config();
         config.useSingleServer().setAddress(connectionString);
-
-        // Remove the existing cache during application start up so any new changes to the rate limit
-        // configuration can be re-applied
-        RedissonClient redisson = Redisson.create(config);
-        redisson.getKeys().delete(CACHE);
         return config;
     }
 
     @Bean
     public CacheManager cacheManager(Config config) {
+//        RedissonClient redisson = Redisson.create(config);
+//        redisson.getKeys().delete(CACHE);
+
         CacheManager manager = Caching.getCachingProvider().getCacheManager();
         manager.createCache(CACHE, RedissonConfiguration.fromConfig(config));
         return manager;
