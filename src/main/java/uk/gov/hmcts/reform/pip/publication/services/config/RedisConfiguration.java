@@ -44,9 +44,6 @@ public class RedisConfiguration {
 
     @Bean
     public CacheManager cacheManager(Config config) {
-//        RedissonClient redisson = Redisson.create(config);
-//        redisson.getKeys().delete(CACHE);
-
         CacheManager manager = Caching.getCachingProvider().getCacheManager();
         manager.createCache(CACHE, RedissonConfiguration.fromConfig(config));
         return manager;
