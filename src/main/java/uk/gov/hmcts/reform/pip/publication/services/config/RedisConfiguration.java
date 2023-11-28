@@ -24,13 +24,13 @@ public class RedisConfiguration {
     @Value("${env-name}")
     private String envName;
 
-    @Value("${redis.host}")
+    @Value("${spring.data.redis.host}")
     private String redisHost;
 
-    @Value("${redis.port}")
+    @Value("${spring.data.redis.port}")
     private String redisPort;
 
-    @Value("${redis.password}")
+    @Value("${spring.data.redis.password}")
     private String redisPassword;
 
     @Bean

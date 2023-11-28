@@ -11,6 +11,11 @@ management:
       exposure:
         include: health, info, prometheus
 spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6381}
+      password: ${REDIS_PASSWORD:}
   cloud:
     azure:
       active-directory:
@@ -80,8 +85,6 @@ springdoc:
 
 fileRetentionWeeks: 78 weeks
 
-
-
 rate-limit:
   email:
     capacity:
@@ -89,7 +92,3 @@ rate-limit:
       high: ${HIGH_CAPACITY_MAX_EMAILS:5}
     interval-in-minutes: ${EMAIL_RATE_LIMIT_INTERVAL:1}
 
-redis:
-  host: ${REDIS_HOST:127.0.0.1}
-  port: ${REDIS_PORT:6379}
-  password: ${REDIS_PASSWORD:}
