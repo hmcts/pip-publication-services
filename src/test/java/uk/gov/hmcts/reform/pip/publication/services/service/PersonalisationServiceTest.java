@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.RedisTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
@@ -63,7 +62,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class, RedisTestConfiguration.class})
+@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @DirtiesContext
 @ActiveProfiles("test")
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})

@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.RedisTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
 
@@ -31,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class, RedisTestConfiguration.class})
+@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @DirtiesContext
 @ActiveProfiles("test")
 @SuppressWarnings("PMD.TooManyMethods")

@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.RedisTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 
 import java.util.Base64;
@@ -33,7 +32,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class, RedisTestConfiguration.class})
+@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @DirtiesContext
 @ActiveProfiles("test")
 class ThirdPartyManagementServiceTest {

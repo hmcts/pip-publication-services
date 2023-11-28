@@ -11,7 +11,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.RedisTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
@@ -36,7 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class, RedisTestConfiguration.class})
+@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @DirtiesContext
 @ActiveProfiles("test")
 class UserNotificationServiceTest {

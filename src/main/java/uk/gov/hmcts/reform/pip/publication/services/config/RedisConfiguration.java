@@ -24,19 +24,19 @@ public class RedisConfiguration {
     @Value("${env-name}")
     private String envName;
 
-    @Value("${redis.host}")
+    @Value("${spring.data.redis.host}")
     private String redisHost;
 
-    @Value("${redis.port}")
+    @Value("${spring.data.redis.port}")
     private String redisPort;
 
-    @Value("${redis.password}")
+    @Value("${spring.data.redis.password}")
     private String redisPassword;
 
     @Bean
     public Config config() {
         String connectionString = (LOCAL.equals(envName) ? LOCAL_REDIS_PROTOCOL_PREFIX : REDIS_PROTOCOL_PREFIX)
-            + redisPassword + "@" + redisHost + ":" + redisPort;
+            + redisPassword + '@' + redisHost + ":" + redisPort;
         Config config = new Config();
         config.useSingleServer().setAddress(connectionString);
         return config;

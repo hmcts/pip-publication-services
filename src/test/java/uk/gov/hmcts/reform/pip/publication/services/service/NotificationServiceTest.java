@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.RedisTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
@@ -40,7 +39,7 @@ import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class, RedisTestConfiguration.class})
+@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @DirtiesContext
 @ActiveProfiles("test")
 @SuppressWarnings({"PMD"})
