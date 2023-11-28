@@ -113,7 +113,7 @@ class EmailServiceTest {
     void adminAccountCreationEmailReturnsSuccess() {
         CreatedAdminWelcomeEmail createdAdminWelcomeEmail = new CreatedAdminWelcomeEmail(EMAIL, "b", "c");
 
-        doNothing().when(rateLimitingService).validate(EMAIL, ADMIN_ACCOUNT_CREATION_EMAIL.getEmailLimit());
+        doNothing().when(rateLimitingService).validate(EMAIL, ADMIN_ACCOUNT_CREATION_EMAIL);
         when(personalisationService.buildAdminAccountPersonalisation(createdAdminWelcomeEmail))
             .thenReturn(personalisation);
 
@@ -133,7 +133,7 @@ class EmailServiceTest {
         CreatedAdminWelcomeEmail createdAdminWelcomeEmail = new CreatedAdminWelcomeEmail(EMAIL, "b", "c");
 
         doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService)
-            .validate(EMAIL, ADMIN_ACCOUNT_CREATION_EMAIL.getEmailLimit());
+            .validate(EMAIL, ADMIN_ACCOUNT_CREATION_EMAIL);
 
         assertThatThrownBy(() -> emailService
             .buildCreatedAdminWelcomeEmail(createdAdminWelcomeEmail, ADMIN_ACCOUNT_CREATION_EMAIL))
@@ -148,7 +148,7 @@ class EmailServiceTest {
     void existingUserWelcomeValidEmailReturnsSuccess() {
         WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true, FULL_NAME);
 
-        doNothing().when(rateLimitingService).validate(EMAIL, EXISTING_USER_WELCOME_EMAIL.getEmailLimit());
+        doNothing().when(rateLimitingService).validate(EMAIL, EXISTING_USER_WELCOME_EMAIL);
         when(personalisationService.buildWelcomePersonalisation(createdWelcomeEmail))
             .thenReturn(personalisation);
 
@@ -168,7 +168,7 @@ class EmailServiceTest {
         WelcomeEmail createdWelcomeEmail = new WelcomeEmail(EMAIL, true, FULL_NAME);
 
         doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService)
-            .validate(EMAIL, EXISTING_USER_WELCOME_EMAIL.getEmailLimit());
+            .validate(EMAIL, EXISTING_USER_WELCOME_EMAIL);
 
         assertThatThrownBy(() -> emailService
             .buildWelcomeEmail(createdWelcomeEmail, EXISTING_USER_WELCOME_EMAIL))
@@ -196,7 +196,7 @@ class EmailServiceTest {
         artefact.setIsFlatFile(true);
 
         doNothing().when(rateLimitingService)
-            .validate(EMAIL, MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getEmailLimit());
+            .validate(EMAIL, MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL);
         when(personalisationService.buildFlatFileSubscriptionPersonalisation(subscriptionEmail, artefact))
             .thenReturn(personalisation);
 
@@ -218,7 +218,7 @@ class EmailServiceTest {
         subscriptionEmail.setEmail(EMAIL);
 
         doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService)
-            .validate(EMAIL, MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getEmailLimit());
+            .validate(EMAIL, MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL);
 
         assertThatThrownBy(() -> emailService
             .buildFlatFileSubscriptionEmail(subscriptionEmail, artefact, MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL))
@@ -246,7 +246,7 @@ class EmailServiceTest {
         artefact.setIsFlatFile(false);
 
         doNothing().when(rateLimitingService)
-            .validate(EMAIL, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getEmailLimit());
+            .validate(EMAIL, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL);
         when(personalisationService.buildRawDataSubscriptionPersonalisation(subscriptionEmail, artefact))
             .thenReturn(personalisation);
 
@@ -268,7 +268,7 @@ class EmailServiceTest {
         subscriptionEmail.setEmail(EMAIL);
 
         doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService)
-            .validate(EMAIL, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getEmailLimit());
+            .validate(EMAIL, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL);
 
         assertThatThrownBy(() -> emailService
             .buildRawDataSubscriptionEmail(subscriptionEmail, artefact, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL))
@@ -323,7 +323,7 @@ class EmailServiceTest {
         duplicateMediaSetupEmail.setFullName("testname");
         duplicateMediaSetupEmail.setEmail(EMAIL);
 
-        doNothing().when(rateLimitingService).validate(EMAIL, MEDIA_DUPLICATE_ACCOUNT_EMAIL.getEmailLimit());
+        doNothing().when(rateLimitingService).validate(EMAIL, MEDIA_DUPLICATE_ACCOUNT_EMAIL);
         when(personalisationService.buildDuplicateMediaAccountPersonalisation(duplicateMediaSetupEmail))
             .thenReturn(personalisation);
 
@@ -342,7 +342,7 @@ class EmailServiceTest {
         duplicateMediaSetupEmail.setEmail(EMAIL);
 
         doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService)
-            .validate(EMAIL, MEDIA_DUPLICATE_ACCOUNT_EMAIL.getEmailLimit());
+            .validate(EMAIL, MEDIA_DUPLICATE_ACCOUNT_EMAIL);
 
         assertThatThrownBy(() -> emailService
             .buildDuplicateMediaSetupEmail(duplicateMediaSetupEmail, MEDIA_DUPLICATE_ACCOUNT_EMAIL))
@@ -356,7 +356,7 @@ class EmailServiceTest {
     @Test
     void testMediaApplicationReportingEmailReturnsSuccess() {
         doNothing().when(rateLimitingService)
-            .validate(EMAIL, MEDIA_APPLICATION_REPORTING_EMAIL.getEmailLimit());
+            .validate(EMAIL, MEDIA_APPLICATION_REPORTING_EMAIL);
         when(personalisationService.buildMediaApplicationsReportingPersonalisation(TEST_BYTE))
             .thenReturn(personalisation);
 
@@ -375,7 +375,7 @@ class EmailServiceTest {
     @Test
     void testMediaApplicationReportingEmailAboveRateLimit() {
         doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService)
-            .validate(EMAIL, MEDIA_APPLICATION_REPORTING_EMAIL.getEmailLimit());
+            .validate(EMAIL, MEDIA_APPLICATION_REPORTING_EMAIL);
 
         assertThatThrownBy(() -> emailService
             .buildMediaApplicationReportingEmail(TEST_BYTE, MEDIA_APPLICATION_REPORTING_EMAIL))
@@ -388,7 +388,7 @@ class EmailServiceTest {
 
     @Test
     void testUnidentifiedBlobEmailReturnsSuccess() {
-        doNothing().when(rateLimitingService).validate(EMAIL, BAD_BLOB_EMAIL.getEmailLimit());
+        doNothing().when(rateLimitingService).validate(EMAIL, BAD_BLOB_EMAIL);
         when(personalisationService.buildUnidentifiedBlobsPersonalisation(NO_MATCH_ARTEFACT_LIST))
             .thenReturn(personalisation);
 
@@ -403,7 +403,7 @@ class EmailServiceTest {
     @Test
     void testUnidentifiedBlobEmailAboveRateLimit() {
         doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService)
-            .validate(EMAIL, BAD_BLOB_EMAIL.getEmailLimit());
+            .validate(EMAIL, BAD_BLOB_EMAIL);
 
         assertThatThrownBy(() -> emailService
             .buildUnidentifiedBlobsEmail(NO_MATCH_ARTEFACT_LIST, BAD_BLOB_EMAIL))
@@ -418,7 +418,7 @@ class EmailServiceTest {
     void testMediaVerificationEmailReturnsSuccess() {
         MediaVerificationEmail mediaVerificationEmailData = new MediaVerificationEmail(FULL_NAME, EMAIL);
 
-        doNothing().when(rateLimitingService).validate(EMAIL, MEDIA_USER_VERIFICATION_EMAIL.getEmailLimit());
+        doNothing().when(rateLimitingService).validate(EMAIL, MEDIA_USER_VERIFICATION_EMAIL);
         when(personalisationService.buildMediaVerificationPersonalisation(mediaVerificationEmailData))
             .thenReturn(personalisation);
 
@@ -440,7 +440,7 @@ class EmailServiceTest {
     void testMediaVerificationEmailAboveRateLimit() {
         MediaVerificationEmail mediaVerificationEmailData = new MediaVerificationEmail(FULL_NAME, EMAIL);
         doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService)
-            .validate(EMAIL, MEDIA_USER_VERIFICATION_EMAIL.getEmailLimit());
+            .validate(EMAIL, MEDIA_USER_VERIFICATION_EMAIL);
 
         assertThatThrownBy(() -> emailService
             .buildMediaUserVerificationEmail(mediaVerificationEmailData, MEDIA_USER_VERIFICATION_EMAIL))
@@ -476,7 +476,7 @@ class EmailServiceTest {
 
         when(personalisationService.buildMediaRejectionPersonalisation(mediaRejectionEmail))
             .thenReturn(testPersonalisation);
-        doNothing().when(rateLimitingService).validate(EMAIL, MEDIA_USER_REJECTION_EMAIL.getEmailLimit());
+        doNothing().when(rateLimitingService).validate(EMAIL, MEDIA_USER_REJECTION_EMAIL);
 
         EmailToSend emailToSend = emailService.buildMediaApplicationRejectionEmail(
             mediaRejectionEmail, MEDIA_USER_REJECTION_EMAIL
@@ -498,7 +498,7 @@ class EmailServiceTest {
     void testBuildMediaApplicationRejectionEmailAboveRateLimit() {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(FULL_NAME, EMAIL, Collections.emptyMap());
         doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService)
-            .validate(EMAIL, MEDIA_USER_REJECTION_EMAIL.getEmailLimit());
+            .validate(EMAIL, MEDIA_USER_REJECTION_EMAIL);
 
         assertThatThrownBy(() -> emailService
             .buildMediaApplicationRejectionEmail(mediaRejectionEmail, MEDIA_USER_REJECTION_EMAIL))
@@ -516,7 +516,7 @@ class EmailServiceTest {
         );
 
         doNothing().when(rateLimitingService)
-            .validate(EMAIL, INACTIVE_USER_NOTIFICATION_EMAIL_AAD.getEmailLimit());
+            .validate(EMAIL, INACTIVE_USER_NOTIFICATION_EMAIL_AAD);
         when(personalisationService.buildInactiveUserNotificationPersonalisation(inactiveUserNotificationEmail))
             .thenReturn(personalisation);
 
@@ -542,7 +542,7 @@ class EmailServiceTest {
             EMAIL, FULL_NAME, "PI_AAD", LAST_SIGNED_IN_DATE
         );
         doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService)
-            .validate(EMAIL, INACTIVE_USER_NOTIFICATION_EMAIL_AAD.getEmailLimit());
+            .validate(EMAIL, INACTIVE_USER_NOTIFICATION_EMAIL_AAD);
 
         assertThatThrownBy(() -> emailService
             .buildInactiveUserNotificationEmail(inactiveUserNotificationEmail,
@@ -556,7 +556,7 @@ class EmailServiceTest {
 
     @Test
     void testMiDataReportingEmailReturnsSuccess() {
-        doNothing().when(rateLimitingService).validate(EMAIL, MI_DATA_REPORTING_EMAIL.getEmailLimit());
+        doNothing().when(rateLimitingService).validate(EMAIL, MI_DATA_REPORTING_EMAIL);
         when(personalisationService.buildMiDataReportingPersonalisation())
             .thenReturn(personalisation);
 
@@ -579,7 +579,7 @@ class EmailServiceTest {
     @Test
     void testMiDataReportingEmailAboveRateLimit() {
         doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService)
-            .validate(EMAIL, MI_DATA_REPORTING_EMAIL.getEmailLimit());
+            .validate(EMAIL, MI_DATA_REPORTING_EMAIL);
 
         assertThatThrownBy(() -> emailService
             .buildMiDataReportingEmail(MI_DATA_REPORTING_EMAIL))
@@ -598,7 +598,7 @@ class EmailServiceTest {
         systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
-        when(rateLimitingService.isValid(EMAIL, SYSTEM_ADMIN_UPDATE_EMAIL.getEmailLimit()))
+        when(rateLimitingService.isValid(EMAIL, SYSTEM_ADMIN_UPDATE_EMAIL))
             .thenReturn(true);
         when(personalisationService.buildSystemAdminUpdateEmailPersonalisation(systemAdminAction))
             .thenReturn(personalisation);
@@ -622,9 +622,9 @@ class EmailServiceTest {
         systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
-        when(rateLimitingService.isValid(EMAIL, SYSTEM_ADMIN_UPDATE_EMAIL.getEmailLimit()))
+        when(rateLimitingService.isValid(EMAIL, SYSTEM_ADMIN_UPDATE_EMAIL))
             .thenReturn(true);
-        when(rateLimitingService.isValid(EMAIL2, SYSTEM_ADMIN_UPDATE_EMAIL.getEmailLimit()))
+        when(rateLimitingService.isValid(EMAIL2, SYSTEM_ADMIN_UPDATE_EMAIL))
             .thenReturn(false);
         when(personalisationService.buildSystemAdminUpdateEmailPersonalisation(systemAdminAction))
             .thenReturn(personalisation);
@@ -646,7 +646,7 @@ class EmailServiceTest {
         locationSubscriptionDeletion.setLocationName("locationName");
         locationSubscriptionDeletion.setSubscriberEmails(List.of(EMAIL));
 
-        when(rateLimitingService.isValid(EMAIL, DELETE_LOCATION_SUBSCRIPTION.getEmailLimit()))
+        when(rateLimitingService.isValid(EMAIL, DELETE_LOCATION_SUBSCRIPTION))
             .thenReturn(true);
         when(personalisationService.buildDeleteLocationSubscriptionEmailPersonalisation(locationSubscriptionDeletion))
             .thenReturn(personalisation);
@@ -667,9 +667,9 @@ class EmailServiceTest {
         LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion();
         locationSubscriptionDeletion.setSubscriberEmails(List.of(EMAIL, EMAIL2));
 
-        when(rateLimitingService.isValid(EMAIL, SYSTEM_ADMIN_UPDATE_EMAIL.getEmailLimit()))
+        when(rateLimitingService.isValid(EMAIL, DELETE_LOCATION_SUBSCRIPTION))
             .thenReturn(false);
-        when(rateLimitingService.isValid(EMAIL2, SYSTEM_ADMIN_UPDATE_EMAIL.getEmailLimit()))
+        when(rateLimitingService.isValid(EMAIL2, DELETE_LOCATION_SUBSCRIPTION))
             .thenReturn(true);
         when(personalisationService.buildDeleteLocationSubscriptionEmailPersonalisation(locationSubscriptionDeletion))
             .thenReturn(personalisation);

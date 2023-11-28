@@ -8,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.TooManyEmailsException;
-import uk.gov.hmcts.reform.pip.publication.services.models.EmailLimit;
+import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -22,8 +22,10 @@ class RateLimitingServiceTest {
     private static final String TEST_EMAIL3 = "test3@rateLimit.com";
     private static final String TEST_EMAIL4 = "test4@rateLimit.com";
 
-    private static final String ERROR_MESSAGE = "Email failed to be sent to t****@rateLimit.com as the rate limit "
-        + "has been exceeded for the user";
+    private static final Templates TEMPLATE_WITH_STANDARD_EMAIL_LIMIT = Templates.EXISTING_USER_WELCOME_EMAIL;
+    private static final Templates TEMPLATE_WITH_HIGH_CAPACITY_EMAIL_LIMIT = Templates.SYSTEM_ADMIN_UPDATE_EMAIL;
+
+    private static final String ERROR_MESSAGE = "Rate limit has been exceeded.";
     private static final String EXCEPTION_MESSAGE = "Exception should be thrown";
     private static final String NO_EXCEPTION_MESSAGE = "Exception should not be thrown";
 
@@ -32,65 +34,65 @@ class RateLimitingServiceTest {
 
     @Test
     void testExceptionIsThrownAfterReachingStandardEmailLimit() {
-        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL, EmailLimit.STANDARD))
+        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL, TEMPLATE_WITH_STANDARD_EMAIL_LIMIT))
             .as(NO_EXCEPTION_MESSAGE)
             .doesNotThrowAnyException();
 
-        assertThatThrownBy(() -> rateLimitingService.validate(TEST_EMAIL, EmailLimit.STANDARD))
+        assertThatThrownBy(() -> rateLimitingService.validate(TEST_EMAIL, TEMPLATE_WITH_STANDARD_EMAIL_LIMIT))
             .as(EXCEPTION_MESSAGE)
             .isInstanceOf(TooManyEmailsException.class)
-            .hasMessage(ERROR_MESSAGE);
+            .hasMessageContaining(ERROR_MESSAGE);
     }
 
     @Test
     void testExceptionIsThrownAfterReachingHighCapacityEmailLimit() {
-        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL, EmailLimit.HIGH))
+        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL, TEMPLATE_WITH_HIGH_CAPACITY_EMAIL_LIMIT))
             .as(NO_EXCEPTION_MESSAGE)
             .doesNotThrowAnyException();
 
-        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL, EmailLimit.HIGH))
+        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL, TEMPLATE_WITH_HIGH_CAPACITY_EMAIL_LIMIT))
             .as(NO_EXCEPTION_MESSAGE)
             .doesNotThrowAnyException();
 
-        assertThatThrownBy(() -> rateLimitingService.validate(TEST_EMAIL, EmailLimit.HIGH))
+        assertThatThrownBy(() -> rateLimitingService.validate(TEST_EMAIL, TEMPLATE_WITH_HIGH_CAPACITY_EMAIL_LIMIT))
             .as(EXCEPTION_MESSAGE)
             .isInstanceOf(TooManyEmailsException.class)
-            .hasMessage(ERROR_MESSAGE);
+            .hasMessageContaining(ERROR_MESSAGE);
     }
 
     @Test
     void testExceptionNotThrownUsingTheSameLimitIfEmailsDifferent() {
-        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL2, EmailLimit.STANDARD))
+        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL2, TEMPLATE_WITH_STANDARD_EMAIL_LIMIT))
             .as(NO_EXCEPTION_MESSAGE)
             .doesNotThrowAnyException();
 
-        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL3, EmailLimit.STANDARD))
+        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL3, TEMPLATE_WITH_STANDARD_EMAIL_LIMIT))
             .as(NO_EXCEPTION_MESSAGE)
             .doesNotThrowAnyException();
     }
 
     @Test
     void testEmailLimitsAppliedIndependentlyUsingTheSameEmail() {
-        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL4, EmailLimit.HIGH))
+        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL4, TEMPLATE_WITH_HIGH_CAPACITY_EMAIL_LIMIT))
             .as(NO_EXCEPTION_MESSAGE)
             .doesNotThrowAnyException();
 
-        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL4, EmailLimit.STANDARD))
+        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL4, TEMPLATE_WITH_STANDARD_EMAIL_LIMIT))
             .as(NO_EXCEPTION_MESSAGE)
             .doesNotThrowAnyException();
 
-        assertThatThrownBy(() -> rateLimitingService.validate(TEST_EMAIL4, EmailLimit.STANDARD))
+        assertThatThrownBy(() -> rateLimitingService.validate(TEST_EMAIL4, TEMPLATE_WITH_STANDARD_EMAIL_LIMIT))
             .as(EXCEPTION_MESSAGE)
             .isInstanceOf(TooManyEmailsException.class)
-            .hasMessage(ERROR_MESSAGE);
+            .hasMessageContaining(ERROR_MESSAGE);
 
-        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL4, EmailLimit.HIGH))
+        assertThatCode(() -> rateLimitingService.validate(TEST_EMAIL4, TEMPLATE_WITH_HIGH_CAPACITY_EMAIL_LIMIT))
             .as(NO_EXCEPTION_MESSAGE)
             .doesNotThrowAnyException();
 
-        assertThatThrownBy(() -> rateLimitingService.validate(TEST_EMAIL4, EmailLimit.HIGH))
+        assertThatThrownBy(() -> rateLimitingService.validate(TEST_EMAIL4, TEMPLATE_WITH_HIGH_CAPACITY_EMAIL_LIMIT))
             .as(EXCEPTION_MESSAGE)
             .isInstanceOf(TooManyEmailsException.class)
-            .hasMessage(ERROR_MESSAGE);
+            .hasMessageContaining(ERROR_MESSAGE);
     }
 }

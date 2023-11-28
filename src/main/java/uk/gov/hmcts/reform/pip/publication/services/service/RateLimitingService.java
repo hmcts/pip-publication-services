@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pip.publication.services.config.RateLimitConfiguratio
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.TooManyEmailsException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailLimit;
+import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
@@ -15,22 +16,21 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 @Slf4j
 public class RateLimitingService {
     private static final String EMAIL_PREFIX_SEPARATOR = "::";
-    private static final String ERROR_MESSAGE = "Email failed to be sent to %s as the rate limit has been exceeded "
-        + "for the user";
+    private static final String ERROR_MESSAGE = "Rate limit has been exceeded. %s failed to be sent to %s";
 
     @Autowired
     private RateLimitConfiguration rateLimitConfiguration;
 
-    public void validate(String email, EmailLimit emailLimit) {
-        if (!isEmailWithinLimit(email, emailLimit)) {
-            throw new TooManyEmailsException(getErrorMessage(email));
+    public void validate(String email, Templates emailTemplate) {
+        if (!isEmailWithinLimit(email, emailTemplate.getEmailLimit())) {
+            throw new TooManyEmailsException(getErrorMessage(email, emailTemplate.getDescription()));
         }
     }
 
-    public boolean isValid(String email, EmailLimit emailLimit) {
-        boolean isValid = isEmailWithinLimit(email, emailLimit);
+    public boolean isValid(String email, Templates emailTemplate) {
+        boolean isValid = isEmailWithinLimit(email, emailTemplate.getEmailLimit());
         if (!isValid) {
-            log.error(writeLog(getErrorMessage(email)));
+            log.error(writeLog(getErrorMessage(email, emailTemplate.getDescription())));
         }
         return isValid;
     }
@@ -41,7 +41,7 @@ public class RateLimitingService {
         return bucket.tryConsume(1);
     }
 
-    private String getErrorMessage(String email) {
-        return String.format(ERROR_MESSAGE, EmailHelper.maskEmail(email));
+    private String getErrorMessage(String email, String emailescription) {
+        return String.format(ERROR_MESSAGE, emailescription, EmailHelper.maskEmail(email));
     }
 }

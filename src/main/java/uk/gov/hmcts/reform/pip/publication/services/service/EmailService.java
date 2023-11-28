@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
-import uk.gov.hmcts.reform.pip.publication.services.models.EmailLimit;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
@@ -48,39 +47,39 @@ public class EmailService {
     private String piTeamEmail;
 
     protected EmailToSend buildWelcomeEmail(WelcomeEmail body, Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate.getEmailLimit());
+        rateLimitingService.validate(body.getEmail(), emailTemplate);
         return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
                              personalisationService.buildWelcomePersonalisation(body));
     }
 
     protected EmailToSend buildCreatedAdminWelcomeEmail(CreatedAdminWelcomeEmail body, Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate.getEmailLimit());
+        rateLimitingService.validate(body.getEmail(), emailTemplate);
         return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
                              personalisationService.buildAdminAccountPersonalisation(body));
     }
 
     protected EmailToSend buildFlatFileSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
                                                          Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate.getEmailLimit());
+        rateLimitingService.validate(body.getEmail(), emailTemplate);
         return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
                              personalisationService.buildFlatFileSubscriptionPersonalisation(body, artefact));
     }
 
     protected EmailToSend buildRawDataSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
                                                         Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate.getEmailLimit());
+        rateLimitingService.validate(body.getEmail(), emailTemplate);
         return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
                              personalisationService.buildRawDataSubscriptionPersonalisation(body, artefact));
     }
 
     protected EmailToSend buildDuplicateMediaSetupEmail(DuplicatedMediaEmail body, Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate.getEmailLimit());
+        rateLimitingService.validate(body.getEmail(), emailTemplate);
         return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
                              personalisationService.buildDuplicateMediaAccountPersonalisation(body));
     }
 
     protected EmailToSend buildMediaApplicationReportingEmail(byte[] csvMediaApplications, Templates emailTemplate) {
-        rateLimitingService.validate(piTeamEmail, emailTemplate.getEmailLimit());
+        rateLimitingService.validate(piTeamEmail, emailTemplate);
         return generateEmail(piTeamEmail, emailTemplate.getTemplate(),
                              personalisationService
                                  .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
@@ -88,53 +87,53 @@ public class EmailService {
 
     protected EmailToSend buildUnidentifiedBlobsEmail(List<NoMatchArtefact> noMatchArtefactList,
                                                       Templates emailTemplate) {
-        rateLimitingService.validate(piTeamEmail, emailTemplate.getEmailLimit());
+        rateLimitingService.validate(piTeamEmail, emailTemplate);
         return generateEmail(piTeamEmail, emailTemplate.getTemplate(),
                              personalisationService.buildUnidentifiedBlobsPersonalisation(noMatchArtefactList));
     }
 
     protected EmailToSend buildMediaUserVerificationEmail(MediaVerificationEmail body,Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate.getEmailLimit());
+        rateLimitingService.validate(body.getEmail(), emailTemplate);
         return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
                              personalisationService.buildMediaVerificationPersonalisation(body));
     }
 
     protected EmailToSend buildMediaApplicationRejectionEmail(MediaRejectionEmail body, Templates emailTemplate)
         throws IOException {
-        rateLimitingService.validate(body.getEmail(), emailTemplate.getEmailLimit());
+        rateLimitingService.validate(body.getEmail(), emailTemplate);
         return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
                              personalisationService.buildMediaRejectionPersonalisation(body));
     }
 
     protected EmailToSend buildInactiveUserNotificationEmail(InactiveUserNotificationEmail body,
                                                              Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate.getEmailLimit());
+        rateLimitingService.validate(body.getEmail(), emailTemplate);
         return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
                              personalisationService.buildInactiveUserNotificationPersonalisation(body));
     }
 
     protected List<EmailToSend> buildSystemAdminUpdateEmail(SystemAdminAction body, Templates emailTemplate) {
-        List<String> emails = applyEmailRateLimit(body.getEmailList(), emailTemplate.getEmailLimit());
+        List<String> emails = applyEmailRateLimit(body.getEmailList(), emailTemplate);
         return generateEmail(emails, emailTemplate.getTemplate(),
                              personalisationService.buildSystemAdminUpdateEmailPersonalisation(body));
     }
 
     protected EmailToSend buildMiDataReportingEmail(Templates emailTemplate) {
-        rateLimitingService.validate(piTeamEmail, emailTemplate.getEmailLimit());
+        rateLimitingService.validate(piTeamEmail, emailTemplate);
         return generateEmail(piTeamEmail, emailTemplate.getTemplate(),
                              personalisationService.buildMiDataReportingPersonalisation());
     }
 
     protected List<EmailToSend> buildDeleteLocationSubscriptionEmail(
         LocationSubscriptionDeletion body, Templates emailTemplate) {
-        List<String> emails = applyEmailRateLimit(body.getSubscriberEmails(), emailTemplate.getEmailLimit());
+        List<String> emails = applyEmailRateLimit(body.getSubscriberEmails(), emailTemplate);
         return generateEmail(emails, emailTemplate.getTemplate(),
                              personalisationService.buildDeleteLocationSubscriptionEmailPersonalisation(body));
     }
 
-    private List<String> applyEmailRateLimit(List<String> emails, EmailLimit emailLimit) {
+    private List<String> applyEmailRateLimit(List<String> emails, Templates emailTemplate) {
         return emails.stream()
-            .filter(e -> rateLimitingService.isValid(e, emailLimit))
+            .filter(e -> rateLimitingService.isValid(e, emailTemplate))
             .toList();
     }
 
