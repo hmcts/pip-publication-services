@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationFunctionalTestBase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -24,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext
 @ActiveProfiles("functional")
-class GetWelcomeTest {
+class GetWelcomeTest extends RedisConfigurationFunctionalTestBase {
 
     @Autowired
     private MockMvc mockMvc;

@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -34,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext
 @ActiveProfiles("test")
 @SuppressWarnings("PMD.TooManyMethods")
-class ThirdPartyServiceTest {
+class ThirdPartyServiceTest extends RedisConfigurationTestBase {
 
     @Autowired
     private ThirdPartyService thirdPartyService;

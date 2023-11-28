@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.TooManyEmailsException;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -16,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @DirtiesContext
 @ActiveProfiles("test")
-class RateLimitingServiceTest {
+class RateLimitingServiceTest extends RedisConfigurationTestBase {
     private static final String TEST_EMAIL = "test1@rateLimit.com";
     private static final String TEST_EMAIL2 = "test2@rateLimit.com";
     private static final String TEST_EMAIL3 = "test3@rateLimit.com";

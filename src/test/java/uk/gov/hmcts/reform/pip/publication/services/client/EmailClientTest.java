@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.pip.publication.services.client;
 
-import com.redis.testcontainers.RedisContainer;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext
 @SuppressWarnings("PMD.ImmutableField")
 @ActiveProfiles("test")
-class EmailClientTest extends SpringBootTestBase {
+class EmailClientTest extends RedisConfigurationTestBase {
 
     @Value("${notify.api.key}")
     private String mockApiKey;

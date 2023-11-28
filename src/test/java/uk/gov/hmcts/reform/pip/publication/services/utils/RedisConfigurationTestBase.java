@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.client;
+package uk.gov.hmcts.reform.pip.publication.services.utils;
 
 import com.redis.testcontainers.RedisContainer;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -8,10 +8,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
-public class SpringBootTestBase {
+@SuppressWarnings("checkstyle:HideUtilityClassConstructorCheck")
+public class RedisConfigurationTestBase {
 
     @Container
-    private static RedisContainer redisContainer = new RedisContainer(DockerImageName.parse("redis:latest")).withExposedPorts(6379);
+    private static RedisContainer redisContainer = new RedisContainer(DockerImageName.parse("redis:latest"))
+        .withExposedPorts(6379);
 
     @DynamicPropertySource
     static void registerRedisProperties(DynamicPropertyRegistry registry) {

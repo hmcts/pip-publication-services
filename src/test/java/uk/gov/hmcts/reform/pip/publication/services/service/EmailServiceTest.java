@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
@@ -67,7 +68,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.SYST
 @DirtiesContext
 @ActiveProfiles("test")
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
-class EmailServiceTest {
+class EmailServiceTest extends RedisConfigurationTestBase {
 
     private static final String EMAIL = "test@email.com";
     private static final String EMAIL2 = "test2@email.com";
