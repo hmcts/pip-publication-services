@@ -29,44 +29,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 class EmailClientTest {
 
-//    static {
-//        try (GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:latest"))
-//            .withExposedPorts(6379)) {
-//            redis.start();
-//            System.setProperty("spring.redis.host", "localhost");
-//            System.setProperty("spring.redis.port", String.valueOf(6379));
-//        }
-//    }
-
-    private static final String PASSWORD = RandomStringUtils.randomAlphabetic(10);
-
     @Container
-    private static RedisContainer redisContainer = new RedisContainer(DockerImageName.parse("redis:5.0.3-alpine")).withExposedPorts(6379);
-        //.withCommand("redis-server --requirepass " + PASSWORD);
-
-//        new RedisContainer(
-//        RedisContainer.DEFAULT_IMAGE_NAME.withTag(RedisContainer.DEFAULT_TAG)).withExposedPorts(6379);
+    private static RedisContainer redisContainer = new RedisContainer(DockerImageName.parse("redis:latest")).withExposedPorts(6379);
 
     @DynamicPropertySource
     static void registerRedisProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.redis.host", redisContainer::getHost);
-        registry.add("spring.data.redis.port", () -> {
-            String port =  redisContainer.getMappedPort(6379).toString();
-            System.out.println("******Port: " + port);
-            return port;
-        });
-        //registry.add("spring.data.redis.password", () -> PASSWORD);
+        registry.add("spring.data.redis.port", () -> redisContainer.getMappedPort(6379).toString());
     }
-
-    @BeforeAll
-    static void beforeAll() {
-        redisContainer.start();
-    }
-
-//    @AfterAll
-//    static void afterAll() {
-//        redisContainer.stop();
-//    }
 
     @Value("${notify.api.key}")
     private String mockApiKey;
