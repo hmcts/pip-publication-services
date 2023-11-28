@@ -25,18 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @DirtiesContext
 @SuppressWarnings("PMD.ImmutableField")
-@Testcontainers
 @ActiveProfiles("test")
-class EmailClientTest {
-
-    @Container
-    private static RedisContainer redisContainer = new RedisContainer(DockerImageName.parse("redis:latest")).withExposedPorts(6379);
-
-    @DynamicPropertySource
-    static void registerRedisProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.redis.host", redisContainer::getHost);
-        registry.add("spring.data.redis.port", () -> redisContainer.getMappedPort(6379).toString());
-    }
+class EmailClientTest extends SpringBootTestBase {
 
     @Value("${notify.api.key}")
     private String mockApiKey;
