@@ -38,8 +38,8 @@ public class RateLimitConfiguration {
         Bucket bucket = buckets.builder()
             .build(key, configSupplier);
 
-        // If the application has been restarted with bucket configuration updated, this does not automatically update
-        // the persisted bandwidth so the configuration needs to be replaced with the new one.
+        // If the bucket configuration has been updated, this does not automatically update the persisted
+        // bandwidth so the configuration needs to be replaced with the new one explicitly.
         refreshBucketConfiguration(key, bucket, configSupplier.get());
         return bucket;
     }
