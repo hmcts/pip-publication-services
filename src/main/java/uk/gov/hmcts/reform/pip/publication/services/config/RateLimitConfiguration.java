@@ -5,6 +5,7 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.Refill;
+import io.github.bucket4j.TokensInheritanceStrategy;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,8 +34,14 @@ public class RateLimitConfiguration {
     public Bucket resolveBucket(String key, EmailLimit emailLimit) {
         Integer emailCapacity = STANDARD.equals(emailLimit) ? standardEmailCapacity : highEmailCapacity;
         Supplier<BucketConfiguration> configSupplier = getBucketConfiguration(emailCapacity);
-        return buckets.builder()
+
+        Bucket bucket = buckets.builder()
             .build(key, configSupplier);
+
+        // If the application has been restarted with bucket configuration updated, this does not automatically update
+        // the persisted bandwidth so the configuration needs to be replaced with the new one.
+        refreshBucketConfiguration(key, bucket, configSupplier.get());
+        return bucket;
     }
 
     private Supplier<BucketConfiguration> getBucketConfiguration(Integer emailCapacity) {
@@ -44,4 +51,18 @@ public class RateLimitConfiguration {
             .addLimit(bandwidth)
             .build();
     }
+
+    private void refreshBucketConfiguration(String key, Bucket bucket, BucketConfiguration currentBucketConfiguration) {
+        buckets.getProxyConfiguration(key).ifPresent(config -> {
+            if (config.getBandwidths().length > 0) {
+                Bandwidth persistedBandwidth = config.getBandwidths()[0];
+                Bandwidth currentBandwidth = currentBucketConfiguration.getBandwidths()[0];
+                if (persistedBandwidth.getCapacity() != currentBandwidth.getCapacity()
+                    || persistedBandwidth.getRefillPeriodNanos() != currentBandwidth.getRefillPeriodNanos()) {
+                    bucket.replaceConfiguration(currentBucketConfiguration, TokensInheritanceStrategy.PROPORTIONALLY);
+                }
+            }
+        });
+    }
+
 }
