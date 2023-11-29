@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.utils;
 
 import com.redis.testcontainers.RedisContainer;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.junit.jupiter.Container;
