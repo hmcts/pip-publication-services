@@ -174,7 +174,7 @@ dependencies {
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.8'
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.4'
   implementation group: 'org.redisson', name: 'redisson', version: '3.24.3'
-  implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.9.1'
+  implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.10.0'
 
   // Force upgrade snakeyaml version for CVE-2022-1471
   implementation( group: 'org.yaml', name: 'snakeyaml').version {
