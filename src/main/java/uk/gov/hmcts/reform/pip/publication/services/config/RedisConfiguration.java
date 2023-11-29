@@ -36,7 +36,8 @@ public class RedisConfiguration {
     @Bean
     public Config config() {
         String connectionString = (LOCAL.equals(envName) ? LOCAL_REDIS_PROTOCOL_PREFIX : REDIS_PROTOCOL_PREFIX)
-            + redisPassword + '@' + redisHost + ":" + redisPort;
+            + (redisPassword.isEmpty() ? "" : ":" + redisPassword + "@")
+            + redisHost + ":" + redisPort;
         Config config = new Config();
         config.useSingleServer().setAddress(connectionString);
         return config;
