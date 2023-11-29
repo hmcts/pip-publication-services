@@ -194,7 +194,6 @@ dependencies {
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.12.0'
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp-tls', version: '4.12.0'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.0'
-  testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.19.3'
   testImplementation group: 'com.redis', name: 'testcontainers-redis', version: '1.7.0'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.19.3'
 }

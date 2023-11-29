@@ -10,14 +10,16 @@ import org.testcontainers.utility.DockerImageName;
 @Testcontainers
 @SuppressWarnings("checkstyle:HideUtilityClassConstructorCheck")
 public class RedisConfigurationTestBase {
+    private static final String REDIS_IMAGE_NAME = "redis:latest";
+    private static final int REDIS_PORT = 6379;
 
     @Container
-    private static RedisContainer redisContainer = new RedisContainer(DockerImageName.parse("redis:latest"))
-        .withExposedPorts(6379);
+    private static RedisContainer redisContainer = new RedisContainer(DockerImageName.parse(REDIS_IMAGE_NAME))
+        .withExposedPorts(REDIS_PORT);
 
     @DynamicPropertySource
     static void registerRedisProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.redis.host", redisContainer::getHost);
-        registry.add("spring.data.redis.port", () -> redisContainer.getMappedPort(6379).toString());
+        registry.add("spring.data.redis.port", () -> redisContainer.getMappedPort(REDIS_PORT).toString());
     }
 }
