@@ -88,9 +88,9 @@ fileRetentionWeeks: 78 weeks
 rate-limit:
   email:
     capacity:
-      standard: ${STANDARD_MAX_EMAILS:2}
-      high: ${HIGH_CAPACITY_MAX_EMAILS:4}
-    interval-in-minutes: ${EMAIL_RATE_LIMIT_INTERVAL:1}
+      standard: ${STANDARD_MAX_EMAILS:10}
+      high: ${HIGH_CAPACITY_MAX_EMAILS:200}
+    interval-in-minutes: ${EMAIL_RATE_LIMIT_INTERVAL:30}
   cache:
-    expiry-in-minute: ${RATE_LIMIT_CACHE_EXPIRY:1}
+    expiry-in-minute: ${RATE_LIMIT_CACHE_EXPIRY:30}
 
