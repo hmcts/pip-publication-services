@@ -42,7 +42,8 @@ public class EmailService {
     private String piTeamEmail;
 
     @Autowired
-    public EmailService(EmailClient emailClient, PersonalisationService personalisationService, RateLimitingService rateLimitingService) {
+    public EmailService(EmailClient emailClient, PersonalisationService personalisationService,
+                        RateLimitingService rateLimitingService) {
         this.emailClient = emailClient;
         this.personalisationService = personalisationService;
         this.rateLimitingService = rateLimitingService;
