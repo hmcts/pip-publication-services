@@ -1,6 +1,6 @@
 rate-limit:
   email:
     capacity:
-      standard: 100
-      high: 200
+      standard: 20
+      high: 50
     interval-in-minutes: 1
