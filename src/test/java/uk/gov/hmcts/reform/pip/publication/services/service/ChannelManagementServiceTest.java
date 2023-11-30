@@ -93,7 +93,7 @@ class ChannelManagementServiceTest extends RedisConfigurationTestBase {
         mockChannelManagementMockEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.EXCEL, false);
-        assertTrue(response.length() == 0, "Response not empty");
+        assertEquals(0, response.length(), "Response not empty");
     }
 
     @Test
@@ -101,7 +101,7 @@ class ChannelManagementServiceTest extends RedisConfigurationTestBase {
         mockChannelManagementMockEndpoint.enqueue(new MockResponse().setResponseCode(413));
 
         String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF, false);
-        assertTrue(response.length() == 0, "Response not empty");
+        assertEquals(0, response.length(), "Response not empty");
     }
 
     @Test

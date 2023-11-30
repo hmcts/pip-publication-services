@@ -19,8 +19,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.models.EmailLimit.STA
 
 @Configuration
 public class RateLimitConfiguration {
-    @Autowired
-    public ProxyManager<String> buckets;
+    private ProxyManager<String> buckets;
 
     @Value("${rate-limit.email.capacity.standard}")
     private Integer standardEmailCapacity;
@@ -30,6 +29,11 @@ public class RateLimitConfiguration {
 
     @Value("${rate-limit.email.interval-in-minutes}")
     private Integer rateLimitInterval;
+
+    @Autowired
+    public RateLimitConfiguration(ProxyManager<String> buckets) {
+        this.buckets = buckets;
+    }
 
     public Bucket resolveBucket(String key, EmailLimit emailLimit) {
         Integer emailCapacity = STANDARD.equals(emailLimit) ? standardEmailCapacity : highEmailCapacity;

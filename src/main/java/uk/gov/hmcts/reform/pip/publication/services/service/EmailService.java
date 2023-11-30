@@ -34,17 +34,19 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 @Slf4j
 @SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods"})
 public class EmailService {
-    @Autowired
-    EmailClient emailClient;
-
-    @Autowired
-    PersonalisationService personalisationService;
-
-    @Autowired
-    private RateLimitingService rateLimitingService;
+    private final EmailClient emailClient;
+    private final PersonalisationService personalisationService;
+    private final RateLimitingService rateLimitingService;
 
     @Value("${notify.pi-team-email}")
     private String piTeamEmail;
+
+    @Autowired
+    public EmailService(EmailClient emailClient, PersonalisationService personalisationService, RateLimitingService rateLimitingService) {
+        this.emailClient = emailClient;
+        this.personalisationService = personalisationService;
+        this.rateLimitingService = rateLimitingService;
+    }
 
     protected EmailToSend buildWelcomeEmail(WelcomeEmail body, Templates emailTemplate) {
         rateLimitingService.validate(body.getEmail(), emailTemplate);

@@ -18,8 +18,12 @@ public class RateLimitingService {
     private static final String EMAIL_PREFIX_SEPARATOR = "::";
     private static final String ERROR_MESSAGE = "Rate limit has been exceeded. %s failed to be sent to %s";
 
+    private final RateLimitConfiguration rateLimitConfiguration;
+
     @Autowired
-    private RateLimitConfiguration rateLimitConfiguration;
+    public RateLimitingService(RateLimitConfiguration rateLimitConfiguration) {
+        this.rateLimitConfiguration = rateLimitConfiguration;
+    }
 
     public void validate(String email, Templates emailTemplate) {
         if (!isEmailWithinLimit(email, emailTemplate.getEmailLimit())) {
