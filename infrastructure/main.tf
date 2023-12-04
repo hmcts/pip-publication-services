@@ -9,5 +9,5 @@ locals {
   apim_name     = "sds-api-mgmt-${local.env}"
   apim_rg       = "ss-${local.env}-network-rg"
 
-  deploy_apim   = local.env == "test" ? 1 : 0
+  deploy_apim   = local.env == "stg" ? 1 : 0
 }
