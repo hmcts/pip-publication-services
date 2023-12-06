@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
@@ -248,18 +247,6 @@ public class NotificationController {
         return ResponseEntity.ok(String.format(
             "Location subscription email successfully sent with reference id: %s",
             notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion)
-        ));
-    }
-
-    @ApiResponse(responseCode = OK_RESPONSE, description = "OTP email successfully sent with referenceId: {Id}")
-    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
-    @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
-    @Operation(summary = "Send email containing B2C one-time password")
-    @PostMapping("/otp")
-    public ResponseEntity<String> sendOtpEmail(@Valid @RequestBody OtpEmail body) {
-        return ResponseEntity.ok(String.format(
-            "OTP email successfully sent with referenceId %s",
-            userNotificationService.handleOtpEmailRequest(body)
         ));
     }
 }

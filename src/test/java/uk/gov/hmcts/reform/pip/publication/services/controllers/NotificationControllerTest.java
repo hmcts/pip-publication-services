@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
@@ -58,7 +57,6 @@ class NotificationControllerTest {
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
-    private static final String OTP = "123456";
     private static final String IMAGE_NAME = "test-image.png";
     private static final String SUCCESS_ID = "SuccessId";
     private static final String MESSAGES_MATCH = "Messages should match";
@@ -77,7 +75,6 @@ class NotificationControllerTest {
     private ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
     private SystemAdminAction systemAdminAction;
     private LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion();
-    private OtpEmail otpEmail = new OtpEmail(OTP, VALID_EMAIL);
 
     @Mock
     private NotificationService notificationService;
@@ -328,13 +325,6 @@ class NotificationControllerTest {
     void testSendDeleteLocationSubscriptionEmailShouldReturnOkResponse() {
         assertEquals(HttpStatus.OK, notificationController
                          .sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion).getStatusCode(),
-                     STATUS_CODES_MATCH
-        );
-    }
-
-    @Test
-    void testSendOtpEmailShouldReturnOkResponse() {
-        assertEquals(HttpStatus.OK, notificationController.sendOtpEmail(otpEmail).getStatusCode(),
                      STATUS_CODES_MATCH
         );
     }
