@@ -4,6 +4,24 @@
     <cache-lookup-value key="pipPubServicesAuth" variable-name="pipAuthToken" />
     <choose>
       <when condition="@(context.Variables.GetValueOrDefault("pipAuthToken", "") == "")">
+        <send-request ignore-error="false" timeout="20" response-variable-name="pipApimClientSecret" mode="new">
+          <set-url>https://pip-ss-kv-test.vault.azure.net/secrets/app-pip-apim-admin-pwd/?api-version=7.0</set-url>
+          <set-method>GET</set-method>
+          <authentication-managed-identity resource="https://vault.azure.net" />
+        </send-request>
+        <set-variable name="clientSecret" value="@{
+          var secret = ((IResponse)context.Variables["pipApimClientSecret"]).Body.As<JObject>();
+          return secret["value"].ToString();
+        }" />
+        <send-request ignore-error="false" timeout="20" response-variable-name="pipPublicationServicesScope" mode="new">
+          <set-url>https://pip-ss-kv-test.vault.azure.net/secrets/app-pip-publication-services-scope/?api-version=7.0</set-url>
+          <set-method>GET</set-method>
+          <authentication-managed-identity resource="https://vault.azure.net" />
+        </send-request>
+        <set-variable name="scope" value="@{
+          var secret = ((IResponse)context.Variables["pipPublicationServicesScope"]).Body.As<JObject>();
+          return secret["value"].ToString();
+        }" />
         <send-request ignore-error="true" timeout="20" response-variable-name="bearerToken" mode="new">
           <set-url>https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token</set-url>
           <set-method>POST</set-method>
@@ -11,7 +29,7 @@
             <value>application/x-www-form-urlencoded</value>
           </set-header>
           <set-body>@{
-            return "client_id={CLIENT_ID}&scope={SCOPE}/.default&client_secret={CLIENT_PWD}&grant_type=client_credentials";
+            return "client_id=" + (string)context.Variables["clientId"] + "&scope=" + (string)context.Variables["scope"] + "/.default&client_secret=" + (string)context.Variables["clientSecret"] + "&grant_type=client_credentials";
           }</set-body>
         </send-request>
         <set-variable name="pipAuthToken" value="@("Bearer " + (String)((IResponse)context.Variables["bearerToken"]).Body.As<JObject>()["access_token"])" />
