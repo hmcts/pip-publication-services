@@ -33,7 +33,7 @@
   </suppress>
   <suppress>
     <notes>Pulled in by the latest spring boot v3.0.13</notes>
-    <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback.*@1.4.11$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback.*$</packageUrl>
     <cve>CVE-2023-36052</cve>
   </suppress>
 </suppressions>
