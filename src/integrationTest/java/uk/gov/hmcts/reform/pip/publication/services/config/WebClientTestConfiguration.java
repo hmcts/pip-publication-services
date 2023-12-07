@@ -22,7 +22,7 @@ import reactor.netty.http.client.HttpClient;
 import javax.net.ssl.SSLException;
 
 @Configuration
-@Profile("functional & functionalratelimit")
+@Profile("functional | cub")
 public class WebClientTestConfiguration {
 
     @Bean

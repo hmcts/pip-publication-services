@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
-@ActiveProfiles("functionalratelimit")
+@ActiveProfiles("cub")
 class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
     private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
