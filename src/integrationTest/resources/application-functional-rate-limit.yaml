@@ -5,4 +5,4 @@ rate-limit:
       high: 2
     interval-in-minutes: 1
   cache:
-    expiry-in-minute: ${RATE_LIMIT_CACHE_EXPIRY:5}
+    expiry-in-minute: ${RATE_LIMIT_CACHE_EXPIRY:2}

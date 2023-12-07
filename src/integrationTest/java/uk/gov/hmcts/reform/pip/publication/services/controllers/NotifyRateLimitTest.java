@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
+import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.tls.HandshakeCertificates;
 import org.junit.jupiter.api.AfterEach;
@@ -33,29 +34,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
 @ActiveProfiles("functional-rate-limit")
 class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
-
-    private static final String VALID_WELCOME_REQUEST_BODY_NEW = """
-        {
-            "email": "testRateLimitStandard@justice.gov.uk",
-            "isExisting": "false",
-            "fullName": "fullName"
-        }
-        """;
-
-    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY = """
-        {
-            "requesterName": "reqName",
-            "actionResult": "ATTEMPTED",
-            "changeType": "DELETE_LOCATION",
-            "emailList": [
-                "test.system.admin@justice.gov.uk"
-            ],
-            "detailString": "test"
-        }
-        """;
-
     private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
+    private static final String RANDOM_EMAIL = "test"
+        + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
+    private static final String RANDOM_EMAIL_SYSTEM_ADMIN = "test.sa"
+        + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
+
+    private static final String VALID_WELCOME_REQUEST_BODY_NEW = "{\"email\": \""
+        + RANDOM_EMAIL + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
+
+    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY = "{\"requesterName\": \"reqName\","
+        + " \"actionResult\": \"ATTEMPTED\",\"changeType\": \"DELETE_LOCATION\", \"emailList\": "
+        + "[\"" + RANDOM_EMAIL_SYSTEM_ADMIN + "\"],\"detailString\": \"test\"}";
+
 
     private MockWebServer externalApiMockServer;
 
@@ -64,12 +56,10 @@ class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
 
     @BeforeEach
     void setup() throws IOException {
-
         HandshakeCertificates handshakeCertificates = localhost();
         externalApiMockServer = new MockWebServer();
         externalApiMockServer.useHttps(handshakeCertificates.sslSocketFactory(), false);
         externalApiMockServer.start(4444);
-
     }
 
     @AfterEach
@@ -79,7 +69,6 @@ class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
 
     @Test
     void testRateLimitStandardWelcomeRequestNew() throws Exception {
-
         mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(VALID_WELCOME_REQUEST_BODY_NEW)
                             .contentType(MediaType.APPLICATION_JSON))
