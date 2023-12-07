@@ -40,13 +40,24 @@ class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
         + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
     private static final String RANDOM_EMAIL_SYSTEM_ADMIN = "test.sa"
         + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
+    private static final String RANDOM_EMAIL_NEW = "test"
+        + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
+    private static final String RANDOM_EMAIL_SYSTEM_ADMIN_NEW = "test.sa"
+        + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
+
+    private static final String VALID_WELCOME_REQUEST_BODY = "{\"email\": \""
+        + RANDOM_EMAIL + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
 
     private static final String VALID_WELCOME_REQUEST_BODY_NEW = "{\"email\": \""
-        + RANDOM_EMAIL + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
+        + RANDOM_EMAIL_NEW + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
 
     private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY = "{\"requesterName\": \"reqName\","
         + " \"actionResult\": \"ATTEMPTED\",\"changeType\": \"DELETE_LOCATION\", \"emailList\": "
         + "[\"" + RANDOM_EMAIL_SYSTEM_ADMIN + "\"],\"detailString\": \"test\"}";
+
+    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_NEW = "{\"requesterName\": \"reqName\","
+        + " \"actionResult\": \"ATTEMPTED\",\"changeType\": \"DELETE_LOCATION\", \"emailList\": "
+        + "[\"" + RANDOM_EMAIL_SYSTEM_ADMIN_NEW + "\"],\"detailString\": \"test\"}";
 
     private MockWebServer externalApiMockServer;
 
@@ -69,23 +80,29 @@ class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
     @Test
     void testRateLimitStandardWelcomeRequestNew() throws Exception {
         mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(VALID_WELCOME_REQUEST_BODY_NEW)
+                            .content(VALID_WELCOME_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
 
         mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(VALID_WELCOME_REQUEST_BODY_NEW)
+                            .content(VALID_WELCOME_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
 
         mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(VALID_WELCOME_REQUEST_BODY_NEW)
+                            .content(VALID_WELCOME_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isTooManyRequests())
             .andExpect(content().string(containsString("Rate limit has been exceeded. "
                                                            + "New media account welcome email failed to be sent to")));
+
+        mockMvc.perform(post(WELCOME_EMAIL_URL)
+                            .content(VALID_WELCOME_REQUEST_BODY_NEW)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
     }
 
     @Test
@@ -96,17 +113,26 @@ class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
             .andExpect(status().isOk())
             .andExpect(content().string(containsString(
                 "Send notification email successfully to all system admin with referenceId")));
+
         mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(not(containsString(
                 "Send notification email successfully to all system admin with referenceId: []"))));
+
         mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString(
                 "Send notification email successfully to all system admin with referenceId: []")));
+
+        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
+                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_NEW)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(not(containsString(
+                "Send notification email successfully to all system admin with referenceId: []"))));
     }
 }
