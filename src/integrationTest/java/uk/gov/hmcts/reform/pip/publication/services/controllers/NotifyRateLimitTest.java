@@ -41,9 +41,9 @@ class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
     private static final String RANDOM_EMAIL_SYSTEM_ADMIN = "test.sa"
         + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
     private static final String RANDOM_EMAIL_NEW = "test"
-        + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
+        + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
     private static final String RANDOM_EMAIL_SYSTEM_ADMIN_NEW = "test.sa"
-        + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
+        + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
 
     private static final String VALID_WELCOME_REQUEST_BODY = "{\"email\": \""
         + RANDOM_EMAIL + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
