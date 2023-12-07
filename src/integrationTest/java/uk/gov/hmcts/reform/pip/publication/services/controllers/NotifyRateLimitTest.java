@@ -48,7 +48,6 @@ class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
         + " \"actionResult\": \"ATTEMPTED\",\"changeType\": \"DELETE_LOCATION\", \"emailList\": "
         + "[\"" + RANDOM_EMAIL_SYSTEM_ADMIN + "\"],\"detailString\": \"test\"}";
 
-
     private MockWebServer externalApiMockServer;
 
     @Autowired
