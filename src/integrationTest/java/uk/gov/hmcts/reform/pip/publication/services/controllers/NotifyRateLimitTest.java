@@ -44,7 +44,8 @@ class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
         + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
     private static final String RANDOM_EMAIL_SYSTEM_ADMIN_NEW = "test.sa"
         + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
-
+    private static final String SYSTEM_ADMIN_UPDATE_MESSAGE = "Send notification "
+        + "email successfully to all system admin with referenceId: []";
     private static final String VALID_WELCOME_REQUEST_BODY = "{\"email\": \""
         + RANDOM_EMAIL + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
 
@@ -111,28 +112,24 @@ class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(not(containsString(
-                "Send notification email successfully to all system admin with referenceId: []"))));
+            .andExpect(content().string(not(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE))));
 
         mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(not(containsString(
-                "Send notification email successfully to all system admin with referenceId: []"))));
+            .andExpect(content().string(not(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE))));
 
         mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(
-                "Send notification email successfully to all system admin with referenceId: []")));
+            .andExpect(content().string(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE)));
 
         mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_NEW)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(not(containsString(
-                "Send notification email successfully to all system admin with referenceId: []"))));
+            .andExpect(content().string(not(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE))));
     }
 }
