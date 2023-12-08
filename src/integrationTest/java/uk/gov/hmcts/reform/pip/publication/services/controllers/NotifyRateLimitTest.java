@@ -111,8 +111,8 @@ class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(
-                "Send notification email successfully to all system admin with referenceId")));
+            .andExpect(content().string(not(containsString(
+                "Send notification email successfully to all system admin with referenceId: []"))));
 
         mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
