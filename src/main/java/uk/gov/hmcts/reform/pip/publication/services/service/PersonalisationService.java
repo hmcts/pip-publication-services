@@ -282,7 +282,7 @@ public class PersonalisationService {
             return personalisation;
         } catch (NotificationClientException e) {
             log.warn(writeLog(String.format(
-                "Error adding attachment to flat file email {}. Artefact ID: {}",
+                "Error adding attachment to flat file email %s. Artefact ID: %s",
                 EmailHelper.maskEmail(body.getEmail()),
                 artefact.getArtefactId()
             )));
@@ -366,7 +366,7 @@ public class PersonalisationService {
 
     private static List<String> formatReasons(Map<String, List<String>> reasons) {
         List<String> reasonList = new ArrayList<>();
-        reasons.forEach((key, value) -> reasonList.add(String.format("%s\n^%s", value.get(0), value.get(1))));
+        reasons.forEach((key, value) -> reasonList.add(String.format("%s%n^%s", value.get(0), value.get(1))));
         return reasonList;
     }
 

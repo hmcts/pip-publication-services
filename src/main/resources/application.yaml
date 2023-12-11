@@ -11,6 +11,11 @@ management:
       exposure:
         include: health, info, prometheus
 spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
   cloud:
     azure:
       active-directory:
@@ -79,3 +84,13 @@ springdoc:
     path: /swagger-ui/
 
 fileRetentionWeeks: 78 weeks
+
+rate-limit:
+  email:
+    capacity:
+      standard: ${STANDARD_MAX_EMAILS:10}
+      high: ${HIGH_CAPACITY_MAX_EMAILS:200}
+    interval-in-minutes: ${EMAIL_RATE_LIMIT_INTERVAL:30}
+  cache:
+    expiry-in-minute: ${RATE_LIMIT_CACHE_EXPIRY:30}
+

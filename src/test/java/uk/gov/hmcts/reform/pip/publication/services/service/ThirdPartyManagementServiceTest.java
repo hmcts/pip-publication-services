@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -30,8 +32,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@DirtiesContext
 @ActiveProfiles("test")
-class ThirdPartyManagementServiceTest {
+class ThirdPartyManagementServiceTest extends RedisConfigurationTestBase {
     private static final String API_DESTINATION = "testUrl";
     private static final String MESSAGES_MATCH = "Messages should match";
     private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
