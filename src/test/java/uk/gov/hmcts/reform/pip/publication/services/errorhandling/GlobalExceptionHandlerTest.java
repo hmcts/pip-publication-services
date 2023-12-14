@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Not
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.TooManyEmailsException;
 
 import java.util.List;
 
@@ -162,5 +163,15 @@ class GlobalExceptionHandlerTest {
         assertNotNull(responseEntity.getBody(), BODY_RESPONSE);
         assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
                      PASSED_IN_MESSAGE);
+    }
+
+    @Test
+    void testTooManyEmailsException() {
+        TooManyEmailsException exception = new TooManyEmailsException(TEST_MESSAGE);
+        ResponseEntity<ExceptionResponse> responseEntity = globalExceptionHandler.handle(exception);
+
+        assertEquals(HttpStatus.TOO_MANY_REQUESTS, responseEntity.getStatusCode(), STATUS_CODE);
+        assertNotNull(responseEntity.getBody(), BODY_RESPONSE);
+        assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(), PASSED_IN_MESSAGE);
     }
 }
