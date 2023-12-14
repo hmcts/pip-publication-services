@@ -1,0 +1,111 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "CaTH Publication Services Service",
+    "description": "Use this service to send emails with Gov.UK Notify and send publications to third party systems",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "description": "README",
+    "url": "https://github.com/hmcts/pip-publication-services"
+  },
+  "servers": [
+    {
+      "url": "https://pip-publication-services.staging.platform.hmcts.net",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/notify/otp": {
+      "post": {
+        "tags": [
+          "Publication Services notification API"
+        ],
+        "summary": "Send email with B2C one-time password",
+        "operationId": "sendOtpEmail",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpEmail"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OTP email successfully sent with referenceId: {Id}",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "NotifyException error message",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User has not been authorised",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "Publication Services root API"
+        ],
+        "summary": "Get Welcome",
+        "operationId": "welcome",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OtpEmail": {
+        "type": "object",
+        "properties": {
+          "otp": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
