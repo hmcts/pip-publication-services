@@ -134,6 +134,11 @@ public class EmailService {
                              personalisationService.buildDeleteLocationSubscriptionEmailPersonalisation(body));
     }
 
+    protected EmailToSend buildOtpEmail(String email, String otp, Templates emailTemplate) {
+        return generateEmail(email, emailTemplate.getTemplate(),
+                             personalisationService.buildOtpEmailPersonalisation(otp));
+    }
+
     private List<String> applyEmailRateLimit(List<String> emails, Templates emailTemplate) {
         return emails.stream()
             .filter(e -> rateLimitingService.isValid(e, emailTemplate))

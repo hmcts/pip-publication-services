@@ -62,6 +62,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_VERIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MI_DATA_REPORTING_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.SYSTEM_ADMIN_UPDATE_EMAIL;
 
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
@@ -74,6 +75,7 @@ class EmailServiceTest extends RedisConfigurationTestBase {
     private static final String EMAIL2 = "test2@email.com";
     private static final String FULL_NAME = "fullName";
     private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
+    private static final String OTP_VALUE = "123456";
 
     @Autowired
     private EmailService emailService;
@@ -454,17 +456,17 @@ class EmailServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testBuildMediaApplicationRejectionEmail() throws IOException {
-        Map<String, List<String>> reasons = new ConcurrentHashMap<>();
-
-        reasons.put("notMedia", List.of(
-            "The applicant is not an accredited member of the media.",
-            "You can sign in with an existing MyHMCTS account. Or you can register your organisation at "
-                + "https://www.gov.uk/guidance/myhmcts-online-case-management-for-legal-professionals"));
-
-        reasons.put("noMatch", List.of(
-            "Details provided do not match.",
-            "The name, email address and Press ID do not match each other."));
-
+        Map<String, List<String>> reasons = Map.of(
+            "notMedia", List.of(
+                "The applicant is not an accredited member of the media.",
+                "You can sign in with an existing MyHMCTS account. Or you can register your organisation at "
+                    + "https://www.gov.uk/guidance/myhmcts-online-case-management-for-legal-professionals"
+            ),
+            "noMatch", List.of(
+                "Details provided do not match.",
+                "The name, email address and Press ID do not match each other."
+            )
+        );
 
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "Test Name",
@@ -685,5 +687,24 @@ class EmailServiceTest extends RedisConfigurationTestBase {
         assertEquals(DELETE_LOCATION_SUBSCRIPTION.getTemplate(), emailToSends.get(0).getTemplate(),
                      TEMPLATE_MESSAGE
         );
+    }
+
+    @Test
+    void buildOtpEmailReturnsSuccess() {
+        Map<String, Object> personalisation = Map.of("otp", OTP_VALUE);
+        when(personalisationService.buildOtpEmailPersonalisation(OTP_VALUE)).thenReturn(personalisation);
+
+        assertThat(emailService.buildOtpEmail(EMAIL, OTP_VALUE, OTP_EMAIL))
+            .as("OTP email values do not match")
+            .extracting(
+                EmailToSend::getEmailAddress,
+                EmailToSend::getPersonalisation,
+                EmailToSend::getTemplate
+            )
+            .containsExactly(
+                EMAIL,
+                personalisation,
+                OTP_EMAIL.getTemplate()
+            );
     }
 }

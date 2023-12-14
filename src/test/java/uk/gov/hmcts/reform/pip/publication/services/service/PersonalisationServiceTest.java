@@ -99,6 +99,7 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
     private static final String YES = "Yes";
     private static final String NO = "No";
     private static final String EMAIL = "a@b.com";
+    private static final String OTP_VALUE = "123456";
     private static final String CASE_URN_VALUE = "1234";
     private static final String CASE_NUMBER_VALUE = "12345678";
     private static final String LOCATION_ID = "12345";
@@ -128,6 +129,7 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
     private static final String CONTENT_DATE_ASSERT_MESSAGE = "No content date found";
     private static final String REJECT_REASONS = "reject-reasons";
     private static final String FULL_NAME_LOWERCASE = "full-name";
+    private static final String OTP = "otp";
 
     @Autowired
     PersonalisationService personalisationService;
@@ -772,5 +774,13 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         assertEquals(locationSubscriptionDeletion.getLocationName(), locationName,
                      "Name does not match location name"
         );
+    }
+
+    @Test
+    void testBuildOtpEmailPersonalisation() {
+        Map<String, Object> personalisation = personalisationService.buildOtpEmailPersonalisation(OTP_VALUE);
+        Object otp = personalisation.get(OTP);
+        assertNotNull(otp, "No OTP found");
+        assertEquals(OTP_VALUE, otp, "OTP value does not match");
     }
 }

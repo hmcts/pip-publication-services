@@ -470,4 +470,10 @@ public class PersonalisationService {
 
         return personalisation;
     }
+
+    public Map<String, Object> buildOtpEmailPersonalisation(String otp) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        personalisation.put("otp", otp);
+        return personalisation;
+    }
 }

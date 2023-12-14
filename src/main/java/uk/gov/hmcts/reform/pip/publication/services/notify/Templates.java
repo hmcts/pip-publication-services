@@ -57,7 +57,10 @@ public enum Templates {
                                          EmailLimit.STANDARD),
     DELETE_LOCATION_SUBSCRIPTION("929276e1-da85-4f21-9ed4-53492bedff68",
                                  "Location deletion notification email",
-                                 EmailLimit.HIGH);
+                                 EmailLimit.HIGH),
+    OTP_EMAIL("c51dc591-e956-43b2-8cc2-ac32bbcece3b",
+              "B2C OTP email",
+              EmailLimit.HIGH);
 
     private static final Map<String, Templates> LOOKUP = new ConcurrentHashMap<>();
 

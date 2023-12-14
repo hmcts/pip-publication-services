@@ -50,6 +50,7 @@ All interactions with `pip-publication-services` are performed through the API (
   - Subscription related emails to verified users when new publications are uploaded to CaTH, or when a user’s subscriptions are being deleted as a result of routine maintenance of locations within CaTH.
   - Notification emails to all system admin users when selected audit actions are performed by other system admins.
   - CaTH service team emails containing reports of current data contents and statistics, and when a publication is being uploaded with an unindentified location.
+  - Emails containing one-time password (OTP) used for user verification in Azure B2C password reset flow.
 - Handles forwarding of newly uploaded publications to third party publishers.
 - Rate limit the number of emails that can be sent to a user within a set interval.
 - Secure/Insecure Mode: Use of bearer tokens for authentication with the secure instance (if desired).
