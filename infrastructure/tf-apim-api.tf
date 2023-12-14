@@ -1,7 +1,8 @@
 locals {
   apim_api_name  = "${var.product}-${var.component}-api"
   api_policy_raw = file("./resources/api-policy/api-policy.xml")
-  api_policy = replace(local.api_policy_raw, "{TENANT_ID}", data.azurerm_client_config.current.tenant_id)
+  api_policy = replace(replace(local.api_policy_raw, "{TENANT_ID}", data.azurerm_client_config.current.tenant_id)
+    , "{ENV}", local.env)
 }
 
 module "apim_api" {
