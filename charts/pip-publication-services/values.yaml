@@ -30,5 +30,11 @@ java:
           alias: CHANNEL_MANAGEMENT_AZ_API
         - name: app-insights-java-connection-string
           alias: APP_INSIGHTS_CONNECTION_STRING
+        - name: REDIS-V6-HOST
+          alias: REDIS_HOST
+        - name: REDIS-V6-PORT
+          alias: REDIS_PORT
+        - name: REDIS-V6-PASSWORD
+          alias: REDIS_PASSWORD
   environment:
     ENV_NAME: "{{ .Values.global.environment }}"

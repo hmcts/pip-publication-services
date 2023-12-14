@@ -11,12 +11,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -26,8 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
+@DirtiesContext
 @ActiveProfiles("test")
-class ChannelManagementServiceTest {
+class ChannelManagementServiceTest extends RedisConfigurationTestBase {
 
     private static MockWebServer mockChannelManagementMockEndpoint;
     private final ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
@@ -90,7 +93,7 @@ class ChannelManagementServiceTest {
         mockChannelManagementMockEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.EXCEL, false);
-        assertTrue(response.length() == 0, "Response not empty");
+        assertEquals(0, response.length(), "Response not empty");
     }
 
     @Test
@@ -98,7 +101,7 @@ class ChannelManagementServiceTest {
         mockChannelManagementMockEndpoint.enqueue(new MockResponse().setResponseCode(413));
 
         String response = channelManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF, false);
-        assertTrue(response.length() == 0, "Response not empty");
+        assertEquals(0, response.length(), "Response not empty");
     }
 
     @Test

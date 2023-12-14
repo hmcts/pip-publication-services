@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
@@ -15,8 +15,10 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.io.IOException;
@@ -28,12 +30,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_EMAIL;
 
 @SpringBootTest
+@DirtiesContext
 @ActiveProfiles("test")
-class UserNotificationServiceTest {
+@SuppressWarnings("PMD.TooManyMethods")
+class UserNotificationServiceTest extends RedisConfigurationTestBase {
 
     private static final String REJECTION_EMAIL_FIRST_LINE_JSON = "\"id\":\"123e4567-e89b-12d3-a456-426614174000\",";
     private static final String EMAIL = "test@email.com";
@@ -50,6 +57,8 @@ class UserNotificationServiceTest {
 
     private static final String FULL_NAME = "fullName";
     private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
+    private static final String OTP_VALUE = "123456";
+
     private static final WelcomeEmail VALID_BODY_EXISTING = new WelcomeEmail(
         EMAIL, true, FULL_NAME);
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
@@ -70,7 +79,7 @@ class UserNotificationServiceTest {
 
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(
         VALID_BODY_NEW.getEmail(),
-        Templates.BAD_BLOB_EMAIL.template,
+        Templates.BAD_BLOB_EMAIL.getTemplate(),
         personalisationMap,
         SUCCESS_REF_ID
     );
@@ -79,12 +88,12 @@ class UserNotificationServiceTest {
 
 
     private final EmailToSend validEmailBodyForDuplicateMediaUserClient =
-        new EmailToSend(VALID_BODY_NEW.getEmail(), Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template,
+        new EmailToSend(VALID_BODY_NEW.getEmail(), Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.getTemplate(),
                         personalisationMap, SUCCESS_REF_ID
         );
 
-    private static final String EXISTING_REFERENCE_ID =
-        "Existing user with valid JSON should return successful referenceId.";
+    private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
+    private static final String NULL_MESSAGE = "Result should be null";
     private final Location location = new Location();
 
     @Mock
@@ -111,19 +120,19 @@ class UserNotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessExisting() {
-        when(emailService.buildWelcomeEmail(VALID_BODY_EXISTING, Templates.EXISTING_USER_WELCOME_EMAIL.template))
+        when(emailService.buildWelcomeEmail(VALID_BODY_EXISTING, Templates.EXISTING_USER_WELCOME_EMAIL))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, userNotificationService.handleWelcomeEmailRequest(VALID_BODY_EXISTING),
-                     EXISTING_REFERENCE_ID
+                     REFERENCE_ID_MESSAGE
         );
     }
 
     @Test
     void testValidPayloadReturnsSuccessNew() {
-        when(emailService.buildWelcomeEmail(VALID_BODY_NEW, Templates.MEDIA_NEW_ACCOUNT_SETUP.template))
+        when(emailService.buildWelcomeEmail(VALID_BODY_NEW, Templates.MEDIA_NEW_ACCOUNT_SETUP))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, userNotificationService.handleWelcomeEmailRequest(VALID_BODY_NEW),
-                     EXISTING_REFERENCE_ID
+                     REFERENCE_ID_MESSAGE
         );
     }
 
@@ -131,7 +140,7 @@ class UserNotificationServiceTest {
     void testValidPayloadReturnsSuccessAzure() {
         when(emailService.buildCreatedAdminWelcomeEmail(
             VALID_BODY_AAD,
-            Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template
+            Templates.ADMIN_ACCOUNT_CREATION_EMAIL
         ))
             .thenReturn(validEmailBodyForEmailClient);
         assertEquals(SUCCESS_REF_ID, userNotificationService.azureNewUserEmailRequest(VALID_BODY_AAD),
@@ -147,11 +156,11 @@ class UserNotificationServiceTest {
 
         when(emailService.buildDuplicateMediaSetupEmail(
             createMediaSetupEmail,
-            Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template
+            Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL
         ))
             .thenReturn(validEmailBodyForDuplicateMediaUserClient);
         assertEquals(SUCCESS_REF_ID, userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail),
-                     EXISTING_REFERENCE_ID
+                     REFERENCE_ID_MESSAGE
         );
     }
 
@@ -159,7 +168,7 @@ class UserNotificationServiceTest {
     void testValidPayloadReturnsSuccessMediaVerification() {
         when(emailService.buildMediaUserVerificationEmail(
             MEDIA_VERIFICATION_EMAIL,
-            Templates.MEDIA_USER_VERIFICATION_EMAIL.template
+            Templates.MEDIA_USER_VERIFICATION_EMAIL
         ))
             .thenReturn(validEmailBodyForEmailClient);
 
@@ -174,7 +183,7 @@ class UserNotificationServiceTest {
     void testValidPayloadReturnsSuccessInactiveUserNotificationForAad() {
         when(emailService.buildInactiveUserNotificationEmail(
             INACTIVE_USER_NOTIFICATION_EMAIL_AAD,
-            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD.template
+            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD
         ))
             .thenReturn(validEmailBodyForEmailClient);
 
@@ -188,7 +197,7 @@ class UserNotificationServiceTest {
     void testValidPayloadReturnsSuccessInactiveUserNotificationForCft() {
         when(emailService.buildInactiveUserNotificationEmail(
             INACTIVE_USER_NOTIFICATION_EMAIL_CFT,
-            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT.template
+            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT
         ))
             .thenReturn(validEmailBodyForEmailClient);
 
@@ -205,7 +214,7 @@ class UserNotificationServiceTest {
             EMAIL,
             testReasons
         );
-        EmailToSend expectedEmail = new EmailToSend(EMAIL, Templates.MEDIA_USER_REJECTION_EMAIL.template,
+        EmailToSend expectedEmail = new EmailToSend(EMAIL, MEDIA_USER_REJECTION_EMAIL.getTemplate(),
                                                     new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"
         );
         String jsonResponse = "{"
@@ -224,7 +233,7 @@ class UserNotificationServiceTest {
             + "}";
         SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
 
-        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(String.class)))
+        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(Templates.class)))
             .thenReturn(expectedEmail);
         when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
 
@@ -240,7 +249,7 @@ class UserNotificationServiceTest {
             EMAIL,
             testReasons
         );
-        EmailToSend expectedEmail = new EmailToSend(EMAIL, Templates.MEDIA_USER_REJECTION_EMAIL.template,
+        EmailToSend expectedEmail = new EmailToSend(EMAIL, MEDIA_USER_REJECTION_EMAIL.getTemplate(),
                                                     new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"
         );
         String jsonResponse =
@@ -259,14 +268,36 @@ class UserNotificationServiceTest {
                 + "}";
         SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
 
-        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(String.class)))
+        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(Templates.class)))
             .thenReturn(expectedEmail);
         when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
 
         String result = userNotificationService.mediaUserRejectionEmailRequest(mediaRejectionEmail);
-
-        Assertions.assertNull(result, "expected null");
+        assertNull(result, NULL_MESSAGE);
     }
 
+    @Test
+    void testOtpEmailRequestReturnsReferenceId() {
+        Map<String, Object> personalisation = Map.of("otp", OTP_VALUE);
+        EmailToSend otpEmail = new EmailToSend(EMAIL, OTP_EMAIL.getTemplate(), personalisation, SUCCESS_REF_ID);
 
+        when(emailService.buildOtpEmail(EMAIL, OTP_VALUE, OTP_EMAIL)).thenReturn(otpEmail);
+        when(emailService.sendEmail(otpEmail)).thenReturn(sendEmailResponse);
+
+        String result = userNotificationService.handleOtpEmailRequest(new OtpEmail(OTP_VALUE, EMAIL));
+        assertEquals(SUCCESS_REF_ID, result, REFERENCE_ID_MESSAGE);
+    }
+
+    @Test
+    void testOtpEmailRequestReturnsNull() {
+        Map<String, Object> personalisation = Map.of("otp", OTP_VALUE);
+        EmailToSend otpEmail = new EmailToSend(EMAIL, OTP_EMAIL.getTemplate(), personalisation, null);
+
+        when(emailService.buildOtpEmail(EMAIL, OTP_VALUE, OTP_EMAIL)).thenReturn(otpEmail);
+        when(sendEmailResponse.getReference()).thenReturn(Optional.empty());
+        when(emailService.sendEmail(otpEmail)).thenReturn(sendEmailResponse);
+
+        String result = userNotificationService.handleOtpEmailRequest(new OtpEmail(OTP_VALUE, EMAIL));
+        assertNull(result, NULL_MESSAGE);
+    }
 }

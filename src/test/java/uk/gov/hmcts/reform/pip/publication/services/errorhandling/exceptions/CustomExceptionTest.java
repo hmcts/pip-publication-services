@@ -12,8 +12,7 @@ class CustomExceptionTest {
 
     @Test
     void testCreationOfPublicationNotFoundException() {
-        PublicationNotFoundException publicationNotFoundException
-            = new PublicationNotFoundException(TEST_MESSAGE);
+        PublicationNotFoundException publicationNotFoundException = new PublicationNotFoundException(TEST_MESSAGE);
         assertEquals(TEST_MESSAGE, publicationNotFoundException.getMessage(),
                      EXPECTED_MESSAGE
         );
@@ -21,16 +20,14 @@ class CustomExceptionTest {
 
     @Test
     void testCreationOfBadPayloadException() {
-        BadPayloadException badPayloadException
-            = new BadPayloadException(TEST_MESSAGE);
+        BadPayloadException badPayloadException = new BadPayloadException(TEST_MESSAGE);
         assertEquals(TEST_MESSAGE, badPayloadException.getMessage(),
                      EXPECTED_MESSAGE);
     }
 
     @Test
     void testCreationOfNotifyException() {
-        NotifyException notifyException
-            = new NotifyException(TEST_MESSAGE);
+        NotifyException notifyException = new NotifyException(TEST_MESSAGE);
         assertEquals(TEST_MESSAGE, notifyException.getMessage(),
                      EXPECTED_MESSAGE);
     }
@@ -48,12 +45,17 @@ class CustomExceptionTest {
             new WebClientResponseException(404, TEST_MESSAGE, null, null, null), "testApi");
         assertEquals("Third party request to: testApi failed after 3 retries due to: 404 " + TEST_MESSAGE,
                      exception.getMessage(), EXPECTED_MESSAGE);
-
     }
 
     @Test
     void testCreationOfCsvCreationException() {
         CsvCreationException csvCreationException = new CsvCreationException(TEST_MESSAGE);
         assertEquals(TEST_MESSAGE, csvCreationException.getMessage(), EXPECTED_MESSAGE);
+    }
+
+    @Test
+    void testTooManyEmailsException() {
+        TooManyEmailsException exception = new TooManyEmailsException(TEST_MESSAGE);
+        assertEquals(TEST_MESSAGE, exception.getMessage(), EXPECTED_MESSAGE);
     }
 }

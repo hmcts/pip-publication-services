@@ -27,7 +27,7 @@ import javax.net.ssl.SSLException;
  * Configures the Web Client that is used in requests to external services.
  */
 @Configuration
-@Profile("!test & !functional")
+@Profile("!test & !functional & !functional-rate-limit")
 public class WebClientConfiguration {
     // Currently we allow a maximum 2MB of PDF/Excel file to be transferred from Channel-management (same as GOV.UK
     // Notify file size constraint). The file content is sent as a Base64 encoded string which add roughly 33% space

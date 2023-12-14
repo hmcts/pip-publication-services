@@ -18,3 +18,9 @@ service-to-service:
 error-handling:
   num-of-retries: 3
   backoff: 2
+rate-limit:
+  email:
+    capacity:
+      standard: 1
+      high: 2
+    interval-in-minutes: 1

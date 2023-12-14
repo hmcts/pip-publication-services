@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Not
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.TooManyEmailsException;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
  */
 @Slf4j
 @ControllerAdvice
+@SuppressWarnings("PMD.TooManyMethods")
 public class GlobalExceptionHandler {
 
     /**
@@ -36,11 +38,8 @@ public class GlobalExceptionHandler {
 
         log.error(writeLog("404, publication has not been found when trying to send subscription"));
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setMessage(ex.getMessage());
-        exceptionResponse.setTimestamp(LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(generateExceptionResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(NotifyException.class)
@@ -49,11 +48,8 @@ public class GlobalExceptionHandler {
         log.error(writeLog(String.format(
             "400, Error while communicating with the notify service with reason %s", ex.getMessage())));
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setMessage(ex.getMessage());
-        exceptionResponse.setTimestamp(LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(generateExceptionResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -62,11 +58,8 @@ public class GlobalExceptionHandler {
         log.error(writeLog(String.format(
             "400, Method argument is not valid. Details: %s", ex.getCause())));
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setMessage(ex.getAllErrors().get(0).getDefaultMessage());
-        exceptionResponse.setTimestamp(LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(generateExceptionResponse(ex.getAllErrors().get(0).getDefaultMessage()));
     }
 
     @ExceptionHandler(BadPayloadException.class)
@@ -76,11 +69,8 @@ public class GlobalExceptionHandler {
             String.format("400, invalid payload sent to publication service. Cause: %s", ex.getCause())
         ));
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setMessage(ex.getMessage());
-        exceptionResponse.setTimestamp(LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(generateExceptionResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(UnsupportedOperationException.class)
@@ -89,11 +79,8 @@ public class GlobalExceptionHandler {
         log.error(writeLog(String.format(
             "400, unsupported REST operation send to publication service. Cause: %s", ex.getCause())));
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setMessage(ex.getMessage());
-        exceptionResponse.setTimestamp(LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(generateExceptionResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(ServiceToServiceException.class)
@@ -102,43 +89,46 @@ public class GlobalExceptionHandler {
             String.format("ServiceToServiceException was thrown with the init cause: %s", ex.getCause())
         ));
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setMessage(ex.getMessage());
-        exceptionResponse.setTimestamp(LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+            .body(generateExceptionResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(ThirdPartyServiceException.class)
     public ResponseEntity<ExceptionResponse> handle(ThirdPartyServiceException ex) {
         log.error(writeLog(ex.getMessage()));
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setMessage(ex.getMessage());
-        exceptionResponse.setTimestamp(LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.valueOf(ex.getStatusCode())).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.valueOf(ex.getStatusCode()))
+            .body(generateExceptionResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(CsvCreationException.class)
     public ResponseEntity<ExceptionResponse> handle(CsvCreationException ex) {
         log.error(writeLog(String.format("CsvCreationException was thrown with the init cause: %s", ex.getCause())));
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setMessage(ex.getMessage());
-        exceptionResponse.setTimestamp(LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(generateExceptionResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(ExcelCreationException.class)
     public ResponseEntity<ExceptionResponse> handle(ExcelCreationException ex) {
         log.error(writeLog(String.format("ExcelCreationException was thrown with the init cause: %s", ex.getCause())));
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setMessage(ex.getMessage());
-        exceptionResponse.setTimestamp(LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(generateExceptionResponse(ex.getMessage()));
+    }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    @ExceptionHandler(TooManyEmailsException.class)
+    public ResponseEntity<ExceptionResponse> handle(TooManyEmailsException ex) {
+        log.error(writeLog(ex.getMessage()));
+
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+            .body(generateExceptionResponse(ex.getMessage()));
+    }
+
+    private ExceptionResponse generateExceptionResponse(String message) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setMessage(message);
+        exceptionResponse.setTimestamp(LocalDateTime.now());
+        return exceptionResponse;
     }
 }

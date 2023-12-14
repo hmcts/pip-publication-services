@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDateTime;
@@ -37,9 +39,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@DirtiesContext
 @ActiveProfiles("test")
-@SuppressWarnings({"PMD"})
-class NotificationServiceTest {
+@SuppressWarnings("PMD.ExcessiveImports")
+class NotificationServiceTest extends RedisConfigurationTestBase {
     private final Map<String, Object> personalisationMap = Map.ofEntries(
         entry("email", VALID_BODY_AAD.getEmail()),
         entry("surname", VALID_BODY_AAD.getSurname()),
@@ -62,7 +65,7 @@ class NotificationServiceTest {
 
     private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
-                                                                             Templates.BAD_BLOB_EMAIL.template,
+                                                                             Templates.BAD_BLOB_EMAIL.getTemplate(),
                                                                              personalisationMap,
                                                                              SUCCESS_REF_ID);
     private static final UUID RAND_UUID = UUID.randomUUID();
@@ -71,7 +74,7 @@ class NotificationServiceTest {
 
 
     private final EmailToSend validEmailBodyForDuplicateMediaUserClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
-        Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template,
+        Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.getTemplate(),
         personalisationMap,
         SUCCESS_REF_ID
     );
@@ -130,7 +133,7 @@ class NotificationServiceTest {
         when(fileCreationService.createMediaApplicationReportingCsv(mediaApplicationList)).thenReturn(TEST_BYTE);
 
         when(emailService.buildMediaApplicationReportingEmail(TEST_BYTE,
-                                                              Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template))
+                                                              Templates.MEDIA_APPLICATION_REPORTING_EMAIL))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, notificationService.handleMediaApplicationReportingRequest(mediaApplicationList),
@@ -141,7 +144,7 @@ class NotificationServiceTest {
     @Test
     void testValidPayloadReturnsSuccessUnidentifiedBlob() {
         when(emailService.buildUnidentifiedBlobsEmail(NO_MATCH_ARTEFACT_LIST,
-                                                      Templates.BAD_BLOB_EMAIL.template))
+                                                      Templates.BAD_BLOB_EMAIL))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, notificationService.unidentifiedBlobEmailRequest(NO_MATCH_ARTEFACT_LIST),
@@ -162,7 +165,7 @@ class NotificationServiceTest {
         subscriptionEmail.setSubscriptions(subscriptions);
 
         when(emailService.buildFlatFileSubscriptionEmail(subscriptionEmail, artefact,
-                                                        Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
+                                                        Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, notificationService.subscriptionEmailRequest(subscriptionEmail),
@@ -184,7 +187,7 @@ class NotificationServiceTest {
         subscriptionEmail.setSubscriptions(subscriptions);
 
         when(emailService.buildRawDataSubscriptionEmail(subscriptionEmail, artefact,
-                                                         Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template))
+                                                         Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, notificationService.subscriptionEmailRequest(subscriptionEmail),
@@ -194,7 +197,7 @@ class NotificationServiceTest {
 
     @Test
     void testHandleMiDataReportingReturnsSuccess() {
-        when(emailService.buildMiDataReportingEmail(Templates.MI_DATA_REPORTING_EMAIL.template))
+        when(emailService.buildMiDataReportingEmail(Templates.MI_DATA_REPORTING_EMAIL))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, notificationService.handleMiDataForReporting(),
@@ -203,8 +206,7 @@ class NotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsSuccessSystemAdminUpdateEmail() {
-        when(emailService.buildSystemAdminUpdateEmail(systemAdminActionEmailBody,
-                                                           Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template))
+        when(emailService.buildSystemAdminUpdateEmail(systemAdminActionEmailBody, Templates.SYSTEM_ADMIN_UPDATE_EMAIL))
             .thenReturn(List.of(validEmailBodyForEmailClient));
         assertEquals(List.of(SUCCESS_REF_ID), notificationService
                          .sendSystemAdminUpdateEmailRequest(systemAdminActionEmailBody),
@@ -217,7 +219,7 @@ class NotificationServiceTest {
         locationSubscriptionDeletionBody.setLocationName(LOCATION_NAME);
         locationSubscriptionDeletionBody.setSubscriberEmails(List.of(EMAIL));
         when(emailService.buildDeleteLocationSubscriptionEmail(locationSubscriptionDeletionBody,
-                                                      Templates.DELETE_LOCATION_SUBSCRIPTION.template))
+                                                      Templates.DELETE_LOCATION_SUBSCRIPTION))
             .thenReturn(List.of(validEmailBodyForEmailClient));
         assertEquals(List.of(SUCCESS_REF_ID), notificationService
             .sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletionBody),

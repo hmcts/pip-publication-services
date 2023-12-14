@@ -13,15 +13,6 @@
     <cve>CVE-2023-35116</cve>
   </suppress>
   <suppress>
-    <notes>Pulled in by GOV.UK Notify Java Client. Already on latest version of parent dependency</notes>
-    <packageUrl>pkg:maven/org.json/json@20230227</packageUrl>
-    <cve>CVE-2023-5072</cve>
-  </suppress>
-  <suppress>
-    <notes>Suppression for netty. Pulled in by springboot on latest version</notes>
-    <cve>CVE-2023-4586</cve>
-  </suppress>
-  <suppress>
     <notes><![CDATA[file name: azure-identity-1.10.0.jar]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.azure/azure\-identity@.*$</packageUrl>
     <cve>CVE-2023-36415</cve>
@@ -30,5 +21,10 @@
     <notes>This vulnerability exists in various com.azure dependencies pulled in by the latest spring-cloud-azure-starter-active-directory</notes>
     <packageUrl regex="true">^pkg:maven/com\.azure/azure.*$</packageUrl>
     <cve>CVE-2023-36052</cve>
+  </suppress>
+  <suppress>
+    <notes>Suppression for logback. Pulled in by the latest spring boot v3.0.13</notes>
+    <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback.*@1.4.11$</packageUrl>
+    <cve>CVE-2023-6378</cve>
   </suppress>
 </suppressions>
