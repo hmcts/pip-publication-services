@@ -39,7 +39,7 @@ public class NotificationService {
     public String handleMediaApplicationReportingRequest(List<MediaApplication> mediaApplicationList) {
         EmailToSend email = emailService.buildMediaApplicationReportingEmail(
             fileCreationService.createMediaApplicationReportingCsv(mediaApplicationList),
-            Templates.MEDIA_APPLICATION_REPORTING_EMAIL.template);
+            Templates.MEDIA_APPLICATION_REPORTING_EMAIL);
 
         return emailService.sendEmail(email)
             .getReference().orElse(null);
@@ -59,11 +59,11 @@ public class NotificationService {
         if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
             return emailService.sendEmail(emailService.buildFlatFileSubscriptionEmail(
                                                   body, artefact,
-                                                  Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.template))
+                                                  Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL))
                 .getReference().orElse(null);
         } else {
             return emailService.sendEmail(emailService.buildRawDataSubscriptionEmail(
-                body, artefact, Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.template))
+                body, artefact, Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL))
                 .getReference().orElse(null);
         }
     }
@@ -75,8 +75,7 @@ public class NotificationService {
      * @return The ID that references the unidentified blobs email.
      */
     public String unidentifiedBlobEmailRequest(List<NoMatchArtefact> noMatchArtefactList) {
-        EmailToSend email = emailService
-            .buildUnidentifiedBlobsEmail(noMatchArtefactList, Templates.BAD_BLOB_EMAIL.template);
+        EmailToSend email = emailService.buildUnidentifiedBlobsEmail(noMatchArtefactList, Templates.BAD_BLOB_EMAIL);
 
         return emailService.sendEmail(email).getReference().orElse(null);
     }
@@ -87,13 +86,12 @@ public class NotificationService {
      * @return The ID that references the MI data reporting email.
      */
     public String handleMiDataForReporting() {
-        EmailToSend email = emailService.buildMiDataReportingEmail(Templates.MI_DATA_REPORTING_EMAIL.template);
+        EmailToSend email = emailService.buildMiDataReportingEmail(Templates.MI_DATA_REPORTING_EMAIL);
         return emailService.sendEmail(email).getReference().orElse(null);
     }
 
     public List<String> sendSystemAdminUpdateEmailRequest(SystemAdminAction body) {
-        List<EmailToSend> email = emailService
-            .buildSystemAdminUpdateEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL.template);
+        List<EmailToSend> email = emailService.buildSystemAdminUpdateEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL);
 
         var sentEmails = new ArrayList<String>();
         email.forEach(emailToSend -> sentEmails.add(
@@ -110,7 +108,7 @@ public class NotificationService {
      */
     public List<String> sendDeleteLocationSubscriptionEmail(LocationSubscriptionDeletion body) {
         List<EmailToSend> email = emailService
-            .buildDeleteLocationSubscriptionEmail(body, Templates.DELETE_LOCATION_SUBSCRIPTION.template);
+            .buildDeleteLocationSubscriptionEmail(body, Templates.DELETE_LOCATION_SUBSCRIPTION);
 
         var sentEmails = new ArrayList<String>();
         email.forEach(emailToSend ->

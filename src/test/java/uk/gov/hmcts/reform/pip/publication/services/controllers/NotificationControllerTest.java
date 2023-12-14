@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -43,9 +45,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@DirtiesContext
 @ActiveProfiles("test")
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.TooManyFields"})
-class NotificationControllerTest {
+class NotificationControllerTest extends RedisConfigurationTestBase {
 
     private static final String VALID_EMAIL = "test@email.com";
     private static final boolean TRUE_BOOL = true;

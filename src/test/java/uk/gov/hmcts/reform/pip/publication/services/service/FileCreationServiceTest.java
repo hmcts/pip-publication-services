@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelGenerationService;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -22,9 +24,10 @@ import static org.mockito.Mockito.when;
 
 @Slf4j
 @SpringBootTest
+@DirtiesContext
 @ActiveProfiles("test")
 @SuppressWarnings("PMD.ExcessiveImports")
-class FileCreationServiceTest {
+class FileCreationServiceTest extends RedisConfigurationTestBase {
 
     @Mock
     private DataManagementService dataManagementService;

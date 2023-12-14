@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.location.Location;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -25,8 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("PMD.TooManyMethods")
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
+@DirtiesContext
 @ActiveProfiles("test")
-class DataManagementServiceTest {
+class DataManagementServiceTest extends RedisConfigurationTestBase {
 
     private static final String RESPONSE_BODY = "responseBody";
     private static final String CONTENT_TYPE_HEADER = "Content-Type";

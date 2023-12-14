@@ -1,0 +1,8 @@
+rate-limit:
+  email:
+    capacity:
+      standard: 2
+      high: 2
+    interval-in-minutes: 1
+  cache:
+    expiry-in-minute: ${RATE_LIMIT_CACHE_EXPIRY:2}

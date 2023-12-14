@@ -25,12 +25,6 @@ public class UserNotificationService {
     @Autowired
     private EmailService emailService;
 
-    @Autowired
-    private FileCreationService fileCreationService;
-
-    @Autowired
-    private DataManagementService dataManagementService;
-
     /**
      * Handles the incoming request for welcome emails, checks the json payload and builds and sends the email.
      *
@@ -42,8 +36,8 @@ public class UserNotificationService {
             EmailHelper.maskEmail(body.getEmail()))));
 
         return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
-            ? Templates.EXISTING_USER_WELCOME_EMAIL.template :
-            Templates.MEDIA_NEW_ACCOUNT_SETUP.template)).getReference().orElse(null);
+            ? Templates.EXISTING_USER_WELCOME_EMAIL : Templates.MEDIA_NEW_ACCOUNT_SETUP))
+            .getReference().orElse(null);
     }
 
     /**
@@ -57,7 +51,7 @@ public class UserNotificationService {
             EmailHelper.maskEmail(body.getEmail()))));
 
         EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body,
-            Templates.ADMIN_ACCOUNT_CREATION_EMAIL.template);
+            Templates.ADMIN_ACCOUNT_CREATION_EMAIL);
         return emailService.sendEmail(email)
             .getReference().orElse(null);
     }
@@ -71,7 +65,7 @@ public class UserNotificationService {
      */
     public String mediaDuplicateUserEmailRequest(DuplicatedMediaEmail body) {
         EmailToSend email = emailService.buildDuplicateMediaSetupEmail(body,
-            Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.template);
+            Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL);
         return emailService.sendEmail(email)
             .getReference().orElse(null);
     }
@@ -84,7 +78,7 @@ public class UserNotificationService {
      */
     public String mediaUserVerificationEmailRequest(MediaVerificationEmail body) {
         EmailToSend email = emailService
-            .buildMediaUserVerificationEmail(body, Templates.MEDIA_USER_VERIFICATION_EMAIL.template);
+            .buildMediaUserVerificationEmail(body, Templates.MEDIA_USER_VERIFICATION_EMAIL);
 
         return emailService.sendEmail(email).getReference().orElse(null);
     }
@@ -97,7 +91,7 @@ public class UserNotificationService {
      */
     public String mediaUserRejectionEmailRequest(MediaRejectionEmail body) throws IOException {
         EmailToSend email = emailService
-            .buildMediaApplicationRejectionEmail(body, Templates.MEDIA_USER_REJECTION_EMAIL.template);
+            .buildMediaApplicationRejectionEmail(body, Templates.MEDIA_USER_REJECTION_EMAIL);
 
         return emailService.sendEmail(email).getReference().orElse(null);
     }
@@ -112,10 +106,10 @@ public class UserNotificationService {
         EmailToSend email;
         if ("PI_AAD".equals(body.getUserProvenance())) {
             email = emailService
-                .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD.template);
+                .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD);
         } else {
             email = emailService
-                .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT.template);
+                .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT);
         }
 
         return emailService.sendEmail(email).getReference().orElse(null);
