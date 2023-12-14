@@ -69,7 +69,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.SYST
 @DirtiesContext
 @ActiveProfiles("test")
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
-class EmailServiceTest {
+class EmailServiceTest extends RedisConfigurationTestBase {
 
     private static final String EMAIL = "test@email.com";
     private static final String EMAIL2 = "test2@email.com";
