@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
-class NotificationServiceTest {
+class NotificationServiceTest extends RedisConfigurationTestBase {
     private final Map<String, Object> personalisationMap = Map.ofEntries(
         entry("email", VALID_BODY_AAD.getEmail()),
         entry("surname", VALID_BODY_AAD.getSurname()),

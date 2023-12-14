@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_EMAIL;
 
 @SpringBootTest
 @DirtiesContext
@@ -278,9 +279,9 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
     @Test
     void testOtpEmailRequestReturnsReferenceId() {
         Map<String, Object> personalisation = Map.of("otp", OTP_VALUE);
-        EmailToSend otpEmail = new EmailToSend(EMAIL, Templates.OTP_EMAIL.template, personalisation, SUCCESS_REF_ID);
+        EmailToSend otpEmail = new EmailToSend(EMAIL, OTP_EMAIL.getTemplate(), personalisation, SUCCESS_REF_ID);
 
-        when(emailService.buildOtpEmail(EMAIL, OTP_VALUE, Templates.OTP_EMAIL.template)).thenReturn(otpEmail);
+        when(emailService.buildOtpEmail(EMAIL, OTP_VALUE, OTP_EMAIL)).thenReturn(otpEmail);
         when(emailService.sendEmail(otpEmail)).thenReturn(sendEmailResponse);
 
         String result = userNotificationService.handleOtpEmailRequest(new OtpEmail(OTP_VALUE, EMAIL));
@@ -290,9 +291,9 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
     @Test
     void testOtpEmailRequestReturnsNull() {
         Map<String, Object> personalisation = Map.of("otp", OTP_VALUE);
-        EmailToSend otpEmail = new EmailToSend(EMAIL, Templates.OTP_EMAIL.template, personalisation, null);
+        EmailToSend otpEmail = new EmailToSend(EMAIL, OTP_EMAIL.getTemplate(), personalisation, null);
 
-        when(emailService.buildOtpEmail(EMAIL, OTP_VALUE, Templates.OTP_EMAIL.template)).thenReturn(otpEmail);
+        when(emailService.buildOtpEmail(EMAIL, OTP_VALUE, OTP_EMAIL)).thenReturn(otpEmail);
         when(sendEmailResponse.getReference()).thenReturn(Optional.empty());
         when(emailService.sendEmail(otpEmail)).thenReturn(sendEmailResponse);
 

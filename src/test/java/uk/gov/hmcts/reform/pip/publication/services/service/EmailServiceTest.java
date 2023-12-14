@@ -62,6 +62,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_VERIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MI_DATA_REPORTING_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.SYSTEM_ADMIN_UPDATE_EMAIL;
 
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
@@ -693,7 +694,7 @@ class EmailServiceTest {
         Map<String, Object> personalisation = Map.of("otp", OTP_VALUE);
         when(personalisationService.buildOtpEmailPersonalisation(OTP_VALUE)).thenReturn(personalisation);
 
-        assertThat(emailService.buildOtpEmail(EMAIL, OTP_VALUE, Templates.OTP_EMAIL.template))
+        assertThat(emailService.buildOtpEmail(EMAIL, OTP_VALUE, OTP_EMAIL))
             .as("OTP email values do not match")
             .extracting(
                 EmailToSend::getEmailAddress,
@@ -703,7 +704,7 @@ class EmailServiceTest {
             .containsExactly(
                 EMAIL,
                 personalisation,
-                Templates.OTP_EMAIL.template
+                OTP_EMAIL.getTemplate()
             );
     }
 }
