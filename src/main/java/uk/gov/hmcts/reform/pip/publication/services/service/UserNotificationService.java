@@ -119,7 +119,7 @@ public class UserNotificationService {
         log.info(writeLog(String.format("OTP email being processed for user %s",
                                         EmailHelper.maskEmail(body.getEmail()))));
 
-        EmailToSend email = emailService.buildOtpEmail(body.getEmail(), body.getOtp(), Templates.OTP_EMAIL.template);
+        EmailToSend email = emailService.buildOtpEmail(body.getEmail(), body.getOtp(), Templates.OTP_EMAIL);
         return emailService.sendEmail(email)
             .getReference()
             .orElse(null);
