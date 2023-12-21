@@ -29,7 +29,7 @@
             <value>application/x-www-form-urlencoded</value>
           </set-header>
           <set-body>@{
-            return "client_id=" + (string)context.Variables["clientId"] + "&scope=" + (string)context.Variables["scope"] + "/.default&client_secret=" + (string)context.Variables["clientSecret"] + "&grant_type=client_credentials";
+            return "client_id={CLIENT_ID}&scope=" + (string)context.Variables["scope"] + "/.default&client_secret=" + (string)context.Variables["clientSecret"] + "&grant_type=client_credentials";
           }</set-body>
         </send-request>
         <set-variable name="pipAuthToken" value="@("Bearer " + (String)((IResponse)context.Variables["bearerToken"]).Body.As<JObject>()["access_token"])" />
