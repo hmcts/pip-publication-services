@@ -26,7 +26,9 @@ public class ThirdPartyManagementService {
     private final ThirdPartyService thirdPartyService;
 
     @Autowired
-    public ThirdPartyManagementService(DataManagementService dataManagementService, ChannelManagementService channelManagementService, ThirdPartyService thirdPartyService) {
+    public ThirdPartyManagementService(DataManagementService dataManagementService,
+                                       ChannelManagementService channelManagementService,
+                                       ThirdPartyService thirdPartyService) {
         this.dataManagementService = dataManagementService;
         this.channelManagementService = channelManagementService;
         this.thirdPartyService = thirdPartyService;

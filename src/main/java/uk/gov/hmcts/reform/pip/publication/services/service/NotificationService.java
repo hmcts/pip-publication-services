@@ -28,7 +28,8 @@ public class NotificationService {
     private final DataManagementService dataManagementService;
 
     @Autowired
-    public NotificationService(EmailService emailService, FileCreationService fileCreationService, DataManagementService dataManagementService) {
+    public NotificationService(EmailService emailService, FileCreationService fileCreationService,
+                               DataManagementService dataManagementService) {
         this.emailService = emailService;
         this.fileCreationService = fileCreationService;
         this.dataManagementService = dataManagementService;
