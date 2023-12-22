@@ -21,14 +21,18 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 @Service
 @Slf4j
 public class NotificationService {
-    @Autowired
-    private EmailService emailService;
+    private final EmailService emailService;
+
+    private final FileCreationService fileCreationService;
+
+    private final DataManagementService dataManagementService;
 
     @Autowired
-    private FileCreationService fileCreationService;
-
-    @Autowired
-    private DataManagementService dataManagementService;
+    public NotificationService(EmailService emailService, FileCreationService fileCreationService, DataManagementService dataManagementService) {
+        this.emailService = emailService;
+        this.fileCreationService = fileCreationService;
+        this.dataManagementService = dataManagementService;
+    }
 
     /**
      * Handles the incoming request for media applications reporting emails.
