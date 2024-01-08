@@ -1,1 +1,1 @@
-env="stg"
+env = "stg"

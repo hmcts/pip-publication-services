@@ -4,7 +4,7 @@
 
 - [Overview](#overview)
 - [Features and Functionality](#features-and-functionality)
-  - [GOV.UK Notify](#gov-uk-notify)
+  - [GOV.UK Notify](#govuk-notify)
   - [Subscription Fulfillment](#subscription-fulfillment)
   - [Third Party Publisher](#third-party-publisher)
 - [Roles](#roles)
@@ -267,7 +267,9 @@ The client at runtime is attached as a javaagent, which allows it to send the lo
 To connect to app insights a connection string is used. This is configured to read from the KV Secret mounted inside the pod.
 
 It is possible to connect to app insights locally, although somewhat tricky. The easiest way is to get the connection string from azure, set it as an environment variable (APPLICATIONINSIGHTS_CONNECTION_STRING), and add in the javaagent as VM argument. You will also need to remove / comment out the connection string line the config.
+
 ## Security & Quality Considerations
+
 We use a few automated tools to ensure quality and security within the service. A few examples can be found below:
 
 - SonarCloud - provides automated code analysis, finding vulnerabilities, bugs and code smells. Quality gates ensure that test coverage, code style and security are maintained where possible.
