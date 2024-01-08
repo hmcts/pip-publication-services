@@ -14,16 +14,18 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
-import java.io.IOException;
-
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Service
 @Slf4j
 public class UserNotificationService {
 
+    private final EmailService emailService;
+
     @Autowired
-    private EmailService emailService;
+    public UserNotificationService(EmailService emailService) {
+        this.emailService = emailService;
+    }
 
     /**
      * Handles the incoming request for welcome emails, checks the json payload and builds and sends the email.
@@ -89,7 +91,7 @@ public class UserNotificationService {
      * @param body The body of the media rejection email.
      * @return The ID that references the media user rejection email.
      */
-    public String mediaUserRejectionEmailRequest(MediaRejectionEmail body) throws IOException {
+    public String mediaUserRejectionEmailRequest(MediaRejectionEmail body) {
         EmailToSend email = emailService
             .buildMediaApplicationRejectionEmail(body, Templates.MEDIA_USER_REJECTION_EMAIL);
 
