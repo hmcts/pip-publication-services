@@ -19,14 +19,20 @@ public class ThirdPartyManagementService {
     private static final String SUCCESS_MESSAGE = "Successfully sent list to %s";
     private static final String EMPTY_SUCCESS_MESSAGE = "Successfully sent empty list to %s";
 
-    @Autowired
-    private DataManagementService dataManagementService;
+    private final DataManagementService dataManagementService;
+
+    private final ChannelManagementService channelManagementService;
+
+    private final ThirdPartyService thirdPartyService;
 
     @Autowired
-    private ChannelManagementService channelManagementService;
-
-    @Autowired
-    private ThirdPartyService thirdPartyService;
+    public ThirdPartyManagementService(DataManagementService dataManagementService,
+                                       ChannelManagementService channelManagementService,
+                                       ThirdPartyService thirdPartyService) {
+        this.dataManagementService = dataManagementService;
+        this.channelManagementService = channelManagementService;
+        this.thirdPartyService = thirdPartyService;
+    }
 
     /**
      * Handles the incoming request for sending lists out to third party publishers, uses the artefact id from body

@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -39,14 +38,11 @@ import java.util.List;
 @SuppressWarnings("PMD.TooManyMethods")
 public class NotificationController {
 
-    @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
-    @Autowired
-    private ThirdPartyManagementService thirdPartyManagementService;
+    private final ThirdPartyManagementService thirdPartyManagementService;
 
-    @Autowired
-    private UserNotificationService userNotificationService;
+    private final UserNotificationService userNotificationService;
 
     private static final String BAD_PAYLOAD_EXCEPTION_MESSAGE = "BadPayloadException error message";
 
@@ -57,6 +53,15 @@ public class NotificationController {
     private static final String OK_RESPONSE = "200";
     private static final String AUTH_RESPONSE = "403";
     private static final String BAD_REQUEST = "400";
+
+    @Autowired
+    public NotificationController(NotificationService notificationService,
+                                  ThirdPartyManagementService thirdPartyManagementService,
+                                  UserNotificationService userNotificationService) {
+        this.notificationService = notificationService;
+        this.thirdPartyManagementService = thirdPartyManagementService;
+        this.userNotificationService = userNotificationService;
+    }
 
     /**
      * api to send welcome emails to new or existing users.
@@ -189,8 +194,7 @@ public class NotificationController {
     @ApiResponse(responseCode = AUTH_RESPONSE, description = NOT_AUTHORIZED_MESSAGE)
     @Operation(summary = "Send a media applicant a rejection email")
     @PostMapping("/media/reject")
-    public ResponseEntity<String> sendMediaUserRejectionEmail(@RequestBody MediaRejectionEmail body)
-        throws IOException {
+    public ResponseEntity<String> sendMediaUserRejectionEmail(@RequestBody MediaRejectionEmail body) {
         return ResponseEntity.ok(String.format(
             "Media user rejection email successfully sent with referenceId: %s",
             userNotificationService.mediaUserRejectionEmailRequest(body)
