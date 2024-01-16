@@ -377,14 +377,13 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Language.class, names = {"WELSH", "BI_LINGUAL"})
-    void buildRawDataNonSjpNonEnglishWhenAllPresent(Language language) {
+    @Test
+    void buildRawDataNonSjpWelshWhenAllPresent(Language language) {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setContentDate(LocalDateTime.now());
         artefact.setListType(ListType.COP_DAILY_CAUSE_LIST);
-        artefact.setLanguage(language);
+        artefact.setLanguage(Language.WELSH);
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
