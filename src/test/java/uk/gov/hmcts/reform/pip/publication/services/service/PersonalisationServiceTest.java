@@ -378,7 +378,7 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void buildRawDataNonSjpWelshWhenAllPresent(Language language) {
+    void buildRawDataNonSjpWelshWhenAllPresent() {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setContentDate(LocalDateTime.now());
