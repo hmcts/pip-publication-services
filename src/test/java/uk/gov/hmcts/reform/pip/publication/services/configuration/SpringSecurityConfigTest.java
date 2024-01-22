@@ -24,7 +24,7 @@ class SpringSecurityConfigTest {
 
         springSecurityConfig.apiFilterChain(httpSecurity);
 
-        verify(httpSecurity, times(1)).apply(any(AadResourceServerHttpSecurityConfigurer.class));
+        verify(httpSecurity, times(1)).with(any(AadResourceServerHttpSecurityConfigurer.class), any());
         verify(httpSecurity, times(1)).csrf(any());
     }
 
