@@ -4,8 +4,9 @@ locals {
     for operation_policies_file in local.operation_policies_files :
     basename(operation_policies_file) => {
       operation_id = replace(basename(operation_policies_file), ".xml", "")
-      xml_content = replace(replace(file("${path.module}/${operation_policies_file}"), "{TENANT_ID}", data.azurerm_client_config.current.tenant_id)
-      , "{ENV}", local.env)
+      xml_content = replace(replace(file("${path.module}/${operation_policies_file}"),
+        "{TENANT_ID}", data.azurerm_client_config.current.tenant_id),
+      "{CLIENT_ID}", length(data.azurerm_key_vault_secret.data_client_id) > 0 ? data.azurerm_key_vault_secret.data_client_id[0].value : "")
     }
   }
 }
