@@ -4,7 +4,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.4'
-  id 'org.springframework.boot' version '3.0.13'
+  id 'org.springframework.boot' version '3.2.1'
   id 'org.owasp.dependencycheck' version '9.0.5'
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'org.sonarqube' version '4.4.1.3373'
@@ -165,7 +165,7 @@ dependencies {
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.4'
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '4.1.1-RELEASE'
-  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.1.14', {
+  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.1.17', {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 
@@ -175,11 +175,6 @@ dependencies {
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.5'
   implementation group: 'org.redisson', name: 'redisson', version: '3.24.3'
   implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.10.0'
-
-  // Force upgrade snakeyaml version for CVE-2022-1471
-  implementation( group: 'org.yaml', name: 'snakeyaml').version {
-    strictly("2.0")
-  }
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
@@ -195,7 +190,7 @@ dependencies {
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp-tls', version: '4.12.0'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.1'
   testImplementation group: 'com.redis', name: 'testcontainers-redis', version: '1.7.0'
-  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.19.3'
+  testImplementation group: 'org.testcontainers', name: 'junit-jupiter'
   testImplementation group: 'io.github.hakky54', name: 'logcaptor', version: '2.9.1'
 }
 
