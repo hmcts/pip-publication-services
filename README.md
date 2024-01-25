@@ -28,6 +28,7 @@
 - [Test Suite](#test-suite)
   - [Unit tests](#unit-tests)
   - [Functional tests](#functional-tests)
+  - [Fortify](#fortify)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -293,6 +294,10 @@ Functional tests can be run using `./gradlew functional`
 For our functional tests, we are using Square's [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver) library. This allows us to test the full HTTP stack for our service-to-service interactions.
 
 The functional tests also call out to Data Management in staging to retrieve publications.
+
+### Fortify
+
+We use Fortify to scan for security vulnerabilities. This is run as part of our nightly pipelines.
 
 ## Contributing
 We are happy to accept third-party contributions. See [.github/CONTRIBUTING.md](./.github/CONTRIBUTING.md) for more details.
