@@ -191,7 +191,7 @@ dependencies {
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.1'
   testImplementation group: 'com.redis', name: 'testcontainers-redis', version: '1.7.0'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter'
-  testImplementation group: 'io.github.hakky54', name: 'logcaptor', version: '2.9.1'
+  testImplementation group: 'io.github.hakky54', name: 'logcaptor', version: '2.9.2'
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.0', classifier: 'all'
 }
 
