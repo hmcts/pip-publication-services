@@ -63,7 +63,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/Artefact_External"
+                  "type": "string"
                 }
               }
             }
@@ -73,7 +73,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/Artefact_External"
+                  "type": "string"
                 }
               }
             }

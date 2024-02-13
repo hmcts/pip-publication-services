@@ -165,7 +165,6 @@ public class PersonalisationService {
 
             personalisation.put("list_type", artefact.getListType().getFriendlyName());
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
-            personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
             personalisation.putAll(populateFilesPersonalisation(artefact));
 
             personalisation.put(
@@ -282,7 +281,6 @@ public class PersonalisationService {
 
             personalisation.put(LINK_TO_FILE, uploadedFile);
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
-            personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
 
             personalisation.put(
                 "content_date",

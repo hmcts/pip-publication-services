@@ -116,11 +116,7 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
     private static final String LIST_TYPE_MESSAGE = "List type does not match expected list type";
     private static final String LOCATION_MESSAGE = "Location not as expected";
     private static final String NO_START_PAGE_LINK_MESSAGE = "No start page link key found";
-    private static final String NO_SUBSCRIPTION_PAGE_LINK_MESSAGE = "No subscription page link key found";
     private static final String START_PAGE_LINK_MISMATCH_MESSAGE = "Start page link does not match expected link";
-    private static final String SUBSCRIPTION_PAGE_LINK_MISMATCH_MESSAGE = "Subscription page link does not match "
-        + "expected link";
-
 
     private static final String CONTENTS = "Contents";
     private static final String ERROR_MESSAGE = "error message";
@@ -324,11 +320,6 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         assertNotNull(startPageLink, NO_START_PAGE_LINK_MESSAGE);
         assertEquals(personalisationLinks.getStartPageLink(), startPageLink, START_PAGE_LINK_MISMATCH_MESSAGE);
 
-        String subscriptionPageLink = (String) personalisation.get(SUBSCRIPTION_PAGE_LINK);
-        assertNotNull(subscriptionPageLink, NO_SUBSCRIPTION_PAGE_LINK_MESSAGE);
-        assertEquals(personalisationLinks.getSubscriptionPageLink(), subscriptionPageLink,
-                     SUBSCRIPTION_PAGE_LINK_MISMATCH_MESSAGE);
-
         Object contentDate = personalisation.get(CONTENT_DATE);
         assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
     }
@@ -381,11 +372,6 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         Object startPageLink = personalisation.get(START_PAGE_LINK);
         assertNotNull(startPageLink, NO_START_PAGE_LINK_MESSAGE);
         assertEquals(personalisationLinks.getStartPageLink(), startPageLink, START_PAGE_LINK_MISMATCH_MESSAGE);
-
-        String subscriptionPageLink = (String) personalisation.get(SUBSCRIPTION_PAGE_LINK);
-        assertNotNull(subscriptionPageLink, NO_SUBSCRIPTION_PAGE_LINK_MESSAGE);
-        assertEquals(personalisationLinks.getSubscriptionPageLink(), subscriptionPageLink,
-                     SUBSCRIPTION_PAGE_LINK_MISMATCH_MESSAGE);
 
         Object contentDate = personalisation.get(CONTENT_DATE);
         assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
@@ -442,11 +428,6 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         assertNotNull(startPageLink, NO_START_PAGE_LINK_MESSAGE);
         assertEquals(personalisationLinks.getStartPageLink(), startPageLink, START_PAGE_LINK_MISMATCH_MESSAGE);
 
-        String subscriptionPageLink = (String) personalisation.get(SUBSCRIPTION_PAGE_LINK);
-        assertNotNull(subscriptionPageLink, NO_SUBSCRIPTION_PAGE_LINK_MESSAGE);
-        assertEquals(personalisationLinks.getSubscriptionPageLink(), subscriptionPageLink,
-                     SUBSCRIPTION_PAGE_LINK_MISMATCH_MESSAGE);
-
         Object contentDate = personalisation.get(CONTENT_DATE);
         assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
     }
@@ -485,11 +466,6 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         Object startPageLink = personalisation.get(START_PAGE_LINK);
         assertNotNull(startPageLink, NO_START_PAGE_LINK_MESSAGE);
         assertEquals(personalisationLinks.getStartPageLink(), startPageLink, START_PAGE_LINK_MISMATCH_MESSAGE);
-
-        String subscriptionPageLink = (String) personalisation.get(SUBSCRIPTION_PAGE_LINK);
-        assertNotNull(subscriptionPageLink, NO_SUBSCRIPTION_PAGE_LINK_MESSAGE);
-        assertEquals(personalisationLinks.getSubscriptionPageLink(), subscriptionPageLink,
-                     SUBSCRIPTION_PAGE_LINK_MISMATCH_MESSAGE);
 
         Object contentDate = personalisation.get(CONTENT_DATE);
         assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
