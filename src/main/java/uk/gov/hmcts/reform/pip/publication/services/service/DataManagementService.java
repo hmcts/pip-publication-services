@@ -25,12 +25,8 @@ public class DataManagementService {
     @Value("${service-to-service.data-management}")
     private String url;
 
-    private final WebClient webClient;
-
     @Autowired
-    public DataManagementService(WebClient webClient) {
-        this.webClient = webClient;
-    }
+    private WebClient webClient;
 
     public Artefact getArtefact(UUID artefactId) {
         try {

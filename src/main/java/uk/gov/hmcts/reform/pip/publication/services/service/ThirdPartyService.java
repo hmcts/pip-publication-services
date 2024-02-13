@@ -40,12 +40,8 @@ public class ThirdPartyService {
     private static final String COURTEL = "Courtel";
     private static final String CATH_PROVENANCE = "CATH";
 
-    private final WebClient.Builder webClient;
-
     @Autowired
-    public ThirdPartyService(WebClient.Builder webClient) {
-        this.webClient = webClient;
-    }
+    private WebClient.Builder webClient;
 
     /**
      * Third party call for Flat File publications.

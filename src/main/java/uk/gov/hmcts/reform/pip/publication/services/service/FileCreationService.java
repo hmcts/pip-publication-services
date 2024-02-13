@@ -25,27 +25,20 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("PMD.PreserveStackTrace")
 public class FileCreationService {
 
-    private final DataManagementService dataManagementService;
+    @Autowired
+    private DataManagementService dataManagementService;
 
-    private final AccountManagementService accountManagementService;
+    @Autowired
+    private AccountManagementService accountManagementService;
 
-    private final SubscriptionManagementService subscriptionManagementService;
+    @Autowired
+    private SubscriptionManagementService subscriptionManagementService;
 
-    private final ExcelGenerationService excelGenerationService;
+    @Autowired
+    private ExcelGenerationService excelGenerationService;
 
     private static final String[] HEADINGS = {"Full name", "Email", "Employer",
         "Request date", "Status", "Status date"};
-
-    @Autowired
-    public FileCreationService(DataManagementService dataManagementService,
-                               AccountManagementService accountManagementService,
-                               SubscriptionManagementService subscriptionManagementService,
-                               ExcelGenerationService excelGenerationService) {
-        this.dataManagementService = dataManagementService;
-        this.accountManagementService = accountManagementService;
-        this.subscriptionManagementService = subscriptionManagementService;
-        this.excelGenerationService = excelGenerationService;
-    }
 
     /**
      * Creates a byte array csv from a list of media applications.

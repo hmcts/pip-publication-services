@@ -31,12 +31,8 @@ public class ChannelManagementService {
     @Value("${service-to-service.channel-management}")
     private String url;
 
-    private final WebClient webClient;
-
     @Autowired
-    public ChannelManagementService(WebClient webClient) {
-        this.webClient = webClient;
-    }
+    private WebClient webClient;
 
     /**
      * Makes a get request to channel management for the artefact summary by artefactId.

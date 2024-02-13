@@ -19,12 +19,8 @@ public class AccountManagementService {
     @Value("${service-to-service.account-management}")
     private String url;
 
-    private final WebClient webClient;
-
     @Autowired
-    public AccountManagementService(WebClient webClient) {
-        this.webClient = webClient;
-    }
+    private WebClient webClient;
 
     public String getMiData() {
         try {
