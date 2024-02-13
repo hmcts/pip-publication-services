@@ -69,7 +69,7 @@
             }
           },
           "403": {
-            "description": "User has not been authorized",
+            "description": "User has not been authorised",
             "content": {
               "*/*": {
                 "schema": {
