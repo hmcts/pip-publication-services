@@ -52,20 +52,15 @@ public class PersonalisationService {
     private static final int MAX_FILE_SIZE = 2_000_000;
     private static final String LINK_TO_SERVICE = "link-to-service";
 
-    @Autowired
-    DataManagementService dataManagementService;
+    private final DataManagementService dataManagementService;
 
-    @Autowired
-    NotifyConfigProperties notifyConfigProperties;
+    private final NotifyConfigProperties notifyConfigProperties;
 
-    @Autowired
-    ChannelManagementService channelManagementService;
+    private final ChannelManagementService channelManagementService;
 
-    @Autowired
-    FileCreationService fileCreationService;
+    private final FileCreationService fileCreationService;
 
-    @Autowired
-    CaseNameHelper caseNameHelper;
+    private final CaseNameHelper caseNameHelper;
 
     @Value("${env-name}")
     private String envName;
@@ -103,6 +98,19 @@ public class PersonalisationService {
     private static final String ACTION_RESULT = "attempted/succeeded";
     private static final String ADDITIONAL_DETAILS = "Additional_change_detail";
     private static final String LOCATION_NAME = "location-name";
+
+    @Autowired
+    public PersonalisationService(DataManagementService dataManagementService,
+                                  NotifyConfigProperties notifyConfigProperties,
+                                  ChannelManagementService channelManagementService,
+                                  FileCreationService fileCreationService,
+                                  CaseNameHelper caseNameHelper) {
+        this.dataManagementService = dataManagementService;
+        this.notifyConfigProperties = notifyConfigProperties;
+        this.channelManagementService = channelManagementService;
+        this.fileCreationService = fileCreationService;
+        this.caseNameHelper = caseNameHelper;
+    }
 
 
     /**
@@ -354,7 +362,7 @@ public class PersonalisationService {
      * @param body The body of the media account rejection email.
      * @return The personalisation map for the media rejection email.
      */
-    public Map<String, Object> buildMediaRejectionPersonalisation(MediaRejectionEmail body) throws IOException {
+    public Map<String, Object> buildMediaRejectionPersonalisation(MediaRejectionEmail body) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
         personalisation.put(FULL_NAME_LOWERCASE, body.getFullName());

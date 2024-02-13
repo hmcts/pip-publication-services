@@ -19,8 +19,12 @@ public class SubscriptionManagementService {
     @Value("${service-to-service.subscription-management}")
     private String url;
 
+    private final WebClient webClient;
+
     @Autowired
-    private WebClient webClient;
+    public SubscriptionManagementService(WebClient webClient) {
+        this.webClient = webClient;
+    }
 
     public String getAllMiData() {
         try {

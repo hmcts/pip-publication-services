@@ -21,8 +21,12 @@ import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationServ
 @IsB2C
 @SecurityRequirement(name = "Bearer authentication")
 public class B2cNotificationController {
+    private final UserNotificationService userNotificationService;
+
     @Autowired
-    private UserNotificationService userNotificationService;
+    public B2cNotificationController(UserNotificationService userNotificationService) {
+        this.userNotificationService = userNotificationService;
+    }
 
     @ApiResponse(responseCode = "200", description = "OTP email successfully sent with referenceId: {Id}")
     @ApiResponse(responseCode = "400", description = "NotifyException error message")
