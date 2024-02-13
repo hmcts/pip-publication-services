@@ -465,7 +465,7 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
         Object startPageLink = personalisation.get(START_PAGE_LINK);
         assertNotNull(startPageLink, NO_START_PAGE_LINK_MESSAGE);
-        assertEquals(personalisationLinks.getStartPageLink(), startPageLink, START_PAGE_LINK_MISMATCH_MESSAGE);
+        assertEquals(personalisationLinks.getStartPageLink(), startPageLink,START_PAGE_LINK_MISMATCH_MESSAGE);
 
         Object contentDate = personalisation.get(CONTENT_DATE);
         assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
