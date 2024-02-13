@@ -58,17 +58,32 @@
               }
             }
           },
-          "403": {
-            "description": "User has not been authorised",
+          "401": {
+            "description": "Invalid access credential",
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/Artefact_External"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User has not been authorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Artefact_External"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer authentication": []
+          }
+        ]
       }
     },
     "/": {
@@ -105,6 +120,14 @@
             "type": "string"
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "Bearer authentication": {
+        "type": "http",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }
