@@ -22,4 +22,9 @@
     <packageUrl regex="true">^pkg:maven/com\.azure/azure.*$</packageUrl>
     <cve>CVE-2023-36052</cve>
   </suppress>
+  <suppress>
+    <notes>Vulnerability across multiple springframework dependencies.Should be removed once the dependency update PR has been merged</notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring.*$</packageUrl>
+    <cve>CVE-2024-22233</cve>
+  </suppress>
 </suppressions>
