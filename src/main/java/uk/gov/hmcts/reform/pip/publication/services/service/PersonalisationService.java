@@ -70,6 +70,7 @@ public class PersonalisationService {
 
     private static final String REJECT_REASONS = "reject-reasons";
     private static final String FULL_NAME_LOWERCASE = "full-name";
+    private static final String LIST_TYPE = "list_type";
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
@@ -163,8 +164,9 @@ public class PersonalisationService {
             populateCaseUrnPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.CASE_URN));
             populateLocationPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.LOCATION_ID));
 
-            personalisation.put("list_type", artefact.getListType().getFriendlyName());
+            personalisation.put(LIST_TYPE, artefact.getListType().getFriendlyName());
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
+            personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
             personalisation.putAll(populateFilesPersonalisation(artefact));
 
             personalisation.put(
@@ -270,7 +272,7 @@ public class PersonalisationService {
             List<String> location = body.getSubscriptions().get(SubscriptionTypes.LOCATION_ID);
             populateLocationPersonalisation(personalisation, location);
 
-            personalisation.put("list_type", artefact.getListType().getFriendlyName());
+            personalisation.put(LIST_TYPE, artefact.getListType().getFriendlyName());
 
             byte[] artefactData = dataManagementService.getArtefactFlatFile(body.getArtefactId());
 
@@ -281,6 +283,7 @@ public class PersonalisationService {
 
             personalisation.put(LINK_TO_FILE, uploadedFile);
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
+            personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
 
             personalisation.put(
                 "content_date",
