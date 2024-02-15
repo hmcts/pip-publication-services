@@ -14,7 +14,7 @@ def component = "publication-services"
 withNightlyPipeline(type, product, component) {
   enableFortifyScan('pip-ss-kv-stg')
 
-  after('fortify-scan') {
+  afterSuccess('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }
 }
