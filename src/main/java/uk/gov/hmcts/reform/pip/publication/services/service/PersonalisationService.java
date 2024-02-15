@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
-import com.microsoft.applicationinsights.core.dependencies.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +26,11 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.RetentionPeriodDuration;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -65,8 +66,7 @@ public class PersonalisationService {
     @Value("${env-name}")
     private String envName;
 
-    @Value("${file-retention-weeks}")
-    private String fileRetentionWeeks;
+    private RetentionPeriodDuration fileRetentionWeeks;
 
     private static final String REJECT_REASONS = "reject-reasons";
     private static final String FULL_NAME_LOWERCASE = "full-name";
@@ -104,12 +104,14 @@ public class PersonalisationService {
                                   NotifyConfigProperties notifyConfigProperties,
                                   ChannelManagementService channelManagementService,
                                   FileCreationService fileCreationService,
-                                  CaseNameHelper caseNameHelper) {
+                                  CaseNameHelper caseNameHelper,
+                                  @Value("${file-retention-weeks}") int fileRetentionWeeks) {
         this.dataManagementService = dataManagementService;
         this.notifyConfigProperties = notifyConfigProperties;
         this.channelManagementService = channelManagementService;
         this.fileCreationService = fileCreationService;
         this.caseNameHelper = caseNameHelper;
+        this.fileRetentionWeeks = new RetentionPeriodDuration(fileRetentionWeeks, ChronoUnit.WEEKS);
     }
 
 
@@ -207,7 +209,7 @@ public class PersonalisationService {
         personalisation.put("display_excel", excelWithinSize);
         personalisation.put(
             "excel_link_to_file",
-            excelWithinSize ? prepareUpload(artefactExcelBytes, false, false, fileRetentionWeeks) : ""
+            excelWithinSize ? prepareUpload(artefactExcelBytes, false, fileRetentionWeeks) : ""
         );
 
         return personalisation;
@@ -239,19 +241,19 @@ public class PersonalisationService {
         personalisation.put(
             "pdf_link_to_file",
             !hasAdditionalPdf && pdfWithinSize
-                ? prepareUpload(artefactPdfBytes, false, false, fileRetentionWeeks) : ""
+                ? prepareUpload(artefactPdfBytes, false, fileRetentionWeeks) : ""
         );
 
         personalisation.put(
             "english_pdf_link_to_file",
             hasAdditionalPdf && pdfWithinSize
-                ? prepareUpload(artefactPdfBytes, false, false, fileRetentionWeeks) : ""
+                ? prepareUpload(artefactPdfBytes, false, fileRetentionWeeks) : ""
         );
 
         personalisation.put(
             "welsh_pdf_link_to_file",
             hasAdditionalPdf && welshPdfWithinSize
-                ? prepareUpload(artefactWelshPdfBytes, false, false, fileRetentionWeeks) : ""
+                ? prepareUpload(artefactWelshPdfBytes, false, fileRetentionWeeks) : ""
         );
 
         return personalisation;
@@ -274,10 +276,7 @@ public class PersonalisationService {
 
             byte[] artefactData = dataManagementService.getArtefactFlatFile(body.getArtefactId());
 
-            String sourceArtefactId = artefact.getSourceArtefactId();
-            JSONObject uploadedFile = !Strings.isNullOrEmpty(sourceArtefactId) && sourceArtefactId.endsWith(".csv")
-                ? prepareUpload(artefactData, true, false, fileRetentionWeeks) :
-                prepareUpload(artefactData, false, false, fileRetentionWeeks);
+            JSONObject uploadedFile = prepareUpload(artefactData, false, fileRetentionWeeks);
 
             personalisation.put(LINK_TO_FILE, uploadedFile);
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
@@ -307,7 +306,7 @@ public class PersonalisationService {
     public Map<String, Object> buildMediaApplicationsReportingPersonalisation(byte[] csvMediaApplications) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
-            personalisation.put(LINK_TO_FILE, prepareUpload(csvMediaApplications, true, false, fileRetentionWeeks));
+            personalisation.put(LINK_TO_FILE, prepareUpload(csvMediaApplications, false, fileRetentionWeeks));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
             return personalisation;
         } catch (NotificationClientException e) {
@@ -460,7 +459,7 @@ public class PersonalisationService {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         try {
             byte[] excel = fileCreationService.generateMiReport();
-            personalisation.put(LINK_TO_FILE, prepareUpload(excel, false, false, fileRetentionWeeks));
+            personalisation.put(LINK_TO_FILE, prepareUpload(excel, false, fileRetentionWeeks));
             personalisation.put(ENV_NAME, convertEnvironmentName(envName));
         } catch (IOException e) {
             log.warn(writeLog("Error generating excel file attachment"));
