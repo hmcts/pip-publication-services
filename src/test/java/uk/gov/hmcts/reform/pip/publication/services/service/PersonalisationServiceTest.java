@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.RetentionPeriodDuration;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -84,7 +85,6 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
     private static final String DISPLAY_EXCEL = "display_excel";
     private static final String LIST_TYPE = "list_type";
     private static final String FILE = "file";
-    private static final String IS_CSV = "is_csv";
     private static final String FORENAME = "first_name";
     private static final String FULL_NAME = "FULL_NAME";
     private static final String CASE_NUMBERS = "case_num";
@@ -452,7 +452,7 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void buildFlatFileWhenAllPresentAndNotCsv() {
+    void buildFlatFileWhenAllPresent() {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
@@ -477,9 +477,6 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
                      LINK_TO_FILE_MESSAGE
         );
-        assertEquals(false, ((JSONObject) personalisation.get(LINK_TO_FILE)).get(IS_CSV),
-                     "File has been marked as a CSV when it's not"
-        );
 
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
         Object startPageLink = personalisation.get(START_PAGE_LINK);
@@ -491,34 +488,6 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         assertNotNull(subscriptionPageLink, NO_SUBSCRIPTION_PAGE_LINK_MESSAGE);
         assertEquals(personalisationLinks.getSubscriptionPageLink(), subscriptionPageLink,
                      SUBSCRIPTION_PAGE_LINK_MISMATCH_MESSAGE);
-
-        Object contentDate = personalisation.get(CONTENT_DATE);
-        assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
-    }
-
-    @Test
-    void buildFlatFileWhenAllPresentAndCsv() {
-        Artefact artefact = new Artefact();
-        artefact.setArtefactId(ARTEFACT_ID);
-        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
-        artefact.setContentDate(LocalDateTime.now());
-        artefact.setSourceArtefactId("sourceArtefact.csv");
-
-        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-
-        byte[] fileContents = CONTENTS.getBytes();
-        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(fileContents);
-
-        Map<String, Object> personalisation =
-            personalisationService.buildFlatFileSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
-
-        assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
-                     LINK_TO_FILE_MESSAGE
-        );
-
-        assertEquals(true, ((JSONObject) personalisation.get(LINK_TO_FILE)).get(IS_CSV),
-                     "File has not been marked as a CSV when it is"
-        );
 
         Object contentDate = personalisation.get(CONTENT_DATE);
         assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
@@ -541,10 +510,6 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
 
         assertEquals(Base64.encode(fileContents), ((JSONObject) personalisation.get(LINK_TO_FILE)).get(FILE),
                      LINK_TO_FILE_MESSAGE
-        );
-
-        assertEquals(false, ((JSONObject) personalisation.get(LINK_TO_FILE)).get(IS_CSV),
-                     "File has been marked as a CSV when it's not"
         );
 
         Object contentDate = personalisation.get(CONTENT_DATE);
@@ -736,8 +701,8 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
     void testBuildMiDataReportingWithNotifyException() throws IOException {
         when(fileCreationService.generateMiReport()).thenReturn(TEST_BYTE);
         try (MockedStatic<NotificationClient> mockStatic = mockStatic(NotificationClient.class)) {
-            mockStatic.when(() -> EmailClient.prepareUpload(TEST_BYTE, false,
-                                                            false, "78 weeks"
+            mockStatic.when(() -> EmailClient.prepareUpload(eq(TEST_BYTE), eq(false),
+                                                            any(RetentionPeriodDuration.class)
                 ))
                 .thenThrow(new NotificationClientException(ERROR_MESSAGE));
             assertThatThrownBy(() -> personalisationService.buildMiDataReportingPersonalisation())
