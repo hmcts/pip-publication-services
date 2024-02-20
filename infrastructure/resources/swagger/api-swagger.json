@@ -19,6 +19,11 @@
       "description": "Generated server url"
     }
   ],
+  "security": [
+    {
+      "Bearer authentication": []
+    }
+  ],
   "paths": {
     "/notify/otp": {
       "post": {
@@ -78,12 +83,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "Bearer authentication": []
-          }
-        ]
+        }
       }
     },
     "/": {
@@ -96,6 +96,26 @@
         "responses": {
           "200": {
             "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid access credential",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User has not been authorised",
             "content": {
               "*/*": {
                 "schema": {
