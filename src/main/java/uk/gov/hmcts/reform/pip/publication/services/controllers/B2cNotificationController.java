@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationServ
 @Tag(name = "Publication Services notification API for B2C")
 @RequestMapping("/notify")
 @IsB2C
-@SecurityRequirement(name = "Bearer authentication")
+@SecurityRequirement(name = "bearerAuth")
 public class B2cNotificationController {
     private final UserNotificationService userNotificationService;
 

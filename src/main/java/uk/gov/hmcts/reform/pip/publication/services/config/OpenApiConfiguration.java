@@ -12,7 +12,7 @@ import static io.swagger.v3.oas.annotations.enums.SecuritySchemeIn.HEADER;
 import static io.swagger.v3.oas.annotations.enums.SecuritySchemeType.HTTP;
 
 @Configuration
-@SecurityScheme(name = "Bearer authentication", type = HTTP, scheme = "bearer", bearerFormat = "JWT", in = HEADER)
+@SecurityScheme(name = "bearerAuth", type = HTTP, scheme = "bearer", bearerFormat = "JWT", in = HEADER)
 public class OpenApiConfiguration {
 
     @Bean
