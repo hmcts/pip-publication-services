@@ -78,7 +78,9 @@ CaTH verified users are able to add email subscriptions to new publications usin
 - When a new publication is uploaded, `pip-subscription-management` determines all the subscribers to that publication and notify `pip-publication-services`, passing in all the subscribers' emails alongside the publication unique reference ID.
 - `pip-publication-services` then retrieves the publication metadata from `pip-data-management` and determine whether the publication has been uploaded as a flat file or in JSON format.
 - If the publication was uploaded as a flat file, it will retrieve the uploaded file from Azure blob storage through `pip-data-management`.
-- If the publication was uploaded in JSON format, it will retrieve the stored publication summary information and the files in alternative publishing formats (PDF and/or Excel spreadsheet) through `pip-channel-management`. These files/summary are pre-generated and stored in Azure blob storage during the upload process.
+- If the publication was uploaded in JSON format and the JSON payload is less than the set limit (currently default to 2MB), it will:
+  - generate the publication summary information through `pip-channel-management`.
+  - retrieve the files in alternative publishing formats (PDF and/or Excel spreadsheet) through `pip-channel-management`. These files are pre-generated and stored in Azure blob storage during the upload process.
 - The email will be personalised using the information above by means by placeholders. Any required files will be uploaded to GOV.UK Notify and links to download the files will be provided in the emails.
 - All the required email information will be sent to GOV.UK Notify to generate the emails for the subscribers.
 
