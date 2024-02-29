@@ -245,18 +245,21 @@ public class PersonalisationService {
     }
 
     private byte[] getFileBytes(Artefact artefact, FileType fileType, boolean additionalPdf) {
-        if (artefact.getPayloadSize() != null && artefact.getPayloadSize() >= maxPayloadSize) {
-            return new byte[0];
+        if (payloadWithinLimit(artefact.getPayloadSize())) {
+            String artefactFile = channelManagementService.getArtefactFile(artefact.getArtefactId(),
+                                                                           fileType, additionalPdf);
+            return Base64.getDecoder().decode(artefactFile);
         }
+        return new byte[0];
+    }
 
-        String artefactFile = channelManagementService.getArtefactFile(artefact.getArtefactId(),
-                                                                       fileType, additionalPdf);
-        return Base64.getDecoder().decode(artefactFile);
+    private boolean payloadWithinLimit(Float payloadSize) {
+        return payloadSize == null || payloadSize < maxPayloadSize;
     }
 
     private Map<String, Object> populateSummaryPersonalisation(Artefact artefact) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        boolean displaySummary = artefact.getPayloadSize() == null || artefact.getPayloadSize() < maxPayloadSize;
+        boolean displaySummary = payloadWithinLimit(artefact.getPayloadSize());
         String summary = displaySummary ? channelManagementService.getArtefactSummary(artefact.getArtefactId()) : "";
 
         personalisation.put("display_summary", displaySummary);
