@@ -79,6 +79,8 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
     private static final String WELSH_PDF_LINK_TO_FILE = "welsh_pdf_link_to_file";
     private static final String PDF_LINK_TO_FILE = "pdf_link_to_file";
     private static final String EXCEL_LINK_TO_FILE = "excel_link_to_file";
+    private static final String ARTEFACT_SUMMARY = "testing_of_array";
+    private static final String DISPLAY_SUMMARY = "display_summary";
     private static final String DISPLAY_ENGLISH_PDF = "display_english_pdf";
     private static final String DISPLAY_WELSH_PDF = "display_welsh_pdf";
     private static final String DISPLAY_PDF = "display_pdf";
@@ -103,8 +105,10 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
     private static final String CASE_URN_VALUE = "1234";
     private static final String CASE_NUMBER_VALUE = "12345678";
     private static final String LOCATION_ID = "12345";
+    private static final Float PAYLOAD_SIZE = 50f;
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
     private static final String ARRAY_OF_IDS = "array_of_ids";
+    private static final String COP_LIST_TYPE = "COP Daily Cause List";
 
     private static final String CASE_NUMBER_MESSAGE = "Case number does not match";
     private static final String CASE_URN_MESSAGE = "Case urn does not match";
@@ -112,7 +116,9 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
     private static final String DISPLAY_CASE_URN_MESSAGE = "Display case urn flag does not match";
     private static final String DISPLAY_LOCATIONS_MESSAGE = "Display locations flag does not match";
     private static final String DISPLAY_FILE_MESSAGE = "Display file flag does not match";
+    private static final String DISPLAY_SUMMARY_MESSAGE = "Display summary flag does not match";
     private static final String LINK_TO_FILE_MESSAGE = "Link to file does not match expected value";
+    private static final String ARTEFACT_SUMMARY_MESSAGE = "Artefact summary does not match expected value";
     private static final String LIST_TYPE_MESSAGE = "List type does not match expected list type";
     private static final String LOCATION_MESSAGE = "Location not as expected";
     private static final String NO_START_PAGE_LINK_MESSAGE = "No start page link key found";
@@ -281,6 +287,7 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         artefact.setContentDate(LocalDateTime.now());
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         artefact.setLanguage(language);
+        artefact.setPayloadSize(PAYLOAD_SIZE);
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
@@ -316,7 +323,7 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         assertEquals(Base64.encode(TEST_BYTE_ARRAY), ((JSONObject) personalisation.get(EXCEL_LINK_TO_FILE)).get(FILE),
                      LINK_TO_FILE_MESSAGE);
 
-        assertEquals(HELLO, personalisation.get("testing_of_array"),
+        assertEquals(HELLO, personalisation.get(ARTEFACT_SUMMARY),
                      "testing_of_array does not match expected value");
 
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
@@ -335,6 +342,122 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void buildRawDataNonSjpEnglishWhenAllPresent() {
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(UUID.randomUUID());
+        artefact.setContentDate(LocalDateTime.now());
+        artefact.setListType(ListType.COP_DAILY_CAUSE_LIST);
+        artefact.setLanguage(Language.ENGLISH);
+        artefact.setPayloadSize(PAYLOAD_SIZE);
+
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
+        when(channelManagementService.getArtefactFile(any(), any(), eq(false)))
+            .thenReturn(BASE64_ENCODED_TEST_STRING);
+        when(caseNameHelper.generateCaseNumberPersonalisation(any(), any()))
+            .thenReturn(SUBSCRIPTIONS.get(SubscriptionTypes.CASE_NUMBER));
+
+        Map<String, Object> personalisation =
+            personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
+
+        assertEquals(YES, personalisation.get(DISPLAY_CASE_NUMBERS), DISPLAY_CASE_NUMBER_MESSAGE);
+        assertEquals(SUBSCRIPTIONS.get(SubscriptionTypes.CASE_NUMBER), personalisation.get(CASE_NUMBERS),
+                     CASE_NUMBER_MESSAGE);
+
+        assertEquals(YES, personalisation.get(DISPLAY_CASE_URN), DISPLAY_CASE_URN_MESSAGE);
+        assertEquals(SUBSCRIPTIONS.get(SubscriptionTypes.CASE_URN), personalisation.get(CASE_URN), CASE_URN_MESSAGE);
+
+        assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), DISPLAY_LOCATIONS_MESSAGE);
+        assertEquals(location.getName(), personalisation.get(LOCATIONS), LOCATION_MESSAGE);
+        assertEquals(COP_LIST_TYPE, personalisation.get(LIST_TYPE), LIST_TYPE_MESSAGE);
+
+        assertFalse((boolean) personalisation.get(DISPLAY_ENGLISH_PDF), DISPLAY_FILE_MESSAGE);
+        assertFalse((boolean) personalisation.get(DISPLAY_WELSH_PDF), DISPLAY_FILE_MESSAGE);
+        assertTrue((boolean) personalisation.get(DISPLAY_PDF), DISPLAY_FILE_MESSAGE);
+        assertFalse((boolean) personalisation.get(DISPLAY_EXCEL), DISPLAY_FILE_MESSAGE);
+
+        assertEquals("", personalisation.get(ENGLISH_PDF_LINK_TO_FILE), LINK_TO_FILE_MESSAGE);
+        assertEquals("", personalisation.get(WELSH_PDF_LINK_TO_FILE), LINK_TO_FILE_MESSAGE);
+
+        assertEquals(Base64.encode(TEST_BYTE_ARRAY), ((JSONObject) personalisation.get(PDF_LINK_TO_FILE)).get(FILE),
+                     LINK_TO_FILE_MESSAGE);
+        assertEquals("", personalisation.get(EXCEL_LINK_TO_FILE), LINK_TO_FILE_MESSAGE);
+
+        assertTrue((boolean) personalisation.get(DISPLAY_SUMMARY), DISPLAY_SUMMARY_MESSAGE);
+        assertEquals(HELLO, personalisation.get(ARTEFACT_SUMMARY), ARTEFACT_SUMMARY_MESSAGE);
+
+        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+        Object startPageLink = personalisation.get(START_PAGE_LINK);
+        assertNotNull(startPageLink, NO_START_PAGE_LINK_MESSAGE);
+        assertEquals(personalisationLinks.getStartPageLink(), startPageLink, START_PAGE_LINK_MISMATCH_MESSAGE);
+
+        String subscriptionPageLink = (String) personalisation.get(SUBSCRIPTION_PAGE_LINK);
+        assertNotNull(subscriptionPageLink, NO_SUBSCRIPTION_PAGE_LINK_MESSAGE);
+        assertEquals(personalisationLinks.getSubscriptionPageLink(), subscriptionPageLink,
+                     SUBSCRIPTION_PAGE_LINK_MISMATCH_MESSAGE);
+
+        Object contentDate = personalisation.get(CONTENT_DATE);
+        assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
+    }
+
+    @Test
+    void buildRawDataNonSjpEnglishWhenPayloadSizeOverLimit() {
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(UUID.randomUUID());
+        artefact.setContentDate(LocalDateTime.now());
+        artefact.setListType(ListType.COP_DAILY_CAUSE_LIST);
+        artefact.setLanguage(Language.ENGLISH);
+        artefact.setPayloadSize(200f);
+
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
+        when(channelManagementService.getArtefactFile(any(), any(), eq(false)))
+            .thenReturn(BASE64_ENCODED_TEST_STRING);
+        when(caseNameHelper.generateCaseNumberPersonalisation(any(), any()))
+            .thenReturn(SUBSCRIPTIONS.get(SubscriptionTypes.CASE_NUMBER));
+
+        Map<String, Object> personalisation =
+            personalisationService.buildRawDataSubscriptionPersonalisation(SUBSCRIPTIONS_EMAIL, artefact);
+
+        assertEquals(YES, personalisation.get(DISPLAY_CASE_NUMBERS), DISPLAY_CASE_NUMBER_MESSAGE);
+        assertEquals(SUBSCRIPTIONS.get(SubscriptionTypes.CASE_NUMBER), personalisation.get(CASE_NUMBERS),
+                     CASE_NUMBER_MESSAGE);
+
+        assertEquals(YES, personalisation.get(DISPLAY_CASE_URN), DISPLAY_CASE_URN_MESSAGE);
+        assertEquals(SUBSCRIPTIONS.get(SubscriptionTypes.CASE_URN), personalisation.get(CASE_URN), CASE_URN_MESSAGE);
+
+        assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), DISPLAY_LOCATIONS_MESSAGE);
+        assertEquals(location.getName(), personalisation.get(LOCATIONS), LOCATION_MESSAGE);
+        assertEquals(COP_LIST_TYPE, personalisation.get(LIST_TYPE), LIST_TYPE_MESSAGE);
+
+        assertFalse((boolean) personalisation.get(DISPLAY_ENGLISH_PDF), DISPLAY_FILE_MESSAGE);
+        assertFalse((boolean) personalisation.get(DISPLAY_WELSH_PDF), DISPLAY_FILE_MESSAGE);
+        assertFalse((boolean) personalisation.get(DISPLAY_PDF), DISPLAY_FILE_MESSAGE);
+        assertFalse((boolean) personalisation.get(DISPLAY_EXCEL), DISPLAY_FILE_MESSAGE);
+
+        assertEquals("", personalisation.get(ENGLISH_PDF_LINK_TO_FILE), LINK_TO_FILE_MESSAGE);
+        assertEquals("", personalisation.get(WELSH_PDF_LINK_TO_FILE), LINK_TO_FILE_MESSAGE);
+        assertEquals("", personalisation.get(PDF_LINK_TO_FILE), LINK_TO_FILE_MESSAGE);
+        assertEquals("", personalisation.get(EXCEL_LINK_TO_FILE), LINK_TO_FILE_MESSAGE);
+
+        assertFalse((boolean) personalisation.get(DISPLAY_SUMMARY), DISPLAY_SUMMARY_MESSAGE);
+        assertEquals("", personalisation.get(ARTEFACT_SUMMARY), ARTEFACT_SUMMARY_MESSAGE);
+
+        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+        Object startPageLink = personalisation.get(START_PAGE_LINK);
+        assertNotNull(startPageLink, NO_START_PAGE_LINK_MESSAGE);
+        assertEquals(personalisationLinks.getStartPageLink(), startPageLink, START_PAGE_LINK_MISMATCH_MESSAGE);
+
+        String subscriptionPageLink = (String) personalisation.get(SUBSCRIPTION_PAGE_LINK);
+        assertNotNull(subscriptionPageLink, NO_SUBSCRIPTION_PAGE_LINK_MESSAGE);
+        assertEquals(personalisationLinks.getSubscriptionPageLink(), subscriptionPageLink,
+                     SUBSCRIPTION_PAGE_LINK_MISMATCH_MESSAGE);
+
+        Object contentDate = personalisation.get(CONTENT_DATE);
+        assertNotNull(contentDate, CONTENT_DATE_ASSERT_MESSAGE);
+    }
+
+    @Test
+    void buildRawDataNonSjpEnglishWhenPayloadSizeMissing() {
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
         artefact.setContentDate(LocalDateTime.now());
@@ -360,7 +483,7 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
 
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), DISPLAY_LOCATIONS_MESSAGE);
         assertEquals(location.getName(), personalisation.get(LOCATIONS), LOCATION_MESSAGE);
-        assertEquals("COP Daily Cause List", personalisation.get(LIST_TYPE), LIST_TYPE_MESSAGE);
+        assertEquals(COP_LIST_TYPE, personalisation.get(LIST_TYPE), LIST_TYPE_MESSAGE);
 
         assertFalse((boolean) personalisation.get(DISPLAY_ENGLISH_PDF), DISPLAY_FILE_MESSAGE);
         assertFalse((boolean) personalisation.get(DISPLAY_WELSH_PDF), DISPLAY_FILE_MESSAGE);
@@ -374,8 +497,8 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
                      LINK_TO_FILE_MESSAGE);
         assertEquals("", personalisation.get(EXCEL_LINK_TO_FILE), LINK_TO_FILE_MESSAGE);
 
-        assertEquals(HELLO, personalisation.get("testing_of_array"),
-                     "testing_of_array does not match expected value");
+        assertTrue((boolean) personalisation.get(DISPLAY_SUMMARY), DISPLAY_SUMMARY_MESSAGE);
+        assertEquals(HELLO, personalisation.get(ARTEFACT_SUMMARY), ARTEFACT_SUMMARY_MESSAGE);
 
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
         Object startPageLink = personalisation.get(START_PAGE_LINK);
@@ -399,6 +522,7 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         artefact.setContentDate(LocalDateTime.now());
         artefact.setListType(ListType.COP_DAILY_CAUSE_LIST);
         artefact.setLanguage(language);
+        artefact.setPayloadSize(PAYLOAD_SIZE);
 
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(channelManagementService.getArtefactSummary(any())).thenReturn(HELLO);
@@ -419,7 +543,7 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
 
         assertEquals(YES, personalisation.get(DISPLAY_LOCATIONS), DISPLAY_LOCATIONS_MESSAGE);
         assertEquals(location.getName(), personalisation.get(LOCATIONS), LOCATION_MESSAGE);
-        assertEquals("COP Daily Cause List", personalisation.get(LIST_TYPE), LIST_TYPE_MESSAGE);
+        assertEquals(COP_LIST_TYPE, personalisation.get(LIST_TYPE), LIST_TYPE_MESSAGE);
 
         assertTrue((boolean) personalisation.get(DISPLAY_ENGLISH_PDF), DISPLAY_FILE_MESSAGE);
         assertTrue((boolean) personalisation.get(DISPLAY_WELSH_PDF), DISPLAY_FILE_MESSAGE);
@@ -434,8 +558,8 @@ class PersonalisationServiceTest extends RedisConfigurationTestBase {
         assertEquals("", personalisation.get(PDF_LINK_TO_FILE), LINK_TO_FILE_MESSAGE);
         assertEquals("", personalisation.get(EXCEL_LINK_TO_FILE), LINK_TO_FILE_MESSAGE);
 
-        assertEquals(HELLO, personalisation.get("testing_of_array"),
-                     "testing_of_array does not match expected value");
+        assertTrue((boolean) personalisation.get(DISPLAY_SUMMARY), DISPLAY_SUMMARY_MESSAGE);
+        assertEquals(HELLO, personalisation.get(ARTEFACT_SUMMARY), ARTEFACT_SUMMARY_MESSAGE);
 
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
         Object startPageLink = personalisation.get(START_PAGE_LINK);
