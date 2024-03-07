@@ -22,10 +22,10 @@
     <packageUrl regex="true">^pkg:maven/com\.azure/azure.*$</packageUrl>
     <cve>CVE-2023-36052</cve>
   </suppress>
-<!--  <suppress>-->
-<!--    <notes>Vulnerability in commons-compress. Already on latest version of parent</notes>-->
-<!--    <packageUrl regex="true">^pkg:maven/org.apache.commons/commons-compress@1.25.0</packageUrl>-->
-<!--    <cve>CVE-2024-25710</cve>-->
-<!--    <cve>CVE-2024-26308</cve>-->
-<!--  </suppress>-->
+  <suppress>
+    <notes>Vulnerability in commons-compress. Already on latest version of parent</notes>
+    <packageUrl regex="true">^pkg:maven/org.apache.commons/commons-compress@1.25.0</packageUrl>
+    <cve>CVE-2024-25710</cve>
+    <cve>CVE-2024-26308</cve>
+  </suppress>
 </suppressions>
