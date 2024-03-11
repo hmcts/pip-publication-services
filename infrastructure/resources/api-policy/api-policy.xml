@@ -39,6 +39,7 @@
     <set-header name="Authorization" exists-action="override">
       <value>@((String)context.Variables["pipAuthToken"])</value>
     </set-header>
+    <rewrite-uri template="/notify/otp" />
   </inbound>
   <backend>
     <base />
