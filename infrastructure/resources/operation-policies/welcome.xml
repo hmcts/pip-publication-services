@@ -23,6 +23,7 @@
       </allowed-methods>
     </cors>
     <base />
+    <rewrite-uri template="" />
   </inbound>
   <backend>
     <base />
