@@ -22,7 +22,7 @@ public enum Templates {
     MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL("1f7247a5-3b95-4baa-a911-890b48c9cd5b",
                                        "Media subscription email for flat file",
                                        EmailLimit.HIGH),
-    MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL("77245764-98ad-49db-9bb9-d5f1ae8fafb0",
+    MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL("02d2d10e-38ab-4f6d-a0da-13954604b2cb",
                                       "Media subscription email for JSON",
                                       EmailLimit.HIGH),
     MEDIA_NEW_ACCOUNT_SETUP("e426073b-958c-42a2-a94f-bbdd1a400cb7",

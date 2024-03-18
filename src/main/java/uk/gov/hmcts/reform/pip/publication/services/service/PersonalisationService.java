@@ -66,6 +66,9 @@ public class PersonalisationService {
     @Value("${env-name}")
     private String envName;
 
+    @Value("${payload.json.max-size-in-kb}")
+    private int maxPayloadSize;
+
     private RetentionPeriodDuration fileRetentionWeeks;
 
     private static final String REJECT_REASONS = "reject-reasons";
@@ -170,11 +173,7 @@ public class PersonalisationService {
             personalisation.put(START_PAGE_LINK, notifyConfigProperties.getLinks().getStartPageLink());
             personalisation.put(SUBSCRIPTION_PAGE_LINK, notifyConfigProperties.getLinks().getSubscriptionPageLink());
             personalisation.putAll(populateFilesPersonalisation(artefact));
-
-            personalisation.put(
-                "testing_of_array",
-                channelManagementService.getArtefactSummary(artefact.getArtefactId())
-            );
+            personalisation.putAll(populateSummaryPersonalisation(artefact));
 
             personalisation.put(
                 "content_date",
@@ -194,19 +193,10 @@ public class PersonalisationService {
     private Map<String, Object> populateFilesPersonalisation(Artefact artefact) throws NotificationClientException {
         Map<String, Object> personalisation = populatePdfPersonalisation(artefact);
 
-        byte[] artefactExcelBytes = new byte[0];
-        if (artefact.getListType().hasExcel()) {
-            String artefactExcel = channelManagementService.getArtefactFile(artefact.getArtefactId(),
-                                                                            FileType.EXCEL, false);
-            artefactExcelBytes = Base64.getDecoder().decode(artefactExcel);
-        }
-
+        byte[] artefactExcelBytes = artefact.getListType().hasExcel()
+            ? getFileBytes(artefact, FileType.EXCEL, false)
+            : new byte[0];
         boolean excelWithinSize = artefactExcelBytes.length < MAX_FILE_SIZE && artefactExcelBytes.length > 0;
-        if (artefact.getListType().hasExcel()) {
-            String artefactExcel = channelManagementService.getArtefactFile(artefact.getArtefactId(),
-                                                                            FileType.EXCEL, false);
-            artefactExcelBytes = Base64.getDecoder().decode(artefactExcel);
-        }
 
         personalisation.put("display_excel", excelWithinSize);
         personalisation.put(
@@ -220,19 +210,12 @@ public class PersonalisationService {
     private Map<String, Object> populatePdfPersonalisation(Artefact artefact) throws NotificationClientException {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
-        String artefactPdf = channelManagementService.getArtefactFile(artefact.getArtefactId(), FileType.PDF, false);
-        byte[] artefactPdfBytes = Base64.getDecoder().decode(artefactPdf);
+        byte[] artefactPdfBytes = getFileBytes(artefact, FileType.PDF, false);
         boolean pdfWithinSize = artefactPdfBytes.length < MAX_FILE_SIZE && artefactPdfBytes.length > 0;
 
         boolean hasAdditionalPdf = artefact.getListType().hasAdditionalPdf()
             && artefact.getLanguage() != Language.ENGLISH;
-        byte[] artefactWelshPdfBytes = new byte[0];
-
-        if (hasAdditionalPdf) {
-            String artefactWelshPdf = channelManagementService.getArtefactFile(artefact.getArtefactId(),
-                                                                               FileType.PDF, true);
-            artefactWelshPdfBytes = Base64.getDecoder().decode(artefactWelshPdf);
-        }
+        byte[] artefactWelshPdfBytes = hasAdditionalPdf ? getFileBytes(artefact, FileType.PDF, true) : new byte[0];
         boolean welshPdfWithinSize = artefactWelshPdfBytes.length < MAX_FILE_SIZE
             && artefactWelshPdfBytes.length > 0;
 
@@ -257,6 +240,30 @@ public class PersonalisationService {
             hasAdditionalPdf && welshPdfWithinSize
                 ? prepareUpload(artefactWelshPdfBytes, false, fileRetentionWeeks) : ""
         );
+
+        return personalisation;
+    }
+
+    private byte[] getFileBytes(Artefact artefact, FileType fileType, boolean additionalPdf) {
+        if (payloadWithinLimit(artefact.getPayloadSize())) {
+            String artefactFile = channelManagementService.getArtefactFile(artefact.getArtefactId(),
+                                                                           fileType, additionalPdf);
+            return Base64.getDecoder().decode(artefactFile);
+        }
+        return new byte[0];
+    }
+
+    private boolean payloadWithinLimit(Float payloadSize) {
+        return payloadSize == null || payloadSize < maxPayloadSize;
+    }
+
+    private Map<String, Object> populateSummaryPersonalisation(Artefact artefact) {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        boolean displaySummary = payloadWithinLimit(artefact.getPayloadSize());
+        String summary = displaySummary ? channelManagementService.getArtefactSummary(artefact.getArtefactId()) : "";
+
+        personalisation.put("display_summary", displaySummary);
+        personalisation.put("testing_of_array", summary);
 
         return personalisation;
     }

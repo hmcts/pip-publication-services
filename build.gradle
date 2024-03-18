@@ -165,7 +165,7 @@ dependencies {
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.4'
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.0-RELEASE'
-  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.1.18', {
+  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.1.19', {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 

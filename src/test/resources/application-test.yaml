@@ -18,6 +18,9 @@ service-to-service:
 error-handling:
   num-of-retries: 3
   backoff: 2
+payload:
+  json:
+    max-size-in-kb: 100
 rate-limit:
   email:
     capacity:
