@@ -86,6 +86,10 @@ springdoc:
 
 fileRetentionWeeks: 78
 
+payload:
+  json:
+    max-size-in-kb: ${MAX_PAYLOAD_SIZE:2048}
+
 rate-limit:
   email:
     capacity:
