@@ -13,19 +13,19 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 @AllArgsConstructor
 public enum Templates {
-    EXISTING_USER_WELCOME_EMAIL("321cbaa6-2a19-4980-87c6-fe90516db59b",
+    EXISTING_USER_WELCOME_EMAIL("cc1b744d-6aa1-4410-9f53-216f8bd3298f",
                                 "Existing media account welcome email",
                                 EmailLimit.STANDARD),
-    ADMIN_ACCOUNT_CREATION_EMAIL("5609165c-ae4b-4d67-acdb-8dcbd0f5fb64",
+    ADMIN_ACCOUNT_CREATION_EMAIL("0af670d6-024a-4fe5-ae2d-b908f69b0fc0",
                                  "Admin account welcome email",
                                  EmailLimit.STANDARD),
-    MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL("1f7247a5-3b95-4baa-a911-890b48c9cd5b",
+    MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL("56486063-8741-4709-b871-dcde9503ed59",
                                        "Media subscription email for flat file",
                                        EmailLimit.HIGH),
     MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL("02d2d10e-38ab-4f6d-a0da-13954604b2cb",
                                       "Media subscription email for JSON",
                                       EmailLimit.HIGH),
-    MEDIA_NEW_ACCOUNT_SETUP("e426073b-958c-42a2-a94f-bbdd1a400cb7",
+    MEDIA_NEW_ACCOUNT_SETUP("689c0183-0461-423e-a542-de513a93a5b7",
                             "New media account welcome email",
                             EmailLimit.STANDARD),
     MEDIA_DUPLICATE_ACCOUNT_EMAIL("13b058a5-82da-4331-98ff-97d3ebf66f51",

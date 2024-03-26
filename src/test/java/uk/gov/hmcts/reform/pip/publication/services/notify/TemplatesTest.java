@@ -15,7 +15,7 @@ class TemplatesTest {
 
     private static final String SHOULD_MATCH_MESSAGE = "Templates should match";
 
-    private static final String EXISTING_USER_WELCOME_TEMPLATE = "321cbaa6-2a19-4980-87c6-fe90516db59b";
+    private static final String EXISTING_USER_WELCOME_TEMPLATE = "cc1b744d-6aa1-4410-9f53-216f8bd3298f";
     private static final String MEDIA_APPLICATION_REPORTING_EMAIL_TEMPLATE = "c59c90a3-1806-4649-b4b5-b6bce8f8f72c";
     private static final String BAD_BLOB_EMAIL_TEMPLATE = "0fbd150f-ff5b-49f0-aa34-6a6273901ceb";
     private static final String MEDIA_VERIFICATION_EMAIL_TEMPLATE = "1dea6b4b-48b6-4eb1-8b86-7031de5502d9";
