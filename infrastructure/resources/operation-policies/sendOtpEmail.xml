@@ -52,6 +52,7 @@
         new JProperty("email", (String) context.Request.Body.As<JObject>(preserveContent: true)["email"])
       ).ToString();
     }</set-body>
+    <rewrite-uri template="/notify/otp" />
   </inbound>
   <backend>
     <base />
