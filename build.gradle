@@ -169,8 +169,8 @@ dependencies {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.23.0'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.23.0'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.23.1'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.23.1'
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.9'
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.5'
   implementation group: 'org.redisson', name: 'redisson', version: '3.27.1'
