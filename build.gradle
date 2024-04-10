@@ -4,10 +4,10 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.4'
-  id 'org.springframework.boot' version '3.2.3'
-  id 'org.owasp.dependencycheck' version '9.0.9'
+  id 'org.springframework.boot' version '3.2.4'
+  id 'org.owasp.dependencycheck' version '9.1.0'
   id 'com.github.ben-manes.versions' version '0.51.0'
-  id 'org.sonarqube' version '4.4.1.3373'
+  id 'org.sonarqube' version '5.0.0.4638'
   id 'io.freefair.lombok' version '8.6'
 }
 
@@ -89,7 +89,7 @@ task smoke(type: Test) {
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '10.14.0'
+  toolVersion = '10.15.0'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
@@ -158,23 +158,23 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
-  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '5.10.0'
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
+  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '5.11.0'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.4'
 
-  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.0-RELEASE'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
   implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.1.20', {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.23.0'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.23.0'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.23.1'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.23.1'
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.9'
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.5'
-  implementation group: 'org.redisson', name: 'redisson', version: '3.27.1'
-  implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.11.0'
+  implementation group: 'org.redisson', name: 'redisson', version: '3.27.2'
+  implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.12.6'
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
@@ -188,8 +188,8 @@ dependencies {
   testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.12.0'
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.12.0'
   testImplementation group: 'com.squareup.okhttp3', name: 'okhttp-tls', version: '4.12.0'
-  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.1'
-  testImplementation group: 'com.redis', name: 'testcontainers-redis', version: '2.2.0'
+  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.2'
+  testImplementation group: 'com.redis', name: 'testcontainers-redis', version: '2.2.2'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter'
   testImplementation group: 'io.github.hakky54', name: 'logcaptor', version: '2.9.2'
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.1', classifier: 'all'
@@ -217,4 +217,4 @@ wrapper {
   distributionType = Wrapper.DistributionType.ALL
 }
 
-ext['log4j2.version'] = '2.23.0'
+ext['log4j2.version'] = '2.23.1'
