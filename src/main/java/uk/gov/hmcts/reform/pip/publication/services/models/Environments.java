@@ -21,7 +21,7 @@ public enum Environments {
     private String formattedName;
 
     public static String convertEnvironmentName(String input) {
-        Optional<Environments> matchedEnvironment = Arrays.stream(Environments.values())
+        Optional<Environments> matchedEnvironment = Arrays.stream(values())
             .filter(env -> env.originalName.equals(input))
             .findFirst();
 

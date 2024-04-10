@@ -133,6 +133,7 @@ public class ThirdPartyService {
         return String.format(PDF_SUCCESS_MESSAGE, COURTEL, api);
     }
 
+    @SuppressWarnings("PMD.LooseCoupling")
     private Consumer<HttpHeaders> getHttpHeadersFromArtefact(Artefact artefact, Location location,
                                                              boolean isSendingPdf) {
         if (artefact == null || location == null) {

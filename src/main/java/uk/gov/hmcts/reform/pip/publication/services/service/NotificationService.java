@@ -98,7 +98,7 @@ public class NotificationService {
     public List<String> sendSystemAdminUpdateEmailRequest(SystemAdminAction body) {
         List<EmailToSend> email = emailService.buildSystemAdminUpdateEmail(body, Templates.SYSTEM_ADMIN_UPDATE_EMAIL);
 
-        var sentEmails = new ArrayList<String>();
+        List<String> sentEmails = new ArrayList<>();
         email.forEach(emailToSend -> sentEmails.add(
             emailService.sendEmail(emailToSend).getReference().orElse(null)
         ));
@@ -115,7 +115,7 @@ public class NotificationService {
         List<EmailToSend> email = emailService
             .buildDeleteLocationSubscriptionEmail(body, Templates.DELETE_LOCATION_SUBSCRIPTION);
 
-        var sentEmails = new ArrayList<String>();
+        List<String> sentEmails = new ArrayList<>();
         email.forEach(emailToSend ->
             sentEmails.add(emailService.sendEmail(emailToSend).getReference().orElse(null))
         );

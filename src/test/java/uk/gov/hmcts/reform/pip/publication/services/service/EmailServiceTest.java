@@ -68,7 +68,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.SYST
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @DirtiesContext
 @ActiveProfiles("test")
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.CouplingBetweenObjects"})
 class EmailServiceTest extends RedisConfigurationTestBase {
 
     private static final String EMAIL = "test@email.com";
