@@ -47,7 +47,8 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
  */
 @Component
 @Slf4j
-@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.GodClass"})
+@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods", "PMD.ExcessiveImports",
+    "PMD.GodClass", "PMD.CouplingBetweenObjects"})
 public class PersonalisationService {
 
     private static final int MAX_FILE_SIZE = 2_000_000;

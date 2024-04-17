@@ -65,7 +65,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.CouplingBetweenObjects"})
 class PersonalisationServiceTest extends RedisConfigurationTestBase {
 
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.model.account.UserProvenances;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
@@ -106,7 +107,7 @@ public class UserNotificationService {
      */
     public String inactiveUserNotificationEmailRequest(InactiveUserNotificationEmail body) {
         EmailToSend email;
-        if ("PI_AAD".equals(body.getUserProvenance())) {
+        if (UserProvenances.PI_AAD.name().equals(body.getUserProvenance())) {
             email = emailService
                 .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD);
         } else {

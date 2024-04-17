@@ -38,3 +38,5 @@ java:
           alias: REDIS_PASSWORD
   environment:
     ENV_NAME: "{{ .Values.global.environment }}"
+  autoscaling:
+    enabled: false #To be enabled as part of PUB-1692
