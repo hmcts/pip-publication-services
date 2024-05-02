@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.model.account.UserProvenances;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
@@ -18,7 +19,7 @@ public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
         InactiveUserNotificationEmailBody emailBody = (InactiveUserNotificationEmailBody) email;
-        Templates emailTemplate = "PI_AAD".equals(emailBody.getUserProvenance())
+        Templates emailTemplate = UserProvenances.PI_AAD.name().equals(emailBody.getUserProvenance())
             ? INACTIVE_USER_NOTIFICATION_EMAIL_AAD
             : INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
 
