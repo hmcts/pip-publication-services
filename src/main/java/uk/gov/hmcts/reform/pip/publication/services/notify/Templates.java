@@ -108,7 +108,7 @@ public enum Templates {
     private final String description;
     private final EmailLimit emailLimit;
     private final EmailGenerator emailGenerator;
-    private BatchEmailGenerator batchEmailGenerator = null;
+    private BatchEmailGenerator batchEmailGenerator;
 
     Templates(String template, String description, EmailLimit emailLimit, EmailGenerator emailGenerator) {
         this.template = template;

@@ -104,7 +104,7 @@ public class NotificationService {
         List<EmailToSend> email = emailService.handleBatchEmailGeneration(new SystemAdminUpdateEmailBody(body, envName),
                                                                           Templates.SYSTEM_ADMIN_UPDATE_EMAIL);
 
-        var sentEmails = new ArrayList<String>();
+        List<String> sentEmails = new ArrayList<>();
         email.forEach(emailToSend -> sentEmails.add(
             emailService.sendEmail(emailToSend)
                 .getReference()
@@ -124,7 +124,7 @@ public class NotificationService {
             new LocationSubscriptionDeletionEmailBody(body), Templates.DELETE_LOCATION_SUBSCRIPTION
         );
 
-        var sentEmails = new ArrayList<String>();
+        List<String> sentEmails = new ArrayList<>();
         email.forEach(emailToSend -> sentEmails.add(
             emailService.sendEmail(emailToSend)
                 .getReference()

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
@@ -27,16 +28,16 @@ public class FlatFileSubscriptionEmailGenerator extends EmailGenerator {
     public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
         FlatFileSubscriptionEmailBody emailBody = (FlatFileSubscriptionEmailBody) email;
         return generateEmail(emailBody.getEmail(), MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getTemplate(),
-                             buildEmailPersonalisation(emailBody, personalisationLinks));
+                             buildEmailPersonalisation(emailBody, emailBody.getArtefact(), personalisationLinks));
     }
 
-    private Map<String, Object> buildEmailPersonalisation(FlatFileSubscriptionEmailBody emailBody,
+    private Map<String, Object> buildEmailPersonalisation(FlatFileSubscriptionEmailBody emailBody, Artefact artefact,
                                                           PersonalisationLinks personalisationLinks) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             populateLocationPersonalisation(personalisation, emailBody.getLocationName());
 
-            personalisation.put("list_type", emailBody.getArtefact().getListType().getFriendlyName());
+            personalisation.put("list_type", artefact.getListType().getFriendlyName());
             JSONObject uploadedFile = prepareUpload(emailBody.getArtefactFlatFile(), false,
                                                     emailBody.getFileRetentionWeeks());
 
@@ -46,7 +47,7 @@ public class FlatFileSubscriptionEmailGenerator extends EmailGenerator {
 
             personalisation.put(
                 "content_date",
-                emailBody.getArtefact().getContentDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+                artefact.getContentDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
             );
 
             return personalisation;
