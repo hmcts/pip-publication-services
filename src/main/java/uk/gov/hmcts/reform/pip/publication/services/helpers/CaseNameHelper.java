@@ -17,10 +17,9 @@ import java.util.Optional;
 @Component
 public final class CaseNameHelper {
 
-    private ObjectMapper objectMapper;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public CaseNameHelper() {
-        objectMapper = new ObjectMapper();
+    private CaseNameHelper() {
     }
 
     /**
@@ -29,10 +28,10 @@ public final class CaseNameHelper {
      * @param content The case numbers that have been searched by.
      * @return The list of case numbers, and case names if available.
      */
-    public List<String> generateCaseNumberPersonalisation(Artefact artefact, List<String> content) {
+    public static List<String> generateCaseNumberPersonalisation(Artefact artefact, List<String> content) {
         if (artefact.getSearch() != null && artefact.getSearch().containsKey("cases")) {
-            List<CaseSearch> caseSearches = objectMapper.convertValue(artefact.getSearch().get("cases"),
-                                                                      new TypeReference<>() {});
+            List<CaseSearch> caseSearches = OBJECT_MAPPER.convertValue(artefact.getSearch().get("cases"),
+                                                                       new TypeReference<>() {});
 
             List<String> contentWithCaseNames = new ArrayList<>();
 

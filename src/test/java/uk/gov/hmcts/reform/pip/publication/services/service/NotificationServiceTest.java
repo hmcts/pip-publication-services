@@ -18,6 +18,8 @@ import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.BatchEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
@@ -36,6 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -71,7 +75,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
     private static final UUID RAND_UUID = UUID.randomUUID();
     private static final Integer LOCATION_ID = 1;
     private static final String LOCATION_NAME = "Location Name";
-
+    private static final String piTeamEmail = "teamEmail@Email.com";
 
     private final EmailToSend validEmailBodyForDuplicateMediaUserClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
         Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL.getTemplate(),
@@ -132,8 +136,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
 
         when(fileCreationService.createMediaApplicationReportingCsv(mediaApplicationList)).thenReturn(TEST_BYTE);
 
-        when(emailService.buildMediaApplicationReportingEmail(TEST_BYTE,
-                                                              Templates.MEDIA_APPLICATION_REPORTING_EMAIL))
+        when(emailService.handleEmailGeneration(any(EmailBody.class), eq(Templates.MEDIA_APPLICATION_REPORTING_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, notificationService.handleMediaApplicationReportingRequest(mediaApplicationList),
@@ -143,8 +146,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testValidPayloadReturnsSuccessUnidentifiedBlob() {
-        when(emailService.buildUnidentifiedBlobsEmail(NO_MATCH_ARTEFACT_LIST,
-                                                      Templates.BAD_BLOB_EMAIL))
+        when(emailService.handleEmailGeneration(any(EmailBody.class), eq(Templates.BAD_BLOB_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, notificationService.unidentifiedBlobEmailRequest(NO_MATCH_ARTEFACT_LIST),
@@ -152,52 +154,8 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void testIsFlatFile() {
-        artefact.setArtefactId(RAND_UUID);
-        artefact.setIsFlatFile(true);
-
-        when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
-        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
-
-        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-        subscriptionEmail.setEmail("a@b.com");
-        subscriptionEmail.setArtefactId(RAND_UUID);
-        subscriptionEmail.setSubscriptions(subscriptions);
-
-        when(emailService.buildFlatFileSubscriptionEmail(subscriptionEmail, artefact,
-                                                        Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL))
-            .thenReturn(validEmailBodyForEmailClient);
-
-        assertEquals(SUCCESS_REF_ID, notificationService.subscriptionEmailRequest(subscriptionEmail),
-                     "Subscription with flat file should return successful referenceId.");
-
-    }
-
-    @Test
-    void testIsNotFlatFile() {
-        artefact.setArtefactId(RAND_UUID);
-        artefact.setIsFlatFile(false);
-
-        when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(artefact);
-        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(location);
-
-        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-        subscriptionEmail.setEmail("a@b.com");
-        subscriptionEmail.setArtefactId(RAND_UUID);
-        subscriptionEmail.setSubscriptions(subscriptions);
-
-        when(emailService.buildRawDataSubscriptionEmail(subscriptionEmail, artefact,
-                                                         Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL))
-            .thenReturn(validEmailBodyForEmailClient);
-
-        assertEquals(SUCCESS_REF_ID, notificationService.subscriptionEmailRequest(subscriptionEmail),
-                     "Subscription with raw data should return successful referenceId.");
-
-    }
-
-    @Test
     void testHandleMiDataReportingReturnsSuccess() {
-        when(emailService.buildMiDataReportingEmail(Templates.MI_DATA_REPORTING_EMAIL))
+        when(emailService.handleEmailGeneration(any(EmailBody.class), eq(Templates.MI_DATA_REPORTING_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, notificationService.handleMiDataForReporting(),
@@ -206,8 +164,9 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testValidPayloadReturnsSuccessSystemAdminUpdateEmail() {
-        when(emailService.buildSystemAdminUpdateEmail(systemAdminActionEmailBody, Templates.SYSTEM_ADMIN_UPDATE_EMAIL))
+        when(emailService.handleBatchEmailGeneration(any(BatchEmailBody.class), eq(Templates.SYSTEM_ADMIN_UPDATE_EMAIL)))
             .thenReturn(List.of(validEmailBodyForEmailClient));
+
         assertEquals(List.of(SUCCESS_REF_ID), notificationService
                          .sendSystemAdminUpdateEmailRequest(systemAdminActionEmailBody),
                      EXISTING_REFERENCE_ID
@@ -218,9 +177,9 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
     void testValidPayloadReturnsDeleteLocationSubscriptionEmail() {
         locationSubscriptionDeletionBody.setLocationName(LOCATION_NAME);
         locationSubscriptionDeletionBody.setSubscriberEmails(List.of(EMAIL));
-        when(emailService.buildDeleteLocationSubscriptionEmail(locationSubscriptionDeletionBody,
-                                                      Templates.DELETE_LOCATION_SUBSCRIPTION))
+        when(emailService.handleBatchEmailGeneration(any(BatchEmailBody.class), eq(Templates.DELETE_LOCATION_SUBSCRIPTION)))
             .thenReturn(List.of(validEmailBodyForEmailClient));
+
         assertEquals(List.of(SUCCESS_REF_ID), notificationService
             .sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletionBody),
                      EXISTING_REFERENCE_ID

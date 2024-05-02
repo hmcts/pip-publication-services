@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
+import uk.gov.hmcts.reform.pip.publication.services.service.SubscriptionNotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
@@ -86,6 +87,9 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
     private UserNotificationService userNotificationService;
 
     @Mock
+    private SubscriptionNotificationService subscriptionNotificationService;
+
+    @Mock
     private ThirdPartyManagementService thirdPartyManagementService;
 
     @InjectMocks
@@ -124,7 +128,7 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
         when(userNotificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
-        when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
+        when(subscriptionNotificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
 

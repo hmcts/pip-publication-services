@@ -2,162 +2,48 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.pip.model.publication.Artefact;
-import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
-import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
+import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
-import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.BatchEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Component
 @Slf4j
-@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.TooManyMethods"})
+@SuppressWarnings("PMD.PreserveStackTrace")
 public class EmailService {
     private final EmailClient emailClient;
-    private final PersonalisationService personalisationService;
     private final RateLimitingService rateLimitingService;
-
-    @Value("${notify.pi-team-email}")
-    private String piTeamEmail;
+    private final NotifyConfigProperties notifyConfigProperties;
 
     @Autowired
-    public EmailService(EmailClient emailClient, PersonalisationService personalisationService,
-                        RateLimitingService rateLimitingService) {
+    public EmailService(EmailClient emailClient, RateLimitingService rateLimitingService,
+                        NotifyConfigProperties notifyConfigProperties) {
         this.emailClient = emailClient;
-        this.personalisationService = personalisationService;
         this.rateLimitingService = rateLimitingService;
+        this.notifyConfigProperties = notifyConfigProperties;
     }
 
-    protected EmailToSend buildWelcomeEmail(WelcomeEmail body, Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate);
-        return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
-                             personalisationService.buildWelcomePersonalisation(body));
+    public EmailToSend handleEmailGeneration(EmailBody emailBody, Templates emailTemplate) {
+        rateLimitingService.validate(emailBody.getEmail(), emailTemplate);
+        return emailTemplate.getEmailGenerator()
+            .buildEmail(emailBody, notifyConfigProperties.getLinks());
     }
 
-    protected EmailToSend buildCreatedAdminWelcomeEmail(CreatedAdminWelcomeEmail body, Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate);
-        return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
-                             personalisationService.buildAdminAccountPersonalisation(body));
-    }
-
-    protected EmailToSend buildFlatFileSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
-                                                         Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate);
-        return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
-                             personalisationService.buildFlatFileSubscriptionPersonalisation(body, artefact));
-    }
-
-    protected EmailToSend buildRawDataSubscriptionEmail(SubscriptionEmail body, Artefact artefact,
-                                                        Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate);
-        return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
-                             personalisationService.buildRawDataSubscriptionPersonalisation(body, artefact));
-    }
-
-    protected EmailToSend buildDuplicateMediaSetupEmail(DuplicatedMediaEmail body, Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate);
-        return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
-                             personalisationService.buildDuplicateMediaAccountPersonalisation(body));
-    }
-
-    protected EmailToSend buildMediaApplicationReportingEmail(byte[] csvMediaApplications, Templates emailTemplate) {
-        rateLimitingService.validate(piTeamEmail, emailTemplate);
-        return generateEmail(piTeamEmail, emailTemplate.getTemplate(),
-                             personalisationService
-                                 .buildMediaApplicationsReportingPersonalisation(csvMediaApplications));
-    }
-
-    protected EmailToSend buildUnidentifiedBlobsEmail(List<NoMatchArtefact> noMatchArtefactList,
-                                                      Templates emailTemplate) {
-        rateLimitingService.validate(piTeamEmail, emailTemplate);
-        return generateEmail(piTeamEmail, emailTemplate.getTemplate(),
-                             personalisationService.buildUnidentifiedBlobsPersonalisation(noMatchArtefactList));
-    }
-
-    protected EmailToSend buildMediaUserVerificationEmail(MediaVerificationEmail body,Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate);
-        return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
-                             personalisationService.buildMediaVerificationPersonalisation(body));
-    }
-
-    protected EmailToSend buildMediaApplicationRejectionEmail(MediaRejectionEmail body, Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate);
-        return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
-                             personalisationService.buildMediaRejectionPersonalisation(body));
-    }
-
-    protected EmailToSend buildInactiveUserNotificationEmail(InactiveUserNotificationEmail body,
-                                                             Templates emailTemplate) {
-        rateLimitingService.validate(body.getEmail(), emailTemplate);
-        return generateEmail(body.getEmail(), emailTemplate.getTemplate(),
-                             personalisationService.buildInactiveUserNotificationPersonalisation(body));
-    }
-
-    protected List<EmailToSend> buildSystemAdminUpdateEmail(SystemAdminAction body, Templates emailTemplate) {
-        List<String> emails = applyEmailRateLimit(body.getEmailList(), emailTemplate);
-        return generateEmail(emails, emailTemplate.getTemplate(),
-                             personalisationService.buildSystemAdminUpdateEmailPersonalisation(body));
-    }
-
-    protected EmailToSend buildMiDataReportingEmail(Templates emailTemplate) {
-        rateLimitingService.validate(piTeamEmail, emailTemplate);
-        return generateEmail(piTeamEmail, emailTemplate.getTemplate(),
-                             personalisationService.buildMiDataReportingPersonalisation());
-    }
-
-    protected List<EmailToSend> buildDeleteLocationSubscriptionEmail(
-        LocationSubscriptionDeletion body, Templates emailTemplate) {
-        List<String> emails = applyEmailRateLimit(body.getSubscriberEmails(), emailTemplate);
-        return generateEmail(emails, emailTemplate.getTemplate(),
-                             personalisationService.buildDeleteLocationSubscriptionEmailPersonalisation(body));
-    }
-
-    protected EmailToSend buildOtpEmail(String email, String otp, Templates emailTemplate) {
-        return generateEmail(email, emailTemplate.getTemplate(),
-                             personalisationService.buildOtpEmailPersonalisation(otp));
-    }
-
-    private List<String> applyEmailRateLimit(List<String> emails, Templates emailTemplate) {
-        return emails.stream()
-            .filter(e -> rateLimitingService.isValid(e, emailTemplate))
-            .toList();
-    }
-
-    private List<EmailToSend> generateEmail(List<String> emails, String template,
-                                            Map<String, Object> personalisation) {
-        List<EmailToSend> createdEmails = new ArrayList<>();
-
-        for (String email : emails) {
-            String referenceId = UUID.randomUUID().toString();
-            createdEmails.add(new EmailToSend(email, template, personalisation, referenceId));
-        }
-
-        return createdEmails;
-    }
-
-    private EmailToSend generateEmail(String email, String template, Map<String, Object> personalisation) {
-        String referenceId = UUID.randomUUID().toString();
-        return new EmailToSend(email, template, personalisation, referenceId);
+    public List<EmailToSend> handleBatchEmailGeneration(BatchEmailBody emailBody, Templates emailTemplate) {
+        List<String> emails = applyEmailRateLimit(emailBody.getEmails(), emailTemplate);
+        emailBody.setEmails(emails);
+        return emailTemplate.getBatchEmailGenerator()
+            .buildEmail(emailBody, notifyConfigProperties.getLinks());
     }
 
     public SendEmailResponse sendEmail(EmailToSend emailToSend) {
@@ -176,5 +62,11 @@ public class EmailService {
                                                        + "Reason: %s", emailToSend.getReferenceId(), e)));
             throw new NotifyException(e.getMessage());
         }
+    }
+
+    private List<String> applyEmailRateLimit(List<String> emails, Templates emailTemplate) {
+        return emails.stream()
+            .filter(e -> rateLimitingService.isValid(e, emailTemplate))
+            .toList();
     }
 }
