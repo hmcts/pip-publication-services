@@ -96,7 +96,7 @@ public enum Templates {
     private static final Map<String, Templates> LOOKUP = new ConcurrentHashMap<>();
 
     static {
-        for (Templates value : Templates.values()) {
+        for (Templates value : values()) {
             LOOKUP.put(value.template, value);
         }
     }
