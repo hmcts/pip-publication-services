@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RawDataSubscriptionEmailBody extends EmailBody {
+public class RawDataSubscriptionEmailData extends EmailData {
     private Map<SubscriptionTypes, List<String>> subscriptions;
     private UUID artefactId;
     private Artefact artefact;
@@ -28,7 +28,7 @@ public class RawDataSubscriptionEmailBody extends EmailBody {
     private byte[] excel;
     private RetentionPeriodDuration fileRetentionWeeks;
 
-    public RawDataSubscriptionEmailBody(SubscriptionEmail subscriptionEmail, Artefact artefact, String artefactSummary,
+    public RawDataSubscriptionEmailData(SubscriptionEmail subscriptionEmail, Artefact artefact, String artefactSummary,
                                         byte[] pdf, byte[] additionalPdf, byte[] excel, String locationName,
                                         int fileRetentionWeeks) {
         super(subscriptionEmail.getEmail());

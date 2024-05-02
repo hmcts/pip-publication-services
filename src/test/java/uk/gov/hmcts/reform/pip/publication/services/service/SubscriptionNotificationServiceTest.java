@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.FlatFileSubscriptionEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.RawDataSubscriptionEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.FlatFileSubscriptionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.RawDataSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
@@ -95,7 +95,7 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         EmailToSend validEmailBodyForEmailClient = new EmailToSend(
             EMAIL, MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getTemplate(), PERSONALISATION_MAP, SUCCESS_REF_ID
         );
-        when(emailService.handleEmailGeneration(any(FlatFileSubscriptionEmailBody.class),
+        when(emailService.handleEmailGeneration(any(FlatFileSubscriptionEmailData.class),
                                                 eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
 
@@ -117,7 +117,7 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         EmailToSend validEmailBodyForEmailClient = new EmailToSend(
             EMAIL, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(), PERSONALISATION_MAP, SUCCESS_REF_ID
         );
-        when(emailService.handleEmailGeneration(any(RawDataSubscriptionEmailBody.class),
+        when(emailService.handleEmailGeneration(any(RawDataSubscriptionEmailData.class),
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
 

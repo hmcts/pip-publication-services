@@ -8,8 +8,8 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Not
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.FlatFileSubscriptionEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.EmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.FlatFileSubscriptionEmailData;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.format.DateTimeFormatter;
@@ -25,21 +25,21 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 @SuppressWarnings("PMD.PreserveStackTrace")
 public class FlatFileSubscriptionEmailGenerator extends EmailGenerator {
     @Override
-    public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
-        FlatFileSubscriptionEmailBody emailBody = (FlatFileSubscriptionEmailBody) email;
-        return generateEmail(emailBody.getEmail(), MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getTemplate(),
-                             buildEmailPersonalisation(emailBody, emailBody.getArtefact(), personalisationLinks));
+    public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
+        FlatFileSubscriptionEmailData emailData = (FlatFileSubscriptionEmailData) email;
+        return generateEmail(emailData.getEmail(), MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getTemplate(),
+                             buildEmailPersonalisation(emailData, emailData.getArtefact(), personalisationLinks));
     }
 
-    private Map<String, Object> buildEmailPersonalisation(FlatFileSubscriptionEmailBody emailBody, Artefact artefact,
+    private Map<String, Object> buildEmailPersonalisation(FlatFileSubscriptionEmailData emailData, Artefact artefact,
                                                           PersonalisationLinks personalisationLinks) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
-            populateLocationPersonalisation(personalisation, emailBody.getLocationName());
+            populateLocationPersonalisation(personalisation, emailData.getLocationName());
 
             personalisation.put("list_type", artefact.getListType().getFriendlyName());
-            JSONObject uploadedFile = prepareUpload(emailBody.getArtefactFlatFile(), false,
-                                                    emailBody.getFileRetentionWeeks());
+            JSONObject uploadedFile = prepareUpload(emailData.getArtefactFlatFile(), false,
+                                                    emailData.getFileRetentionWeeks());
 
             personalisation.put("link_to_file", uploadedFile);
             personalisation.put("start_page_link", personalisationLinks.getStartPageLink());
@@ -54,8 +54,8 @@ public class FlatFileSubscriptionEmailGenerator extends EmailGenerator {
         } catch (NotificationClientException e) {
             log.warn(writeLog(String.format(
                 "Error adding attachment to flat file email %s. Artefact ID: %s",
-                EmailHelper.maskEmail(emailBody.getEmail()),
-                emailBody.getArtefactId()
+                EmailHelper.maskEmail(emailData.getEmail()),
+                emailData.getArtefactId()
             )));
             throw new NotifyException(e.getMessage());
         }

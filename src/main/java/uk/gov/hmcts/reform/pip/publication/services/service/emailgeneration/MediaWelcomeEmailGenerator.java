@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MediaWelcomeEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.EmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MediaWelcomeEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.util.Map;
@@ -16,20 +16,20 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 @Service
 public class MediaWelcomeEmailGenerator extends EmailGenerator {
     @Override
-    public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
-        MediaWelcomeEmailBody emailBody = (MediaWelcomeEmailBody) email;
-        Templates emailTemplate = emailBody.isExisting()
+    public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
+        MediaWelcomeEmailData emailData = (MediaWelcomeEmailData) email;
+        Templates emailTemplate = emailData.isExisting()
             ? EXISTING_USER_WELCOME_EMAIL
             : MEDIA_NEW_ACCOUNT_SETUP;
 
-        return generateEmail(emailBody.getEmail(), emailTemplate.getTemplate(),
-                             buildEmailPersonalisation(emailBody, personalisationLinks));
+        return generateEmail(emailData.getEmail(), emailTemplate.getTemplate(),
+                             buildEmailPersonalisation(emailData, personalisationLinks));
     }
 
-    private Map<String, Object> buildEmailPersonalisation(MediaWelcomeEmailBody emailBody,
+    private Map<String, Object> buildEmailPersonalisation(MediaWelcomeEmailData emailData,
                                                           PersonalisationLinks personalisationLinks) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put("full_name", emailBody.getFullName());
+        personalisation.put("full_name", emailData.getFullName());
         personalisation.put("forgot_password_process_link", personalisationLinks.getAadPwResetLinkMedia());
         personalisation.put("subscription_page_link", personalisationLinks.getSubscriptionPageLink());
         personalisation.put("start_page_link", personalisationLinks.getStartPageLink());

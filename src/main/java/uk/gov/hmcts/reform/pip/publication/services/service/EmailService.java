@@ -7,8 +7,8 @@ import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.BatchEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.BatchEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.EmailData;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
@@ -33,13 +33,13 @@ public class EmailService {
         this.notifyConfigProperties = notifyConfigProperties;
     }
 
-    public EmailToSend handleEmailGeneration(EmailBody emailBody, Templates emailTemplate) {
-        rateLimitingService.validate(emailBody.getEmail(), emailTemplate);
+    public EmailToSend handleEmailGeneration(EmailData emailData, Templates emailTemplate) {
+        rateLimitingService.validate(emailData.getEmail(), emailTemplate);
         return emailTemplate.getEmailGenerator()
-            .buildEmail(emailBody, notifyConfigProperties.getLinks());
+            .buildEmail(emailData, notifyConfigProperties.getLinks());
     }
 
-    public List<EmailToSend> handleBatchEmailGeneration(BatchEmailBody emailBody, Templates emailTemplate) {
+    public List<EmailToSend> handleBatchEmailGeneration(BatchEmailData emailBody, Templates emailTemplate) {
         List<String> emails = applyEmailRateLimit(emailBody.getEmails(), emailTemplate);
         emailBody.setEmails(emails);
         return emailTemplate.getBatchEmailGenerator()

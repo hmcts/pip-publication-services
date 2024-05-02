@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MediaApplicationReportingEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.EmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MediaApplicationReportingEmailData;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
@@ -22,19 +22,19 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 @SuppressWarnings("PMD.PreserveStackTrace")
 public class MediaApplicationReportingEmailGenerator extends EmailGenerator {
     @Override
-    public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
-        MediaApplicationReportingEmailBody emailBody = (MediaApplicationReportingEmailBody) email;
-        return generateEmail(emailBody.getEmail(), MEDIA_APPLICATION_REPORTING_EMAIL.getTemplate(),
-                             buildEmailPersonalisation(emailBody));
+    public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
+        MediaApplicationReportingEmailData emailData = (MediaApplicationReportingEmailData) email;
+        return generateEmail(emailData.getEmail(), MEDIA_APPLICATION_REPORTING_EMAIL.getTemplate(),
+                             buildEmailPersonalisation(emailData));
     }
 
-    private Map<String, Object> buildEmailPersonalisation(MediaApplicationReportingEmailBody emailBody) {
+    private Map<String, Object> buildEmailPersonalisation(MediaApplicationReportingEmailData emailData) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             personalisation.put("link_to_file",
-                                prepareUpload(emailBody.getMediaApplicationsCsv(), false,
-                                              emailBody.getFileRetentionWeeks()));
-            personalisation.put("env_name", convertEnvironmentName(emailBody.getEnvName()));
+                                prepareUpload(emailData.getMediaApplicationsCsv(), false,
+                                              emailData.getFileRetentionWeeks()));
+            personalisation.put("env_name", convertEnvironmentName(emailData.getEnvName()));
             return personalisation;
         } catch (NotificationClientException e) {
             log.error(writeLog(String.format(

@@ -6,13 +6,13 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.model.account.UserProvenances;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.AdminWelcomeEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.InactiveUserNotificationEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MediaAccountRejectionEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MediaDuplicatedAccountEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MediaUserVerificationEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MediaWelcomeEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.OtpEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.AdminWelcomeEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.InactiveUserNotificationEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MediaAccountRejectionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MediaDuplicatedAccountEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MediaUserVerificationEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MediaWelcomeEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.OtpEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
@@ -44,7 +44,7 @@ public class UserNotificationService {
         log.info(writeLog(String.format("Media account welcome email being processed for user %s",
             EmailHelper.maskEmail(body.getEmail()))));
 
-        MediaWelcomeEmailBody emailBody = new MediaWelcomeEmailBody(body);
+        MediaWelcomeEmailData emailBody = new MediaWelcomeEmailData(body);
         Templates emailTemplate = body.isExisting()
             ? Templates.EXISTING_USER_WELCOME_EMAIL
             : Templates.MEDIA_NEW_ACCOUNT_SETUP;
@@ -65,7 +65,7 @@ public class UserNotificationService {
         log.info(writeLog(String.format("Admin account welcome email being processed for user %s",
             EmailHelper.maskEmail(body.getEmail()))));
 
-        EmailToSend email = emailService.handleEmailGeneration(new AdminWelcomeEmailBody(body),
+        EmailToSend email = emailService.handleEmailGeneration(new AdminWelcomeEmailData(body),
                                                                Templates.ADMIN_ACCOUNT_CREATION_EMAIL);
         return emailService.sendEmail(email)
             .getReference()
@@ -81,7 +81,7 @@ public class UserNotificationService {
      */
     public String mediaDuplicateUserEmailRequest(DuplicatedMediaEmail body) {
         EmailToSend email = emailService.handleEmailGeneration(
-            new MediaDuplicatedAccountEmailBody(body),
+            new MediaDuplicatedAccountEmailData(body),
             Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL
         );
         return emailService.sendEmail(email)
@@ -96,7 +96,7 @@ public class UserNotificationService {
      * @return The ID that references the media user verification email.
      */
     public String mediaUserVerificationEmailRequest(MediaVerificationEmail body) {
-        EmailToSend email = emailService.handleEmailGeneration(new MediaUserVerificationEmailBody(body),
+        EmailToSend email = emailService.handleEmailGeneration(new MediaUserVerificationEmailData(body),
                                                                Templates.MEDIA_USER_VERIFICATION_EMAIL);
         return emailService.sendEmail(email)
             .getReference()
@@ -110,7 +110,7 @@ public class UserNotificationService {
      * @return The ID that references the media user rejection email.
      */
     public String mediaUserRejectionEmailRequest(MediaRejectionEmail body) {
-        EmailToSend email = emailService.handleEmailGeneration(new MediaAccountRejectionEmailBody(body),
+        EmailToSend email = emailService.handleEmailGeneration(new MediaAccountRejectionEmailData(body),
                                                                Templates.MEDIA_USER_REJECTION_EMAIL);
         return emailService.sendEmail(email)
             .getReference()
@@ -128,7 +128,7 @@ public class UserNotificationService {
             ? Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD
             : Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
 
-        EmailToSend email = emailService.handleEmailGeneration(new InactiveUserNotificationEmailBody(body),
+        EmailToSend email = emailService.handleEmailGeneration(new InactiveUserNotificationEmailData(body),
                                                                emailTemplate);
         return emailService.sendEmail(email)
             .getReference()
@@ -139,7 +139,7 @@ public class UserNotificationService {
         log.info(writeLog(String.format("OTP email being processed for user %s",
                                         EmailHelper.maskEmail(body.getEmail()))));
 
-        EmailToSend email = emailService.handleEmailGeneration(new OtpEmailBody(body), Templates.OTP_EMAIL);
+        EmailToSend email = emailService.handleEmailGeneration(new OtpEmailData(body), Templates.OTP_EMAIL);
         return emailService.sendEmail(email)
             .getReference()
             .orElse(null);

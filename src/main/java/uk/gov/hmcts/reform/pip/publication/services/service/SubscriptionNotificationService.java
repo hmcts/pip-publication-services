@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.FlatFileSubscriptionEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.RawDataSubscriptionEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.FlatFileSubscriptionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.RawDataSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
@@ -64,7 +64,7 @@ public class SubscriptionNotificationService {
 
     private String flatFileSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact, String locationName) {
         byte[] artefactFlatFile = dataManagementService.getArtefactFlatFile(body.getArtefactId());
-        FlatFileSubscriptionEmailBody emailBody = new FlatFileSubscriptionEmailBody(
+        FlatFileSubscriptionEmailData emailBody = new FlatFileSubscriptionEmailData(
             body, artefact, locationName, artefactFlatFile, fileRetentionWeeks
         );
         EmailToSend email = emailService.handleEmailGeneration(emailBody,
@@ -85,7 +85,7 @@ public class SubscriptionNotificationService {
         byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
             : new byte[0];
 
-        RawDataSubscriptionEmailBody emailBody = new RawDataSubscriptionEmailBody(
+        RawDataSubscriptionEmailData emailBody = new RawDataSubscriptionEmailData(
             body, artefact, artefactSummary, pdf, additionalPdf, excel, locationName, fileRetentionWeeks
         );
         EmailToSend email = emailService.handleEmailGeneration(emailBody,

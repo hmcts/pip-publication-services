@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration;
 
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.BatchEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.BatchEmailData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public abstract class BatchEmailGenerator {
-    public abstract List<EmailToSend> buildEmail(BatchEmailBody emailBody, PersonalisationLinks personalisationLinks);
+    public abstract List<EmailToSend> buildEmail(BatchEmailData emailData, PersonalisationLinks personalisationLinks);
 
     public List<EmailToSend> generateEmail(List<String> emails, String template,
                                             Map<String, Object> personalisation) {

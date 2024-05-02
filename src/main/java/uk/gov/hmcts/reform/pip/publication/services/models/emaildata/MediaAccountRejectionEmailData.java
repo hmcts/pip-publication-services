@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,11 +11,11 @@ import java.util.Map;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MediaAccountRejectionEmailBody extends EmailBody {
+public class MediaAccountRejectionEmailData extends EmailData {
     private String fullName;
     private Map<String, List<String>> reasons;
 
-    public MediaAccountRejectionEmailBody(MediaRejectionEmail mediaRejectionEmail) {
+    public MediaAccountRejectionEmailData(MediaRejectionEmail mediaRejectionEmail) {
         super(mediaRejectionEmail.getEmail());
         this.fullName = mediaRejectionEmail.getFullName();
         this.reasons = mediaRejectionEmail.getReasons();

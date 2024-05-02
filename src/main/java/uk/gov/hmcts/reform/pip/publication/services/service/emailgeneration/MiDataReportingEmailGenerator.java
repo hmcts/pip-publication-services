@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MiDataReportingEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.EmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MiDataReportingEmailData;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
@@ -22,19 +22,19 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 @SuppressWarnings("PMD.PreserveStackTrace")
 public class MiDataReportingEmailGenerator extends EmailGenerator {
     @Override
-    public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
-        MiDataReportingEmailBody emailBody = (MiDataReportingEmailBody) email;
-        return generateEmail(emailBody.getEmail(), MI_DATA_REPORTING_EMAIL.getTemplate(),
-                             buildEmailPersonalisation(emailBody));
+    public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
+        MiDataReportingEmailData emailData = (MiDataReportingEmailData) email;
+        return generateEmail(emailData.getEmail(), MI_DATA_REPORTING_EMAIL.getTemplate(),
+                             buildEmailPersonalisation(emailData));
     }
 
-    private Map<String, Object> buildEmailPersonalisation(MiDataReportingEmailBody emailBody) {
+    private Map<String, Object> buildEmailPersonalisation(MiDataReportingEmailData emailData) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         try {
             personalisation.put("link_to_file",
-                                prepareUpload(emailBody.getExcel(), false,
-                                              emailBody.getFileRetentionWeeks()));
-            personalisation.put("env_name", convertEnvironmentName(emailBody.getEnvName()));
+                                prepareUpload(emailData.getExcel(), false,
+                                              emailData.getFileRetentionWeeks()));
+            personalisation.put("env_name", convertEnvironmentName(emailData.getEnvName()));
         } catch (NotificationClientException e) {
             log.warn(writeLog("Error adding attachment to MI data reporting email"));
             throw new NotifyException(e.getMessage());

@@ -17,11 +17,11 @@ import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.LocationSubscriptionDeletionEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MediaApplicationReportingEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MiDataReportingEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.SystemAdminUpdateEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.UnidentifiedBlobEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.LocationSubscriptionDeletionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MediaApplicationReportingEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MiDataReportingEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.SystemAdminUpdateEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.UnidentifiedBlobEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -126,7 +126,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
             "REJECTED", LocalDateTime.now()));
 
         when(fileCreationService.createMediaApplicationReportingCsv(mediaApplicationList)).thenReturn(TEST_BYTE);
-        when(emailService.handleEmailGeneration(any(MediaApplicationReportingEmailBody.class),
+        when(emailService.handleEmailGeneration(any(MediaApplicationReportingEmailData.class),
                                                 eq(Templates.MEDIA_APPLICATION_REPORTING_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
 
@@ -137,7 +137,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testValidPayloadReturnsSuccessUnidentifiedBlob() {
-        when(emailService.handleEmailGeneration(any(UnidentifiedBlobEmailBody.class), eq(Templates.BAD_BLOB_EMAIL)))
+        when(emailService.handleEmailGeneration(any(UnidentifiedBlobEmailData.class), eq(Templates.BAD_BLOB_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, notificationService.unidentifiedBlobEmailRequest(NO_MATCH_ARTEFACT_LIST),
@@ -146,7 +146,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testHandleMiDataReportingReturnsSuccess() {
-        when(emailService.handleEmailGeneration(any(MiDataReportingEmailBody.class),
+        when(emailService.handleEmailGeneration(any(MiDataReportingEmailData.class),
                                                 eq(Templates.MI_DATA_REPORTING_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
 
@@ -156,7 +156,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testValidPayloadReturnsSuccessSystemAdminUpdateEmail() {
-        when(emailService.handleBatchEmailGeneration(any(SystemAdminUpdateEmailBody.class),
+        when(emailService.handleBatchEmailGeneration(any(SystemAdminUpdateEmailData.class),
                                                      eq(Templates.SYSTEM_ADMIN_UPDATE_EMAIL)))
             .thenReturn(List.of(validEmailBodyForEmailClient));
 
@@ -170,7 +170,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
     void testValidPayloadReturnsDeleteLocationSubscriptionEmail() {
         locationSubscriptionDeletionBody.setLocationName(LOCATION_NAME);
         locationSubscriptionDeletionBody.setSubscriberEmails(List.of(EMAIL));
-        when(emailService.handleBatchEmailGeneration(any(LocationSubscriptionDeletionEmailBody.class),
+        when(emailService.handleBatchEmailGeneration(any(LocationSubscriptionDeletionEmailData.class),
                                                      eq(Templates.DELETE_LOCATION_SUBSCRIPTION)))
             .thenReturn(List.of(validEmailBodyForEmailClient));
 

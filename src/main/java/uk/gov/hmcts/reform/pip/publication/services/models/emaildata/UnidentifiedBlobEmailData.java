@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,11 +10,11 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UnidentifiedBlobEmailBody extends EmailBody {
+public class UnidentifiedBlobEmailData extends EmailData {
     private List<NoMatchArtefact> noMatchArtefacts;
     private String envName;
 
-    public UnidentifiedBlobEmailBody(String email, List<NoMatchArtefact> noMatchArtefacts, String envName) {
+    public UnidentifiedBlobEmailData(String email, List<NoMatchArtefact> noMatchArtefacts, String envName) {
         super(email);
         this.noMatchArtefacts = noMatchArtefacts;
         this.envName = envName;

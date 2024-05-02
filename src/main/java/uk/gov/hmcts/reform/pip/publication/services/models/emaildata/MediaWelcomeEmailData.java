@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,11 +8,11 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MediaWelcomeEmailBody extends EmailBody {
+public class MediaWelcomeEmailData extends EmailData {
     private boolean isExisting;
     private String fullName;
 
-    public MediaWelcomeEmailBody(WelcomeEmail welcomeEmail) {
+    public MediaWelcomeEmailData(WelcomeEmail welcomeEmail) {
         super(welcomeEmail.getEmail());
         this.isExisting = welcomeEmail.isExisting();
         this.fullName = welcomeEmail.getFullName();

@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MediaAccountRejectionEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.EmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MediaAccountRejectionEmailData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,19 +16,19 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 @Service
 public class MediaAccountRejectionEmailGenerator extends EmailGenerator {
     @Override
-    public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
-        MediaAccountRejectionEmailBody emailBody = (MediaAccountRejectionEmailBody) email;
-        return generateEmail(emailBody.getEmail(), MEDIA_USER_REJECTION_EMAIL.getTemplate(),
-                             buildEmailPersonalisation(emailBody, personalisationLinks));
+    public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
+        MediaAccountRejectionEmailData emailData = (MediaAccountRejectionEmailData) email;
+        return generateEmail(emailData.getEmail(), MEDIA_USER_REJECTION_EMAIL.getTemplate(),
+                             buildEmailPersonalisation(emailData, personalisationLinks));
     }
 
-    private Map<String, Object> buildEmailPersonalisation(MediaAccountRejectionEmailBody emailBody,
+    private Map<String, Object> buildEmailPersonalisation(MediaAccountRejectionEmailData emailData,
                                                           PersonalisationLinks personalisationLinks) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
-        personalisation.put("full-name", emailBody.getFullName());
+        personalisation.put("full-name", emailData.getFullName());
 
-        personalisation.put("reject-reasons", formatReasons(emailBody.getReasons()));
+        personalisation.put("reject-reasons", formatReasons(emailData.getReasons()));
         personalisation.put("link-to-service", personalisationLinks.getStartPageLink()
             + "/create-media-account");
 

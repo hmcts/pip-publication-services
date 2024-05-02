@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,10 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminW
 @Getter
 @Setter
 @NoArgsConstructor
-public class AdminWelcomeEmailBody extends EmailBody {
+public class AdminWelcomeEmailData extends EmailData {
     private String forename;
 
-    public AdminWelcomeEmailBody(CreatedAdminWelcomeEmail welcomeEmail) {
+    public AdminWelcomeEmailData(CreatedAdminWelcomeEmail welcomeEmail) {
         super(welcomeEmail.getEmail());
         this.forename = welcomeEmail.getForename();
     }

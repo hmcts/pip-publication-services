@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,10 @@ import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LocationSubscriptionDeletionEmailBody extends BatchEmailBody {
+public class LocationSubscriptionDeletionEmailData extends BatchEmailData {
     private String locationName;
 
-    public LocationSubscriptionDeletionEmailBody(LocationSubscriptionDeletion locationSubscriptionDeletion) {
+    public LocationSubscriptionDeletionEmailData(LocationSubscriptionDeletion locationSubscriptionDeletion) {
         super(locationSubscriptionDeletion.getSubscriberEmails());
         this.locationName = locationSubscriptionDeletion.getLocationName();
     }

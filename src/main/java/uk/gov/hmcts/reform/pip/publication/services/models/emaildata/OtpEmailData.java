@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,10 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OtpEmailBody extends EmailBody {
+public class OtpEmailData extends EmailData {
     private String otp;
 
-    public OtpEmailBody(OtpEmail otpEmail) {
+    public OtpEmailData(OtpEmail otpEmail) {
         super(otpEmail.getEmail());
         this.otp = otpEmail.getOtp();
     }

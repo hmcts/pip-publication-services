@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,10 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 @Getter
 @Setter
 @NoArgsConstructor
-public class MediaDuplicatedAccountEmailBody extends EmailBody {
+public class MediaDuplicatedAccountEmailData extends EmailData {
     private String fullName;
 
-    public MediaDuplicatedAccountEmailBody(DuplicatedMediaEmail duplicatedMediaEmail) {
+    public MediaDuplicatedAccountEmailData(DuplicatedMediaEmail duplicatedMediaEmail) {
         super(duplicatedMediaEmail.getEmail());
         this.fullName = duplicatedMediaEmail.getFullName();
     }

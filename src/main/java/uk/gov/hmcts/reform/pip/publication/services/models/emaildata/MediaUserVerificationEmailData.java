@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,10 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 @Getter
 @Setter
 @NoArgsConstructor
-public class MediaUserVerificationEmailBody extends EmailBody {
+public class MediaUserVerificationEmailData extends EmailData {
     private String fullName;
 
-    public MediaUserVerificationEmailBody(MediaVerificationEmail mediaVerificationEmail) {
+    public MediaUserVerificationEmailData(MediaVerificationEmail mediaVerificationEmail) {
         super(mediaVerificationEmail.getEmail());
         this.fullName = mediaVerificationEmail.getFullName();
     }

@@ -10,11 +10,11 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Exc
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.LocationSubscriptionDeletionEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MediaApplicationReportingEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MiDataReportingEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.SystemAdminUpdateEmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.UnidentifiedBlobEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.LocationSubscriptionDeletionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MediaApplicationReportingEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MiDataReportingEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.SystemAdminUpdateEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.UnidentifiedBlobEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class NotificationService {
     public String handleMediaApplicationReportingRequest(List<MediaApplication> mediaApplicationList) {
         byte[] mediaApplicationsCsv = fileCreationService.createMediaApplicationReportingCsv(mediaApplicationList);
         EmailToSend email = emailService.handleEmailGeneration(
-            new MediaApplicationReportingEmailBody(piTeamEmail, mediaApplicationsCsv, fileRetentionWeeks, envName),
+            new MediaApplicationReportingEmailData(piTeamEmail, mediaApplicationsCsv, fileRetentionWeeks, envName),
             Templates.MEDIA_APPLICATION_REPORTING_EMAIL
         );
         return emailService.sendEmail(email)
@@ -71,7 +71,7 @@ public class NotificationService {
      */
     public String unidentifiedBlobEmailRequest(List<NoMatchArtefact> noMatchArtefactList) {
         EmailToSend email = emailService.handleEmailGeneration(
-            new UnidentifiedBlobEmailBody(piTeamEmail, noMatchArtefactList, envName),
+            new UnidentifiedBlobEmailData(piTeamEmail, noMatchArtefactList, envName),
             Templates.BAD_BLOB_EMAIL
         );
         return emailService.sendEmail(email)
@@ -94,14 +94,14 @@ public class NotificationService {
         }
 
         EmailToSend email = emailService.handleEmailGeneration(
-            new MiDataReportingEmailBody(piTeamEmail, excel, fileRetentionWeeks, envName),
+            new MiDataReportingEmailData(piTeamEmail, excel, fileRetentionWeeks, envName),
             Templates.MI_DATA_REPORTING_EMAIL
         );
         return emailService.sendEmail(email).getReference().orElse(null);
     }
 
     public List<String> sendSystemAdminUpdateEmailRequest(SystemAdminAction body) {
-        List<EmailToSend> email = emailService.handleBatchEmailGeneration(new SystemAdminUpdateEmailBody(body, envName),
+        List<EmailToSend> email = emailService.handleBatchEmailGeneration(new SystemAdminUpdateEmailData(body, envName),
                                                                           Templates.SYSTEM_ADMIN_UPDATE_EMAIL);
 
         List<String> sentEmails = new ArrayList<>();
@@ -121,7 +121,7 @@ public class NotificationService {
      */
     public List<String> sendDeleteLocationSubscriptionEmail(LocationSubscriptionDeletion body) {
         List<EmailToSend> email = emailService.handleBatchEmailGeneration(
-            new LocationSubscriptionDeletionEmailBody(body), Templates.DELETE_LOCATION_SUBSCRIPTION
+            new LocationSubscriptionDeletionEmailData(body), Templates.DELETE_LOCATION_SUBSCRIPTION
         );
 
         List<String> sentEmails = new ArrayList<>();

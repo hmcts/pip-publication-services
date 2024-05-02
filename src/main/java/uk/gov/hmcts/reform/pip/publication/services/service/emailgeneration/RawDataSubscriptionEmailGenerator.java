@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.pip.publication.services.helpers.CaseNameHelper;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.RawDataSubscriptionEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.EmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.RawDataSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -36,28 +36,28 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
     private static final int MAX_FILE_SIZE = 2_000_000;
 
     @Override
-    public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
-        RawDataSubscriptionEmailBody emailBody = (RawDataSubscriptionEmailBody) email;
-        return generateEmail(emailBody.getEmail(), MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(),
-                             buildEmailPersonalisation(emailBody, emailBody.getArtefact(), personalisationLinks));
+    public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
+        RawDataSubscriptionEmailData emailData = (RawDataSubscriptionEmailData) email;
+        return generateEmail(emailData.getEmail(), MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(),
+                             buildEmailPersonalisation(emailData, emailData.getArtefact(), personalisationLinks));
     }
 
-    private Map<String, Object> buildEmailPersonalisation(RawDataSubscriptionEmailBody emailBody, Artefact artefact,
+    private Map<String, Object> buildEmailPersonalisation(RawDataSubscriptionEmailData emailData, Artefact artefact,
                                                           PersonalisationLinks personalisationLinks) {
         try {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
-            Map<SubscriptionTypes, List<String>> subscriptions = emailBody.getSubscriptions();
+            Map<SubscriptionTypes, List<String>> subscriptions = emailData.getSubscriptions();
 
             populateCaseNumberPersonalisation(artefact, personalisation,
                                               subscriptions.get(SubscriptionTypes.CASE_NUMBER));
             populateCaseUrnPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.CASE_URN));
-            populateLocationPersonalisation(personalisation, emailBody.getLocationName());
+            populateLocationPersonalisation(personalisation, emailData.getLocationName());
 
             personalisation.put("list_type", artefact.getListType().getFriendlyName());
             personalisation.put("start_page_link", personalisationLinks.getStartPageLink());
             personalisation.put("subscription_page_link", personalisationLinks.getSubscriptionPageLink());
-            personalisation.putAll(populateFilesPersonalisation(emailBody, artefact));
-            personalisation.putAll(populateSummaryPersonalisation(emailBody.getArtefactSummary()));
+            personalisation.putAll(populateFilesPersonalisation(emailData, artefact));
+            personalisation.putAll(populateSummaryPersonalisation(emailData.getArtefactSummary()));
 
             personalisation.put(
                 "content_date",
@@ -67,7 +67,7 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         } catch (Exception e) {
             log.warn(writeLog(
                 String.format("Error adding attachment to raw data email %s. Artefact ID: %s",
-                              EmailHelper.maskEmail(emailBody.getEmail()), emailBody.getArtefactId())
+                              EmailHelper.maskEmail(emailData.getEmail()), emailData.getArtefactId())
             ));
             throw new NotifyException(e.getMessage());
         }
@@ -101,23 +101,23 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         personalisation.put("locations", locationName);
     }
 
-    private Map<String, Object> populateFilesPersonalisation(RawDataSubscriptionEmailBody emailBody, Artefact artefact)
+    private Map<String, Object> populateFilesPersonalisation(RawDataSubscriptionEmailData emailData, Artefact artefact)
         throws NotificationClientException {
-        Map<String, Object> personalisation = populatePdfPersonalisation(emailBody, artefact);
+        Map<String, Object> personalisation = populatePdfPersonalisation(emailData, artefact);
 
-        byte[] artefactExcelBytes = emailBody.getExcel();
+        byte[] artefactExcelBytes = emailData.getExcel();
         boolean excelWithinSize = artefactExcelBytes.length < MAX_FILE_SIZE && artefactExcelBytes.length > 0;
 
         personalisation.put("display_excel", excelWithinSize);
         personalisation.put(
             "excel_link_to_file",
-            excelWithinSize ? prepareUpload(artefactExcelBytes, false, emailBody.getFileRetentionWeeks()) : ""
+            excelWithinSize ? prepareUpload(artefactExcelBytes, false, emailData.getFileRetentionWeeks()) : ""
         );
 
         return personalisation;
     }
 
-    private Map<String, Object> populatePdfPersonalisation(RawDataSubscriptionEmailBody emailBody, Artefact artefact)
+    private Map<String, Object> populatePdfPersonalisation(RawDataSubscriptionEmailData emailData, Artefact artefact)
         throws NotificationClientException {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
 

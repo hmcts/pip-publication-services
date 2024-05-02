@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,12 +11,12 @@ import java.util.Arrays;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MediaApplicationReportingEmailBody extends EmailBody {
+public class MediaApplicationReportingEmailData extends EmailData {
     private byte[] mediaApplicationsCsv;
     private RetentionPeriodDuration fileRetentionWeeks;
     private String envName;
 
-    public MediaApplicationReportingEmailBody(String email, byte[] mediaApplicationsCsv, int fileRetentionWeeks,
+    public MediaApplicationReportingEmailData(String email, byte[] mediaApplicationsCsv, int fileRetentionWeeks,
                                               String envName) {
         super(email);
         this.mediaApplicationsCsv = mediaApplicationsCsv == null ? new byte[0]

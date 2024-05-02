@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
-import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.MediaUserVerificationEmailBody;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.EmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MediaUserVerificationEmailData;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,16 +14,16 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 @Service
 public class MediaUserVerificationEmailGenerator extends EmailGenerator {
     @Override
-    public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
-        MediaUserVerificationEmailBody emailBody = (MediaUserVerificationEmailBody) email;
-        return generateEmail(emailBody.getEmail(), MEDIA_USER_VERIFICATION_EMAIL.getTemplate(),
-                             buildEmailPersonalisation(emailBody, personalisationLinks));
+    public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
+        MediaUserVerificationEmailData emailData = (MediaUserVerificationEmailData) email;
+        return generateEmail(emailData.getEmail(), MEDIA_USER_VERIFICATION_EMAIL.getTemplate(),
+                             buildEmailPersonalisation(emailData, personalisationLinks));
     }
 
-    private Map<String, Object> buildEmailPersonalisation(MediaUserVerificationEmailBody emailBody,
+    private Map<String, Object> buildEmailPersonalisation(MediaUserVerificationEmailData emailData,
                                                           PersonalisationLinks personalisationLinks) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put("full_name", emailBody.getFullName());
+        personalisation.put("full_name", emailData.getFullName());
         personalisation.put("verification_page_link", personalisationLinks.getMediaVerificationPageLink());
         return personalisation;
     }

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,12 +11,12 @@ import java.util.Arrays;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MiDataReportingEmailBody extends EmailBody {
+public class MiDataReportingEmailData extends EmailData {
     private byte[] excel;
     private RetentionPeriodDuration fileRetentionWeeks;
     private String envName;
 
-    public MiDataReportingEmailBody(String email, byte[] excel, int fileRetentionWeeks, String envName) {
+    public MiDataReportingEmailData(String email, byte[] excel, int fileRetentionWeeks, String envName) {
         super(email);
         this.excel = excel == null ? new byte[0] : Arrays.copyOf(excel, excel.length);
         this.fileRetentionWeeks = new RetentionPeriodDuration(fileRetentionWeeks, ChronoUnit.WEEKS);

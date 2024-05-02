@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.models.emailbody;
+package uk.gov.hmcts.reform.pip.publication.services.models.emaildata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,14 +14,14 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FlatFileSubscriptionEmailBody extends EmailBody {
+public class FlatFileSubscriptionEmailData extends EmailData {
     private UUID artefactId;
     private Artefact artefact;
     private String locationName;
     private byte[] artefactFlatFile;
     private RetentionPeriodDuration fileRetentionWeeks;
 
-    public FlatFileSubscriptionEmailBody(SubscriptionEmail subscriptionEmail, Artefact artefact, String locationName,
+    public FlatFileSubscriptionEmailData(SubscriptionEmail subscriptionEmail, Artefact artefact, String locationName,
                                          byte[] artefactFlatFile, int fileRetentionWeeks) {
         super(subscriptionEmail.getEmail());
         this.artefactId = subscriptionEmail.getArtefactId();
