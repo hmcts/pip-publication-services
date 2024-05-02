@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
@@ -11,10 +10,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
 import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.FlatFileSubscriptionEmailBody;
 import uk.gov.service.notify.NotificationClientException;
-import uk.gov.service.notify.RetentionPeriodDuration;
 
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,11 +23,6 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 @Slf4j
 @SuppressWarnings("PMD.PreserveStackTrace")
 public class FlatFileSubscriptionEmailGenerator extends EmailGenerator {
-    @Value("${file-retention-weeks}")
-    private int fileRetentionWeeks;
-
-    RetentionPeriodDuration retentionPeriodDuration = new RetentionPeriodDuration(fileRetentionWeeks, ChronoUnit.WEEKS);
-
     @Override
     public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
         FlatFileSubscriptionEmailBody emailBody = (FlatFileSubscriptionEmailBody) email;
@@ -46,7 +38,7 @@ public class FlatFileSubscriptionEmailGenerator extends EmailGenerator {
 
             personalisation.put("list_type", emailBody.getArtefact().getListType().getFriendlyName());
             JSONObject uploadedFile = prepareUpload(emailBody.getArtefactFlatFile(), false,
-                                                    retentionPeriodDuration);
+                                                    emailBody.getFileRetentionWeeks());
 
             personalisation.put("link_to_file", uploadedFile);
             personalisation.put("start_page_link", personalisationLinks.getStartPageLink());

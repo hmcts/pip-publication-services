@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
@@ -17,9 +16,6 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.SYST
 
 @Service
 public class SystemAdminUpdateEmailGenerator extends BatchEmailGenerator {
-    @Value("${env-name}")
-    private String envName;
-
     @Override
     public List<EmailToSend> buildEmail(BatchEmailBody email, PersonalisationLinks personalisationLinks) {
         SystemAdminUpdateEmailBody emailBody = (SystemAdminUpdateEmailBody) email;
@@ -33,7 +29,7 @@ public class SystemAdminUpdateEmailGenerator extends BatchEmailGenerator {
         personalisation.put("attempted/succeeded", emailBody.getActionResult().label.toLowerCase(Locale.ENGLISH));
         personalisation.put("change-type", emailBody.getChangeType().label);
         personalisation.put("Additional_change_detail", emailBody.getAdditionalChangeDetail());
-        personalisation.put("env_name", convertEnvironmentName(envName));
+        personalisation.put("env_name", convertEnvironmentName(emailBody.getEnvName()));
 
         return personalisation;
     }

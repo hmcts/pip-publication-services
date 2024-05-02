@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
@@ -14,16 +13,14 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.EmailBody;
 import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.RawDataSubscriptionEmailBody;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.service.notify.NotificationClientException;
-import uk.gov.service.notify.RetentionPeriodDuration;
 
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 @Service
@@ -38,15 +35,10 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
     private static final String NO = "No";
     private static final int MAX_FILE_SIZE = 2_000_000;
 
-    @Value("${file-retention-weeks}")
-    private int fileRetentionWeeks;
-
-    RetentionPeriodDuration retentionPeriodDuration = new RetentionPeriodDuration(fileRetentionWeeks, ChronoUnit.WEEKS);
-
     @Override
     public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
         RawDataSubscriptionEmailBody emailBody = (RawDataSubscriptionEmailBody) email;
-        return generateEmail(emailBody.getEmail(), MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getTemplate(),
+        return generateEmail(emailBody.getEmail(), MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(),
                              buildEmailPersonalisation(emailBody, personalisationLinks));
     }
 
@@ -120,7 +112,7 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         personalisation.put("display_excel", excelWithinSize);
         personalisation.put(
             "excel_link_to_file",
-            excelWithinSize ? prepareUpload(artefactExcelBytes, false, retentionPeriodDuration) : ""
+            excelWithinSize ? prepareUpload(artefactExcelBytes, false, emailBody.getFileRetentionWeeks()) : ""
         );
 
         return personalisation;
@@ -147,19 +139,19 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         personalisation.put(
             "pdf_link_to_file",
             !hasAdditionalPdf && pdfWithinSize
-                ? prepareUpload(artefactPdfBytes, false, retentionPeriodDuration) : ""
+                ? prepareUpload(artefactPdfBytes, false, emailBody.getFileRetentionWeeks()) : ""
         );
 
         personalisation.put(
             "english_pdf_link_to_file",
             hasAdditionalPdf && pdfWithinSize
-                ? prepareUpload(artefactPdfBytes, false, retentionPeriodDuration) : ""
+                ? prepareUpload(artefactPdfBytes, false, emailBody.getFileRetentionWeeks()) : ""
         );
 
         personalisation.put(
             "welsh_pdf_link_to_file",
             hasAdditionalPdf && welshPdfWithinSize
-                ? prepareUpload(artefactWelshPdfBytes, false, retentionPeriodDuration) : ""
+                ? prepareUpload(artefactWelshPdfBytes, false, emailBody.getFileRetentionWeeks()) : ""
         );
 
         return personalisation;

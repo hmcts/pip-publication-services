@@ -31,6 +31,9 @@ public class SubscriptionNotificationService {
     @Value("${payload.json.max-size-in-kb}")
     private int maxPayloadSize;
 
+    @Value("${file-retention-weeks}")
+    private int fileRetentionWeeks;
+
     @Autowired
     public SubscriptionNotificationService(EmailService emailService, DataManagementService dataManagementService,
                                            ChannelManagementService channelManagementService) {
@@ -61,8 +64,9 @@ public class SubscriptionNotificationService {
 
     private String flatFileSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact, String locationName) {
         byte[] artefactFlatFile = dataManagementService.getArtefactFlatFile(body.getArtefactId());
-        FlatFileSubscriptionEmailBody emailBody = new FlatFileSubscriptionEmailBody(body, artefact, locationName,
-                                                                                    artefactFlatFile);
+        FlatFileSubscriptionEmailBody emailBody = new FlatFileSubscriptionEmailBody(
+            body, artefact, locationName, artefactFlatFile, fileRetentionWeeks
+        );
         EmailToSend email = emailService.handleEmailGeneration(emailBody,
                                                                Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL);
 
@@ -81,8 +85,9 @@ public class SubscriptionNotificationService {
         byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
             : new byte[0];
 
-        RawDataSubscriptionEmailBody emailBody = new RawDataSubscriptionEmailBody(body, artefact, artefactSummary, pdf,
-                                                                                  additionalPdf, excel, locationName);
+        RawDataSubscriptionEmailBody emailBody = new RawDataSubscriptionEmailBody(
+            body, artefact, artefactSummary, pdf, additionalPdf, excel, locationName, fileRetentionWeeks
+        );
         EmailToSend email = emailService.handleEmailGeneration(emailBody,
                                                                Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL);
 

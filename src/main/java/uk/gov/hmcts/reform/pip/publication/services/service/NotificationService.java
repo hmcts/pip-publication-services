@@ -34,6 +34,12 @@ public class NotificationService {
     @Value("${notify.pi-team-email}")
     private String piTeamEmail;
 
+    @Value("${file-retention-weeks}")
+    private int fileRetentionWeeks;
+
+    @Value("${env-name}")
+    private String envName;
+
     @Autowired
     public NotificationService(EmailService emailService, FileCreationService fileCreationService) {
         this.emailService = emailService;
@@ -49,7 +55,7 @@ public class NotificationService {
     public String handleMediaApplicationReportingRequest(List<MediaApplication> mediaApplicationList) {
         byte[] mediaApplicationsCsv = fileCreationService.createMediaApplicationReportingCsv(mediaApplicationList);
         EmailToSend email = emailService.handleEmailGeneration(
-            new MediaApplicationReportingEmailBody(piTeamEmail, mediaApplicationsCsv),
+            new MediaApplicationReportingEmailBody(piTeamEmail, mediaApplicationsCsv, fileRetentionWeeks, envName),
             Templates.MEDIA_APPLICATION_REPORTING_EMAIL
         );
         return emailService.sendEmail(email)
@@ -65,7 +71,7 @@ public class NotificationService {
      */
     public String unidentifiedBlobEmailRequest(List<NoMatchArtefact> noMatchArtefactList) {
         EmailToSend email = emailService.handleEmailGeneration(
-            new UnidentifiedBlobEmailBody(piTeamEmail, noMatchArtefactList),
+            new UnidentifiedBlobEmailBody(piTeamEmail, noMatchArtefactList, envName),
             Templates.BAD_BLOB_EMAIL
         );
         return emailService.sendEmail(email)
@@ -87,13 +93,15 @@ public class NotificationService {
             throw new ExcelCreationException(e.getMessage());
         }
 
-        EmailToSend email = emailService.handleEmailGeneration(new MiDataReportingEmailBody(piTeamEmail, excel),
-                                                               Templates.MI_DATA_REPORTING_EMAIL);
+        EmailToSend email = emailService.handleEmailGeneration(
+            new MiDataReportingEmailBody(piTeamEmail, excel, fileRetentionWeeks, envName),
+            Templates.MI_DATA_REPORTING_EMAIL
+        );
         return emailService.sendEmail(email).getReference().orElse(null);
     }
 
     public List<String> sendSystemAdminUpdateEmailRequest(SystemAdminAction body) {
-        List<EmailToSend> email = emailService.handleBatchEmailGeneration(new SystemAdminUpdateEmailBody(body),
+        List<EmailToSend> email = emailService.handleBatchEmailGeneration(new SystemAdminUpdateEmailBody(body, envName),
                                                                           Templates.SYSTEM_ADMIN_UPDATE_EMAIL);
 
         var sentEmails = new ArrayList<String>();

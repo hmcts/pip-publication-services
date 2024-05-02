@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 @Service
 @Slf4j
 public class UserNotificationService {
-
     private final EmailService emailService;
 
     @Autowired

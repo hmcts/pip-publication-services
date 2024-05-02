@@ -15,12 +15,14 @@ public class SystemAdminUpdateEmailBody extends BatchEmailBody {
     private ActionResult actionResult;
     private ChangeType changeType;
     private String additionalChangeDetail;
+    private String envName;
 
-    public SystemAdminUpdateEmailBody(SystemAdminAction systemAdminAction) {
+    public SystemAdminUpdateEmailBody(SystemAdminAction systemAdminAction, String envName) {
         super(systemAdminAction.getEmailList());
         this.requesterName = systemAdminAction.getRequesterName();
         this.actionResult = systemAdminAction.getActionResult();
         this.changeType = systemAdminAction.getChangeType();
         this.additionalChangeDetail = systemAdminAction.createAdditionalChangeDetail();
+        this.envName = envName;
     }
 }

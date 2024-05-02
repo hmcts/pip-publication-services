@@ -12,9 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 public class UnidentifiedBlobEmailBody extends EmailBody {
     private List<NoMatchArtefact> noMatchArtefacts;
+    private String envName;
 
-    public UnidentifiedBlobEmailBody(String email, List<NoMatchArtefact> noMatchArtefacts) {
+    public UnidentifiedBlobEmailBody(String email, List<NoMatchArtefact> noMatchArtefacts, String envName) {
         super(email);
         this.noMatchArtefacts = noMatchArtefacts;
+        this.envName = envName;
     }
 }

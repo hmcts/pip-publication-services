@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
@@ -17,9 +16,6 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.BAD_
 
 @Service
 public class UnidentifiedBlobEmailGenerator extends EmailGenerator {
-    @Value("${env-name}")
-    private String envName;
-
     @Override
     public EmailToSend buildEmail(EmailBody email, PersonalisationLinks personalisationLinks) {
         UnidentifiedBlobEmailBody emailBody = (UnidentifiedBlobEmailBody) email;
@@ -38,7 +34,7 @@ public class UnidentifiedBlobEmailGenerator extends EmailGenerator {
             ));
 
         personalisation.put("array_of_ids", listOfUnmatched);
-        personalisation.put("env_name", convertEnvironmentName(envName));
+        personalisation.put("env_name", convertEnvironmentName(emailBody.getEnvName()));
         return personalisation;
     }
 }

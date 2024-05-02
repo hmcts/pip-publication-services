@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.Batc
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.EmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.FlatFileSubscriptionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.InactiveUserNotificationEmailGenerator;
+import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.LocationSubscriptionDeletionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.MediaAccountRejectionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.MediaApplicationReportingEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.MediaDuplicatedAccountEmailGenerator;
@@ -87,7 +88,9 @@ public enum Templates {
                                          new InactiveUserNotificationEmailGenerator()),
     DELETE_LOCATION_SUBSCRIPTION("929276e1-da85-4f21-9ed4-53492bedff68",
                                  "Location deletion notification email",
-                                 EmailLimit.HIGH),
+                                 EmailLimit.HIGH,
+                                 null,
+                                 new LocationSubscriptionDeletionEmailGenerator()),
     OTP_EMAIL("c51dc591-e956-43b2-8cc2-ac32bbcece3b",
               "B2C OTP email",
               EmailLimit.HIGH,
@@ -104,14 +107,8 @@ public enum Templates {
     private final String template;
     private final String description;
     private final EmailLimit emailLimit;
-    private EmailGenerator emailGenerator = null;
+    private final EmailGenerator emailGenerator;
     private BatchEmailGenerator batchEmailGenerator = null;
-
-    Templates(String template, String description, EmailLimit emailLimit) {
-        this.template = template;
-        this.description = description;
-        this.emailLimit = emailLimit;
-    }
 
     Templates(String template, String description, EmailLimit emailLimit, EmailGenerator emailGenerator) {
         this.template = template;
