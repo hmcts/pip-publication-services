@@ -121,12 +121,12 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         throws NotificationClientException {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
-        byte[] artefactPdfBytes = emailBody.getPdf();
+        byte[] artefactPdfBytes = emailData.getPdf();
         boolean pdfWithinSize = artefactPdfBytes.length < MAX_FILE_SIZE && artefactPdfBytes.length > 0;
 
         boolean hasAdditionalPdf = artefact.getListType().hasAdditionalPdf()
             && artefact.getLanguage() != Language.ENGLISH;
-        byte[] artefactWelshPdfBytes = emailBody.getAdditionalPdf();
+        byte[] artefactWelshPdfBytes = emailData.getAdditionalPdf();
         boolean welshPdfWithinSize = artefactWelshPdfBytes.length < MAX_FILE_SIZE
             && artefactWelshPdfBytes.length > 0;
 
@@ -137,19 +137,19 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         personalisation.put(
             "pdf_link_to_file",
             !hasAdditionalPdf && pdfWithinSize
-                ? prepareUpload(artefactPdfBytes, false, emailBody.getFileRetentionWeeks()) : ""
+                ? prepareUpload(artefactPdfBytes, false, emailData.getFileRetentionWeeks()) : ""
         );
 
         personalisation.put(
             "english_pdf_link_to_file",
             hasAdditionalPdf && pdfWithinSize
-                ? prepareUpload(artefactPdfBytes, false, emailBody.getFileRetentionWeeks()) : ""
+                ? prepareUpload(artefactPdfBytes, false, emailData.getFileRetentionWeeks()) : ""
         );
 
         personalisation.put(
             "welsh_pdf_link_to_file",
             hasAdditionalPdf && welshPdfWithinSize
-                ? prepareUpload(artefactWelshPdfBytes, false, emailBody.getFileRetentionWeeks()) : ""
+                ? prepareUpload(artefactWelshPdfBytes, false, emailData.getFileRetentionWeeks()) : ""
         );
 
         return personalisation;

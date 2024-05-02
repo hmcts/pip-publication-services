@@ -44,12 +44,12 @@ public class UserNotificationService {
         log.info(writeLog(String.format("Media account welcome email being processed for user %s",
             EmailHelper.maskEmail(body.getEmail()))));
 
-        MediaWelcomeEmailData emailBody = new MediaWelcomeEmailData(body);
+        MediaWelcomeEmailData emailData = new MediaWelcomeEmailData(body);
         Templates emailTemplate = body.isExisting()
             ? Templates.EXISTING_USER_WELCOME_EMAIL
             : Templates.MEDIA_NEW_ACCOUNT_SETUP;
 
-        EmailToSend email = emailService.handleEmailGeneration(emailBody, emailTemplate);
+        EmailToSend email = emailService.handleEmailGeneration(emailData, emailTemplate);
         return emailService.sendEmail(email)
             .getReference()
             .orElse(null);

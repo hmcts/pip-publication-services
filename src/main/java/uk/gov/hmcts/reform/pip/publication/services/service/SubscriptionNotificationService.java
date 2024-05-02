@@ -64,10 +64,10 @@ public class SubscriptionNotificationService {
 
     private String flatFileSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact, String locationName) {
         byte[] artefactFlatFile = dataManagementService.getArtefactFlatFile(body.getArtefactId());
-        FlatFileSubscriptionEmailData emailBody = new FlatFileSubscriptionEmailData(
+        FlatFileSubscriptionEmailData emailData = new FlatFileSubscriptionEmailData(
             body, artefact, locationName, artefactFlatFile, fileRetentionWeeks
         );
-        EmailToSend email = emailService.handleEmailGeneration(emailBody,
+        EmailToSend email = emailService.handleEmailGeneration(emailData,
                                                                Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL);
 
         return emailService.sendEmail(email)
@@ -85,10 +85,10 @@ public class SubscriptionNotificationService {
         byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
             : new byte[0];
 
-        RawDataSubscriptionEmailData emailBody = new RawDataSubscriptionEmailData(
+        RawDataSubscriptionEmailData emailData = new RawDataSubscriptionEmailData(
             body, artefact, artefactSummary, pdf, additionalPdf, excel, locationName, fileRetentionWeeks
         );
-        EmailToSend email = emailService.handleEmailGeneration(emailBody,
+        EmailToSend email = emailService.handleEmailGeneration(emailData,
                                                                Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL);
 
         return emailService.sendEmail(email)

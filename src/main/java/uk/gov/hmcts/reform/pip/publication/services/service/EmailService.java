@@ -39,11 +39,11 @@ public class EmailService {
             .buildEmail(emailData, notifyConfigProperties.getLinks());
     }
 
-    public List<EmailToSend> handleBatchEmailGeneration(BatchEmailData emailBody, Templates emailTemplate) {
-        List<String> emails = applyEmailRateLimit(emailBody.getEmails(), emailTemplate);
-        emailBody.setEmails(emails);
+    public List<EmailToSend> handleBatchEmailGeneration(BatchEmailData emailData, Templates emailTemplate) {
+        List<String> emails = applyEmailRateLimit(emailData.getEmails(), emailTemplate);
+        emailData.setEmails(emails);
         return emailTemplate.getBatchEmailGenerator()
-            .buildEmail(emailBody, notifyConfigProperties.getLinks());
+            .buildEmail(emailData, notifyConfigProperties.getLinks());
     }
 
     public SendEmailResponse sendEmail(EmailToSend emailToSend) {
