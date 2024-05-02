@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.FlatFileSub
 import uk.gov.hmcts.reform.pip.publication.services.models.emailbody.RawDataSubscriptionEmailBody;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.util.List;
@@ -32,8 +34,9 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL;
 
 @SpringBootTest
+@DirtiesContext
 @ActiveProfiles("test")
-public class SubscriptionNotificationServiceTest {
+class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
     private static final String EMAIL = "test@email.com";
     private static final String FILE_CONTENT = "123";
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
@@ -41,7 +44,7 @@ public class SubscriptionNotificationServiceTest {
     private static final String LOCATION_NAME = "Location Name";
     private static final byte[] ARTEFACT_FLAT_FILE = new byte[8];
     private static final String SUCCESS_REF_ID = "successRefId";
-    private static final Map<String, Object> personalisationMap = Map.of("email", EMAIL);
+    private static final Map<String, Object> PERSONALISATION_MAP = Map.of("email", EMAIL);
 
     private final Artefact artefact = new Artefact();
     private final Location location = new Location();
@@ -90,7 +93,7 @@ public class SubscriptionNotificationServiceTest {
         when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(ARTEFACT_FLAT_FILE);
 
         EmailToSend validEmailBodyForEmailClient = new EmailToSend(
-            EMAIL, MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getTemplate(), personalisationMap, SUCCESS_REF_ID
+            EMAIL, MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getTemplate(), PERSONALISATION_MAP, SUCCESS_REF_ID
         );
         when(emailService.handleEmailGeneration(any(FlatFileSubscriptionEmailBody.class),
                                                 eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
@@ -112,7 +115,7 @@ public class SubscriptionNotificationServiceTest {
         when(channelManagementService.getArtefactFile(ARTEFACT_ID, FileType.EXCEL, false)).thenReturn(FILE_CONTENT);
 
         EmailToSend validEmailBodyForEmailClient = new EmailToSend(
-            EMAIL, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(), personalisationMap, SUCCESS_REF_ID
+            EMAIL, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(), PERSONALISATION_MAP, SUCCESS_REF_ID
         );
         when(emailService.handleEmailGeneration(any(RawDataSubscriptionEmailBody.class),
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))

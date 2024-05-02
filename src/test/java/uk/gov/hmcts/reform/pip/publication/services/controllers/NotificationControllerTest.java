@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.TooManyFields"})
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.TooManyFields", "PMD.CouplingBetweenObjects"})
 class NotificationControllerTest extends RedisConfigurationTestBase {
 
     private static final String VALID_EMAIL = "test@email.com";

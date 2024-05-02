@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
-@SuppressWarnings("PMD.ExcessiveImports")
 class FileCreationServiceTest extends RedisConfigurationTestBase {
 
     @Mock

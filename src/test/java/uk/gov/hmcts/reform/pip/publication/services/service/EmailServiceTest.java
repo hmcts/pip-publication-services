@@ -5,6 +5,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL;
 
 @SpringBootTest
+@DirtiesContext
 @ActiveProfiles("test")
 class EmailServiceTest extends RedisConfigurationTestBase {
 
@@ -39,16 +41,16 @@ class EmailServiceTest extends RedisConfigurationTestBase {
 
     @Mock
     private SendEmailResponse sendEmailResponse;
-
-    @Test
-    void testHandleEmailGeneration() {
-
-    }
-
-    @Test
-    void testHandleBatchEmailGeneration() {
-
-    }
+//
+//    @Test
+//    void testHandleEmailGeneration() {
+//
+//    }
+//
+//    @Test
+//    void testHandleBatchEmailGeneration() {
+//
+//    }
 
     @Test
     void testSendEmailWithSuccess() throws NotificationClientException {
