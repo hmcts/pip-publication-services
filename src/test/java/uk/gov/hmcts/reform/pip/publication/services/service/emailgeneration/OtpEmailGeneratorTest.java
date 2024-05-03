@@ -6,21 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.OtpEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_EMAIL;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
+@SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
-class OtpEmailGeneratorTest {
+class OtpEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String EMAIL = "test@testing.com";
     private static final String OTP = "123456";
     private static final String OTP_PERSONALISATION = "otp";

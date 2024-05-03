@@ -6,22 +6,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.AdminWelcomeEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.ADMIN_ACCOUNT_CREATION_EMAIL;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
+@SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
-class AdminWelcomeEmailGeneratorTest {
+class AdminWelcomeEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String EMAIL = "test@testing.com";
     private static final String NAME = "Name";
 

@@ -9,12 +9,11 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
 import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.model.system.admin.CreateSystemAdminAction;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.SystemAdminUpdateEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.List;
 import java.util.Locale;
@@ -22,10 +21,10 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.SYSTEM_ADMIN_UPDATE_EMAIL;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
+@SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
-class SystemAdminUpdateEmailGeneratorTest {
+class SystemAdminUpdateEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String SYSTEM_ADMIN_EMAIL1 = "systemAdmin1@testing.com";
     private static final String SYSTEM_ADMIN_EMAIL2 = "systemAdmin2@testing.com";
     private static final String ACCOUNT_EMAIL = "testAccountEmail@testing.com";

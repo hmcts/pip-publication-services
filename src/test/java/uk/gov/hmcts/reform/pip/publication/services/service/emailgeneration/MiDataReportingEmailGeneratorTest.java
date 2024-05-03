@@ -9,13 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.MiDataReportingEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.RetentionPeriodDuration;
@@ -29,10 +28,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MI_DATA_REPORTING_EMAIL;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
+@SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
-class MiDataReportingEmailGeneratorTest {
+class MiDataReportingEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String EMAIL = "test@testing.com";
     private static final byte[] EXCEL = "Test byte".getBytes();
     private static final int FILE_RETENTION_WEEKS = 78;
