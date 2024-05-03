@@ -127,7 +127,7 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
-        when(userNotificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
+        when(userNotificationService.mediaAccountWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
         when(subscriptionNotificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
@@ -135,7 +135,7 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test", "500"));
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test2", "123"));
 
-        when(userNotificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody))
+        when(userNotificationService.adminAccountWelcomeEmailRequest(createdAdminWelcomeEmailValidBody))
             .thenReturn(SUCCESS_ID);
         when(thirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
         when(userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);

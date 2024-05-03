@@ -88,7 +88,7 @@ public class NotificationController {
     public ResponseEntity<String> sendWelcomeEmail(@RequestBody WelcomeEmail body) {
         return ResponseEntity.ok(String.format(
             "Welcome email successfully sent with referenceId %s",
-            userNotificationService.handleWelcomeEmailRequest(body)
+            userNotificationService.mediaAccountWelcomeEmailRequest(body)
         ));
     }
 
@@ -101,7 +101,7 @@ public class NotificationController {
     public ResponseEntity<String> sendAdminAccountWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
         return ResponseEntity.ok(String.format(
             "Created admin welcome email successfully sent with referenceId %s",
-            userNotificationService.azureNewUserEmailRequest(body)
+            userNotificationService.adminAccountWelcomeEmailRequest(body)
         ));
     }
 

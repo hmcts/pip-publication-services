@@ -42,7 +42,7 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
     private static final Integer LOCATION_ID = 1;
     private static final String LOCATION_NAME = "Location Name";
-    private static final byte[] ARTEFACT_FLAT_FILE = new byte[8];
+    private static final byte[] ARTEFACT_FLAT_FILE = "Test byte".getBytes();
     private static final String SUCCESS_REF_ID = "successRefId";
     private static final Map<String, Object> PERSONALISATION_MAP = Map.of("email", EMAIL);
 

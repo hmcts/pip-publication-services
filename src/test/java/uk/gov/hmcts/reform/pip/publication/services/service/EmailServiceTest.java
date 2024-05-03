@@ -41,16 +41,6 @@ class EmailServiceTest extends RedisConfigurationTestBase {
 
     @Mock
     private SendEmailResponse sendEmailResponse;
-//
-//    @Test
-//    void testHandleEmailGeneration() {
-//
-//    }
-//
-//    @Test
-//    void testHandleBatchEmailGeneration() {
-//
-//    }
 
     @Test
     void testSendEmailWithSuccess() throws NotificationClientException {

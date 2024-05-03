@@ -131,7 +131,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
                                                 eq(Templates.EXISTING_USER_WELCOME_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
 
-        assertEquals(SUCCESS_REF_ID, userNotificationService.handleWelcomeEmailRequest(VALID_BODY_EXISTING),
+        assertEquals(SUCCESS_REF_ID, userNotificationService.mediaAccountWelcomeEmailRequest(VALID_BODY_EXISTING),
                      REFERENCE_ID_MESSAGE
         );
     }
@@ -142,7 +142,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
                                                 eq(Templates.MEDIA_NEW_ACCOUNT_SETUP)))
             .thenReturn(validEmailBodyForEmailClient);
 
-        assertEquals(SUCCESS_REF_ID, userNotificationService.handleWelcomeEmailRequest(VALID_BODY_NEW),
+        assertEquals(SUCCESS_REF_ID, userNotificationService.mediaAccountWelcomeEmailRequest(VALID_BODY_NEW),
                      REFERENCE_ID_MESSAGE
         );
     }
@@ -153,7 +153,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
                                                 eq(Templates.ADMIN_ACCOUNT_CREATION_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
 
-        assertEquals(SUCCESS_REF_ID, userNotificationService.azureNewUserEmailRequest(VALID_BODY_AAD),
+        assertEquals(SUCCESS_REF_ID, userNotificationService.adminAccountWelcomeEmailRequest(VALID_BODY_AAD),
                      "Azure user with valid JSON should return successful referenceId."
         );
     }

@@ -40,7 +40,7 @@ public class UserNotificationService {
      * @param body JSONObject containing the email and isExisting values e.g.
      *             {email: 'example@email.com', isExisting: 'true'}
      */
-    public String handleWelcomeEmailRequest(WelcomeEmail body) {
+    public String mediaAccountWelcomeEmailRequest(WelcomeEmail body) {
         log.info(writeLog(String.format("Media account welcome email being processed for user %s",
             EmailHelper.maskEmail(body.getEmail()))));
 
@@ -61,7 +61,7 @@ public class UserNotificationService {
      * @param body JSONObject containing the email and forename/surname values e.g.
      *             email: 'example@email.com', forename: 'foo', surname: 'bar'}
      */
-    public String azureNewUserEmailRequest(CreatedAdminWelcomeEmail body) {
+    public String adminAccountWelcomeEmailRequest(CreatedAdminWelcomeEmail body) {
         log.info(writeLog(String.format("Admin account welcome email being processed for user %s",
             EmailHelper.maskEmail(body.getEmail()))));
 
