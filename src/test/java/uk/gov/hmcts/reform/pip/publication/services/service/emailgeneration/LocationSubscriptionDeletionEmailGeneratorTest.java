@@ -7,7 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
+import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
+import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.LocationSubscriptionDeletionEmailData;
@@ -17,7 +19,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.DELETE_LOCATION_SUBSCRIPTION;
 
-@SpringBootTest
+@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @DirtiesContext
 @ActiveProfiles("test")
 class LocationSubscriptionDeletionEmailGeneratorTest {
@@ -42,9 +44,12 @@ class LocationSubscriptionDeletionEmailGeneratorTest {
     void testBuildLocationSubscriptionDeletionEmail() {
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
 
-        LocationSubscriptionDeletion mediaEmail = new LocationSubscriptionDeletion(LOCATION_NAME,
-                                                                                   List.of(EMAIL1, EMAIL2, EMAIL3));
-        LocationSubscriptionDeletionEmailData emailData = new LocationSubscriptionDeletionEmailData(mediaEmail);
+        LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion(
+            LOCATION_NAME, List.of(EMAIL1, EMAIL2, EMAIL3)
+        );
+        LocationSubscriptionDeletionEmailData emailData = new LocationSubscriptionDeletionEmailData(
+            locationSubscriptionDeletion
+        );
 
         List<EmailToSend> results = emailGenerator.buildEmail(emailData, personalisationLinks);
 
