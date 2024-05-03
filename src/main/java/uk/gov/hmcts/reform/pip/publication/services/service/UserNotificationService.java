@@ -59,7 +59,7 @@ public class UserNotificationService {
      * Handles the incoming request for AAD welcome emails, checks the json payload and builds and sends the email.
      *
      * @param body JSONObject containing the email and forename/surname values e.g.
-     *             email: 'example@email.com', forename: 'foo', surname: 'bar'}
+     *             {email: 'example@email.com', forename: 'foo', surname: 'bar'}
      */
     public String adminAccountWelcomeEmailRequest(CreatedAdminWelcomeEmail body) {
         log.info(writeLog(String.format("Admin account welcome email being processed for user %s",
@@ -135,6 +135,12 @@ public class UserNotificationService {
             .orElse(null);
     }
 
+    /**
+     * Handles the sending of the email containing the OTP.
+     *
+     * @param body The body of the OTP email.
+     * @return The ID that references the OTP email.
+     */
     public String handleOtpEmailRequest(OtpEmail body) {
         log.info(writeLog(String.format("OTP email being processed for user %s",
                                         EmailHelper.maskEmail(body.getEmail()))));

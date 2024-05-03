@@ -12,6 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_EMAIL;
 
 @Service
+/**
+ * Generate the OTP email with personalisation for GOV.UK Notify template.
+ */
 public class OtpEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

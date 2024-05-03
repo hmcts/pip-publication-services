@@ -12,6 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.ADMIN_ACCOUNT_CREATION_EMAIL;
 
 @Service
+/**
+ * Generate the admin welcome email with personalisation for GOV.UK Notify template.
+ */
 public class AdminWelcomeEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

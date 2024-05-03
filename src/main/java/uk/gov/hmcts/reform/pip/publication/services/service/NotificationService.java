@@ -100,6 +100,12 @@ public class NotificationService {
         return emailService.sendEmail(email).getReference().orElse(null);
     }
 
+    /**
+     * This method handles the sending the email to all system admins for some actions on the application.
+     *
+     * @param body The body of the system admin update email.
+     * @return The ID that references the system admin update email.
+     */
     public List<String> sendSystemAdminUpdateEmailRequest(SystemAdminAction body) {
         List<EmailToSend> email = emailService.handleBatchEmailGeneration(new SystemAdminUpdateEmailData(body, envName),
                                                                           Templates.SYSTEM_ADMIN_UPDATE_EMAIL);

@@ -15,6 +15,9 @@ import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.c
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.BAD_BLOB_EMAIL;
 
 @Service
+/**
+ * Generate the unidentified blob email with personalisation for GOV.UK Notify template.
+ */
 public class UnidentifiedBlobEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

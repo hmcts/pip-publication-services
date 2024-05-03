@@ -14,6 +14,9 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.EXIS
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_NEW_ACCOUNT_SETUP;
 
 @Service
+/**
+ * Generate the media welcome email with personalisation for GOV.UK Notify template.
+ */
 public class MediaWelcomeEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

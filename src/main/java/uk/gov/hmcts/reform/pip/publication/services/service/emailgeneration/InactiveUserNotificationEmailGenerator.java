@@ -15,6 +15,9 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INAC
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
 
 @Service
+/**
+ * Generate the inactive user notification email with personalisation for GOV.UK Notify template.
+ */
 public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

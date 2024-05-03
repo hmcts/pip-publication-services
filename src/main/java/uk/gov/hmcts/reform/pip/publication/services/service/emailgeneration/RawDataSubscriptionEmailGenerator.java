@@ -26,6 +26,9 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 @Service
 @Slf4j
 @SuppressWarnings("PMD.PreserveStackTrace")
+/**
+ * Generate the raw data subscription email with personalisation for GOV.UK Notify template.
+ */
 public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
     private static final String CASE_NUMBERS = "case_num";
     private static final String DISPLAY_CASE_NUMBERS = "display_case_num";

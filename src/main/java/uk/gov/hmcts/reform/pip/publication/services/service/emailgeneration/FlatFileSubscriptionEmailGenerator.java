@@ -23,6 +23,9 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 @Service
 @Slf4j
 @SuppressWarnings("PMD.PreserveStackTrace")
+/**
+ * Generate the flat file subscription email with personalisation for GOV.UK Notify template.
+ */
 public class FlatFileSubscriptionEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
