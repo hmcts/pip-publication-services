@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.use
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
-import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.AdminWelcomeEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.EmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.AdminWelcomeEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.EmailGenerator;
 
 import java.util.Map;
