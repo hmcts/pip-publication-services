@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Not
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.MiDataReportingEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.reporting.MiDataReportingEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;

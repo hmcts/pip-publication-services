@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaAccountRejectionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaAccountRejectionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.List;

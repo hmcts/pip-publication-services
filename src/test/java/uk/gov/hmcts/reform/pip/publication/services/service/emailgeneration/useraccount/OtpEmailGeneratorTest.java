@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigPropertie
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.OtpEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
-import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.OtpEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.Map;
