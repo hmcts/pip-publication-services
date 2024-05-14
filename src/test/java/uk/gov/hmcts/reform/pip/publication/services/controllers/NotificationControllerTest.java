@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
+import uk.gov.hmcts.reform.pip.publication.services.service.SubscriptionNotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
@@ -47,7 +48,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.TooManyFields"})
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.TooManyFields", "PMD.CouplingBetweenObjects"})
 class NotificationControllerTest extends RedisConfigurationTestBase {
 
     private static final String VALID_EMAIL = "test@email.com";
@@ -84,6 +85,9 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
 
     @Mock
     private UserNotificationService userNotificationService;
+
+    @Mock
+    private SubscriptionNotificationService subscriptionNotificationService;
 
     @Mock
     private ThirdPartyManagementService thirdPartyManagementService;
@@ -123,15 +127,15 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
-        when(userNotificationService.handleWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
-        when(notificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
+        when(userNotificationService.mediaAccountWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
+        when(subscriptionNotificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
 
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test", "500"));
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test2", "123"));
 
-        when(userNotificationService.azureNewUserEmailRequest(createdAdminWelcomeEmailValidBody))
+        when(userNotificationService.adminAccountWelcomeEmailRequest(createdAdminWelcomeEmailValidBody))
             .thenReturn(SUCCESS_ID);
         when(thirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
         when(userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);

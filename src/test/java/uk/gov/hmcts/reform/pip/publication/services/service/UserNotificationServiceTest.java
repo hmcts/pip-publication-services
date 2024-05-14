@@ -10,6 +10,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.AdminWelcomeEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.InactiveUserNotificationEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaAccountRejectionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaDuplicatedAccountEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaUserVerificationEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaWelcomeEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.OtpEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
@@ -21,7 +28,6 @@ import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.SendEmailResponse;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +38,7 @@ import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_EMAIL;
@@ -39,7 +46,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
-@SuppressWarnings("PMD.TooManyMethods")
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
 class UserNotificationServiceTest extends RedisConfigurationTestBase {
 
     private static final String REJECTION_EMAIL_FIRST_LINE_JSON = "\"id\":\"123e4567-e89b-12d3-a456-426614174000\",";
@@ -120,30 +127,33 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testValidPayloadReturnsSuccessExisting() {
-        when(emailService.buildWelcomeEmail(VALID_BODY_EXISTING, Templates.EXISTING_USER_WELCOME_EMAIL))
+        when(emailService.handleEmailGeneration(any(MediaWelcomeEmailData.class),
+                                                eq(Templates.EXISTING_USER_WELCOME_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
-        assertEquals(SUCCESS_REF_ID, userNotificationService.handleWelcomeEmailRequest(VALID_BODY_EXISTING),
+
+        assertEquals(SUCCESS_REF_ID, userNotificationService.mediaAccountWelcomeEmailRequest(VALID_BODY_EXISTING),
                      REFERENCE_ID_MESSAGE
         );
     }
 
     @Test
     void testValidPayloadReturnsSuccessNew() {
-        when(emailService.buildWelcomeEmail(VALID_BODY_NEW, Templates.MEDIA_NEW_ACCOUNT_SETUP))
+        when(emailService.handleEmailGeneration(any(MediaWelcomeEmailData.class),
+                                                eq(Templates.MEDIA_NEW_ACCOUNT_SETUP)))
             .thenReturn(validEmailBodyForEmailClient);
-        assertEquals(SUCCESS_REF_ID, userNotificationService.handleWelcomeEmailRequest(VALID_BODY_NEW),
+
+        assertEquals(SUCCESS_REF_ID, userNotificationService.mediaAccountWelcomeEmailRequest(VALID_BODY_NEW),
                      REFERENCE_ID_MESSAGE
         );
     }
 
     @Test
     void testValidPayloadReturnsSuccessAzure() {
-        when(emailService.buildCreatedAdminWelcomeEmail(
-            VALID_BODY_AAD,
-            Templates.ADMIN_ACCOUNT_CREATION_EMAIL
-        ))
+        when(emailService.handleEmailGeneration(any(AdminWelcomeEmailData.class),
+                                                eq(Templates.ADMIN_ACCOUNT_CREATION_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
-        assertEquals(SUCCESS_REF_ID, userNotificationService.azureNewUserEmailRequest(VALID_BODY_AAD),
+
+        assertEquals(SUCCESS_REF_ID, userNotificationService.adminAccountWelcomeEmailRequest(VALID_BODY_AAD),
                      "Azure user with valid JSON should return successful referenceId."
         );
     }
@@ -154,11 +164,10 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
         createMediaSetupEmail.setFullName("test_forename");
         createMediaSetupEmail.setEmail(EMAIL);
 
-        when(emailService.buildDuplicateMediaSetupEmail(
-            createMediaSetupEmail,
-            Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL
-        ))
+        when(emailService.handleEmailGeneration(any(MediaDuplicatedAccountEmailData.class),
+                                                eq(Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL)))
             .thenReturn(validEmailBodyForDuplicateMediaUserClient);
+
         assertEquals(SUCCESS_REF_ID, userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail),
                      REFERENCE_ID_MESSAGE
         );
@@ -166,10 +175,8 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testValidPayloadReturnsSuccessMediaVerification() {
-        when(emailService.buildMediaUserVerificationEmail(
-            MEDIA_VERIFICATION_EMAIL,
-            Templates.MEDIA_USER_VERIFICATION_EMAIL
-        ))
+        when(emailService.handleEmailGeneration(any(MediaUserVerificationEmailData.class),
+                                                eq(Templates.MEDIA_USER_VERIFICATION_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(
@@ -181,10 +188,8 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testValidPayloadReturnsSuccessInactiveUserNotificationForAad() {
-        when(emailService.buildInactiveUserNotificationEmail(
-            INACTIVE_USER_NOTIFICATION_EMAIL_AAD,
-            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD
-        ))
+        when(emailService.handleEmailGeneration(any(InactiveUserNotificationEmailData.class),
+                                                eq(Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD)))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.inactiveUserNotificationEmailRequest(
@@ -195,10 +200,8 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testValidPayloadReturnsSuccessInactiveUserNotificationForCft() {
-        when(emailService.buildInactiveUserNotificationEmail(
-            INACTIVE_USER_NOTIFICATION_EMAIL_CFT,
-            Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT
-        ))
+        when(emailService.handleEmailGeneration(any(InactiveUserNotificationEmailData.class),
+                                                eq(Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT)))
             .thenReturn(validEmailBodyForEmailClient);
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.inactiveUserNotificationEmailRequest(
@@ -208,7 +211,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void testMediaUserRejectionEmailRequestWithValidData() throws IOException {
+    void testMediaUserRejectionEmailRequestWithValidData() {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "Test Name",
             EMAIL,
@@ -233,7 +236,8 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
             + "}";
         SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
 
-        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(Templates.class)))
+        when(emailService.handleEmailGeneration(any(MediaAccountRejectionEmailData.class),
+                                                eq(MEDIA_USER_REJECTION_EMAIL)))
             .thenReturn(expectedEmail);
         when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
 
@@ -243,7 +247,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void testMediaUserRejectionEmailRequestWithNullReference() throws IOException {
+    void testMediaUserRejectionEmailRequestWithNullReference() {
         MediaRejectionEmail mediaRejectionEmail = new MediaRejectionEmail(
             "Test Name",
             EMAIL,
@@ -268,7 +272,8 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
                 + "}";
         SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
 
-        when(emailService.buildMediaApplicationRejectionEmail(any(MediaRejectionEmail.class), any(Templates.class)))
+        when(emailService.handleEmailGeneration(any(MediaAccountRejectionEmailData.class),
+                                                eq(MEDIA_USER_REJECTION_EMAIL)))
             .thenReturn(expectedEmail);
         when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
 
@@ -281,7 +286,8 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
         Map<String, Object> personalisation = Map.of("otp", OTP_VALUE);
         EmailToSend otpEmail = new EmailToSend(EMAIL, OTP_EMAIL.getTemplate(), personalisation, SUCCESS_REF_ID);
 
-        when(emailService.buildOtpEmail(EMAIL, OTP_VALUE, OTP_EMAIL)).thenReturn(otpEmail);
+        when(emailService.handleEmailGeneration(any(OtpEmailData.class), eq(OTP_EMAIL)))
+            .thenReturn(otpEmail);
         when(emailService.sendEmail(otpEmail)).thenReturn(sendEmailResponse);
 
         String result = userNotificationService.handleOtpEmailRequest(new OtpEmail(OTP_VALUE, EMAIL));
@@ -293,7 +299,8 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
         Map<String, Object> personalisation = Map.of("otp", OTP_VALUE);
         EmailToSend otpEmail = new EmailToSend(EMAIL, OTP_EMAIL.getTemplate(), personalisation, null);
 
-        when(emailService.buildOtpEmail(EMAIL, OTP_VALUE, OTP_EMAIL)).thenReturn(otpEmail);
+        when(emailService.handleEmailGeneration(any(OtpEmailData.class), eq(OTP_EMAIL)))
+            .thenReturn(otpEmail);
         when(sendEmailResponse.getReference()).thenReturn(Optional.empty());
         when(emailService.sendEmail(otpEmail)).thenReturn(sendEmailResponse);
 

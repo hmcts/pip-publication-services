@@ -6,6 +6,13 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.model.account.UserProvenances;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.AdminWelcomeEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.InactiveUserNotificationEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaAccountRejectionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaDuplicatedAccountEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaUserVerificationEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaWelcomeEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.OtpEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
@@ -20,7 +27,6 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 @Service
 @Slf4j
 public class UserNotificationService {
-
     private final EmailService emailService;
 
     @Autowired
@@ -34,13 +40,19 @@ public class UserNotificationService {
      * @param body JSONObject containing the email and isExisting values e.g.
      *             {email: 'example@email.com', isExisting: 'true'}
      */
-    public String handleWelcomeEmailRequest(WelcomeEmail body) {
+    public String mediaAccountWelcomeEmailRequest(WelcomeEmail body) {
         log.info(writeLog(String.format("Media account welcome email being processed for user %s",
             EmailHelper.maskEmail(body.getEmail()))));
 
-        return emailService.sendEmail(emailService.buildWelcomeEmail(body, body.isExisting()
-            ? Templates.EXISTING_USER_WELCOME_EMAIL : Templates.MEDIA_NEW_ACCOUNT_SETUP))
-            .getReference().orElse(null);
+        MediaWelcomeEmailData emailData = new MediaWelcomeEmailData(body);
+        Templates emailTemplate = body.isExisting()
+            ? Templates.EXISTING_USER_WELCOME_EMAIL
+            : Templates.MEDIA_NEW_ACCOUNT_SETUP;
+
+        EmailToSend email = emailService.handleEmailGeneration(emailData, emailTemplate);
+        return emailService.sendEmail(email)
+            .getReference()
+            .orElse(null);
     }
 
     /**
@@ -49,28 +61,32 @@ public class UserNotificationService {
      * @param body JSONObject containing the email and forename/surname values e.g.
      *             {email: 'example@email.com', forename: 'foo', surname: 'bar'}
      */
-    public String azureNewUserEmailRequest(CreatedAdminWelcomeEmail body) {
+    public String adminAccountWelcomeEmailRequest(CreatedAdminWelcomeEmail body) {
         log.info(writeLog(String.format("Admin account welcome email being processed for user %s",
             EmailHelper.maskEmail(body.getEmail()))));
 
-        EmailToSend email = emailService.buildCreatedAdminWelcomeEmail(body,
-            Templates.ADMIN_ACCOUNT_CREATION_EMAIL);
+        EmailToSend email = emailService.handleEmailGeneration(new AdminWelcomeEmailData(body),
+                                                               Templates.ADMIN_ACCOUNT_CREATION_EMAIL);
         return emailService.sendEmail(email)
-            .getReference().orElse(null);
+            .getReference()
+            .orElse(null);
     }
 
     /**
      * Handles the incoming request for duplicate media account emails,
      * checks the json payload and builds and sends the email.
      *
-     * @param body JSONObject containing the email and forename/surname values e.g.
+     * @param body JSONObject containing the email and full name values e.g.
      *             {email: 'example@email.com', fullname: 'foo bar'}
      */
     public String mediaDuplicateUserEmailRequest(DuplicatedMediaEmail body) {
-        EmailToSend email = emailService.buildDuplicateMediaSetupEmail(body,
-            Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL);
+        EmailToSend email = emailService.handleEmailGeneration(
+            new MediaDuplicatedAccountEmailData(body),
+            Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL
+        );
         return emailService.sendEmail(email)
-            .getReference().orElse(null);
+            .getReference()
+            .orElse(null);
     }
 
     /**
@@ -80,10 +96,11 @@ public class UserNotificationService {
      * @return The ID that references the media user verification email.
      */
     public String mediaUserVerificationEmailRequest(MediaVerificationEmail body) {
-        EmailToSend email = emailService
-            .buildMediaUserVerificationEmail(body, Templates.MEDIA_USER_VERIFICATION_EMAIL);
-
-        return emailService.sendEmail(email).getReference().orElse(null);
+        EmailToSend email = emailService.handleEmailGeneration(new MediaUserVerificationEmailData(body),
+                                                               Templates.MEDIA_USER_VERIFICATION_EMAIL);
+        return emailService.sendEmail(email)
+            .getReference()
+            .orElse(null);
     }
 
     /**
@@ -93,10 +110,11 @@ public class UserNotificationService {
      * @return The ID that references the media user rejection email.
      */
     public String mediaUserRejectionEmailRequest(MediaRejectionEmail body) {
-        EmailToSend email = emailService
-            .buildMediaApplicationRejectionEmail(body, Templates.MEDIA_USER_REJECTION_EMAIL);
-
-        return emailService.sendEmail(email).getReference().orElse(null);
+        EmailToSend email = emailService.handleEmailGeneration(new MediaAccountRejectionEmailData(body),
+                                                               Templates.MEDIA_USER_REJECTION_EMAIL);
+        return emailService.sendEmail(email)
+            .getReference()
+            .orElse(null);
     }
 
     /**
@@ -106,23 +124,28 @@ public class UserNotificationService {
      * @return The ID that references the inactive user notification email.
      */
     public String inactiveUserNotificationEmailRequest(InactiveUserNotificationEmail body) {
-        EmailToSend email;
-        if (UserProvenances.PI_AAD.name().equals(body.getUserProvenance())) {
-            email = emailService
-                .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD);
-        } else {
-            email = emailService
-                .buildInactiveUserNotificationEmail(body, Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT);
-        }
+        Templates emailTemplate = UserProvenances.PI_AAD.name().equals(body.getUserProvenance())
+            ? Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD
+            : Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
 
-        return emailService.sendEmail(email).getReference().orElse(null);
+        EmailToSend email = emailService.handleEmailGeneration(new InactiveUserNotificationEmailData(body),
+                                                               emailTemplate);
+        return emailService.sendEmail(email)
+            .getReference()
+            .orElse(null);
     }
 
+    /**
+     * Handles the sending of the email containing the OTP.
+     *
+     * @param body The body of the OTP email.
+     * @return The ID that references the OTP email.
+     */
     public String handleOtpEmailRequest(OtpEmail body) {
         log.info(writeLog(String.format("OTP email being processed for user %s",
                                         EmailHelper.maskEmail(body.getEmail()))));
 
-        EmailToSend email = emailService.buildOtpEmail(body.getEmail(), body.getOtp(), Templates.OTP_EMAIL);
+        EmailToSend email = emailService.handleEmailGeneration(new OtpEmailData(body), Templates.OTP_EMAIL);
         return emailService.sendEmail(email)
             .getReference()
             .orElse(null);
