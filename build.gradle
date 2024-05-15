@@ -141,11 +141,10 @@ repositories {
   maven { url 'https://jitpack.io' }
 }
 
-def versions = [
-  log4JVersion    : '2.23.1',
-  reformLogging   : '6.1.4',
-  springBoot      : springBoot.class.package.implementationVersion,
-]
+ext {
+  log4JVersion = '2.23.1'
+  reformLogging = '6.1.4'
+}
 
 
 dependencies {
@@ -159,11 +158,11 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
   implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '5.12.0'
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'
-  implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
-  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: reformLogging
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: reformLogging
 
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4JVersion
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4JVersion
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
 
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.4'
 
