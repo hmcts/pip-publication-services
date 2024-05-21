@@ -25,7 +25,7 @@ public class FlatFileSubscriptionEmailData extends EmailData {
     public FlatFileSubscriptionEmailData(SubscriptionEmail subscriptionEmail, Artefact artefact, String locationName,
                                          byte[] artefactFlatFile, int fileRetentionWeeks) {
         super(subscriptionEmail.getEmail());
-        this.artefactId = subscriptionEmail.getArtefactId();
+        this.artefactId = artefact.getArtefactId();
         this.artefact = artefact;
         this.locationName = locationName;
         this.artefactFlatFile = artefactFlatFile == null ? new byte[0]

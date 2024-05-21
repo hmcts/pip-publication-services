@@ -34,7 +34,7 @@ public class RawDataSubscriptionEmailData extends EmailData {
                                         int fileRetentionWeeks) {
         super(subscriptionEmail.getEmail());
         this.subscriptions = subscriptionEmail.getSubscriptions();
-        this.artefactId = subscriptionEmail.getArtefactId();
+        this.artefactId = artefact.getArtefactId();
         this.artefact = artefact;
         this.locationName = locationName;
         this.artefactSummary = artefactSummary;
