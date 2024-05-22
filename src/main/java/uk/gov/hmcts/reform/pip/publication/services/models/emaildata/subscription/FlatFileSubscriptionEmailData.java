@@ -10,13 +10,11 @@ import uk.gov.service.notify.RetentionPeriodDuration;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class FlatFileSubscriptionEmailData extends EmailData {
-    private UUID artefactId;
     private Artefact artefact;
     private String locationName;
     private byte[] artefactFlatFile;
@@ -25,7 +23,6 @@ public class FlatFileSubscriptionEmailData extends EmailData {
     public FlatFileSubscriptionEmailData(SubscriptionEmail subscriptionEmail, Artefact artefact, String locationName,
                                          byte[] artefactFlatFile, int fileRetentionWeeks) {
         super(subscriptionEmail.getEmail());
-        this.artefactId = artefact.getArtefactId();
         this.artefact = artefact;
         this.locationName = locationName;
         this.artefactFlatFile = artefactFlatFile == null ? new byte[0]

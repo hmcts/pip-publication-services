@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription;
 
+import nl.altindag.log.LogCaptor;
 import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
@@ -39,6 +41,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
+@SuppressWarnings("PMD.ExcessiveImports")
 class FlatFileSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String EMAIL = "test@testing.com";
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
@@ -127,13 +130,19 @@ class FlatFileSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase 
 
     @Test
     void testFlatFileSubscriptionEmailWithException() {
-        try (MockedStatic<NotificationClient> mockStatic = mockStatic(NotificationClient.class)) {
+        try (MockedStatic<NotificationClient> mockStatic = mockStatic(NotificationClient.class);
+             LogCaptor logCaptor = LogCaptor.forClass(FlatFileSubscriptionEmailGenerator.class)) {
+
             mockStatic.when(() -> NotificationClient.prepareUpload(eq(FLAT_FILE), eq(false),
                                                                    any(RetentionPeriodDuration.class)))
                 .thenThrow(new NotificationClientException(ERROR_MESSAGE));
             assertThatThrownBy(() -> emailGenerator.buildEmail(emailData, personalisationLinks))
                 .isInstanceOf(NotifyException.class)
                 .hasMessage(ERROR_MESSAGE);
+
+            assertTrue(logCaptor.getWarnLogs().get(0).contains(
+                "Error adding attachment to flat file email t***@testing.com. Artefact ID: " + ARTEFACT_ID),
+                       "Warning message is not correct");
         }
     }
 

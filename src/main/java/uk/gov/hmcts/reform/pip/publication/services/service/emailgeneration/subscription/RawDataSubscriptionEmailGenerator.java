@@ -71,7 +71,7 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         } catch (Exception e) {
             log.warn(writeLog(
                 String.format("Error adding attachment to raw data email %s. Artefact ID: %s",
-                              EmailHelper.maskEmail(emailData.getEmail()), emailData.getArtefactId())
+                              EmailHelper.maskEmail(emailData.getEmail()), emailData.getArtefact().getArtefactId())
             ));
             throw new NotifyException(e.getMessage());
         }
