@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.FlatFileSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.RawDataSubscriptionEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SingleSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.SendEmailResponse;
@@ -50,7 +50,7 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
     private final Location location = new Location();
 
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
-    private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+    private final SingleSubscriptionEmail subscriptionEmail = new SingleSubscriptionEmail();
 
     @Mock
     private SendEmailResponse sendEmailResponse;
@@ -76,6 +76,7 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         subscriptionEmail.setSubscriptions(subscriptions);
 
         artefact.setArtefactId(ARTEFACT_ID);
+        artefact.setLocationId(LOCATION_ID.toString());
 
         location.setLocationId(LOCATION_ID);
         location.setName(LOCATION_NAME);

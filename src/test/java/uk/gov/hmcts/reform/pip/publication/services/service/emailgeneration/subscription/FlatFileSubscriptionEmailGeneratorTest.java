@@ -78,7 +78,6 @@ class FlatFileSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail(EMAIL);
         subscriptionEmail.setSubscriptions(SUBSCRIPTIONS);
-        subscriptionEmail.setArtefactId(ARTEFACT_ID);
 
         Artefact artefact = new Artefact();
         artefact.setArtefactId(ARTEFACT_ID);

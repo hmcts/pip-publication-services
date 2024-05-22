@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -16,11 +15,9 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscriptio
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SingleSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.util.Base64;
-import java.util.List;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
@@ -62,7 +59,7 @@ public class SubscriptionNotificationService {
         if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
             byte[] flatFileData = dataManagementService.getArtefactFlatFile(artefact.getArtefactId());
             return flatFileSubscriptionEmailRequest(body, artefact, flatFileData, locationName);
-         } else {
+        } else {
             String artefactSummary = getArtefactSummary(artefact);
             byte[] pdf = getFileBytes(artefact, FileType.PDF, false);
             boolean hasAdditionalPdf = artefact.getListType().hasAdditionalPdf()
@@ -71,12 +68,13 @@ public class SubscriptionNotificationService {
                 : new byte[0];
             byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
                 : new byte[0];
-           return rawDataSubscriptionEmailRequest(body, artefact, artefactSummary, pdf, additionalPdf, excel, locationName);
+            return rawDataSubscriptionEmailRequest(body, artefact, artefactSummary, pdf,
+                                                   additionalPdf, excel, locationName);
         }
     }
 
     /**
-     * This method handles the bulk sending of subscription emails
+     * This method handles the bulk sending of subscription emails.
      *
      * @param bulkSubscriptionEmail The list of subscriptions that need to be fulfilled.
      */
@@ -107,7 +105,8 @@ public class SubscriptionNotificationService {
             bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
                 log.info(writeLog(String.format("Sending subscription email for user %s",
                                                 EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
-                rawDataSubscriptionEmailRequest(subscriptionEmail, artefact, artefactSummary, pdf, additionalPdf, excel, locationName);
+                rawDataSubscriptionEmailRequest(subscriptionEmail, artefact, artefactSummary, pdf, additionalPdf,
+                                                excel, locationName);
             });
         }
     }
@@ -126,8 +125,8 @@ public class SubscriptionNotificationService {
     }
 
     private String rawDataSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact,
-                                                   String artefactSummary, byte[] pdf, byte[] additionalPdf, byte[] excel,
-                                                   String locationName) {
+                                                   String artefactSummary, byte[] pdf, byte[] additionalPdf,
+                                                   byte[] excel, String locationName) {
         RawDataSubscriptionEmailData emailData = new RawDataSubscriptionEmailData(
             body, artefact, artefactSummary, pdf, additionalPdf, excel, locationName, fileRetentionWeeks
         );

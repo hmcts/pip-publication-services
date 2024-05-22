@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserN
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SingleSubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.SubscriptionNotificationService;

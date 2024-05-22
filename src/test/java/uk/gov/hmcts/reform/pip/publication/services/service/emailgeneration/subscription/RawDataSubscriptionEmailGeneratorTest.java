@@ -88,7 +88,6 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
     void setup() {
         subscriptionEmail.setEmail(EMAIL);
         subscriptionEmail.setSubscriptions(SUBSCRIPTIONS);
-        subscriptionEmail.setArtefactId(ARTEFACT_ID);
 
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setContentDate(LocalDateTime.of(2024, Month.APRIL, 30, 0, 0));
