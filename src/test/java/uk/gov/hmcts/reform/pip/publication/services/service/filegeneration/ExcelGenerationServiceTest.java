@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.filegeneration;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -73,7 +74,7 @@ class ExcelGenerationServiceTest {
         Sheet sheet = workbook.getSheet(SHEET_A);
         softly.assertThat(sheet.getRow(0))
             .as("Sheet A - " + HEADER_ROW_MESSAGE)
-            .extracting(r -> r.getStringCellValue())
+            .extracting(Cell::getStringCellValue)
             .containsExactly(COLUMN_A1, COLUMN_A2, COLUMN_A3);
         softly.assertThat(sheet.getLastRowNum())
             .as("Sheet A - " + ROW_COUNT_MESSAGE)
@@ -82,7 +83,7 @@ class ExcelGenerationServiceTest {
         sheet = workbook.getSheet(SHEET_B);
         softly.assertThat(sheet.getRow(0))
             .as("Sheet B - " + HEADER_ROW_MESSAGE)
-            .extracting(r -> r.getStringCellValue())
+            .extracting(Cell::getStringCellValue)
             .containsExactly(COLUMN_B1, COLUMN_B2, COLUMN_B3, COLUMN_B4);
         softly.assertThat(sheet.getLastRowNum())
             .as("Sheet B - " + ROW_COUNT_MESSAGE)
@@ -91,7 +92,7 @@ class ExcelGenerationServiceTest {
         sheet = workbook.getSheet(SHEET_C);
         softly.assertThat(sheet.getRow(0))
             .as("Sheet C - " + HEADER_ROW_MESSAGE)
-            .extracting(r -> r.getStringCellValue())
+            .extracting(Cell::getStringCellValue)
             .containsExactly(COLUMN_C1, COLUMN_C2);
         softly.assertThat(sheet.getLastRowNum())
             .as("Sheet C - " + ROW_COUNT_MESSAGE)
@@ -116,7 +117,7 @@ class ExcelGenerationServiceTest {
         Sheet sheet = workbook.getSheetAt(0);
         softly.assertThat(sheet.getRow(0))
             .as(HEADER_ROW_MESSAGE)
-            .extracting(r -> r.getStringCellValue())
+            .extracting(Cell::getStringCellValue)
             .containsExactly(COLUMN_A1, COLUMN_A2, COLUMN_A3);
         softly.assertThat(sheet.getLastRowNum())
             .as(ROW_COUNT_MESSAGE)
