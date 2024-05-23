@@ -86,30 +86,9 @@ public class SubscriptionNotificationService {
         String locationName = dataManagementService.getLocation(artefact.getLocationId()).getName();
 
         if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
-            byte[] flatFileData = dataManagementService.getArtefactFlatFile(artefact.getArtefactId());
-
-            bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
-                log.info(writeLog(String.format("Sending subscription email for user %s",
-                                                EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
-
-                flatFileBulkSubscriptionEmailRequest(subscriptionEmail, artefact, flatFileData, locationName);
-            });
+            flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, locationName);
         } else {
-            String artefactSummary = getArtefactSummary(artefact);
-            byte[] pdf = getFileBytes(artefact, FileType.PDF, false);
-            boolean hasAdditionalPdf = artefact.getListType().hasAdditionalPdf()
-                && artefact.getLanguage() != Language.ENGLISH;
-            byte[] additionalPdf = hasAdditionalPdf ? getFileBytes(artefact, FileType.PDF, true)
-                : new byte[0];
-            byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
-                : new byte[0];
-
-            bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
-                log.info(writeLog(String.format("Sending subscription email for user %s",
-                                                EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
-                rawDataBulkSubscriptionEmailRequest(subscriptionEmail, artefact, artefactSummary, pdf, additionalPdf,
-                                                excel, locationName);
-            });
+            rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, locationName);
         }
     }
 
@@ -140,29 +119,50 @@ public class SubscriptionNotificationService {
             .orElse(null);
     }
 
-    private void flatFileBulkSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact,
-                                                    byte[] artefactFlatFile, String locationName) {
-        try {
-            flatFileSubscriptionEmailRequest(body, artefact, artefactFlatFile, locationName);
-        } catch (TooManyEmailsException ex) {
-            log.error(writeLog(ex.getMessage()));
-        } catch (NotifyException ignored) {
-            // This is a bulk email, so we don't want to stop the process if one email fails
-            // This exception is already logged at a higher level, so no need to log again here
-        }
+    private void flatFileBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
+                                                     String locationName) {
+
+        byte[] flatFileData = dataManagementService.getArtefactFlatFile(artefact.getArtefactId());
+        bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
+            try {
+                log.info(writeLog(String.format("Sending subscription email for user %s",
+                                            EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
+
+                flatFileSubscriptionEmailRequest(subscriptionEmail, artefact, flatFileData, locationName);
+            } catch (TooManyEmailsException ex) {
+                log.error(writeLog(ex.getMessage()));
+            } catch (NotifyException ignored) {
+                // This is a bulk email, so we don't want to stop the process if one email fails
+                // This exception is already logged at a higher level, so no need to log again here
+            }
+        });
     }
 
-    private void rawDataBulkSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact,
-                                                   String artefactSummary, byte[] pdf, byte[] additionalPdf,
-                                                   byte[] excel, String locationName) {
-        try {
-            rawDataSubscriptionEmailRequest(body, artefact, artefactSummary, pdf, additionalPdf, excel, locationName);
-        } catch (TooManyEmailsException ex) {
-            log.error(writeLog(ex.getMessage()));
-        } catch (NotifyException ignored) {
-            // This is a bulk email, so we don't want to stop the process if one email fails
-            // This exception is already logged at a higher level, so no need to log again here
-        }
+    private void rawDataBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail,
+                                                     Artefact artefact, String locationName) {
+        String artefactSummary = getArtefactSummary(artefact);
+        byte[] pdf = getFileBytes(artefact, FileType.PDF, false);
+        boolean hasAdditionalPdf = artefact.getListType().hasAdditionalPdf()
+            && artefact.getLanguage() != Language.ENGLISH;
+        byte[] additionalPdf = hasAdditionalPdf ? getFileBytes(artefact, FileType.PDF, true)
+            : new byte[0];
+        byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
+            : new byte[0];
+
+        bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
+
+            try {
+                log.info(writeLog(String.format("Sending subscription email for user %s",
+                                                EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
+                rawDataSubscriptionEmailRequest(subscriptionEmail, artefact, artefactSummary, pdf, additionalPdf,
+                                                    excel, locationName);
+            } catch (TooManyEmailsException ex) {
+                log.error(writeLog(ex.getMessage()));
+            } catch (NotifyException ignored) {
+                // This is a bulk email, so we don't want to stop the process if one email fails
+                // This exception is already logged at a higher level, so no need to log again here
+            }
+        });
     }
 
     private String getArtefactSummary(Artefact artefact) {
