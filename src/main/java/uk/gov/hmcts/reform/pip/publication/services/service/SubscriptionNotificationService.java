@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.TooManyEmailsException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.FlatFileSubscriptionEmailData;
@@ -90,7 +92,7 @@ public class SubscriptionNotificationService {
                 log.info(writeLog(String.format("Sending subscription email for user %s",
                                                 EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
 
-                flatFileSubscriptionEmailRequest(subscriptionEmail, artefact, flatFileData, locationName);
+                flatFileBulkSubscriptionEmailRequest(subscriptionEmail, artefact, flatFileData, locationName);
             });
         } else {
             String artefactSummary = getArtefactSummary(artefact);
@@ -105,7 +107,7 @@ public class SubscriptionNotificationService {
             bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
                 log.info(writeLog(String.format("Sending subscription email for user %s",
                                                 EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
-                rawDataSubscriptionEmailRequest(subscriptionEmail, artefact, artefactSummary, pdf, additionalPdf,
+                rawDataBulkSubscriptionEmailRequest(subscriptionEmail, artefact, artefactSummary, pdf, additionalPdf,
                                                 excel, locationName);
             });
         }
@@ -136,6 +138,31 @@ public class SubscriptionNotificationService {
         return emailService.sendEmail(email)
             .getReference()
             .orElse(null);
+    }
+
+    private void flatFileBulkSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact,
+                                                    byte[] artefactFlatFile, String locationName) {
+        try {
+            flatFileSubscriptionEmailRequest(body, artefact, artefactFlatFile, locationName);
+        } catch (TooManyEmailsException ex) {
+            log.error(writeLog(ex.getMessage()));
+        } catch (NotifyException ignored) {
+            // This is a bulk email, so we don't want to stop the process if one email fails
+            // This exception is already logged at a higher level, so no need to log again here
+        }
+    }
+
+    private void rawDataBulkSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact,
+                                                   String artefactSummary, byte[] pdf, byte[] additionalPdf,
+                                                   byte[] excel, String locationName) {
+        try {
+            rawDataSubscriptionEmailRequest(body, artefact, artefactSummary, pdf, additionalPdf, excel, locationName);
+        } catch (TooManyEmailsException ex) {
+            log.error(writeLog(ex.getMessage()));
+        } catch (NotifyException ignored) {
+            // This is a bulk email, so we don't want to stop the process if one email fails
+            // This exception is already logged at a higher level, so no need to log again here
+        }
     }
 
     private String getArtefactSummary(Artefact artefact) {
