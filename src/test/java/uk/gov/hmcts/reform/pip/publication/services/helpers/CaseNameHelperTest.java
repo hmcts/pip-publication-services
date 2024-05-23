@@ -18,15 +18,13 @@ class CaseNameHelperTest {
 
     private static final String CASES = "cases";
 
-    private CaseNameHelper caseNameHelper = new CaseNameHelper();
-
     @Test
     void testWithSearchNull() {
         Artefact artefact = new Artefact();
         artefact.setSearch(null);
 
         List<String> returnedCaseNumbers =
-            caseNameHelper.generateCaseNumberPersonalisation(artefact, List.of(CASE_NUMBER_VALUE));
+            CaseNameHelper.generateCaseNumberPersonalisation(artefact, List.of(CASE_NUMBER_VALUE));
 
         assertEquals(List.of(CASE_NUMBER_VALUE), returnedCaseNumbers, "Case number not as expected");
     }
@@ -82,7 +80,7 @@ class CaseNameHelperTest {
         artefact.setSearch(searchCriteria);
 
         List<String> returnedCaseNumbers =
-            caseNameHelper.generateCaseNumberPersonalisation(artefact, List.of(CASE_NUMBER_VALUE));
+            CaseNameHelper.generateCaseNumberPersonalisation(artefact, List.of(CASE_NUMBER_VALUE));
 
         if (Strings.isNullOrEmpty(caseName)) {
             assertEquals(List.of(CASE_NUMBER_VALUE), returnedCaseNumbers, "Case number not as expected");
