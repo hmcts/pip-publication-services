@@ -199,8 +199,8 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
     void testGetMiDataThrowsException() {
         mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
-                                                                     dataManagementService.getMiData(),
+        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class,
+                                                                     dataManagementService::getMiData,
                                                                  NO_EXPECTED_EXCEPTION);
 
         assertTrue(notifyException.getMessage().contains(NOT_FOUND), NO_STATUS_CODE_IN_EXCEPTION);

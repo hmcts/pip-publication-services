@@ -61,8 +61,8 @@ class AccountManagementServiceTest extends RedisConfigurationTestBase {
     void testGetMiDataThrowsException() {
         mockAccountManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
-                                                                     accountManagementService.getMiData(),
+        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class,
+                                                                 accountManagementService::getMiData,
                                                                  "Exception does not match");
 
         assertTrue(notifyException.getMessage().contains(NOT_FOUND), "Message does not match");
