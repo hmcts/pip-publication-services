@@ -131,7 +131,7 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
 
         softly.assertThat(personalisation.get(LIST_TYPE_PERSONALISATION))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo("SJP Public List");
+            .isEqualTo("SJP Public List (Full list)");
 
         softly.assertThat(personalisation.get(START_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
