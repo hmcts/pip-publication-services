@@ -64,8 +64,8 @@ class SubscriptionManagementServiceTest extends RedisConfigurationTestBase {
     void testGetAllMiDataThrowsException() {
         mockSubscriptionManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
-                                                                     subscriptionManagementService.getAllMiData(),
+        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class,
+                                                                     subscriptionManagementService::getAllMiData,
                                                                  EXCEPTION_NOT_MATCH);
 
         assertTrue(notifyException.getMessage().contains(NOT_FOUND), MESSAGE_NOT_MATCH);
@@ -85,8 +85,8 @@ class SubscriptionManagementServiceTest extends RedisConfigurationTestBase {
     void testGetLocationMiDataThrowsException() {
         mockSubscriptionManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
-                                                                     subscriptionManagementService.getLocationMiData(),
+        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class,
+                                                                     subscriptionManagementService::getLocationMiData,
                                                                  EXCEPTION_NOT_MATCH);
 
         assertTrue(notifyException.getMessage().contains(NOT_FOUND), MESSAGE_NOT_MATCH);
