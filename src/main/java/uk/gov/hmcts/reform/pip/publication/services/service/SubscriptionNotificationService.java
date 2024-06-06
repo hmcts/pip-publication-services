@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.FlatFileSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.RawDataSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SingleSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
@@ -42,37 +41,6 @@ public class SubscriptionNotificationService {
         this.emailService = emailService;
         this.dataManagementService = dataManagementService;
         this.channelManagementService = channelManagementService;
-    }
-
-    /**
-     * This method handles the sending of the subscription email, and forwarding on to the relevant email client.
-     *
-     * @param body The subscription message that is to be fulfilled.
-     * @return The ID that references the subscription message.
-     */
-    @Deprecated
-    public String subscriptionEmailRequest(SingleSubscriptionEmail body) {
-        log.info(writeLog(String.format("Sending subscription email for user %s",
-                                        EmailHelper.maskEmail(body.getEmail()))));
-
-        Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
-        String locationName = dataManagementService.getLocation(artefact.getLocationId()).getName();
-
-        if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
-            byte[] flatFileData = dataManagementService.getArtefactFlatFile(artefact.getArtefactId());
-            return flatFileSubscriptionEmailRequest(body, artefact, flatFileData, locationName);
-        } else {
-            String artefactSummary = getArtefactSummary(artefact);
-            byte[] pdf = getFileBytes(artefact, FileType.PDF, false);
-            boolean hasAdditionalPdf = artefact.getListType().hasAdditionalPdf()
-                && artefact.getLanguage() != Language.ENGLISH;
-            byte[] additionalPdf = hasAdditionalPdf ? getFileBytes(artefact, FileType.PDF, true)
-                : new byte[0];
-            byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
-                : new byte[0];
-            return rawDataSubscriptionEmailRequest(body, artefact, artefactSummary, pdf,
-                                                   additionalPdf, excel, locationName);
-        }
     }
 
     /**

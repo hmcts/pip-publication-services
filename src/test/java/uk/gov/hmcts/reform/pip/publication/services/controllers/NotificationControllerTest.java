@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SingleSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
@@ -71,8 +70,8 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
 
     private WelcomeEmail validRequestBodyTrue;
     private List<MediaApplication> validMediaApplicationList;
-    private SingleSubscriptionEmail subscriptionEmail;
-    private BulkSubscriptionEmail bulkSubscriptionEmail;
+    private SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+    private BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
     private final List<NoMatchArtefact> noMatchArtefactList = new ArrayList<>();
     private CreatedAdminWelcomeEmail createdAdminWelcomeEmailValidBody;
     private DuplicatedMediaEmail createMediaSetupEmail;
@@ -116,12 +115,9 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         inactiveUserNotificationEmail = new InactiveUserNotificationEmail(FULL_NAME, VALID_EMAIL,
                                                                           "PI_AAD", LAST_SIGNED_IN_DATE);
 
-        subscriptionEmail = new SingleSubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
-        subscriptionEmail.setArtefactId(UUID.randomUUID());
         subscriptionEmail.setSubscriptions(new HashMap<>());
 
-        bulkSubscriptionEmail = new BulkSubscriptionEmail();
         bulkSubscriptionEmail.setArtefactId(UUID.randomUUID());
 
         SubscriptionEmail subscriptionEmailForBulk = new SubscriptionEmail();
@@ -141,7 +137,6 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
         when(userNotificationService.mediaAccountWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
-        when(subscriptionNotificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
         doNothing().when(subscriptionNotificationService).bulkSendSubscriptionEmail(bulkSubscriptionEmail);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
@@ -180,15 +175,6 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         assertEquals(HttpStatus.OK, notificationController.sendWelcomeEmail(validRequestBodyTrue).getStatusCode(),
                      STATUS_CODES_MATCH
         );
-    }
-
-    @Test
-    void testSendSubscriptionReturnsOkResponse() {
-        ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmail(subscriptionEmail);
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), STATUS_CODES_MATCH);
-        assertTrue(Objects.requireNonNull(responseEntity.getBody()).contains(SUCCESS_ID),
-                   "Response content does not contain the ID");
     }
 
     @Test

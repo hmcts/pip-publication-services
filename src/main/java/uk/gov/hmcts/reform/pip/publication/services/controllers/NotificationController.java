@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SingleSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.SubscriptionNotificationService;
@@ -119,20 +118,6 @@ public class NotificationController {
             "Media applications report email sent successfully with referenceId %s",
                 notificationService.handleMediaApplicationReportingRequest(
                     mediaApplicationList)));
-    }
-
-    @ApiResponse(responseCode = OK_RESPONSE, description = "Subscription email successfully sent to email: "
-        + "{recipientEmail} with reference id: {reference id}")
-    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
-    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
-    @Operation(summary = "Send subscription email to user")
-    @Deprecated
-    @PostMapping("/subscription")
-    public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody SingleSubscriptionEmail body) {
-        return ResponseEntity.ok(String.format(
-            "Subscription email successfully sent to email: %s with reference id: %s", body.getEmail(),
-            subscriptionNotificationService.subscriptionEmailRequest(body)
-        ));
     }
 
     @ApiResponse(responseCode = ACCEPTED_RESPONSE, description = "Subscription email request accepted")

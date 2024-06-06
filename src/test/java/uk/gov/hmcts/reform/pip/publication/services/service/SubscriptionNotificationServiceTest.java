@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.FlatFileSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.RawDataSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SingleSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
@@ -34,7 +33,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -69,7 +67,7 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
     EmailToSend validEmailBodyForEmailClientFlatFile;
 
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
-    private final SingleSubscriptionEmail subscriptionEmail = new SingleSubscriptionEmail();
+    private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
 
     private final BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
 
@@ -101,7 +99,6 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         subscriptions.put(SubscriptionTypes.LOCATION_ID, List.of("1"));
 
         subscriptionEmail.setEmail(EMAIL);
-        subscriptionEmail.setArtefactId(ARTEFACT_ID);
         subscriptionEmail.setSubscriptions(subscriptions);
 
         bulkSubscriptionEmail.setArtefactId(ARTEFACT_ID);
@@ -131,19 +128,6 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void testFlatFileSubscriptionEmailRequest() {
-        artefact.setIsFlatFile(true);
-
-        when(emailService.handleEmailGeneration(any(FlatFileSubscriptionEmailData.class),
-                                                eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
-            .thenReturn(validEmailBodyForEmailClientFlatFile);
-
-        assertThat(notificationService.subscriptionEmailRequest(subscriptionEmail))
-            .as("Subscription with flat file should return successful reference ID")
-            .isEqualTo(SUCCESS_REF_ID);
-    }
-
-    @Test
     void testBulkFlatFileSubscriptionEmailRequest() {
         artefact.setIsFlatFile(true);
 
@@ -169,20 +153,6 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
             ARTEFACT_FLAT_FILE,
             "Incorrect artefact flat file"
         );
-    }
-
-    @Test
-    void testRawDataSubscriptionEmailRequest() {
-        artefact.setIsFlatFile(false);
-        artefact.setListType(ListType.SJP_PUBLIC_LIST);
-
-        when(emailService.handleEmailGeneration(any(RawDataSubscriptionEmailData.class),
-                                                eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
-            .thenReturn(validEmailBodyForEmailClientRawData);
-
-        assertThat(notificationService.subscriptionEmailRequest(subscriptionEmail))
-            .as("Subscription with raw data file should return successful reference ID")
-            .isEqualTo(SUCCESS_REF_ID);
     }
 
     @Test
