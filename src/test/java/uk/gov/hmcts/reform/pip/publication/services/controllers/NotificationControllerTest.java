@@ -19,11 +19,13 @@ import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SingleSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
@@ -43,6 +45,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -68,7 +71,8 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
 
     private WelcomeEmail validRequestBodyTrue;
     private List<MediaApplication> validMediaApplicationList;
-    private SubscriptionEmail subscriptionEmail;
+    private SingleSubscriptionEmail subscriptionEmail;
+    private BulkSubscriptionEmail bulkSubscriptionEmail;
     private final List<NoMatchArtefact> noMatchArtefactList = new ArrayList<>();
     private CreatedAdminWelcomeEmail createdAdminWelcomeEmailValidBody;
     private DuplicatedMediaEmail createMediaSetupEmail;
@@ -112,10 +116,19 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         inactiveUserNotificationEmail = new InactiveUserNotificationEmail(FULL_NAME, VALID_EMAIL,
                                                                           "PI_AAD", LAST_SIGNED_IN_DATE);
 
-        subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail = new SingleSubscriptionEmail();
         subscriptionEmail.setEmail("a@b.com");
         subscriptionEmail.setArtefactId(UUID.randomUUID());
         subscriptionEmail.setSubscriptions(new HashMap<>());
+
+        bulkSubscriptionEmail = new BulkSubscriptionEmail();
+        bulkSubscriptionEmail.setArtefactId(UUID.randomUUID());
+
+        SubscriptionEmail subscriptionEmailForBulk = new SubscriptionEmail();
+        subscriptionEmailForBulk.setEmail("a@b.com");
+        subscriptionEmailForBulk.setSubscriptions(new HashMap<>());
+
+        bulkSubscriptionEmail.setSubscriptionEmails(List.of(subscriptionEmailForBulk));
 
         createMediaSetupEmail = new DuplicatedMediaEmail();
         createMediaSetupEmail.setEmail("a@b.com");
@@ -129,6 +142,7 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
 
         when(userNotificationService.mediaAccountWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
         when(subscriptionNotificationService.subscriptionEmailRequest(subscriptionEmail)).thenReturn(SUCCESS_ID);
+        doNothing().when(subscriptionNotificationService).bulkSendSubscriptionEmail(bulkSubscriptionEmail);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
 
@@ -175,6 +189,15 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), STATUS_CODES_MATCH);
         assertTrue(Objects.requireNonNull(responseEntity.getBody()).contains(SUCCESS_ID),
                    "Response content does not contain the ID");
+    }
+
+    @Test
+    void testBulkSendSubscriptionReturnsAcceptedResponse() {
+        ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmail(bulkSubscriptionEmail);
+
+        assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode(), STATUS_CODES_MATCH);
+        assertEquals("Subscription email request accepted", Objects.requireNonNull(responseEntity.getBody()),
+                   "Response body should contain accepted message");
     }
 
     @Test

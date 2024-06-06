@@ -59,7 +59,7 @@ public class FlatFileSubscriptionEmailGenerator extends EmailGenerator {
             log.warn(writeLog(String.format(
                 "Error adding attachment to flat file email %s. Artefact ID: %s",
                 EmailHelper.maskEmail(emailData.getEmail()),
-                emailData.getArtefactId()
+                emailData.getArtefact().getArtefactId()
             )));
             throw new NotifyException(e.getMessage());
         }

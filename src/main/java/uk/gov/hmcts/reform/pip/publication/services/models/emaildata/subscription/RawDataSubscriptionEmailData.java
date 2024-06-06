@@ -13,14 +13,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class RawDataSubscriptionEmailData extends EmailData {
     private Map<SubscriptionTypes, List<String>> subscriptions;
-    private UUID artefactId;
     private Artefact artefact;
     private String locationName;
     private String artefactSummary;
@@ -34,7 +32,6 @@ public class RawDataSubscriptionEmailData extends EmailData {
                                         int fileRetentionWeeks) {
         super(subscriptionEmail.getEmail());
         this.subscriptions = subscriptionEmail.getSubscriptions();
-        this.artefactId = subscriptionEmail.getArtefactId();
         this.artefact = artefact;
         this.locationName = locationName;
         this.artefactSummary = artefactSummary;

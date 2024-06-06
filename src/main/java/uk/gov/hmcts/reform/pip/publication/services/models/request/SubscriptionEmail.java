@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.pip.publication.services.validation.SubscriptionsCons
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Data
@@ -19,8 +18,4 @@ public class SubscriptionEmail {
 
     @SubscriptionsConstraint
     Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
-
-    @NotNull
-    UUID artefactId;
-
 }
