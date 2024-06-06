@@ -19,12 +19,13 @@ import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SingleSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.SubscriptionNotificationService;
@@ -57,6 +58,7 @@ public class NotificationController {
     private static final String NOTIFY_EXCEPTION_ERROR_MESSAGE = "NotifyException error message";
 
     private static final String OK_RESPONSE = "200";
+    private static final String ACCEPTED_RESPONSE = "202";
     private static final String BAD_REQUEST = "400";
 
     @Autowired
@@ -124,12 +126,22 @@ public class NotificationController {
     @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     @Operation(summary = "Send subscription email to user")
+    @Deprecated
     @PostMapping("/subscription")
-    public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody SubscriptionEmail body) {
+    public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody SingleSubscriptionEmail body) {
         return ResponseEntity.ok(String.format(
             "Subscription email successfully sent to email: %s with reference id: %s", body.getEmail(),
             subscriptionNotificationService.subscriptionEmailRequest(body)
         ));
+    }
+
+    @ApiResponse(responseCode = ACCEPTED_RESPONSE, description = "Subscription email request accepted")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @Operation(summary = "Bulk send email subscriptions to a list of users and associated config")
+    @PostMapping("/v2/subscription")
+    public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody BulkSubscriptionEmail body) {
+        subscriptionNotificationService.bulkSendSubscriptionEmail(body);
+        return ResponseEntity.accepted().body("Subscription email request accepted");
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Unidentified blob email "
