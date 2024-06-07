@@ -292,8 +292,6 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
     private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
 
     String validLocationsListJson;
-
-    private static final String SUBSCRIPTION_URL = "/notify/subscription";
     private static final String BULK_SUBSCRIPTION_URL = "/notify/v2/subscription";
     private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
@@ -615,7 +613,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
         String missingEmailJsonBody =
             "{\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}, \"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
 
-        mockMvc.perform(post(SUBSCRIPTION_URL)
+        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(missingEmailJsonBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -623,7 +621,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
 
     @Test
     void testValidPayloadForSubsEmailThrowsBadGateway() throws Exception {
-        mockMvc.perform(post(SUBSCRIPTION_URL)
+        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(NONEXISTENT_BLOB_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadGateway());
     }
@@ -635,7 +633,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
             "{\"email\":\"abcd\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
                 + "\"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
 
-        mockMvc.perform(post(SUBSCRIPTION_URL)
+        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(invalidEmailJsonBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -647,7 +645,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
         String missingArtefactIdJsonBody =
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}}";
 
-        mockMvc.perform(post(SUBSCRIPTION_URL)
+        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(missingArtefactIdJsonBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -660,7 +658,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[]},"
                 + "\"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
 
-        mockMvc.perform(post(SUBSCRIPTION_URL)
+        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(invalidSubscriptionJsonBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -672,7 +670,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"998\"]},"
                 + "\"artefactId\": \"55995355-466b-4991-a7da-9d016cbaa591\"}";
 
-        mockMvc.perform(post(SUBSCRIPTION_URL)
+        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(validBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
@@ -684,7 +682,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"998\"]},"
                 + "\"artefactId\": \"7ace17ef-0e5c-4db7-ae4a-a7d7953e0073\"}";
 
-        mockMvc.perform(post(SUBSCRIPTION_URL)
+        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(validBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
@@ -723,7 +721,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
             }
             """;
 
-        mockMvc.perform(post(SUBSCRIPTION_URL)
+        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(validBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
