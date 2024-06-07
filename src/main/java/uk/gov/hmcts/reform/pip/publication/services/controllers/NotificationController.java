@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMed
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.SubscriptionNotificationService;
@@ -120,7 +121,8 @@ public class NotificationController {
                     mediaApplicationList)));
     }
 
-    @ApiResponse(responseCode = ACCEPTED_RESPONSE, description = "Subscription email request accepted")
+    @ApiResponse(responseCode = ACCEPTED_RESPONSE, description = "Subscription email successfully sent to email: "
+        + "{recipientEmail} with reference id: {reference id}")
     @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     @Operation(summary = "Bulk send email subscriptions to a list of users and associated config")
     @PostMapping("/v2/subscription")
