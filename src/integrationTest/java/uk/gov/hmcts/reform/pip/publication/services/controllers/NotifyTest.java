@@ -191,13 +191,25 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
         """;
     private static final String NONEXISTENT_BLOB_SUBS_EMAIL = """
         {
-            "artefactId": "b190522a-5d9b-4089-a8c8-6918721c93df",
-            "email": "test_account_admin@justice.gov.uk",
-            "subscriptions": {
-                "CASE_URN": [
-                    "123"
-                ]
-            }
+           "artefactId":"111",
+           "subscriptionEmails":[
+              {
+                 "email":"test1@justice.gov.uk",
+                 "subscriptions":{
+                    "CASE_URN":[
+                       "123"
+                    ]
+                 }
+              },
+              {
+                 "email":"test2@justice.gov.uk",
+                 "subscriptions":{
+                    "CASE_URN":[
+                       "123"
+                    ]
+                 }
+              }
+           ]
         }
         """;
     private static final String VALID_MEDIA_VERIFICATION_EMAIL_BODY = """
@@ -677,18 +689,6 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
     }
 
     @Test
-    void testValidFlatFileRequestCsv() throws Exception {
-        String validBody =
-            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"998\"]},"
-                + "\"artefactId\": \"7ace17ef-0e5c-4db7-ae4a-a7d7953e0073\"}";
-
-        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(validBody)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-    }
-
-    @Test
     void testSendBulkSubscriptionEmail() throws Exception {
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
@@ -709,20 +709,9 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
     @Test
     @WithMockUser(username = UNAUTHORIZED_USERNAME, authorities = {UNAUTHORIZED_ROLE})
     void testUnauthorizedSendSubscriptionEmail() throws Exception {
-        String validBody = """
-            {
-                "artefactId": "3d498688-bbad-4a53-b253-a16ddf8737a9",
-                "email": "test_account_admin@justice.gov.uk",
-                "subscriptions": {
-                    "LOCATION_ID": [
-                        "4"
-                    ]
-                }
-            }
-            """;
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(validBody)
+                            .content(BULK_SUBSCRIPTION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
     }
