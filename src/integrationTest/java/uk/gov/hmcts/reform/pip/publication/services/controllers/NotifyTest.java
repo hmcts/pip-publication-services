@@ -21,6 +21,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
@@ -191,7 +192,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
         """;
     private static final String NONEXISTENT_BLOB_SUBS_EMAIL = """
         {
-           "artefactId":"111",
+           "artefactId":"a190522a-5d9b-4089-a8c8-6918721c93dg",
            "subscriptionEmails":[
               {
                  "email":"test1@justice.gov.uk",
@@ -678,12 +679,16 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
 
     @Test
     void testValidFlatFileRequest() throws Exception {
-        String validBody =
-            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"998\"]},"
-                + "\"artefactId\": \"55995355-466b-4991-a7da-9d016cbaa591\"}";
+//        String validBody =
+//            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"998\"]},"
+//                + "\"artefactId\": \"55995355-466b-4991-a7da-9d016cbaa591\"}";
+
+        Artefact artefact = new Artefact();
+        artefact.setIsFlatFile(true);
+
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(validBody)
+                            .content(String.valueOf(artefact))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
