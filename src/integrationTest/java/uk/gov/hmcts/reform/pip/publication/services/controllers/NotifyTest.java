@@ -192,18 +192,10 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
         """;
     private static final String NONEXISTENT_BLOB_SUBS_EMAIL = """
         {
-           "artefactId":"a190522a-5d9b-4089-a8c8-6918721c93dg",
+           "artefactId":"b190522a-5d9b-4089-a8c8-6918721c93df",
            "subscriptionEmails":[
               {
-                 "email":"test1@justice.gov.uk",
-                 "subscriptions":{
-                    "CASE_URN":[
-                       "123"
-                    ]
-                 }
-              },
-              {
-                 "email":"test2@justice.gov.uk",
+                 "email": "test_account_admin@justice.gov.uk",
                  "subscriptions":{
                     "CASE_URN":[
                        "123"
@@ -213,6 +205,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
            ]
         }
         """;
+
     private static final String VALID_MEDIA_VERIFICATION_EMAIL_BODY = """
         {
             "fullName": "fullName",
@@ -634,6 +627,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
 
     @Test
     void testValidPayloadForSubsEmailThrowsBadGateway() throws Exception {
+
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(NONEXISTENT_BLOB_SUBS_EMAIL)
                             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadGateway());
@@ -679,15 +673,27 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
 
     @Test
     void testValidFlatFileRequest() throws Exception {
-
-        Artefact artefact = new Artefact();
-        artefact.setIsFlatFile(true);
-
+      String validFlatFileBody ="""
+        {
+           "artefactId":"b190522a-5d9b-4089-a8c8-6918721c93df",
+           "isFlatFile": "true",
+           "subscriptionEmails":[
+              {
+                 "email":"test1@justice.gov.uk",
+                 "subscriptions":{
+                    "CASE_URN":[
+                       "123"
+                    ]
+                 }
+              }
+           ]
+        }
+        """;
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(String.valueOf(artefact))
+                            .content(validFlatFileBody)
                             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isAccepted());
     }
 
     @Test
