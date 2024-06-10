@@ -672,21 +672,21 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
 
     @Test
     void testValidFlatFileRequest() throws Exception {
-      String validFlatFileBody ="""
-        {
-           "artefactId":"b190522a-5d9b-4089-a8c8-6918721c93df",
-           "isFlatFile": "true",
-           "subscriptionEmails":[
-              {
-                 "email":"test1@justice.gov.uk",
-                 "subscriptions":{
-                    "CASE_URN":[
-                       "123"
-                    ]
-                 }
-              }
-           ]
-        }
+        String validFlatFileBody = """
+            {
+               "artefactId":"b190522a-5d9b-4089-a8c8-6918721c93df",
+               "isFlatFile": "true",
+               "subscriptionEmails":[
+                  {
+                     "email":"test1@justice.gov.uk",
+                     "subscriptions":{
+                        "CASE_URN":[
+                           "123"
+                        ]
+                     }
+                  }
+               ]
+            }
         """;
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
