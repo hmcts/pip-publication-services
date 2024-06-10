@@ -679,9 +679,6 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
 
     @Test
     void testValidFlatFileRequest() throws Exception {
-//        String validBody =
-//            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"998\"]},"
-//                + "\"artefactId\": \"55995355-466b-4991-a7da-9d016cbaa591\"}";
 
         Artefact artefact = new Artefact();
         artefact.setIsFlatFile(true);
