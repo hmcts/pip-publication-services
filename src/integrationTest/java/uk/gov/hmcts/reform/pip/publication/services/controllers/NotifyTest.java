@@ -248,6 +248,41 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
             "lastSignedInDate": "01 May 2022"
         }
         """;
+
+    private static final String BULK_SUBSCRIPTION_EMAIL_BODY = """
+        {
+           "artefactId":"b190522a-5d9b-4089-a8c8-6918721c93df",
+           "subscriptionEmails":[
+              {
+                 "email":"test1@justice.gov.uk",
+                 "subscriptions":{
+                    "CASE_URN":[
+                       "123"
+                    ]
+                 }
+              },
+              {
+                 "email":"test2@justice.gov.uk",
+                 "subscriptions":{
+                    "CASE_URN":[
+                       "123"
+                    ]
+                 }
+              }
+           ]
+        }
+        """;
+
+    private static final String BULK_SUBSCRIPTION_EMAIL_BODY_BAD_REQUEST = """
+        {
+           "artefactId":"b190522a-5d9b-4089-a8c8-6918721c93df",
+           "subscriptionEmails":[
+                 "email":"test1@justice.gov.uk",
+                 "email":"test2@justice.gov.uk"
+           ]
+        }
+        """;
+
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
@@ -259,6 +294,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
     String validLocationsListJson;
 
     private static final String SUBSCRIPTION_URL = "/notify/subscription";
+    private static final String BULK_SUBSCRIPTION_URL = "/notify/v2/subscription";
     private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
@@ -436,7 +472,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
 
         MultipartStream multipartStream = new MultipartStream(new ByteArrayInputStream(
             recordedRequest.getBody().readByteArray()), recordedRequest.getHeader("Content-Type")
-            .split("=")[1].getBytes(), 1024, null);
+                                                                  .split("=")[1].getBytes(), 1024, null);
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         multipartStream.readHeaders();
@@ -652,6 +688,24 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
                             .content(validBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    void testSendBulkSubscriptionEmail() throws Exception {
+
+        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
+                            .content(BULK_SUBSCRIPTION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isAccepted());
+    }
+
+    @Test
+    void testSendBulkSubscriptionEmailBadRequest() throws Exception {
+
+        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
+                            .content(BULK_SUBSCRIPTION_EMAIL_BODY_BAD_REQUEST)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
