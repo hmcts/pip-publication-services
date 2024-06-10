@@ -687,7 +687,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
                   }
                ]
             }
-        """;
+            """;
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(validFlatFileBody)
