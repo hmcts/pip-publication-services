@@ -122,7 +122,7 @@ Any endpoint that should require authentication, needs to be annotated either at
 
 ##### General
 
-- [Java JDK 17](https://openjdk.org/projects/jdk/17/) - this is used throughout all of our services.
+- [Java JDK 21](https://openjdk.org/projects/jdk/21/) - this is used throughout all of our services.
 - REST client of some description (e.g. [Curl](https://github.com/curl/curl), [Insomnia](https://insomnia.rest/), [Postman](https://www.postman.com/)). Swagger-UI can also be used to send requests.
 
 ##### Local development
