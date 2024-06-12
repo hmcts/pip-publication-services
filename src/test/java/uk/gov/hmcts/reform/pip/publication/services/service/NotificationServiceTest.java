@@ -59,7 +59,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles("test")
-@SuppressWarnings("PMD.ExcessiveImports")
+@SuppressWarnings({"PMD.ExcessiveImports", "PMD.CouplingBetweenObjects"})
 class NotificationServiceTest extends RedisConfigurationTestBase {
     private final Map<String, Object> personalisationMap = Map.ofEntries(
         entry("email", VALID_BODY_AAD.getEmail()),
