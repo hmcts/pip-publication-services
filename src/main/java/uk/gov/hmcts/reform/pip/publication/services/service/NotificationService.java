@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.M
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.SystemAdminUpdateEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.UnidentifiedBlobEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.io.IOException;
@@ -31,6 +33,10 @@ public class NotificationService {
 
     private final FileCreationService fileCreationService;
 
+    private final DataManagementService dataManagementService;
+
+    private final SubscriptionNotificationService subscriptionNotificationService;
+
     @Value("${notify.pi-team-email}")
     private String piTeamEmail;
 
@@ -41,9 +47,14 @@ public class NotificationService {
     private String envName;
 
     @Autowired
-    public NotificationService(EmailService emailService, FileCreationService fileCreationService) {
+    public NotificationService(EmailService emailService,
+                               FileCreationService fileCreationService,
+                               DataManagementService dataManagementService,
+                               SubscriptionNotificationService subscriptionNotificationService) {
         this.emailService = emailService;
         this.fileCreationService = fileCreationService;
+        this.dataManagementService = dataManagementService;
+        this.subscriptionNotificationService = subscriptionNotificationService;
     }
 
     /**
@@ -117,6 +128,24 @@ public class NotificationService {
                 .orElse(null)
         ));
         return sentEmails;
+    }
+
+    /**
+     * This method handles the bulk sending of subscription emails.
+     *
+     * @param bulkSubscriptionEmail The list of subscriptions that need to be fulfilled.
+     */
+    public void bulkSendSubscriptionEmail(BulkSubscriptionEmail bulkSubscriptionEmail) {
+        Artefact artefact = dataManagementService.getArtefact(bulkSubscriptionEmail.getArtefactId());
+        String locationName = dataManagementService.getLocation(artefact.getLocationId()).getName();
+
+        if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
+            subscriptionNotificationService.flatFileBulkSubscriptionEmailRequest(
+                bulkSubscriptionEmail, artefact, locationName);
+        } else {
+            subscriptionNotificationService.rawDataBulkSubscriptionEmailRequest(
+                bulkSubscriptionEmail, artefact, locationName);
+        }
     }
 
     /**

@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectio
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
-import uk.gov.hmcts.reform.pip.publication.services.service.SubscriptionNotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
@@ -49,8 +48,6 @@ public class NotificationController {
 
     private final UserNotificationService userNotificationService;
 
-    private final SubscriptionNotificationService subscriptionNotificationService;
-
     private static final String BAD_PAYLOAD_EXCEPTION_MESSAGE = "BadPayloadException error message";
 
     private static final String BAD_PAYLOAD_ERROR_MESSAGE = "BadPayloadException error message";
@@ -63,12 +60,10 @@ public class NotificationController {
     @Autowired
     public NotificationController(NotificationService notificationService,
                                   ThirdPartyManagementService thirdPartyManagementService,
-                                  UserNotificationService userNotificationService,
-                                  SubscriptionNotificationService subscriptionNotificationService) {
+                                  UserNotificationService userNotificationService) {
         this.notificationService = notificationService;
         this.thirdPartyManagementService = thirdPartyManagementService;
         this.userNotificationService = userNotificationService;
-        this.subscriptionNotificationService = subscriptionNotificationService;
     }
 
     /**
@@ -126,7 +121,7 @@ public class NotificationController {
     @Operation(summary = "Bulk send email subscriptions to a list of users and associated config")
     @PostMapping("/v2/subscription")
     public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody BulkSubscriptionEmail body) {
-        subscriptionNotificationService.bulkSendSubscriptionEmail(body);
+        notificationService.bulkSendSubscriptionEmail(body);
         return ResponseEntity.accepted().body("Subscription email request accepted");
     }
 

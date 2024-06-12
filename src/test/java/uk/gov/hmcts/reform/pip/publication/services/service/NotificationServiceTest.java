@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +10,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.location.Location;
+import uk.gov.hmcts.reform.pip.model.publication.Artefact;
+import uk.gov.hmcts.reform.pip.model.publication.FileType;
+import uk.gov.hmcts.reform.pip.model.publication.Language;
+import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
 import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
@@ -21,8 +26,12 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.M
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.MiDataReportingEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.SystemAdminUpdateEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.UnidentifiedBlobEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.FlatFileSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.RawDataSubscriptionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
@@ -31,6 +40,7 @@ import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,10 +48,13 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Map.entry;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL;
 
 @SpringBootTest
 @DirtiesContext
@@ -66,8 +79,13 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
 
     private static final Integer LOCATION_ID = 1;
     private static final String LOCATION_NAME = "Location Name";
+    private static final byte[] ARTEFACT_FLAT_FILE = "Test byte".getBytes();
+    private static final UUID ARTEFACT_ID = UUID.randomUUID();
+    private static final String ARTEFACT_SUMMARY = "Test artefact summary";
     private static final String SUCCESS_REF_ID = "successRefId";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
+    private static final String FILE_CONTENT = "123";
+    private static final Map<String, Object> PERSONALISATION_MAP = Map.of("email", EMAIL);
 
     private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
@@ -87,12 +105,23 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
 
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
     private final Location location = new Location();
+    private final Artefact artefact = new Artefact();
+    EmailToSend validEmailBodyForEmailClientFlatFile;
+    EmailToSend validEmailBodyForEmailClientRawData;
 
+    private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+    private final BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
     @Mock
     private SendEmailResponse sendEmailResponse;
 
     @Autowired
     private NotificationService notificationService;
+
+    @MockBean
+    private DataManagementService dataManagementService;
+
+    @MockBean
+    private ChannelManagementService channelManagementService;
 
     @MockBean
     private FileCreationService fileCreationService;
@@ -114,8 +143,31 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
         when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
         when(emailService.sendEmail(validEmailBodyForDuplicateMediaUserClient)).thenReturn(sendEmailResponse);
 
+        validEmailBodyForEmailClientRawData = new EmailToSend(
+            EMAIL, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(), PERSONALISATION_MAP, SUCCESS_REF_ID
+        );
+
+        validEmailBodyForEmailClientFlatFile = new EmailToSend(
+            EMAIL, MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getTemplate(), PERSONALISATION_MAP, SUCCESS_REF_ID
+        );
+
+        subscriptionEmail.setEmail(EMAIL);
+        subscriptionEmail.setSubscriptions(subscriptions);
         location.setLocationId(LOCATION_ID);
         location.setName(LOCATION_NAME);
+        artefact.setArtefactId(ARTEFACT_ID);
+        artefact.setLocationId(LOCATION_ID.toString());
+        bulkSubscriptionEmail.setArtefactId(ARTEFACT_ID);
+        bulkSubscriptionEmail.setSubscriptionEmails(List.of(subscriptionEmail));
+
+        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(String.valueOf(LOCATION_ID))).thenReturn(location);
+        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(ARTEFACT_FLAT_FILE);
+        when(channelManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(channelManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false))
+            .thenReturn(FILE_CONTENT);
+        when(channelManagementService.getArtefactFile(ARTEFACT_ID, FileType.EXCEL, false))
+            .thenReturn(FILE_CONTENT);
     }
 
     @Test
@@ -178,5 +230,64 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
             .sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletionBody),
                      SUCCESS_REF_ID
         );
+    }
+
+    @Test
+    void testBulkSendSubscriptionEmailWithFlatFile() {
+        artefact.setIsFlatFile(true);
+
+        ArgumentCaptor<FlatFileSubscriptionEmailData> argument =
+            ArgumentCaptor.forClass(FlatFileSubscriptionEmailData.class);
+
+        when(emailService.handleEmailGeneration(argument.capture(),
+                                                eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
+            .thenReturn(validEmailBodyForEmailClientFlatFile);
+
+        notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail);
+
+        FlatFileSubscriptionEmailData flatFileSubscriptionEmailData = argument.getValue();
+
+        assertEquals(artefact, flatFileSubscriptionEmailData.getArtefact(),
+                     "Incorrect artefact set");
+        assertEquals(EMAIL, flatFileSubscriptionEmailData.getEmail(),
+                     "Incorrect email address set");
+        assertEquals(LOCATION_NAME, flatFileSubscriptionEmailData.getLocationName(),
+                     "Incorrect location name");
+        assertArrayEquals(
+            flatFileSubscriptionEmailData.getArtefactFlatFile(),
+            ARTEFACT_FLAT_FILE,
+            "Incorrect artefact flat file"
+        );
+    }
+
+    @Test
+    void testBulkSubscriptionEmailRequestWithRawData() {
+        artefact.setIsFlatFile(false);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
+        artefact.setLanguage(Language.WELSH);
+
+        ArgumentCaptor<RawDataSubscriptionEmailData> argument =
+            ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(emailService.handleEmailGeneration(argument.capture(),
+                                                eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
+            .thenReturn(validEmailBodyForEmailClientRawData);
+
+        notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail);
+
+        RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
+
+        assertEquals(artefact, rawDataSubscriptionEmailData.getArtefact(),
+                     "Incorrect artefact set");
+        assertEquals(EMAIL, rawDataSubscriptionEmailData.getEmail(),
+                     "Incorrect email address set");
+        assertEquals(LOCATION_NAME, rawDataSubscriptionEmailData.getLocationName(),
+                     "Incorrect location name");
+        assertEquals(ARTEFACT_SUMMARY, rawDataSubscriptionEmailData.getArtefactSummary(),
+                     "Incorrect PDF content");
+        assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getPdf(),
+                          "Incorrect PDF content");
+        assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getExcel(),
+                          "Incorrect excel content");
     }
 }

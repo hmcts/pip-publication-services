@@ -43,23 +43,6 @@ public class SubscriptionNotificationService {
         this.channelManagementService = channelManagementService;
     }
 
-    /**
-     * This method handles the bulk sending of subscription emails.
-     *
-     * @param bulkSubscriptionEmail The list of subscriptions that need to be fulfilled.
-     */
-    @Async
-    public void bulkSendSubscriptionEmail(BulkSubscriptionEmail bulkSubscriptionEmail) {
-        Artefact artefact = dataManagementService.getArtefact(bulkSubscriptionEmail.getArtefactId());
-        String locationName = dataManagementService.getLocation(artefact.getLocationId()).getName();
-
-        if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
-            flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, locationName);
-        } else {
-            rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, locationName);
-        }
-    }
-
     private String flatFileSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact,
                                                     byte[] artefactFlatFile, String locationName) {
         FlatFileSubscriptionEmailData emailData = new FlatFileSubscriptionEmailData(
@@ -87,7 +70,9 @@ public class SubscriptionNotificationService {
             .orElse(null);
     }
 
-    private void flatFileBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
+    @Async
+    public void flatFileBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail,
+                                                     Artefact artefact,
                                                      String locationName) {
 
         byte[] flatFileData = dataManagementService.getArtefactFlatFile(artefact.getArtefactId());
@@ -106,8 +91,9 @@ public class SubscriptionNotificationService {
         });
     }
 
-    private void rawDataBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail,
-                                                     Artefact artefact, String locationName) {
+    @Async
+    public void rawDataBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail,
+                                                    Artefact artefact, String locationName) {
         String artefactSummary = getArtefactSummary(artefact);
         byte[] pdf = getFileBytes(artefact, FileType.PDF, false);
         boolean hasAdditionalPdf = artefact.getListType().hasAdditionalPdf()

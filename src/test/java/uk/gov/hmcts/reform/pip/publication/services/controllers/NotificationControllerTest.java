@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
-import uk.gov.hmcts.reform.pip.publication.services.service.SubscriptionNotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
@@ -44,7 +43,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -88,9 +86,6 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
 
     @Mock
     private UserNotificationService userNotificationService;
-
-    @Mock
-    private SubscriptionNotificationService subscriptionNotificationService;
 
     @Mock
     private ThirdPartyManagementService thirdPartyManagementService;
@@ -137,7 +132,6 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
         when(userNotificationService.mediaAccountWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
-        doNothing().when(subscriptionNotificationService).bulkSendSubscriptionEmail(bulkSubscriptionEmail);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(SUCCESS_ID);
 
