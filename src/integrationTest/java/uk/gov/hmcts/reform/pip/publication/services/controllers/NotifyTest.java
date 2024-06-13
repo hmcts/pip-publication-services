@@ -256,7 +256,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
 
     private static final String BULK_SUBSCRIPTION_EMAIL_BODY = """
         {
-           "artefactId":"b190522a-5d9b-4089-a8c8-6918721c93df",
+           "artefactId":"30304c47-942e-40aa-9134-35bb40386a0b",
            "subscriptionEmails":[
               {
                  "email":"test1@justice.gov.uk",
@@ -671,11 +671,10 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
     }
 
     @Test
-    void testValidFlatFileRequest() throws Exception {
+    void testSendBulkFlatFileEmail() throws Exception {
         String validFlatFileBody = """
             {
-               "artefactId":"b190522a-5d9b-4089-a8c8-6918721c93df",
-               "isFlatFile": "true",
+               "artefactId":"55995355-466b-4991-a7da-9d016cbaa591",
                "subscriptionEmails":[
                   {
                      "email":"test1@justice.gov.uk",
@@ -696,7 +695,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
     }
 
     @Test
-    void testSendBulkSubscriptionEmail() throws Exception {
+    void testSendBulkJsonEmail() throws Exception {
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(BULK_SUBSCRIPTION_EMAIL_BODY)
@@ -705,7 +704,7 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
     }
 
     @Test
-    void testSendBulkSubscriptionEmailBadRequest() throws Exception {
+    void testSendBulkEmailBadRequest() throws Exception {
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(BULK_SUBSCRIPTION_EMAIL_BODY_BAD_REQUEST)
