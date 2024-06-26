@@ -24,6 +24,7 @@ public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         InactiveUserNotificationEmailData emailData = (InactiveUserNotificationEmailData) email;
         Templates emailTemplate = UserProvenances.PI_AAD.name().equals(emailData.getUserProvenance())
+            || UserProvenances.SSO.name().equals(emailData.getUserProvenance())
             ? INACTIVE_USER_NOTIFICATION_EMAIL_AAD
             : INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
 

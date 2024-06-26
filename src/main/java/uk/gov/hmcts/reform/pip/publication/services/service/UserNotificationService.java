@@ -56,7 +56,7 @@ public class UserNotificationService {
     }
 
     /**
-     * Handles the incoming request for AAD welcome emails, checks the json payload and builds and sends the email.
+     * Handles the incoming request for AAD/SSO welcome emails, checks the json payload and builds and sends the email.
      *
      * @param body JSONObject containing the email and forename/surname values e.g.
      *             {email: 'example@email.com', forename: 'foo', surname: 'bar'}
@@ -125,6 +125,7 @@ public class UserNotificationService {
      */
     public String inactiveUserNotificationEmailRequest(InactiveUserNotificationEmail body) {
         Templates emailTemplate = UserProvenances.PI_AAD.name().equals(body.getUserProvenance())
+            || UserProvenances.SSO.name().equals(body.getUserProvenance())
             ? Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD
             : Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
 
