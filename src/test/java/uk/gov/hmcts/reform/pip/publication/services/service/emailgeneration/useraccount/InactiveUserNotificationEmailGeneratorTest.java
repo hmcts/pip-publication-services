@@ -26,6 +26,7 @@ class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestB
     private static final String EMAIL = "test@testing.com";
     private static final String FULL_NAME = "Full name";
     private static final String AAD_USER_PROVENANCE = "PI_AAD";
+    private static final String SSO_USER_PROVENANCE = "SSO";
     private static final String CFT_IDAM_USER_PROVENANCE = "CFT_IDAM";
     private static final String LAST_SIGN_IN_DATE = "01/05/2024";
 
@@ -55,6 +56,29 @@ class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestB
     void testBuildInactiveAadUserNotificationEmail() {
         InactiveUserNotificationEmail notificationEmail = new InactiveUserNotificationEmail(
             EMAIL, FULL_NAME, AAD_USER_PROVENANCE, LAST_SIGN_IN_DATE
+        );
+        InactiveUserNotificationEmailData emailData = new InactiveUserNotificationEmailData(notificationEmail);
+
+        EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(result.getEmailAddress())
+            .as(EMAIL_ADDRESS_MESSAGE)
+            .isEqualTo(EMAIL);
+
+        softly.assertThat(result.getTemplate())
+            .as(NOTIFY_TEMPLATE_MESSAGE)
+            .isEqualTo(INACTIVE_USER_NOTIFICATION_EMAIL_AAD.getTemplate());
+
+        verifyPersonalisation(softly, result.getPersonalisation());
+        softly.assertAll();
+    }
+
+    @Test
+    void testBuildInactiveSsoUserNotificationEmail() {
+        InactiveUserNotificationEmail notificationEmail = new InactiveUserNotificationEmail(
+            EMAIL, FULL_NAME, SSO_USER_PROVENANCE, LAST_SIGN_IN_DATE
         );
         InactiveUserNotificationEmailData emailData = new InactiveUserNotificationEmailData(notificationEmail);
 
