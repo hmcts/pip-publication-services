@@ -28,4 +28,8 @@
     <cve>CVE-2024-25710</cve>
     <cve>CVE-2024-26308</cve>
   </suppress>
+  <suppress>
+    <notes>This vulnerability exists across azure identity and microsoft authentication libraries </notes>
+    <cve>CVE-2024-35255</cve>
+  </suppress>
 </suppressions>
