@@ -176,7 +176,7 @@ dependencies {
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.9'
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.5'
   implementation group: 'org.redisson', name: 'redisson', version: '3.30.0'
-  implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.12.6'
+  implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.12.7'
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
