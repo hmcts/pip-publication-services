@@ -32,4 +32,9 @@
     <notes>This vulnerability exists across azure identity and microsoft authentication libraries </notes>
     <cve>CVE-2024-35255</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[file name: spring-cloud-azure-starter-active-directory-5.13.0.jar]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.azure\.spring/spring\-cloud\-azure\-starter\-active\-directory@.*$</packageUrl>
+    <cve>CVE-2021-42306</cve>
+  </suppress>
 </suppressions>
