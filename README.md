@@ -86,7 +86,7 @@ CaTH verified users are able to add email subscriptions to new publications usin
 
 ### Third Party Publisher
 
-When a new publication is uploaded to CaTH, `pip-subscription-management` retrieves all the third party publishers for that publication through `pip-data-management`. The allowed third party users (also known as `channel`) for that publication is determined using the user roles in relation to the list type being published (can be press, CFT or crime lists). It will then notify `pip-publication-services`, passing in the Artefact ID and the third party API destination, so the publication can be sent to its destination.
+When a new publication is uploaded to CaTH, `pip-subscription-management` retrieves all the third party publishers for that publication. The allowed third party users (also known as `channel`) for that publication is determined using the user roles in relation to the list type being published (can be press, CFT or crime lists). It will then notify `pip-publication-services`, passing in the Artefact ID and the third party API destination, so the publication can be sent to its destination.
 
 Currently [Courtel](https://www.courtserve.net/) is the only third party publisher configured for CaTH but the service is able to send publications to multiple third party channels if we have more publishers.
 
