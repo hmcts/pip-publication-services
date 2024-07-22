@@ -25,7 +25,6 @@ public class DataManagementService {
     private static final String SERVICE = "Data Management";
     private static final String ADMIN_HEADER = "x-admin";
     private static final String SYSTEM_HEADER = "x-system";
-    private static final String FILE_TYPE_HEADER = "x-file-type";
     private static final String ADDITIONAL_PDF_HEADER = "x-additional-pdf";
     private static final String TRUE = "true";
     private static final int MAX_FILE_SIZE = 2_000_000;
@@ -86,7 +85,7 @@ public class DataManagementService {
 
     public String getArtefactSummary(UUID artefactId) {
         try {
-            return webClient.get().uri(String.format("%s/publication/summary/%s", url, artefactId))
+            return webClient.get().uri(String.format("%s/publication/%s/summary", url, artefactId))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve().bodyToMono(String.class)
                 .block();
@@ -98,9 +97,8 @@ public class DataManagementService {
     public String getArtefactFile(UUID artefactId, FileType fileType, boolean additionalPdf) {
         try {
             return webClient.get()
-                .uri(String.format("%s/publication/file/%s?maxFileSize=%s", url, artefactId, MAX_FILE_SIZE))
+                .uri(String.format("%s/publication/%s/%s?maxFileSize=%s", url, artefactId, fileType, MAX_FILE_SIZE))
                 .header(SYSTEM_HEADER, TRUE)
-                .header(FILE_TYPE_HEADER, fileType.toString())
                 .header(ADDITIONAL_PDF_HEADER, String.valueOf(additionalPdf))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
