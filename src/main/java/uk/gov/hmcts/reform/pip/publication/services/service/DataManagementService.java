@@ -9,9 +9,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
+import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
 import java.util.UUID;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.PAYLOAD_TOO_LARGE;
+import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
 
 @Slf4j
 @Service
@@ -20,7 +25,11 @@ public class DataManagementService {
 
     private static final String SERVICE = "Data Management";
     private static final String ADMIN_HEADER = "x-admin";
+    private static final String SYSTEM_HEADER = "x-system";
+    private static final String FILE_TYPE_HEADER = "x-file-type";
+    private static final String ADDITIONAL_PDF_HEADER = "x-additional-pdf";
     private static final String TRUE = "true";
+    private static final int MAX_FILE_SIZE = 2_000_000;
 
     @Value("${service-to-service.data-management}")
     private String url;
@@ -72,6 +81,37 @@ public class DataManagementService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve().bodyToMono(String.class).block();
         } catch (WebClientResponseException ex) {
+            throw new ServiceToServiceException(SERVICE, ex.getMessage());
+        }
+    }
+
+    public String getArtefactSummary(UUID artefactId) {
+        try {
+            return webClient.get().uri(String.format("%s/publication/summary/%s", url, artefactId))
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve().bodyToMono(String.class)
+                .block();
+        } catch (WebClientResponseException ex) {
+            throw new ServiceToServiceException(SERVICE, ex.getMessage());
+        }
+    }
+
+    public String getArtefactFile(UUID artefactId, FileType fileType, boolean additionalPdf) {
+        try {
+            return webClient.get()
+                .uri(String.format("%s/publication/file/%s?maxFileSize=%s", url, artefactId, MAX_FILE_SIZE))
+                .header(SYSTEM_HEADER, TRUE)
+                .header(FILE_TYPE_HEADER, fileType.toString())
+                .header(ADDITIONAL_PDF_HEADER, String.valueOf(additionalPdf))
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        } catch (WebClientResponseException ex) {
+            if (NOT_FOUND.equals(ex.getStatusCode())
+                || PAYLOAD_TOO_LARGE.equals(ex.getStatusCode())) {
+                return "";
+            }
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
     }
