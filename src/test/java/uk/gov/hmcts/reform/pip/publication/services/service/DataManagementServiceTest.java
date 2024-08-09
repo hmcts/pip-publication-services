@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.apache.http.entity.ContentType;
@@ -13,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
+import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
@@ -30,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext
 @ActiveProfiles("test")
 class DataManagementServiceTest extends RedisConfigurationTestBase {
-
     private static final String RESPONSE_BODY = "responseBody";
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final String EXCEPTION_THROWN_MESSAGE = "Expected exception has not been thrown";
@@ -43,6 +46,10 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
     private static final String NO_STATUS_CODE_IN_EXCEPTION = "Exception response does not contain the status code in"
         + " the message";
     private static final String NO_EXPECTED_EXCEPTION = "Expected exception has not been thrown.";
+    private static final String HELLO = "hello";
+
+    private final ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
+
 
     @Autowired
     WebClient webClient;
@@ -183,6 +190,69 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
                                                        NO_EXPECTED_EXCEPTION);
         assertTrue(notifyException.getMessage().contains(NOT_FOUND),
                    NO_STATUS_CODE_IN_EXCEPTION);
+    }
+
+    @Test
+    void testGetArtefactSummary() {
+        mockDataManagementEndpoint.enqueue(new MockResponse().addHeader(
+            "Content-Type",
+            com.azure.core.http.ContentType.APPLICATION_JSON
+        ).setBody(HELLO));
+
+        String returnedString = dataManagementService.getArtefactSummary(UUID.randomUUID());
+
+        assertEquals(HELLO, returnedString, "Return does not match");
+    }
+
+    @Test
+    void testGetArtefactSummaryError() {
+        mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+        UUID artefactId = UUID.randomUUID();
+        ServiceToServiceException exception = assertThrows(ServiceToServiceException.class,
+                                                           () -> dataManagementService.getArtefactSummary(artefactId),
+                                                           "Exception");
+
+        assertTrue(exception.getMessage().contains("404"), "Exception didn't contain correct message");
+    }
+
+    @Test
+    void testGetArtefactFile() throws JsonProcessingException {
+        mockDataManagementEndpoint.enqueue(
+            new MockResponse()
+                .addHeader("Content-Type", com.azure.core.http.ContentType.APPLICATION_JSON)
+                .setBody(ow.writeValueAsString(HELLO))
+        );
+
+        String response = dataManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF, true);
+        assertTrue(response.length() > 0, "Response doesn't exist");
+    }
+
+    @Test
+    void testGetArtefactFileNotFound() {
+        mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+        String response = dataManagementService.getArtefactFile(UUID.randomUUID(), FileType.EXCEL, false);
+        assertEquals(0, response.length(), "Response not empty");
+    }
+
+    @Test
+    void testGetArtefactFileTooLarge() {
+        mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(413));
+
+        String response = dataManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF, false);
+        assertEquals(0, response.length(), "Response not empty");
+    }
+
+    @Test
+    void testGetArtefactFileError() {
+        mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(500));
+
+        UUID artefactId = UUID.randomUUID();
+        ServiceToServiceException exception = assertThrows(ServiceToServiceException.class, () ->
+            dataManagementService.getArtefactFile(artefactId, FileType.PDF, false), "Exception");
+
+        assertTrue(exception.getMessage().contains("500"), "Exception didn't contain correct message");
     }
 
     @Test

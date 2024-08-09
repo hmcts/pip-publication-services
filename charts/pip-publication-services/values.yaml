@@ -26,8 +26,6 @@ java:
           alias: PI_TEAM_EMAIL
         - name: courtel-certificate
           alias: THIRD_PARTY_CERTIFICATE
-        - name: app-pip-channel-management-scope
-          alias: CHANNEL_MANAGEMENT_AZ_API
         - name: app-insights-java-connection-string
           alias: APP_INSIGHTS_CONNECTION_STRING
         - name: REDIS-V6-HOST

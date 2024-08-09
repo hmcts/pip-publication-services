@@ -55,9 +55,6 @@ class ThirdPartyManagementServiceTest extends RedisConfigurationTestBase {
     private DataManagementService dataManagementService;
 
     @MockBean
-    private ChannelManagementService channelManagementService;
-
-    @MockBean
     private ThirdPartyService thirdPartyService;
 
     @BeforeAll
@@ -103,7 +100,7 @@ class ThirdPartyManagementServiceTest extends RedisConfigurationTestBase {
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(ARTEFACT);
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
-        when(channelManagementService.getArtefactFile(eq(RAND_UUID), any(), anyBoolean())).thenReturn(base64EncodedPdf);
+        when(dataManagementService.getArtefactFile(eq(RAND_UUID), any(), anyBoolean())).thenReturn(base64EncodedPdf);
         when(thirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
         when(thirdPartyService.handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION))
@@ -116,7 +113,7 @@ class ThirdPartyManagementServiceTest extends RedisConfigurationTestBase {
         assertEquals(SUCCESS_API_SENT, thirdPartyManagementService.handleThirdParty(subscription),
                      "Api subscription with json file should return successful referenceId.");
 
-        verify(channelManagementService).getArtefactFile(RAND_UUID, FileType.PDF, expectedAdditionalPdf);
+        verify(dataManagementService).getArtefactFile(RAND_UUID, FileType.PDF, expectedAdditionalPdf);
         verify(thirdPartyService).handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION);
     }
 
@@ -143,7 +140,7 @@ class ThirdPartyManagementServiceTest extends RedisConfigurationTestBase {
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(ARTEFACT);
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
-        when(channelManagementService.getArtefactFile(RAND_UUID, FileType.PDF, false)).thenReturn(base64EncodedPdf);
+        when(dataManagementService.getArtefactFile(RAND_UUID, FileType.PDF, false)).thenReturn(base64EncodedPdf);
         when(thirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 

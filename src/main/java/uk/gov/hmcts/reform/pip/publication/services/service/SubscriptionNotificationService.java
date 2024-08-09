@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 public class SubscriptionNotificationService {
     private final EmailService emailService;
     private final DataManagementService dataManagementService;
-    private final ChannelManagementService channelManagementService;
 
     @Value("${payload.json.max-size-in-kb}")
     private int maxPayloadSize;
@@ -36,11 +35,9 @@ public class SubscriptionNotificationService {
     private int fileRetentionWeeks;
 
     @Autowired
-    public SubscriptionNotificationService(EmailService emailService, DataManagementService dataManagementService,
-                                           ChannelManagementService channelManagementService) {
+    public SubscriptionNotificationService(EmailService emailService, DataManagementService dataManagementService) {
         this.emailService = emailService;
         this.dataManagementService = dataManagementService;
-        this.channelManagementService = channelManagementService;
     }
 
     private String flatFileSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact,
@@ -121,14 +118,14 @@ public class SubscriptionNotificationService {
 
     private String getArtefactSummary(Artefact artefact) {
         if (payloadWithinLimit(artefact.getPayloadSize())) {
-            return channelManagementService.getArtefactSummary(artefact.getArtefactId());
+            return dataManagementService.getArtefactSummary(artefact.getArtefactId());
         }
         return "";
     }
 
     private byte[] getFileBytes(Artefact artefact, FileType fileType, boolean additionalPdf) {
         if (payloadWithinLimit(artefact.getPayloadSize())) {
-            String artefactFile = channelManagementService.getArtefactFile(artefact.getArtefactId(),
+            String artefactFile = dataManagementService.getArtefactFile(artefact.getArtefactId(),
                                                                            fileType, additionalPdf);
             return Base64.getDecoder().decode(artefactFile);
         }

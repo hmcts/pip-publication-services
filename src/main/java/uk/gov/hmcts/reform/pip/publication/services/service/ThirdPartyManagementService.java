@@ -20,17 +20,12 @@ public class ThirdPartyManagementService {
     private static final String EMPTY_SUCCESS_MESSAGE = "Successfully sent empty list to %s";
 
     private final DataManagementService dataManagementService;
-
-    private final ChannelManagementService channelManagementService;
-
     private final ThirdPartyService thirdPartyService;
 
     @Autowired
     public ThirdPartyManagementService(DataManagementService dataManagementService,
-                                       ChannelManagementService channelManagementService,
                                        ThirdPartyService thirdPartyService) {
         this.dataManagementService = dataManagementService;
-        this.channelManagementService = channelManagementService;
         this.thirdPartyService = thirdPartyService;
     }
 
@@ -79,12 +74,12 @@ public class ThirdPartyManagementService {
         boolean additionalPdf = artefact.getListType().hasAdditionalPdf()
             && artefact.getLanguage() != Language.ENGLISH;
 
-        byte[] pdf = channelManagementService.getArtefactFile(artefact.getArtefactId(), FileType.PDF, additionalPdf)
+        byte[] pdf = dataManagementService.getArtefactFile(artefact.getArtefactId(), FileType.PDF, additionalPdf)
             .getBytes();
         if (pdf.length == 0) {
             log.warn(writeLog("Empty PDF not sent to third party"));
         } else {
-            // The PDF returned from channel management is returned as Base 64.
+            // The PDF returned from data-management is returned as Base 64.
             // This is then decoded here before sending to third parties.
             log.info(writeLog(thirdPartyService.handlePdfThirdPartyCall(
                 api, Base64.decodeBase64(pdf), artefact, location)));
