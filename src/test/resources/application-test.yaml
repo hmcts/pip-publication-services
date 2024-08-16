@@ -12,7 +12,6 @@ notify:
   pi-team-email: test@email.com
 service-to-service:
   data-management: http://localhost:8081
-  channel-management: http://localhost:8181
   subscription-management: http://localhost:8081
   account-management: http://localhost:8081
 error-handling:
