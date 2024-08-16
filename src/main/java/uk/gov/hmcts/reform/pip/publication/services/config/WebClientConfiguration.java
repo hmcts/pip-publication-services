@@ -29,7 +29,7 @@ import javax.net.ssl.SSLException;
 @Configuration
 @Profile("!test & !functional & !functional-rate-limit")
 public class WebClientConfiguration {
-    // Currently we allow a maximum 2MB of PDF/Excel file to be transferred from Channel-management (same as GOV.UK
+    // Currently we allow a maximum 2MB of PDF/Excel file to be transferred from data-management (same as GOV.UK
     // Notify file size constraint). The file content is sent as a Base64 encoded string which add roughly 33% space
     // overhead. Hence we increase the service-to-service size constraint to 3MB.
     private static final ExchangeStrategies STRATEGIES =  ExchangeStrategies.builder()

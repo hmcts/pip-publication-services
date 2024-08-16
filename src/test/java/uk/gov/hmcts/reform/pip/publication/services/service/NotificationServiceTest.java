@@ -121,9 +121,6 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
     private DataManagementService dataManagementService;
 
     @MockBean
-    private ChannelManagementService channelManagementService;
-
-    @MockBean
     private FileCreationService fileCreationService;
 
     @MockBean
@@ -163,10 +160,10 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
         when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
         when(dataManagementService.getLocation(String.valueOf(LOCATION_ID))).thenReturn(location);
         when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(ARTEFACT_FLAT_FILE);
-        when(channelManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
-        when(channelManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false))
+        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false))
             .thenReturn(FILE_CONTENT);
-        when(channelManagementService.getArtefactFile(ARTEFACT_ID, FileType.EXCEL, false))
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.EXCEL, false))
             .thenReturn(FILE_CONTENT);
     }
 

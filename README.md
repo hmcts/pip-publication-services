@@ -79,20 +79,20 @@ CaTH verified users are able to add email subscriptions to new publications usin
 - `pip-publication-services` then retrieves the publication metadata from `pip-data-management` and determine whether the publication has been uploaded as a flat file or in JSON format.
 - If the publication was uploaded as a flat file, it will retrieve the uploaded file from Azure blob storage through `pip-data-management`.
 - If the publication was uploaded in JSON format and the JSON payload is less than the set limit (currently default to 2MB), it will:
-  - generate the publication summary information through `pip-channel-management`.
-  - retrieve the files in alternative publishing formats (PDF and/or Excel spreadsheet) through `pip-channel-management`. These files are pre-generated and stored in Azure blob storage during the upload process.
+  - generate the publication summary information through `pip-data-management`.
+  - retrieve the files in alternative publishing formats (PDF and/or Excel spreadsheet) through `pip-data-management`. These files are pre-generated and stored in Azure blob storage during the upload process.
 - The email will be personalised using the information above by means by placeholders. Any required files will be uploaded to GOV.UK Notify and links to download the files will be provided in the emails.
 - All the required email information will be sent to GOV.UK Notify to generate the emails for the subscribers.
 
 ### Third Party Publisher
 
-When a new publication is uploaded to CaTH, `pip-subscription-management` retrieves all the third party publishers for that publication through `pip-channel-management`. The allowed third party users (also known as `channel`) for that publication is determined using the user roles in relation to the list type being published (can be press, CFT or crime lists). It will then notify `pip-publication-services`, passing in the Artefact ID and the third party API destination, so the publication can be sent to its destination.
+When a new publication is uploaded to CaTH, `pip-subscription-management` retrieves all the third party publishers for that publication. The allowed third party users (also known as `channel`) for that publication is determined using the user roles in relation to the list type being published (can be press, CFT or crime lists). It will then notify `pip-publication-services`, passing in the Artefact ID and the third party API destination, so the publication can be sent to its destination.
 
 Currently [Courtel](https://www.courtserve.net/) is the only third party publisher configured for CaTH but the service is able to send publications to multiple third party channels if we have more publishers.
 
 If the publication was uploaded as a flat file, the same file will be retrieved from Azure blob storage through `pip-data-management`, and forwarded to Courtel in multipart/form-data format.
 
-If the publication was uploaded in JSON format, the original content will be sent to Courtel in JSON format. The service will also retrieve the stored PDF from Azure blob storage through `pip-channel-management`, and make a second call to the Courtel API attaching the PDF in multipart/form-data format.
+If the publication was uploaded in JSON format, the original content will be sent to Courtel in JSON format. The service will also retrieve the stored PDF from Azure blob storage through `pip-data-management`, and make a second call to the Courtel API attaching the PDF in multipart/form-data format.
 
 Courtel will also be notified if publications sent to them have been deleted by CaTH.
 
@@ -167,11 +167,9 @@ Below is a table of currently used environment variables for starting the servic
 | CLIENT_SECRET                     | Secret key for authentication requests to the service.                                                                                                                                                                                                             | No        |
 | ACCOUNT_MANAGEMENT_URL            | URL used for connecting to the pip-account-management service. Defaults to staging if not provided.                                                                                                                                                                | No        |
 | DATA_MANAGEMENT_URL               | URL used for connecting to the pip-data-management service. Defaults to staging if not provided.                                                                                                                                                                   | No        |
-| CHANNEL_MANAGEMENT_URL            | URL used for connecting to the pip-channel-management service. Defaults to staging if not provided.                                                                                                                                                                | No        |
 | SUBSCRIPTION_MANAGEMENT_URL       | URL used for connecting to the pip-subscription-management service. Defaults to staging if not provided.                                                                                                                                                           | No        |
 | ACCOUNT_MANAGEMENT_AZ_API         | Used as part of the `scope` parameter when requesting a token from Azure. Used for service-to-service communication with the pip-account management service.                                                                                                       | No        |
 | DATA_MANAGEMENT_AZ_API            | Used as part of the `scope` parameter when requesting a token from Azure. Used for service-to-service communication with the pip-data-management service.                                                                                                          | No        |
-| CHANNEL_MANAGEMENT_AZ_API         | Used as part of the `scope` parameter when requesting a token from Azure. Used for service-to-service communication with the pip-channel management service.                                                                                                       | No        |
 | SUBSCRIPTION_MANAGEMENT_AZ_API    | Used as part of the `scope` parameter when requesting a token from Azure. Used for service-to-service communication with the pip-subscription-management service.                                                                                                  | No        |
 | NOTIFY_API_KEY                    | Used in the authorisation header for interaction with GOV.UK notify client. The API key follows the format {key_name}-{iss-uuid}-{secret-key-uuid}. When running the service locally we should not use the live key. Only test or team API key should be used.     | Yes       |
 | PI_TEAM_EMAIL                     | The email address for sending CaTH reporting emails (e.g. media applications, mi reports, unindentified blobs) to.                                                                                                                                                 | No        |
@@ -197,7 +195,6 @@ Secrets required for getting integration tests to run correctly can be found in 
 | TENANT_ID                      | As above                                                                       |
 | ACCOUNT_MANAGEMENT_AZ_API      | As above                                                                       |
 | DATA_MANAGEMENT_AZ_API         | As above                                                                       |
-| CHANNEL_MANAGEMENT_AZ_API      | As above                                                                       |
 | SUBSCRIPTION_MANAGEMENT_AZ_API | As above                                                                       |
 | NOTIFY_API_KEY                 | As above. Only the test API key should be used when running integration tests. |
 | PI_TEAM_EMAIL                  | As above                                                                       |
