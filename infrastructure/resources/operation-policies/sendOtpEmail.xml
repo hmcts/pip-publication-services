@@ -1,19 +1,39 @@
 <policies>
   <inbound>
-      <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
-        <openid-config url="https://login.microsoftonline.com/{TENANT_ID}/v2.0/.well-known/openid-configuration" />
-        <audiences>
-          <audience>{CLIENT_ID}</audience>
-        </audiences>
-        <issuers>
-          <issuer>https://login.microsoftonline.com/{TENANT_ID}/v2.0</issuer>
-        </issuers>
-        <required-claims>
-          <claim name="roles" match="all">
-            <value>api.request.b2c</value>
-          </claim>
-        </required-claims>
-      </validate-jwt>
+    <choose>
+      <when condition="@(context.Request.Headers.GetValueOrDefault("Authorization","") != "")">
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+          <openid-config url="https://login.microsoftonline.com/{TENANT_ID}/v2.0/.well-known/openid-configuration" />
+          <audiences>
+            <audience>{CLIENT_ID}</audience>
+          </audiences>
+          <issuers>
+            <issuer>https://login.microsoftonline.com/{TENANT_ID}/v2.0</issuer>
+          </issuers>
+          <required-claims>
+            <claim name="roles" match="all">
+              <value>api.request.b2c</value>
+            </claim>
+          </required-claims>
+        </validate-jwt>
+      </when>
+      <otherwise>
+        <validate-jwt token-value="@((String)context.Request.Body.As<JObject>(preserveContent: true)["bearer"])" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+          <openid-config url="https://login.microsoftonline.com/{TENANT_ID}/v2.0/.well-known/openid-configuration" />
+          <audiences>
+            <audience>{CLIENT_ID}</audience>
+          </audiences>
+          <issuers>
+            <issuer>https://login.microsoftonline.com/{TENANT_ID}/v2.0</issuer>
+          </issuers>
+          <required-claims>
+            <claim name="roles" match="all">
+              <value>api.request.b2c</value>
+            </claim>
+          </required-claims>
+        </validate-jwt>
+      </otherwise>
+    </choose>
     <cors>
       <allowed-origins>
         <origin>*</origin>
