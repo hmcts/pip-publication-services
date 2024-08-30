@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
 
 @Service
 /**
@@ -25,7 +26,9 @@ public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
         InactiveUserNotificationEmailData emailData = (InactiveUserNotificationEmailData) email;
         Templates emailTemplate = UserProvenances.PI_AAD.name().equals(emailData.getUserProvenance())
             ? INACTIVE_USER_NOTIFICATION_EMAIL_AAD
-            : INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
+            : UserProvenances.CFT_IDAM.name().equals(emailData.getUserProvenance())
+            ? INACTIVE_USER_NOTIFICATION_EMAIL_CFT
+            : INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
 
         return generateEmail(emailData.getEmail(), emailTemplate.getTemplate(),
                              buildEmailPersonalisation(emailData, personalisationLinks));
@@ -38,6 +41,7 @@ public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
         personalisation.put("last_signed_in_date", emailData.getLastSignedInDate());
         personalisation.put("sign_in_page_link", personalisationLinks.getAadAdminSignInPageLink());
         personalisation.put("cft_sign_in_link", personalisationLinks.getCftSignInPageLink());
+        personalisation.put("crime_sign_in_link", personalisationLinks.getCrimeSignInPageLink());
         return personalisation;
     }
 }

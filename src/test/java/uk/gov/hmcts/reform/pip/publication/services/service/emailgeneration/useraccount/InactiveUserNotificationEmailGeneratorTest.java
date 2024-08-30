@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
 
 @SpringBootTest
 @DirtiesContext
@@ -27,12 +28,14 @@ class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestB
     private static final String FULL_NAME = "Full name";
     private static final String AAD_USER_PROVENANCE = "PI_AAD";
     private static final String CFT_IDAM_USER_PROVENANCE = "CFT_IDAM";
+    private static final String CRIME_IDAM_USER_PROVENANCE = "CRIME_IDAM";
     private static final String LAST_SIGN_IN_DATE = "01/05/2024";
 
     private static final String FULL_NAME_PERSONALISATION = "full_name";
     private static final String LAST_SIGN_IN_DATE_PERSONALISATION = "last_signed_in_date";
     private static final String AAD_SIGN_IN_PAGE_LINK = "sign_in_page_link";
     private static final String CFT_SIGN_IN_PAGE_LINK = "cft_sign_in_link";
+    private static final String CRIME_SIGN_IN_PAGE_LINK = "crime_sign_in_link";
 
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
@@ -97,6 +100,29 @@ class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestB
         softly.assertAll();
     }
 
+    @Test
+    void testBuildInactiveCrimeUserNotificationEmail() {
+        InactiveUserNotificationEmail notificationEmail = new InactiveUserNotificationEmail(
+            EMAIL, FULL_NAME, CRIME_IDAM_USER_PROVENANCE, LAST_SIGN_IN_DATE
+        );
+        InactiveUserNotificationEmailData emailData = new InactiveUserNotificationEmailData(notificationEmail);
+
+        EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(result.getEmailAddress())
+            .as(EMAIL_ADDRESS_MESSAGE)
+            .isEqualTo(EMAIL);
+
+        softly.assertThat(result.getTemplate())
+            .as(NOTIFY_TEMPLATE_MESSAGE)
+            .isEqualTo(INACTIVE_USER_NOTIFICATION_EMAIL_CRIME.getTemplate());
+
+        verifyPersonalisation(softly, result.getPersonalisation());
+        softly.assertAll();
+    }
+
     private void verifyPersonalisation(SoftAssertions softly, Map<String, Object> personalisation) {
         softly.assertThat(personalisation.get(FULL_NAME_PERSONALISATION))
             .as(PERSONALISATION_MESSAGE)
@@ -113,5 +139,9 @@ class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestB
         softly.assertThat(personalisation.get(CFT_SIGN_IN_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo(personalisationLinks.getCftSignInPageLink());
+
+        softly.assertThat(personalisation.get(CRIME_SIGN_IN_PAGE_LINK))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(personalisationLinks.getCrimeSignInPageLink());
     }
 }

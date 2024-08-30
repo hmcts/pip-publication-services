@@ -126,7 +126,9 @@ public class UserNotificationService {
     public String inactiveUserNotificationEmailRequest(InactiveUserNotificationEmail body) {
         Templates emailTemplate = UserProvenances.PI_AAD.name().equals(body.getUserProvenance())
             ? Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD
-            : Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
+            : UserProvenances.CFT_IDAM.name().equals(body.getUserProvenance())
+            ? Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT
+            : Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
 
         EmailToSend email = emailService.handleEmailGeneration(new InactiveUserNotificationEmailData(body),
                                                                emailTemplate);

@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.BAD_
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.EXISTING_USER_WELCOME_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_APPLICATION_REPORTING_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_VERIFICATION_EMAIL;
 
@@ -21,6 +22,8 @@ class TemplatesTest {
     private static final String MEDIA_VERIFICATION_EMAIL_TEMPLATE = "1dea6b4b-48b6-4eb1-8b86-7031de5502d9";
     private static final String INACTIVE_USER_NOTIFICATION_EMAIL_AAD_TEMPLATE = "8f1e82a9-7016-4b28-8473-20c70f9f11ba";
     private static final String INACTIVE_USER_NOTIFICATION_EMAIL_CFT_TEMPLATE = "cca7ea18-4e6f-406f-b4d3-9e017cb53ee9";
+    private static final String INACTIVE_USER_NOTIFICATION_EMAIL_CRIME_TEMPLATE =
+        "710a1ea4-226d-4e94-a8f7-5a102bb31612";
 
     @Test
     void testGetExistingUserWelcomeEmailTemplate() {
@@ -55,6 +58,13 @@ class TemplatesTest {
     @Test
     void testGetInactiveUserNotificationTemplateCft() {
         assertEquals(INACTIVE_USER_NOTIFICATION_EMAIL_CFT_TEMPLATE, INACTIVE_USER_NOTIFICATION_EMAIL_CFT.getTemplate(),
+                     SHOULD_MATCH_MESSAGE);
+    }
+
+    @Test
+    void testGetInactiveUserNotificationTemplateCrime() {
+        assertEquals(INACTIVE_USER_NOTIFICATION_EMAIL_CRIME_TEMPLATE,
+                     INACTIVE_USER_NOTIFICATION_EMAIL_CRIME.getTemplate(),
                      SHOULD_MATCH_MESSAGE);
     }
 

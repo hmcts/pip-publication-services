@@ -86,6 +86,11 @@ public enum Templates {
                                          "Inactive IDAM account notification email",
                                          EmailLimit.STANDARD,
                                          new InactiveUserNotificationEmailGenerator()),
+
+    INACTIVE_USER_NOTIFICATION_EMAIL_CRIME("710a1ea4-226d-4e94-a8f7-5a102bb31612",
+                                         "Inactive IDAM account notification email",
+                                         EmailLimit.STANDARD,
+                                         new InactiveUserNotificationEmailGenerator()),
     DELETE_LOCATION_SUBSCRIPTION("929276e1-da85-4f21-9ed4-53492bedff68",
                                  "Location deletion notification email",
                                  EmailLimit.HIGH,
