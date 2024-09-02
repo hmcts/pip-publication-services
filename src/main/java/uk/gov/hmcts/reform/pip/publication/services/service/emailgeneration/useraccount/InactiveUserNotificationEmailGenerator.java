@@ -20,13 +20,13 @@ public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         InactiveUserNotificationEmailData emailData = (InactiveUserNotificationEmailData) email;
-        Templates emailTemplate = selectNotificationEmailTemplate(emailData.getUserProvenance());
+        Templates emailTemplate = selectInactiveUserNotificationEmailTemplate(emailData.getUserProvenance());
 
         return generateEmail(emailData.getEmail(), emailTemplate.getTemplate(),
                              buildEmailPersonalisation(emailData, personalisationLinks));
     }
 
-    private Templates selectNotificationEmailTemplate(String userProvenance) {
+    private Templates selectInactiveUserNotificationEmailTemplate(String userProvenance) {
         if (UserProvenances.PI_AAD.name().equals(userProvenance)) {
             return Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
         }
