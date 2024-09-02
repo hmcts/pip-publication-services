@@ -12,10 +12,6 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.Emai
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
-
 @Service
 /**
  * Generate the inactive user notification email with personalisation for GOV.UK Notify template.
@@ -24,14 +20,20 @@ public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         InactiveUserNotificationEmailData emailData = (InactiveUserNotificationEmailData) email;
-        Templates emailTemplate = UserProvenances.PI_AAD.name().equals(emailData.getUserProvenance())
-            ? INACTIVE_USER_NOTIFICATION_EMAIL_AAD
-            : UserProvenances.CFT_IDAM.name().equals(emailData.getUserProvenance())
-            ? INACTIVE_USER_NOTIFICATION_EMAIL_CFT
-            : INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
+        Templates emailTemplate = selectNotificationEmailTemplate(emailData.getUserProvenance());
 
         return generateEmail(emailData.getEmail(), emailTemplate.getTemplate(),
                              buildEmailPersonalisation(emailData, personalisationLinks));
+    }
+
+    private Templates selectNotificationEmailTemplate(String userProvenance) {
+        if (UserProvenances.PI_AAD.name().equals(userProvenance)) {
+            return Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
+        }
+
+        return UserProvenances.CFT_IDAM.name().equals(userProvenance)
+            ? Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT
+            : Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
     }
 
     private Map<String, Object> buildEmailPersonalisation(InactiveUserNotificationEmailData emailData,
