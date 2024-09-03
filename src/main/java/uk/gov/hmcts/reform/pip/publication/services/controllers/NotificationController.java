@@ -82,10 +82,7 @@ public class NotificationController {
             + "send existing user emails ")
     @PostMapping("/welcome-email")
     public ResponseEntity<String> sendWelcomeEmail(@RequestBody WelcomeEmail body) {
-        return ResponseEntity.ok(String.format(
-            "Welcome email successfully sent with referenceId %s",
-            userNotificationService.mediaAccountWelcomeEmailRequest(body)
-        ));
+        return ResponseEntity.ok(userNotificationService.mediaAccountWelcomeEmailRequest(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Created admin welcome email "
@@ -223,10 +220,8 @@ public class NotificationController {
     @Operation(summary = "Send notification email to system admin about update")
     @PostMapping("/sysadmin/update")
     public ResponseEntity<String> sendSystemAdminUpdate(@RequestBody SystemAdminAction body) {
-        return ResponseEntity.ok(String.format(
-            "Send notification email successfully to all system admin with referenceId: %s",
-            notificationService.sendSystemAdminUpdateEmailRequest(body)
-        ));
+        List<String> notificationIds = notificationService.sendSystemAdminUpdateEmailRequest(body);
+        return ResponseEntity.ok(String.join(",", notificationIds));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Location subscription email "

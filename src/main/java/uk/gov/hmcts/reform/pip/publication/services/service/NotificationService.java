@@ -124,8 +124,8 @@ public class NotificationService {
         List<String> sentEmails = new ArrayList<>();
         email.forEach(emailToSend -> sentEmails.add(
             emailService.sendEmail(emailToSend)
-                .getReference()
-                .orElse(null)
+                .getNotificationId()
+                .toString()
         ));
         return sentEmails;
     }

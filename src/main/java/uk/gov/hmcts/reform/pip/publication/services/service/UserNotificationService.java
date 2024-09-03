@@ -51,8 +51,8 @@ public class UserNotificationService {
 
         EmailToSend email = emailService.handleEmailGeneration(emailData, emailTemplate);
         return emailService.sendEmail(email)
-            .getReference()
-            .orElse(null);
+            .getNotificationId()
+            .toString();
     }
 
     /**

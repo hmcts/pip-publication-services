@@ -21,10 +21,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
+import uk.gov.hmcts.reform.pip.publication.services.utils.EmailNotificationClient;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationFunctionalTestBase;
+import uk.gov.service.notify.Notification;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -184,7 +187,8 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
             "actionResult": "ATTEMPTED",
             "changeType": "DELETE_LOCATION",
             "emailList": [
-                "test.system.admin@justice.gov.uk"
+                "test.system.admin@justice.gov.uk",
+                "test.system.admin2@justice.gov.uk"
             ],
             "detailString": "test"
         }
@@ -305,6 +309,9 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
     private MockWebServer externalApiMockServer;
 
     @Autowired
+    private EmailNotificationClient notificationClient;
+
+    @Autowired
     private MockMvc mockMvc;
 
 
@@ -335,20 +342,58 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
 
     @Test
     void testValidPayloadReturnsSuccessExisting() throws Exception {
-        mockMvc.perform(post(WELCOME_EMAIL_URL)
+        MvcResult response = mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(VALID_WELCOME_REQUEST_BODY_EXISTING)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+            .andReturn();
+
+        String notificationId = response.getResponse().getContentAsString();
+        Notification notification = notificationClient.getNotificationById(notificationId);
+
+        assertThat(notification.getStatus())
+            .as("Notification status does not match")
+            .isEqualTo("delivered");
+
+        assertThat(notification.getEmailAddress())
+            .as("Email address does not match")
+            .hasValue(EMAIL);
+
+        assertThat(notification.getSubject())
+            .as("Email subject does not match")
+            .hasValue("Court and tribunal hearings service – Welcome");
+
+        assertThat(notification.getBody())
+            .as("Email body does not match")
+            .contains("Click on the link to confirm your email address and finish creating your account");
     }
 
     @Test
     void testValidPayloadReturnsSuccessNew() throws Exception {
-        mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(VALID_WELCOME_REQUEST_BODY_NEW)
-                            .contentType(MediaType.APPLICATION_JSON))
+        MvcResult response = mockMvc.perform(post(WELCOME_EMAIL_URL)
+                                                 .content(VALID_WELCOME_REQUEST_BODY_NEW)
+                                                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+            .andReturn();
+
+        String notificationId = response.getResponse().getContentAsString();
+        Notification notification = notificationClient.getNotificationById(notificationId);
+
+        assertThat(notification.getStatus())
+            .as("Notification status does not match")
+            .isEqualTo("delivered");
+
+        assertThat(notification.getEmailAddress())
+            .as("Email address does not match")
+            .hasValue(EMAIL);
+
+        assertThat(notification.getSubject())
+            .as("Email subject does not match")
+            .hasValue("Court and tribunal hearings account – request approved");
+
+        assertThat(notification.getBody())
+            .as("Email body does not match")
+            .contains("Click on the link to confirm your email address and finish creating your account");
     }
 
     @Test
@@ -891,12 +936,39 @@ class NotifyTest extends RedisConfigurationFunctionalTestBase {
 
     @Test
     void testSendSystemAdminUpdate() throws Exception {
-        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
+        MvcResult response = mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(containsString(
-                "Send notification email successfully to all system admin with referenceId")));
+            .andExpect(status().isOk()).andReturn();
+
+        String responseContent = response.getResponse().getContentAsString();
+        String[] notificationIds = responseContent.split(",");
+
+        assertThat(notificationIds)
+            .hasSize(2);
+
+        Notification notification = notificationClient.getNotificationById(notificationIds[0]);
+        Notification notification2 = notificationClient.getNotificationById(notificationIds[1]);
+
+        assertThat(notification.getEmailAddress())
+            .as("First email address does not match")
+            .hasValue("test.system.admin@justice.gov.uk");
+
+        assertThat(notification2.getEmailAddress())
+            .as("Second email address does not match")
+            .hasValue("test.system.admin2@justice.gov.uk");
+
+        assertThat(notification.getStatus())
+            .as("Notification status does not match")
+            .isEqualTo("delivered");
+
+        assertThat(notification.getSubject())
+            .as("Email subject does not match")
+            .hasValueSatisfying(s -> assertThat(s).contains("Reportable action – Delete Location"));
+
+        assertThat(notification.getBody())
+            .as("Email body does not match")
+            .contains("reqName has attempted to execute a Delete Location change");
     }
 
     @Test
