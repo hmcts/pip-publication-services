@@ -15,4 +15,5 @@ public class PersonalisationLinks {
     private String mediaVerificationPageLink;
     private String adminDashboardLink;
     private String cftSignInPageLink;
+    private String crimeSignInPageLink;
 }
