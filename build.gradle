@@ -214,6 +214,8 @@ dependencies {
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter'
   testImplementation group: 'io.github.hakky54', name: 'logcaptor', version: '2.9.3'
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.3', classifier: 'all'
+
+  functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured'
 }
 
 task fortifyScan(type: JavaExec)  {

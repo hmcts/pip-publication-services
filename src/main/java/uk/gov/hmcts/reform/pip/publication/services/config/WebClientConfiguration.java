@@ -69,7 +69,7 @@ public class WebClientConfiguration {
     }
 
     @Bean
-    @Profile("!dev & !integration & !integration-rate-limit")
+    @Profile("!dev & !integration & !integration-rate-limit & !functional")
     public WebClient.Builder webClientBuilder() throws SSLException {
         SslContext sslContext = SslContextBuilder
             .forClient()
@@ -81,7 +81,7 @@ public class WebClientConfiguration {
     }
 
     @Bean
-    @Profile("integration | integration-rate-limit")
+    @Profile("integration | integration-rate-limit | functional")
     public WebClient.Builder webClientBuilderIntegration() throws SSLException {
         SslContext sslContext = SslContextBuilder
             .forClient()
