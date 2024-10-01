@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.config;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,11 +69,23 @@ public class WebClientConfiguration {
     }
 
     @Bean
-    @Profile("!dev")
+    @Profile("!dev & !integration & !integration-rate-limit")
     public WebClient.Builder webClientBuilder() throws SSLException {
         SslContext sslContext = SslContextBuilder
             .forClient()
             .trustManager(new ByteArrayInputStream(Base64.getDecoder().decode(trustStore)))
+            .build();
+
+        HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(sslContext));
+        return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient));
+    }
+
+    @Bean
+    @Profile("integration | integration-rate-limit")
+    public WebClient.Builder webClientBuilderIntegration() throws SSLException {
+        SslContext sslContext = SslContextBuilder
+            .forClient()
+            .trustManager(InsecureTrustManagerFactory.INSTANCE)
             .build();
 
         HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(sslContext));
