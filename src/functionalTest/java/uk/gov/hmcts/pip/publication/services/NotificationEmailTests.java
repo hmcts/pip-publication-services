@@ -20,7 +20,7 @@ import static org.springframework.http.HttpStatus.OK;
 @ActiveProfiles(profiles = "functional")
 @SpringBootTest(classes = {Application.class, OAuthClient.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class NotificationEmailTests extends FunctionalTestBase {
+class NotificationEmailTests extends FunctionalTestBase {
     private static final String NOTIFY_URL = "/notify";
     private static final String MEDIA_WELCOME_EMAIL_URL = NOTIFY_URL + "/welcome-email";
 
