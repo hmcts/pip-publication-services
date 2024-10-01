@@ -2,9 +2,13 @@
 
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.GradleBuilder
+
 def type = "java"
 def product = "pip"
 def component = "publication-services"
+
+GradleBuilder builder = new GradleBuilder(this, product)
 
 def setupTestSecrets() {
   def bootstap_env = env.ENV == "prod" || env.ENV == "demo" || env.ENV == "sbox" ? env.ENV : "stg"
@@ -20,7 +24,9 @@ def setupTestSecrets() {
       secret('app-pip-subscription-management-scope', 'SUBSCRIPTION_MANAGEMENT_AZ_API'),
       secret('app-pip-publication-services-scope', 'PUBLICATION_SERVICES_AZ_API'),
       secret('app-pip-account-management-scope', 'ACCOUNT_MANAGEMENT_AZ_API'),
-      secret('app-tenant', 'TENANT_ID')
+      secret('app-tenant', 'TENANT_ID'),
+      secret('app-pip-data-management-id', 'CLIENT_ID_FT'),
+      secret('app-pip-data-management-pwd', 'CLIENT_SECRET_FT'),
     ]) {
     env.NOTIFY_API_KEY = "${NOTIFY_API_KEY}"
     env.APP_URI = "${APP_URI}"
@@ -32,6 +38,8 @@ def setupTestSecrets() {
     env.SUBSCRIPTION_MANAGEMENT_AZ_API = "${SUBSCRIPTION_MANAGEMENT_AZ_API}"
     env.TENANT_ID = "${TENANT_ID}"
     env.PI_TEAM_EMAIL = "${PI_TEAM_EMAIL}"
+    env.CLIENT_ID_FT = "${CLIENT_ID_FT}"
+    env.CLIENT_SECRET_FT = "${CLIENT_SECRET_FT}"
   }
 }
 
@@ -44,8 +52,6 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 }
 
 withPipeline(type, product, component) {
-
-//  loadVaultSecrets(apiSecrets)
 
   onMaster() {
     env.ENV = 'stg'
@@ -67,4 +73,8 @@ withPipeline(type, product, component) {
   enableAksStagingDeployment()
   disableLegacyDeployment()
   enableApiGatewayTest()
+
+  afterAlways('test') {
+    builder.gradle('integration')
+  }
 }
