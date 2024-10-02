@@ -27,7 +27,7 @@ public class FunctionalTestBase extends RedisConfigurationTestBase {
     protected String accessToken;
 
     @Value("${test-url}")
-    private static String testUrl;
+    private String testUrl;
 
     @BeforeEach
     void setUp() {
