@@ -1,9 +1,3 @@
-spring:
-  data:
-    redis:
-      host: ${REDIS_HOST_FT}
-      port: ${REDIS_PORT_FT}
-      password: ${REDIS_PASSWORD_FT}
 rate-limit:
   email:
     capacity:

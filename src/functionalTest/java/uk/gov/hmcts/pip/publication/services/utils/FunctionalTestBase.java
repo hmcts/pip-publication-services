@@ -19,7 +19,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 @SpringBootTest(classes = {Application.class, OAuthClient.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class FunctionalTestBase {
+public class FunctionalTestBase extends RedisConfigurationTestBase {
 
     protected static final String CONTENT_TYPE_VALUE = "application/json";
 
