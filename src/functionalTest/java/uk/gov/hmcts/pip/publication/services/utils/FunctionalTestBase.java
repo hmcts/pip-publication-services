@@ -3,7 +3,6 @@ package uk.gov.hmcts.pip.publication.services.utils;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,21 +17,20 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @SpringBootTest(classes = {Application.class, OAuthClient.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class FunctionalTestBase extends RedisConfigurationTestBase {
 
     protected static final String CONTENT_TYPE_VALUE = "application/json";
 
     @Autowired
-    private OAuthClient authClient;
+    private static OAuthClient authClient;
 
-    protected String accessToken;
+    protected static String accessToken;
 
     @Value("${test-url}")
-    private String testUrl;
+    private static String testUrl;
 
     @BeforeAll
-    void setUp() {
+    static void setUp() {
         RestAssured.baseURI = testUrl;
         accessToken = authClient.generateAccessToken();
     }

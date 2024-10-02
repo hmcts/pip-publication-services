@@ -21,7 +21,6 @@ import static org.springframework.http.HttpStatus.OK;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, OAuthClient.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 @ActiveProfiles(profiles = "functional")
 class NotificationEmailTests extends FunctionalTestBase {
     private static final String BEARER = "Bearer ";
