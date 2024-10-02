@@ -34,7 +34,8 @@ class NotificationEmailTests extends FunctionalTestBase {
     void shouldSendMediaWelcomeEmailForNewUser() {
         WelcomeEmail requestBody = new WelcomeEmail(TEST_EMAIL, false, TEST_FULL_NAME);
 
-        final Response response = doPostRequest(MEDIA_WELCOME_EMAIL_URL, Map.of(AUTHORIZATION, BEARER + accessToken),
+        final Response response = doPostRequest(MEDIA_WELCOME_EMAIL_URL,
+                                                Map.of(AUTHORIZATION, BEARER + getAccessToken()),
                                                 requestBody);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
