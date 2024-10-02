@@ -43,9 +43,9 @@ def setupTestSecrets() {
     env.PI_TEAM_EMAIL = "${PI_TEAM_EMAIL}"
     env.CLIENT_ID_FT = "${CLIENT_ID_FT}"
     env.CLIENT_SECRET_FT = "${CLIENT_SECRET_FT}"
-    env.REDIS_HOST = "${REDIS_HOST}"
-    env.REDIS_PORT = "${REDIS_PORT}"
-    env.REDIS_PASSWORD = "${REDIS_PASSWORD}"
+//    env.REDIS_HOST = "${REDIS_HOST}"
+//    env.REDIS_PORT = "${REDIS_PORT}"
+//    env.REDIS_PASSWORD = "${REDIS_PASSWORD}"
   }
 }
 
