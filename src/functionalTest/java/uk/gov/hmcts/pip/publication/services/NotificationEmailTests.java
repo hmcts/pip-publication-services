@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 
 import java.util.Map;
 
-import static com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(SpringExtension.class)
@@ -35,7 +35,7 @@ class NotificationEmailTests extends FunctionalTestBase {
         WelcomeEmail requestBody = new WelcomeEmail(TEST_EMAIL, false, TEST_FULL_NAME);
 
         final Response response = doPostRequest(MEDIA_WELCOME_EMAIL_URL,
-                                                Map.of(AUTHORIZATION, BEARER + getAccessToken()),
+                                                Map.of(AUTHORIZATION, BEARER + accessToken),
                                                 requestBody);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
