@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;
@@ -22,6 +23,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 @Configuration
 public class RedisConfiguration {
     private static final String CACHE = "publication-services-emails-cache";
+    private static final String CACHE_FT = "publication-services-emails-cache-FT";
     private static final String LOCAL = "local";
     private static final String TLS_REDIS_PROTOCOL_PREFIX = "rediss://";
     private static final String LOCAL_REDIS_PROTOCOL_PREFIX = "redis://";
@@ -59,14 +61,28 @@ public class RedisConfiguration {
     }
 
     @Bean
+    @Profile("!functional")
     public CacheManager cacheManager(Config redissonConfig, MutableConfiguration<String, String> jcacheConfiguration) {
         CacheManager cacheManager = Caching.getCachingProvider().getCacheManager();
         cacheManager.createCache(CACHE, RedissonConfiguration.fromConfig(redissonConfig, jcacheConfiguration));
         return cacheManager;
     }
 
-    @Bean
+    @Profile("!functional")
     ProxyManager<String> proxyManager(CacheManager cacheManager) {
+        return new JCacheProxyManager<>(cacheManager.getCache(CACHE));
+    }
+
+    @Bean
+    @Profile("functional")
+    public CacheManager cacheManagerFunctionalTest(Config redissonConfig, MutableConfiguration<String, String> jcacheConfiguration) {
+        CacheManager cacheManager = Caching.getCachingProvider().getCacheManager();
+        cacheManager.createCache(CACHE, RedissonConfiguration.fromConfig(redissonConfig, jcacheConfiguration));
+        return cacheManager;
+    }
+
+    @Profile("functional")
+    ProxyManager<String> proxyManagerFunctionalTest(CacheManager cacheManager) {
         return new JCacheProxyManager<>(cacheManager.getCache(CACHE));
     }
 
