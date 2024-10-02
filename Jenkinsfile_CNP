@@ -27,6 +27,9 @@ def setupTestSecrets() {
       secret('app-tenant', 'TENANT_ID'),
       secret('app-pip-data-management-id', 'CLIENT_ID_FT'),
       secret('app-pip-data-management-pwd', 'CLIENT_SECRET_FT'),
+      secret('REDIS-V6-HOST', 'REDIS_HOST'),
+      secret('REDIS-V6-PORT', 'REDIS_PORT'),
+      secret('REDIS-V6-PASSWORD', 'REDIS_PASSWORD'),
     ]) {
     env.NOTIFY_API_KEY = "${NOTIFY_API_KEY}"
     env.APP_URI = "${APP_URI}"
@@ -40,6 +43,9 @@ def setupTestSecrets() {
     env.PI_TEAM_EMAIL = "${PI_TEAM_EMAIL}"
     env.CLIENT_ID_FT = "${CLIENT_ID_FT}"
     env.CLIENT_SECRET_FT = "${CLIENT_SECRET_FT}"
+    env.REDIS_HOST = "${REDIS_HOST}"
+    env.REDIS_PORT = "${REDIS_PORT}"
+    env.REDIS_PASSWORD = "${REDIS_PASSWORD}"
   }
 }
 
