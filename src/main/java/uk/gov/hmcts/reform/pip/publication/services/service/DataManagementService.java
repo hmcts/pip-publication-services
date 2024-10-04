@@ -85,12 +85,12 @@ public class DataManagementService {
 
     public String getArtefactSummary(UUID artefactId) {
         try {
-           String response = webClient.get().uri(String.format("%s/publication/%s/summary", url, artefactId))
+            String response = webClient.get().uri(String.format("%s/publication/%s/summary", url, artefactId))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve().bodyToMono(String.class)
                 .block();
 
-           return response == null ? "" : response;
+            return response == null ? "" : response;
         } catch (WebClientResponseException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
