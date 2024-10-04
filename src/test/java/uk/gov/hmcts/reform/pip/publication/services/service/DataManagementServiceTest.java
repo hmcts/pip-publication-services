@@ -205,6 +205,18 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
     }
 
     @Test
+    void testGetArtefactSummaryWhenNullReturnsEmptyString() {
+        mockDataManagementEndpoint.enqueue(new MockResponse().addHeader(
+            "Content-Type",
+            com.azure.core.http.ContentType.APPLICATION_JSON
+        ));
+
+        String returnedString = dataManagementService.getArtefactSummary(UUID.randomUUID());
+
+        assertEquals("", returnedString, "Return does not match");
+    }
+
+    @Test
     void testGetArtefactSummaryError() {
         mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
