@@ -27,7 +27,7 @@ class NotificationEmailTests extends FunctionalTestBase {
     private static final String NOTIFY_URL = "/notify";
     private static final String MEDIA_WELCOME_EMAIL_URL = NOTIFY_URL + "/welcome-email";
 
-    private static final String TEST_EMAIL = "test@test.com";
+    private static final String TEST_EMAIL = "test_user@justice.gov.uk";
     private static final String TEST_FULL_NAME = "test user";
 
     @Test
