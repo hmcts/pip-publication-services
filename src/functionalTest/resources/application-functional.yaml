@@ -1,0 +1,7 @@
+rate-limit:
+  email:
+    capacity:
+      standard: 20
+      high: 50
+    interval-in-minutes: 1
+test-url: ${TEST_URL:http://localhost:8081}

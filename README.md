@@ -27,6 +27,7 @@
 - [Security & Quality Considerations](#security--quality-considerations)
 - [Test Suite](#test-suite)
   - [Unit tests](#unit-tests)
+  - [Integration tests](#integration-tests)
   - [Functional tests](#functional-tests)
   - [Fortify](#fortify)
 - [Contributing](#contributing)
@@ -187,17 +188,19 @@ Below is a table of currently used environment variables for starting the servic
 
 Secrets required for getting integration tests to run correctly can be found in the below table:
 
-| Variable                       | Description                                                                    |
-|:-------------------------------|:-------------------------------------------------------------------------------|
-| CLIENT_ID                      | As above                                                                       |
-| CLIENT_SECRET                  | As above                                                                       |
-| APP_URI                        | As above                                                                       |
-| TENANT_ID                      | As above                                                                       |
-| ACCOUNT_MANAGEMENT_AZ_API      | As above                                                                       |
-| DATA_MANAGEMENT_AZ_API         | As above                                                                       |
-| SUBSCRIPTION_MANAGEMENT_AZ_API | As above                                                                       |
-| NOTIFY_API_KEY                 | As above. Only the test API key should be used when running integration tests. |
-| PI_TEAM_EMAIL                  | As above                                                                       |
+| Variable                       | Description                                                                                                              |
+|:-------------------------------|:-------------------------------------------------------------------------------------------------------------------------|
+| CLIENT_ID                      | As above                                                                                                                 |
+| CLIENT_SECRET                  | As above                                                                                                                 |
+| APP_URI                        | As above                                                                                                                 |
+| TENANT_ID                      | As above                                                                                                                 |
+| ACCOUNT_MANAGEMENT_AZ_API      | As above                                                                                                                 |
+| DATA_MANAGEMENT_AZ_API         | As above                                                                                                                 |
+| SUBSCRIPTION_MANAGEMENT_AZ_API | As above                                                                                                                 |
+| NOTIFY_API_KEY                 | As above. Only the test API key should be used when running integration tests.                                           |
+| PI_TEAM_EMAIL                  | As above                                                                                                                 |
+| CLIENT_ID_FT                   | Client ID of external service used for authentication with publication-services application in the functional tests.     |
+| CLIENT_SECRET_FT               | Client secret of external service used for authentication with publication-services application in the functional tests. |
 
 #### Application.yaml files
 The service can also be adapted using the yaml files found in the following locations:
@@ -281,19 +284,27 @@ We use a few automated tools to ensure quality and security within the service. 
 
 ## Test Suite
 
-This microservice is comprehensively tested using both unit and functional tests.
+This microservice is comprehensively tested using unit, integration and functional tests.
 
 ### Unit tests
 
 Unit tests can be run on demand using `./gradlew test`.
 
+### Integration tests
+
+Integration tests can be run on demand using `./gradlew integration`.
+
+For our integration tests, we are using Square's [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver) library. This allows us to test the full HTTP stack for our service-to-service interactions.
+
+The mock server interacts with external CaTH services on staging.
+
 ### Functional tests
 
 Functional tests can be run using `./gradlew functional`
 
-For our functional tests, we are using Square's [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver) library. This allows us to test the full HTTP stack for our service-to-service interactions.
+Functional testing is performed on the stood-up publication-services instance on the dev pod (during pull request) or on staging (when running on the master branch).
 
-The functional tests also call out to Data Management in staging to retrieve publications.
+This publication-services instance interacts with external CaTH services on staging.
 
 ### Fortify
 
