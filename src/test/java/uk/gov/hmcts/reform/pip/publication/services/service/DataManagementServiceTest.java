@@ -195,13 +195,25 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
     @Test
     void testGetArtefactSummary() {
         mockDataManagementEndpoint.enqueue(new MockResponse().addHeader(
-            "Content-Type",
+            CONTENT_TYPE_HEADER,
             com.azure.core.http.ContentType.APPLICATION_JSON
         ).setBody(HELLO));
 
         String returnedString = dataManagementService.getArtefactSummary(UUID.randomUUID());
 
         assertEquals(HELLO, returnedString, "Return does not match");
+    }
+
+    @Test
+    void testGetArtefactSummaryWhenNullReturnsEmptyString() {
+        mockDataManagementEndpoint.enqueue(new MockResponse().addHeader(
+            CONTENT_TYPE_HEADER,
+            com.azure.core.http.ContentType.APPLICATION_JSON
+        ));
+
+        String returnedString = dataManagementService.getArtefactSummary(UUID.randomUUID());
+
+        assertEquals("", returnedString, "Return does not match");
     }
 
     @Test
@@ -220,7 +232,7 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
     void testGetArtefactFile() throws JsonProcessingException {
         mockDataManagementEndpoint.enqueue(
             new MockResponse()
-                .addHeader("Content-Type", com.azure.core.http.ContentType.APPLICATION_JSON)
+                .addHeader(CONTENT_TYPE_HEADER, com.azure.core.http.ContentType.APPLICATION_JSON)
                 .setBody(ow.writeValueAsString(HELLO))
         );
 

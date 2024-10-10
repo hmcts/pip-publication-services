@@ -84,7 +84,7 @@ fileRetentionWeeks: 78
 
 payload:
   json:
-    max-size-in-kb: ${MAX_PAYLOAD_SIZE:256}
+    max-size-summary: ${SUMMARY_MAX_INBOUND_SIZE:256}
 
 rate-limit:
   email:

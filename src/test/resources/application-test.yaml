@@ -19,7 +19,7 @@ error-handling:
   backoff: 2
 payload:
   json:
-    max-size-in-kb: 100
+    max-size-summary: 100
 rate-limit:
   email:
     capacity:

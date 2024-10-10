@@ -28,8 +28,8 @@ public class SubscriptionNotificationService {
     private final EmailService emailService;
     private final DataManagementService dataManagementService;
 
-    @Value("${payload.json.max-size-in-kb}")
-    private int maxPayloadSize;
+    @Value("${payload.json.max-size-summary}")
+    private int maxPayloadSizeForSummary;
 
     @Value("${file-retention-weeks}")
     private int fileRetentionWeeks;
@@ -117,22 +117,20 @@ public class SubscriptionNotificationService {
     }
 
     private String getArtefactSummary(Artefact artefact) {
-        if (payloadWithinLimit(artefact.getPayloadSize())) {
+        if (payloadWithinLimitForSummary(artefact.getPayloadSize())) {
             return dataManagementService.getArtefactSummary(artefact.getArtefactId());
         }
         return "";
     }
 
     private byte[] getFileBytes(Artefact artefact, FileType fileType, boolean additionalPdf) {
-        if (payloadWithinLimit(artefact.getPayloadSize())) {
-            String artefactFile = dataManagementService.getArtefactFile(artefact.getArtefactId(),
-                                                                           fileType, additionalPdf);
-            return Base64.getDecoder().decode(artefactFile);
-        }
-        return new byte[0];
+        String artefactFile = dataManagementService.getArtefactFile(artefact.getArtefactId(),
+                                                                    fileType, additionalPdf);
+        return Base64.getDecoder().decode(artefactFile);
     }
 
-    private boolean payloadWithinLimit(Float payloadSize) {
-        return payloadSize == null || payloadSize < maxPayloadSize;
+    private boolean payloadWithinLimitForSummary(Float payloadSize) {
+        return payloadSize == null || payloadSize < maxPayloadSizeForSummary;
     }
+
 }
