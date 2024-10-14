@@ -9,7 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationFunctionalTestBase;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -27,8 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext
-@ActiveProfiles("functional")
-class SwaggerPublisherTest extends RedisConfigurationFunctionalTestBase {
+@ActiveProfiles("integration")
+class SwaggerPublisherTest extends RedisConfigurationTestBase {
 
     @Autowired
     private MockMvc mvc;
