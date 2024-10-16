@@ -82,6 +82,9 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
     private static final InactiveUserNotificationEmail INACTIVE_USER_NOTIFICATION_EMAIL_CFT =
         new InactiveUserNotificationEmail(EMAIL, FULL_NAME, "CFT_IDAM", LAST_SIGNED_IN_DATE);
 
+    private static final InactiveUserNotificationEmail INACTIVE_USER_NOTIFICATION_EMAIL_CRIME =
+        new InactiveUserNotificationEmail(EMAIL, FULL_NAME, "CRIME_IDAM", LAST_SIGNED_IN_DATE);
+
     private static final String SUCCESS_REF_ID = "successRefId";
 
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(
@@ -206,6 +209,18 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.inactiveUserNotificationEmailRequest(
                          INACTIVE_USER_NOTIFICATION_EMAIL_CFT),
+                     "Inactive user notification should return successful reference ID"
+        );
+    }
+
+    @Test
+    void testValidPayloadReturnsSuccessInactiveUserNotificationForCrime() {
+        when(emailService.handleEmailGeneration(any(InactiveUserNotificationEmailData.class),
+                                                eq(Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME)))
+            .thenReturn(validEmailBodyForEmailClient);
+
+        assertEquals(SUCCESS_REF_ID, userNotificationService.inactiveUserNotificationEmailRequest(
+                         INACTIVE_USER_NOTIFICATION_EMAIL_CRIME),
                      "Inactive user notification should return successful reference ID"
         );
     }

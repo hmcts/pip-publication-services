@@ -9,7 +9,7 @@ import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
 @SuppressWarnings("checkstyle:HideUtilityClassConstructorCheck")
-public class RedisConfigurationFunctionalTestBase {
+public class RedisConfigurationTestBase {
     private static final String REDIS_IMAGE_NAME = "redis:latest";
     private static final int REDIS_PORT = 6379;
 

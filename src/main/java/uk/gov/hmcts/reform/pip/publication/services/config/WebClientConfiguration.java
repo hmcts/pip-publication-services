@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pip.publication.services.config;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,7 @@ import javax.net.ssl.SSLException;
  * Configures the Web Client that is used in requests to external services.
  */
 @Configuration
-@Profile("!test & !functional & !functional-rate-limit")
+@Profile("!test")
 public class WebClientConfiguration {
     // Currently we allow a maximum 2MB of PDF/Excel file to be transferred from data-management (same as GOV.UK
     // Notify file size constraint). The file content is sent as a Base64 encoded string which add roughly 33% space
@@ -68,11 +69,23 @@ public class WebClientConfiguration {
     }
 
     @Bean
-    @Profile("!dev")
+    @Profile("!dev & !integration & !integration-rate-limit & !functional")
     public WebClient.Builder webClientBuilder() throws SSLException {
         SslContext sslContext = SslContextBuilder
             .forClient()
             .trustManager(new ByteArrayInputStream(Base64.getDecoder().decode(trustStore)))
+            .build();
+
+        HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(sslContext));
+        return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient));
+    }
+
+    @Bean
+    @Profile("integration | integration-rate-limit | functional")
+    public WebClient.Builder webClientBuilderIntegration() throws SSLException {
+        SslContext sslContext = SslContextBuilder
+            .forClient()
+            .trustManager(InsecureTrustManagerFactory.INSTANCE)
             .build();
 
         HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(sslContext));

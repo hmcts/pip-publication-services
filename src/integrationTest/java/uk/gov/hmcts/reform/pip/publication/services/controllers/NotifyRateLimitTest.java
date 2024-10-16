@@ -15,7 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationFunctionalTestBase;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
 
@@ -32,8 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
-@ActiveProfiles("functional-rate-limit")
-class NotifyRateLimitTest extends RedisConfigurationFunctionalTestBase {
+@ActiveProfiles("integration-rate-limit")
+class NotifyRateLimitTest extends RedisConfigurationTestBase {
     private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String RANDOM_EMAIL = "test"
