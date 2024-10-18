@@ -64,6 +64,7 @@ notify:
     media-verification-page-link: ${MEDIA_VERIFICATION_PAGE_LINK:https://pip-frontend.staging.platform.hmcts.net/media-verification?p=B2C_1_SignInMediaVerification}
     admin-dashboard-link: ${ADMIN_DASHBOARD_LINK:https://pip-frontend.staging.platform.hmcts.net/admin-dashboard}
     cft-sign-in-page-link: ${NOTIFY_CFT_SIGN_IN_LINK:https://pip-frontend.staging.platform.hmcts.net/cft-login}
+    crime-sign-in-page-link: ${NOTIFY_CRIME_SIGN_IN_LINK:https://pip-frontend.staging.platform.hmcts.net/crime-login}
   pi-team-email: ${PI_TEAM_EMAIL:teamEmail@email.com}
 
 error-handling:
@@ -83,7 +84,7 @@ fileRetentionWeeks: 78
 
 payload:
   json:
-    max-size-in-kb: ${MAX_PAYLOAD_SIZE:256}
+    max-size-summary: ${SUMMARY_MAX_INBOUND_SIZE:256}
 
 rate-limit:
   email:

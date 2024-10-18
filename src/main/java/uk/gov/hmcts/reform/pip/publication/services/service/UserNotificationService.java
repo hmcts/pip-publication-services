@@ -124,15 +124,23 @@ public class UserNotificationService {
      * @return The ID that references the inactive user notification email.
      */
     public String inactiveUserNotificationEmailRequest(InactiveUserNotificationEmail body) {
-        Templates emailTemplate = UserProvenances.PI_AAD.name().equals(body.getUserProvenance())
-            ? Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD
-            : Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
+        Templates emailTemplate = selectInactiveUserNotificationEmailTemplate(body.getUserProvenance());
 
         EmailToSend email = emailService.handleEmailGeneration(new InactiveUserNotificationEmailData(body),
                                                                emailTemplate);
         return emailService.sendEmail(email)
             .getReference()
             .orElse(null);
+    }
+
+    private Templates selectInactiveUserNotificationEmailTemplate(String userProvenance) {
+        if (UserProvenances.PI_AAD.name().equals(userProvenance)) {
+            return Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
+        }
+
+        return UserProvenances.CFT_IDAM.name().equals(userProvenance)
+            ? Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT
+            : Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
     }
 
     /**

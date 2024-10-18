@@ -12,9 +12,6 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.Emai
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
-
 @Service
 /**
  * Generate the inactive user notification email with personalisation for GOV.UK Notify template.
@@ -23,12 +20,20 @@ public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         InactiveUserNotificationEmailData emailData = (InactiveUserNotificationEmailData) email;
-        Templates emailTemplate = UserProvenances.PI_AAD.name().equals(emailData.getUserProvenance())
-            ? INACTIVE_USER_NOTIFICATION_EMAIL_AAD
-            : INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
+        Templates emailTemplate = selectInactiveUserNotificationEmailTemplate(emailData.getUserProvenance());
 
         return generateEmail(emailData.getEmail(), emailTemplate.getTemplate(),
                              buildEmailPersonalisation(emailData, personalisationLinks));
+    }
+
+    private Templates selectInactiveUserNotificationEmailTemplate(String userProvenance) {
+        if (UserProvenances.PI_AAD.name().equals(userProvenance)) {
+            return Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
+        }
+
+        return UserProvenances.CFT_IDAM.name().equals(userProvenance)
+            ? Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT
+            : Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
     }
 
     private Map<String, Object> buildEmailPersonalisation(InactiveUserNotificationEmailData emailData,
@@ -38,6 +43,7 @@ public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
         personalisation.put("last_signed_in_date", emailData.getLastSignedInDate());
         personalisation.put("sign_in_page_link", personalisationLinks.getAadAdminSignInPageLink());
         personalisation.put("cft_sign_in_link", personalisationLinks.getCftSignInPageLink());
+        personalisation.put("crime_sign_in_link", personalisationLinks.getCrimeSignInPageLink());
         return personalisation;
     }
 }

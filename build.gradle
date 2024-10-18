@@ -22,13 +22,22 @@ java {
 }
 
 sourceSets {
-  functionalTest {
+  integrationTest {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
       srcDir file('src/integrationTest/java')
     }
     resources.srcDir file('src/integrationTest/resources')
+  }
+
+  functionalTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/functionalTest/java')
+    }
+    resources.srcDir file('src/functionalTest/resources')
   }
 
   smokeTest {
@@ -42,6 +51,9 @@ sourceSets {
 }
 
 configurations {
+  integrationTestImplementation.extendsFrom testImplementation
+  integrationTestRuntimeOnly.extendsFrom runtimeOnly
+
   functionalTestImplementation.extendsFrom testImplementation
   functionalTestRuntimeOnly.extendsFrom runtimeOnly
 
@@ -74,6 +86,13 @@ test {
   failFast = true
 }
 
+task integration(type: Test) {
+  description = "Runs integration tests"
+  group = "Verification"
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+}
+
 task functional(type: Test) {
   description = "Runs functional tests"
   group = "Verification"
@@ -95,13 +114,13 @@ checkstyle {
 
 pmd {
   toolVersion = "7.4.0"
-  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.smokeTest]
+  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
 jacocoTestReport {
-  executionData(test)
+  executionData(test, integration)
   reports {
     xml.required = true
     csv.required = false
@@ -195,6 +214,8 @@ dependencies {
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter'
   testImplementation group: 'io.github.hakky54', name: 'logcaptor', version: '2.9.3'
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.3', classifier: 'all'
+
+  functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured'
 }
 
 task fortifyScan(type: JavaExec)  {
@@ -215,6 +236,18 @@ bootJar {
   manifest {
     attributes('Implementation-Version': project.version.toString())
   }
+}
+
+rootProject.tasks.named("processIntegrationTestResources") {
+  duplicatesStrategy = 'include'
+}
+
+rootProject.tasks.named("processFunctionalTestResources") {
+  duplicatesStrategy = 'include'
+}
+
+rootProject.tasks.named("processSmokeTestResources") {
+  duplicatesStrategy = 'include'
 }
 
 wrapper {

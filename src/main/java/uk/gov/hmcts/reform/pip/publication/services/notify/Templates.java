@@ -83,7 +83,12 @@ public enum Templates {
                                          EmailLimit.STANDARD,
                                          new InactiveUserNotificationEmailGenerator()),
     INACTIVE_USER_NOTIFICATION_EMAIL_CFT("cca7ea18-4e6f-406f-b4d3-9e017cb53ee9",
-                                         "Inactive IDAM account notification email",
+                                         "Inactive CFT IDAM account notification email",
+                                         EmailLimit.STANDARD,
+                                         new InactiveUserNotificationEmailGenerator()),
+
+    INACTIVE_USER_NOTIFICATION_EMAIL_CRIME("710a1ea4-226d-4e94-a8f7-5a102bb31612",
+                                         "Inactive Crime IDAM account notification email",
                                          EmailLimit.STANDARD,
                                          new InactiveUserNotificationEmailGenerator()),
     DELETE_LOCATION_SUBSCRIPTION("929276e1-da85-4f21-9ed4-53492bedff68",
