@@ -37,4 +37,7 @@ java:
   environment:
     ENV_NAME: "{{ .Values.global.environment }}"
   autoscaling:
-    enabled: false #To be enabled as part of PUB-1692
+    enabled: true
+    maxReplicas: 5
+    minReplicas: 2
+    targetCPUUtilizationPercentage: 80
