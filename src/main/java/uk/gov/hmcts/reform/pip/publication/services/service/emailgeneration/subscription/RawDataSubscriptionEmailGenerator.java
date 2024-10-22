@@ -127,16 +127,14 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
 
     private Map<String, Object> populatePdfPersonalisation(RawDataSubscriptionEmailData emailData, Artefact artefact)
         throws NotificationClientException {
-        Map<String, Object> personalisation = new ConcurrentHashMap<>();
-
         byte[] artefactPdfBytes = emailData.getPdf();
         boolean pdfWithinSize = artefactPdfBytes.length < MAX_FILE_SIZE && artefactPdfBytes.length > 0;
 
         boolean hasAdditionalPdf = artefact.getListType().hasAdditionalPdf()
             && artefact.getLanguage() != Language.ENGLISH;
-        byte[] artefactWelshPdfBytes = emailData.getAdditionalPdf();
-        boolean welshPdfWithinSize = artefactWelshPdfBytes.length < MAX_FILE_SIZE
-            && artefactWelshPdfBytes.length > 0;
+
+        Map<String, Object> personalisation = populateAdditionalPdfPersonalisation(emailData, artefactPdfBytes,
+                                                                                   pdfWithinSize, hasAdditionalPdf);
 
         personalisation.put(
             "pdf_link_text",
@@ -148,6 +146,18 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
             !hasAdditionalPdf && pdfWithinSize
                 ? prepareUpload(artefactPdfBytes, false, emailData.getFileRetentionWeeks()) : ""
         );
+
+        return personalisation;
+    }
+
+    private Map<String, Object> populateAdditionalPdfPersonalisation(RawDataSubscriptionEmailData emailData,
+                                                                     byte[] artefactPdfBytes, boolean pdfWithinSize,
+                                                                     boolean hasAdditionalPdf)
+        throws NotificationClientException {
+        byte[] artefactWelshPdfBytes = emailData.getAdditionalPdf();
+        boolean welshPdfWithinSize = artefactWelshPdfBytes.length < MAX_FILE_SIZE;
+
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
         personalisation.put(
             "english_pdf_link_text",
