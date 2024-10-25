@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationFunctionalTestBase;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -50,8 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
-@ActiveProfiles("functional")
-class NotifyTest extends RedisConfigurationFunctionalTestBase {
+@ActiveProfiles("integration")
+class NotifyTest extends RedisConfigurationTestBase {
 
     private static final String VALID_WELCOME_REQUEST_BODY_EXISTING = """
         {

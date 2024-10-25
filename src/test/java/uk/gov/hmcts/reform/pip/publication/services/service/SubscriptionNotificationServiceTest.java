@@ -169,7 +169,7 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         assertEquals(LOCATION_NAME, rawDataSubscriptionEmailData.getLocationName(),
                      "Incorrect location name");
         assertEquals(ARTEFACT_SUMMARY, rawDataSubscriptionEmailData.getArtefactSummary(),
-                          "Incorrect PDF content");
+                          "Incorrect summary content");
         assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getPdf(),
                           "Incorrect PDF content");
         assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getExcel(),
@@ -193,6 +193,27 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
 
         verify(emailService, times(2))
             .handleEmailGeneration(any(FlatFileSubscriptionEmailData.class), eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL));
+    }
+
+    @Test
+    void testBulkSubscriptionRequestEmptySummaryWhenTooBig() {
+        artefact.setIsFlatFile(false);
+        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setPayloadSize(1024F);
+
+        ArgumentCaptor<RawDataSubscriptionEmailData> argument =
+            ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(emailService.handleEmailGeneration(argument.capture(),
+                                                eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
+            .thenReturn(validEmailBodyForEmailClientRawData);
+
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME);
+
+        RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
+
+        assertEquals("", rawDataSubscriptionEmailData.getArtefactSummary(),
+                     "Incorrect summary content");
     }
 
     @Test

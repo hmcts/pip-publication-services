@@ -27,6 +27,7 @@
 - [Security & Quality Considerations](#security--quality-considerations)
 - [Test Suite](#test-suite)
   - [Unit tests](#unit-tests)
+  - [Integration tests](#integration-tests)
   - [Functional tests](#functional-tests)
   - [Fortify](#fortify)
 - [Contributing](#contributing)
@@ -158,46 +159,48 @@ Python scripts to quickly grab all environment variables (subject to Azure permi
 
 Below is a table of currently used environment variables for starting the service, along with a descriptor of their purpose and whether they are optional or required.
 
-| Variable                          | Description                                                                                                                                                                                                                                                        | Required? |
-|:----------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| SPRING_PROFILES_ACTIVE            | If set to `dev`, the application will run in insecure mode (i.e. no bearer token authentication required for incoming requests.) *Note - if you wish to communicate with other services, you will need to set them all to run in insecure mode in the same way.*   | No        |
-| APP_URI                           | Uniform Resource Identifier - the location where the application expects to receive bearer tokens after a successful authentication process. The application then validates received bearer tokens using the AUD parameter in the token                            | No        |
-| CLIENT_ID                         | Unique ID for the application within Azure AD. Used to identify the application during authentication.                                                                                                                                                             | No        |
-| TENANT_ID                         | Directory unique ID assigned to our Azure AD tenant. Represents the organisation that owns and manages the Azure AD instance.                                                                                                                                      | No        |
-| CLIENT_SECRET                     | Secret key for authentication requests to the service.                                                                                                                                                                                                             | No        |
-| ACCOUNT_MANAGEMENT_URL            | URL used for connecting to the pip-account-management service. Defaults to staging if not provided.                                                                                                                                                                | No        |
-| DATA_MANAGEMENT_URL               | URL used for connecting to the pip-data-management service. Defaults to staging if not provided.                                                                                                                                                                   | No        |
-| SUBSCRIPTION_MANAGEMENT_URL       | URL used for connecting to the pip-subscription-management service. Defaults to staging if not provided.                                                                                                                                                           | No        |
-| ACCOUNT_MANAGEMENT_AZ_API         | Used as part of the `scope` parameter when requesting a token from Azure. Used for service-to-service communication with the pip-account management service.                                                                                                       | No        |
-| DATA_MANAGEMENT_AZ_API            | Used as part of the `scope` parameter when requesting a token from Azure. Used for service-to-service communication with the pip-data-management service.                                                                                                          | No        |
-| SUBSCRIPTION_MANAGEMENT_AZ_API    | Used as part of the `scope` parameter when requesting a token from Azure. Used for service-to-service communication with the pip-subscription-management service.                                                                                                  | No        |
-| NOTIFY_API_KEY                    | Used in the authorisation header for interaction with GOV.UK notify client. The API key follows the format {key_name}-{iss-uuid}-{secret-key-uuid}. When running the service locally we should not use the live key. Only test or team API key should be used.     | Yes       |
-| PI_TEAM_EMAIL                     | The email address for sending CaTH reporting emails (e.g. media applications, mi reports, unindentified blobs) to.                                                                                                                                                 | No        |
-| THIRD_PARTY_CERTIFICATE           | A trust store containing certification for Courtel as the trusted third party publisher.                                                                                                                                                                           | No        |
-| REDIS_HOST                        | Hostname of the Redis instance used for rate limiting. Default to localhost.                                                                                                                                                                                       | No        |
-| REDIS_PORT                        | Port that the Redis instance is running on. Default to port 6379.                                                                                                                                                                                                  | No        |
-| REDIS_PASSWORD                    | Password used to connect to the Redis instance. Default to nothing.                                                                                                                                                                                                | No        |
-| RATE_LIMIT_CACHE_EXPIRY           | The expiry duration (in minutes) of a rate-limiting redis cache entry based on the last time it was accessed. Default to 30 minutes.                                                                                                                               | No        |
-| STANDARD_MAX_EMAILS               | The maximum number of emails allowed to be sent to a user in a given interval for standard capacity email types. Used for rate limiting. Default to 10 (per 30 minutes) for all environments except staging where it is set to 100.                                | No        |
-| HIGH_CAPACITY_MAX_EMAILS          | The maximum number of emails allowed to be sent to a user in a given interval for high capacity email types. Used for rate limiting. Default to 200 (per 30 minutes) for all environments except staging where it is set to 1000.                                  | No        |
-| EMAIL_RATE_LIMIT_INTERVAL         | The rate limiting interval in minutes. Default to 30 minutes.                                                                                                                                                                                                      | No        |
-| MAX_PAYLOAD_SIZE                  | The maximum size of input payload before we stop generating the PDF, excel and email summary for the publication. Default to 2MB.                                                                                                                                  | No        |
+| Variable                          | Description                                                                                                                                                                                                                                                      | Required? |
+|:----------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| SPRING_PROFILES_ACTIVE            | If set to `dev`, the application will run in insecure mode (i.e. no bearer token authentication required for incoming requests.) *Note - if you wish to communicate with other services, you will need to set them all to run in insecure mode in the same way.* | No        |
+| APP_URI                           | Uniform Resource Identifier - the location where the application expects to receive bearer tokens after a successful authentication process. The application then validates received bearer tokens using the AUD parameter in the token                          | No        |
+| CLIENT_ID                         | Unique ID for the application within Azure AD. Used to identify the application during authentication.                                                                                                                                                           | No        |
+| TENANT_ID                         | Directory unique ID assigned to our Azure AD tenant. Represents the organisation that owns and manages the Azure AD instance.                                                                                                                                    | No        |
+| CLIENT_SECRET                     | Secret key for authentication requests to the service.                                                                                                                                                                                                           | No        |
+| ACCOUNT_MANAGEMENT_URL            | URL used for connecting to the pip-account-management service. Defaults to staging if not provided.                                                                                                                                                              | No        |
+| DATA_MANAGEMENT_URL               | URL used for connecting to the pip-data-management service. Defaults to staging if not provided.                                                                                                                                                                 | No        |
+| SUBSCRIPTION_MANAGEMENT_URL       | URL used for connecting to the pip-subscription-management service. Defaults to staging if not provided.                                                                                                                                                         | No        |
+| ACCOUNT_MANAGEMENT_AZ_API         | Used as part of the `scope` parameter when requesting a token from Azure. Used for service-to-service communication with the pip-account management service.                                                                                                     | No        |
+| DATA_MANAGEMENT_AZ_API            | Used as part of the `scope` parameter when requesting a token from Azure. Used for service-to-service communication with the pip-data-management service.                                                                                                        | No        |
+| SUBSCRIPTION_MANAGEMENT_AZ_API    | Used as part of the `scope` parameter when requesting a token from Azure. Used for service-to-service communication with the pip-subscription-management service.                                                                                                | No        |
+| NOTIFY_API_KEY                    | Used in the authorisation header for interaction with GOV.UK notify client. The API key follows the format {key_name}-{iss-uuid}-{secret-key-uuid}. When running the service locally we should not use the live key. Only test or team API key should be used.   | Yes       |
+| PI_TEAM_EMAIL                     | The email address for sending CaTH reporting emails (e.g. media applications, mi reports, unindentified blobs) to.                                                                                                                                               | No        |
+| THIRD_PARTY_CERTIFICATE           | A trust store containing certification for Courtel as the trusted third party publisher.                                                                                                                                                                         | No        |
+| REDIS_HOST                        | Hostname of the Redis instance used for rate limiting. Default to localhost.                                                                                                                                                                                     | No        |
+| REDIS_PORT                        | Port that the Redis instance is running on. Default to port 6379.                                                                                                                                                                                                | No        |
+| REDIS_PASSWORD                    | Password used to connect to the Redis instance. Default to nothing.                                                                                                                                                                                              | No        |
+| RATE_LIMIT_CACHE_EXPIRY           | The expiry duration (in minutes) of a rate-limiting redis cache entry based on the last time it was accessed. Default to 30 minutes.                                                                                                                             | No        |
+| STANDARD_MAX_EMAILS               | The maximum number of emails allowed to be sent to a user in a given interval for standard capacity email types. Used for rate limiting. Default to 10 (per 30 minutes) for all environments except staging where it is set to 100.                              | No        |
+| HIGH_CAPACITY_MAX_EMAILS          | The maximum number of emails allowed to be sent to a user in a given interval for high capacity email types. Used for rate limiting. Default to 200 (per 30 minutes) for all environments except staging where it is set to 1000.                                | No        |
+| EMAIL_RATE_LIMIT_INTERVAL         | The rate limiting interval in minutes. Default to 30 minutes.                                                                                                                                                                                                    | No        |
+| SUMMARY_MAX_INBOUND_SIZE          | The maximum size of the input for the generation of the email summary. Default to 256kb.                                                                                                                                                                         | No        |
 
 ##### Additional Test secrets
 
 Secrets required for getting integration tests to run correctly can be found in the below table:
 
-| Variable                       | Description                                                                    |
-|:-------------------------------|:-------------------------------------------------------------------------------|
-| CLIENT_ID                      | As above                                                                       |
-| CLIENT_SECRET                  | As above                                                                       |
-| APP_URI                        | As above                                                                       |
-| TENANT_ID                      | As above                                                                       |
-| ACCOUNT_MANAGEMENT_AZ_API      | As above                                                                       |
-| DATA_MANAGEMENT_AZ_API         | As above                                                                       |
-| SUBSCRIPTION_MANAGEMENT_AZ_API | As above                                                                       |
-| NOTIFY_API_KEY                 | As above. Only the test API key should be used when running integration tests. |
-| PI_TEAM_EMAIL                  | As above                                                                       |
+| Variable                       | Description                                                                                                              |
+|:-------------------------------|:-------------------------------------------------------------------------------------------------------------------------|
+| CLIENT_ID                      | As above                                                                                                                 |
+| CLIENT_SECRET                  | As above                                                                                                                 |
+| APP_URI                        | As above                                                                                                                 |
+| TENANT_ID                      | As above                                                                                                                 |
+| ACCOUNT_MANAGEMENT_AZ_API      | As above                                                                                                                 |
+| DATA_MANAGEMENT_AZ_API         | As above                                                                                                                 |
+| SUBSCRIPTION_MANAGEMENT_AZ_API | As above                                                                                                                 |
+| NOTIFY_API_KEY                 | As above. Only the test API key should be used when running integration tests.                                           |
+| PI_TEAM_EMAIL                  | As above                                                                                                                 |
+| CLIENT_ID_FT                   | Client ID of external service used for authentication with publication-services application in the functional tests.     |
+| CLIENT_SECRET_FT               | Client secret of external service used for authentication with publication-services application in the functional tests. |
 
 #### Application.yaml files
 The service can also be adapted using the yaml files found in the following locations:
@@ -281,19 +284,27 @@ We use a few automated tools to ensure quality and security within the service. 
 
 ## Test Suite
 
-This microservice is comprehensively tested using both unit and functional tests.
+This microservice is comprehensively tested using unit, integration and functional tests.
 
 ### Unit tests
 
 Unit tests can be run on demand using `./gradlew test`.
 
+### Integration tests
+
+Integration tests can be run on demand using `./gradlew integration`.
+
+For our integration tests, we are using Square's [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver) library. This allows us to test the full HTTP stack for our service-to-service interactions.
+
+The mock server interacts with external CaTH services on staging.
+
 ### Functional tests
 
 Functional tests can be run using `./gradlew functional`
 
-For our functional tests, we are using Square's [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver) library. This allows us to test the full HTTP stack for our service-to-service interactions.
+Functional testing is performed on the stood-up publication-services instance on the dev pod (during pull request) or on staging (when running on the master branch).
 
-The functional tests also call out to Data Management in staging to retrieve publications.
+This publication-services instance interacts with external CaTH services on staging.
 
 ### Fortify
 
