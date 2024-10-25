@@ -6,11 +6,6 @@
     <cve>CVE-2021-42306</cve>
   </suppress>
   <suppress>
-    <notes>The vulnerability exists in the latest version of lib too. Need to wait for new version with the fix</notes>
-    <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.15.4</packageUrl>
-    <cve>CVE-2023-35116</cve>
-  </suppress>
-  <suppress>
     <notes><![CDATA[file name: azure-identity-1.11.4.jar]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.azure/azure\-identity@.*$</packageUrl>
     <cve>CVE-2023-36415</cve>
@@ -19,12 +14,6 @@
     <notes>This vulnerability exists in various com.azure dependencies pulled in by the latest spring-cloud-azure-starter-active-directory</notes>
     <packageUrl regex="true">^pkg:maven/com\.azure/azure.*$</packageUrl>
     <cve>CVE-2023-36052</cve>
-  </suppress>
-  <suppress>
-    <notes>Vulnerability in commons-compress. Already on latest version of parent</notes>
-    <packageUrl regex="true">^pkg:maven/org.apache.commons/commons-compress@1.25.0</packageUrl>
-    <cve>CVE-2024-25710</cve>
-    <cve>CVE-2024-26308</cve>
   </suppress>
   <suppress>
     <notes>This vulnerability exists across azure identity and microsoft authentication libraries </notes>
