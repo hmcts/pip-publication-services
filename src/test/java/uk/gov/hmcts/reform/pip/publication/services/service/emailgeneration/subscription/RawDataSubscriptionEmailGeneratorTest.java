@@ -67,9 +67,14 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
     private static final String SUMMARY_PERSONALISATION =  "testing_of_array";
     private static final String CONTENT_DATE_PERSONALISATION = "content_date";
+
+    private static final String PDF_LINK_TEXT = "pdf_link_text";
     private static final String PDF_LINK_TO_FILE = "pdf_link_to_file";
+    private static final String ENGLISH_PDF_LINK_TEXT = "english_pdf_link_text";
     private static final String ENGLISH_PDF_LINK_TO_FILE = "english_pdf_link_to_file";
+    private static final String WELSH_PDF_LINK_TEXT = "welsh_pdf_link_text";
     private static final String WELSH_PDF_LINK_TO_FILE = "welsh_pdf_link_to_file";
+    private static final String EXCEL_LINK_TEXT = "excel_link_text";
     private static final String EXCEL_LINK_TO_FILE = "excel_link_to_file";
 
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
@@ -151,13 +156,29 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("30 April 2024");
 
+        softly.assertThat(personalisation.get(ENGLISH_PDF_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
         softly.assertThat(personalisation.get(ENGLISH_PDF_LINK_TO_FILE))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
+        softly.assertThat(personalisation.get(WELSH_PDF_LINK_TEXT))
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("");
 
         softly.assertThat(personalisation.get(WELSH_PDF_LINK_TO_FILE))
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("");
+
+        softly.assertThat(personalisation.get(PDF_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isNotEqualTo("");
+
+        softly.assertThat(personalisation.get(EXCEL_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isNotEqualTo("");
 
         assertUploadFileContent(softly, (JSONObject) personalisation.get(PDF_LINK_TO_FILE));
         assertUploadFileContent(softly, (JSONObject) personalisation.get(EXCEL_LINK_TO_FILE));
@@ -218,13 +239,29 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("30 April 2024");
 
+        softly.assertThat(personalisation.get(PDF_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
         softly.assertThat(personalisation.get(PDF_LINK_TO_FILE))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
+        softly.assertThat(personalisation.get(EXCEL_LINK_TEXT))
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("");
 
         softly.assertThat(personalisation.get(EXCEL_LINK_TO_FILE))
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("");
+
+        softly.assertThat(personalisation.get(ENGLISH_PDF_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isNotEqualTo("");
+
+        softly.assertThat(personalisation.get(WELSH_PDF_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isNotEqualTo("");
 
         assertUploadFileContent(softly, (JSONObject) personalisation.get(ENGLISH_PDF_LINK_TO_FILE));
         assertUploadFileContent(softly, (JSONObject) personalisation.get(WELSH_PDF_LINK_TO_FILE));
