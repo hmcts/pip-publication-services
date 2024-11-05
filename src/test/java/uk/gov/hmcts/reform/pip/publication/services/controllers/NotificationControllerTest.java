@@ -275,7 +275,7 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
+    @SuppressWarnings("PMD.UnitTestAssertionsShouldIncludeMessage")
     void testSendInactiveUserNotificationEmailReturnsOk() {
         assertThat(notificationController.sendNotificationToInactiveUsers(inactiveUserNotificationEmail))
             .as("Response does not match")
@@ -290,7 +290,7 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
+    @SuppressWarnings("PMD.UnitTestAssertionsShouldIncludeMessage")
     void testSendMiReportingEmailReturnsOk() {
         when(notificationService.handleMiDataForReporting()).thenReturn(SUCCESS_ID);
 
