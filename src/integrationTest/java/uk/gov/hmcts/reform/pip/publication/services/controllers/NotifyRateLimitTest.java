@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.controllers;
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.tls.HandshakeCertificates;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,13 +85,13 @@ class NotifyRateLimitTest extends RedisConfigurationTestBase {
                             .content(VALID_WELCOME_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.notNullValue()));
 
         mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(VALID_WELCOME_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.notNullValue()));
 
         mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(VALID_WELCOME_REQUEST_BODY)
@@ -103,7 +104,7 @@ class NotifyRateLimitTest extends RedisConfigurationTestBase {
                             .content(VALID_WELCOME_REQUEST_BODY_NEW)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test

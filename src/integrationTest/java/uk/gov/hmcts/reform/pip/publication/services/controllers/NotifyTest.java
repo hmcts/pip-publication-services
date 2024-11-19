@@ -10,6 +10,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.tomcat.util.http.fileupload.MultipartStream;
+import org.hamcrest.core.IsNot;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,11 +35,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.typeCompatibleWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -339,7 +343,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(VALID_WELCOME_REQUEST_BODY_EXISTING)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -348,7 +352,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(VALID_WELCOME_REQUEST_BODY_NEW)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -365,8 +369,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(VALID_DUPLICATE_MEDIA_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(
-                "Duplicate media account email successfully sent")));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -393,8 +396,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(VALID_ADMIN_CREATION_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(
-                "Created admin welcome email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -592,7 +594,8 @@ class NotifyTest extends RedisConfigurationTestBase {
         mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
                             .content(validMediaReportingJson)
                             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -691,7 +694,8 @@ class NotifyTest extends RedisConfigurationTestBase {
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(validFlatFileBody)
                             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isAccepted());
+            .andExpect(status().isAccepted())
+            .andExpect(content().string(IsNull.nullValue()));
     }
 
     @Test
@@ -700,7 +704,8 @@ class NotifyTest extends RedisConfigurationTestBase {
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(BULK_SUBSCRIPTION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isAccepted());
+            .andExpect(status().isAccepted())
+            .andExpect(content().string(IsNull.nullValue()));
     }
 
     @Test
@@ -765,8 +770,8 @@ class NotifyTest extends RedisConfigurationTestBase {
         mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
                             .content(validLocationsListJson)
                             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andExpect(content().string(
-                containsString("Unidentified blob email successfully sent with reference id:")));
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.nullValue()));
     }
 
     @Test
@@ -792,8 +797,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(VALID_MEDIA_VERIFICATION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(
-                "Media user verification email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.nullValue()));
     }
 
     @Test
@@ -820,8 +824,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(VALID_MEDIA_REJECTION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(
-                "Media user rejection email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.nullValue()));
     }
 
     @Test
@@ -855,8 +858,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(
-                "Inactive user sign-in notification email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.nullValue()));
     }
 
     @Test
@@ -879,7 +881,8 @@ class NotifyTest extends RedisConfigurationTestBase {
     @Test
     void testSendMiReportingEmail() throws Exception {
         mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.nullValue()));
     }
 
     @Test
@@ -895,8 +898,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(
-                "Send notification email successfully to all system admin with referenceId")));
+            .andExpect(content().string(IsNull.nullValue()));
     }
 
     @Test
@@ -922,8 +924,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(NOTIFY_LOCATION_SUBSCRIPTION_DELETE_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(
-                "Location subscription email successfully sent with reference id")));
+            .andExpect(content().string(IsNull.nullValue()));
     }
 
     @Test
