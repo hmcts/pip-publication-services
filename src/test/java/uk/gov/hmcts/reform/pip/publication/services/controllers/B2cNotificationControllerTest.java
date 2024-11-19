@@ -39,6 +39,6 @@ class B2cNotificationControllerTest extends RedisConfigurationTestBase {
 
         assertThat(response.getBody())
             .as("Response body does not match")
-            .isEqualTo("OTP email successfully sent with referenceId " + REFERENCE_ID);
+            .isEqualTo(REFERENCE_ID);
     }
 }

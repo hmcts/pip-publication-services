@@ -47,6 +47,7 @@ class MiDataReportingEmailGeneratorTest extends RedisConfigurationTestBase {
 
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
+    private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
     private PersonalisationLinks personalisationLinks;
@@ -77,6 +78,10 @@ class MiDataReportingEmailGeneratorTest extends RedisConfigurationTestBase {
         softly.assertThat(result.getTemplate())
             .as(NOTIFY_TEMPLATE_MESSAGE)
             .isEqualTo(MI_DATA_REPORTING_EMAIL.getTemplate());
+
+        softly.assertThat(result.getReferenceId())
+            .as(REFERENCE_ID_MESSAGE)
+            .isNotNull();
 
         Map<String, Object> personalisation = result.getPersonalisation();
 

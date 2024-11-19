@@ -22,7 +22,7 @@ public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
         InactiveUserNotificationEmailData emailData = (InactiveUserNotificationEmailData) email;
         Templates emailTemplate = selectInactiveUserNotificationEmailTemplate(emailData.getUserProvenance());
 
-        return generateEmail(emailData.getEmail(), emailTemplate.getTemplate(),
+        return generateEmail(emailData, emailTemplate.getTemplate(),
                              buildEmailPersonalisation(emailData, personalisationLinks));
     }
 

@@ -23,8 +23,7 @@ public class UnidentifiedBlobEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         UnidentifiedBlobEmailData emailData = (UnidentifiedBlobEmailData) email;
-        return generateEmail(emailData.getEmail(), BAD_BLOB_EMAIL.getTemplate(),
-                             buildEmailPersonalisation(emailData));
+        return generateEmail(emailData, BAD_BLOB_EMAIL.getTemplate(), buildEmailPersonalisation(emailData));
     }
 
     private Map<String, Object> buildEmailPersonalisation(UnidentifiedBlobEmailData emailData) {

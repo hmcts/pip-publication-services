@@ -52,6 +52,7 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String LOCATION_NAME = "Location name";
     private static final String ARTEFACT_SUMMARY = "Summary";
     private static final byte[] FILE_DATA = "Test byte".getBytes();
+    private static final String REFERENCE_ID = UUID.randomUUID().toString();
 
     private static final int FILE_RETENTION_WEEKS = 78;
     private static final RetentionPeriodDuration RETENTION_PERIOD_DURATION = new RetentionPeriodDuration(
@@ -108,7 +109,8 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
         artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     new byte[0], FILE_DATA, LOCATION_NAME, FILE_RETENTION_WEEKS);
+                                                     new byte[0], FILE_DATA, LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
 
@@ -191,7 +193,8 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
         artefact.setLanguage(Language.WELSH);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     FILE_DATA, new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS);
+                                                     FILE_DATA, new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
 
@@ -275,7 +278,8 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     FILE_DATA, new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS);
+                                                     FILE_DATA, new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     REFERENCE_ID);
 
         try (MockedStatic<NotificationClient> mockStatic = mockStatic(NotificationClient.class);
              LogCaptor logCaptor = LogCaptor.forClass(RawDataSubscriptionEmailGenerator.class)) {

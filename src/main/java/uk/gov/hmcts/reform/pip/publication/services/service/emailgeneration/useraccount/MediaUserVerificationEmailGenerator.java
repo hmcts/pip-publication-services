@@ -20,7 +20,7 @@ public class MediaUserVerificationEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         MediaUserVerificationEmailData emailData = (MediaUserVerificationEmailData) email;
-        return generateEmail(emailData.getEmail(), MEDIA_USER_VERIFICATION_EMAIL.getTemplate(),
+        return generateEmail(emailData, MEDIA_USER_VERIFICATION_EMAIL.getTemplate(),
                              buildEmailPersonalisation(emailData, personalisationLinks));
     }
 

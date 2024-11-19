@@ -26,7 +26,7 @@ public class MediaWelcomeEmailGenerator extends EmailGenerator {
             ? EXISTING_USER_WELCOME_EMAIL
             : MEDIA_NEW_ACCOUNT_SETUP;
 
-        return generateEmail(emailData.getEmail(), emailTemplate.getTemplate(),
+        return generateEmail(emailData, emailTemplate.getTemplate(),
                              buildEmailPersonalisation(emailData, personalisationLinks));
     }
 

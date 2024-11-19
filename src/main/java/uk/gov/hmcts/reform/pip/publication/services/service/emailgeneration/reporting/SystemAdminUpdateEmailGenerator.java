@@ -24,7 +24,7 @@ public class SystemAdminUpdateEmailGenerator extends BatchEmailGenerator {
     public List<EmailToSend> buildEmail(BatchEmailData email, PersonalisationLinks personalisationLinks) {
         SystemAdminUpdateEmailData emailData = (SystemAdminUpdateEmailData) email;
         return generateEmail(emailData.getEmails(), SYSTEM_ADMIN_UPDATE_EMAIL.getTemplate(),
-                             buildEmailPersonalisation(emailData));
+                             buildEmailPersonalisation(emailData), emailData.getReferenceId());
     }
 
     private Map<String, Object> buildEmailPersonalisation(SystemAdminUpdateEmailData emailData) {
