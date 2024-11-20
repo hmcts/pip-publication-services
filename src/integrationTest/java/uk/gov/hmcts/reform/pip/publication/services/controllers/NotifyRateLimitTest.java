@@ -44,8 +44,6 @@ class NotifyRateLimitTest extends RedisConfigurationTestBase {
         + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
     private static final String RANDOM_EMAIL_SYSTEM_ADMIN_NEW = "test.sa"
         + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
-    private static final String SYSTEM_ADMIN_UPDATE_MESSAGE = "Send notification "
-        + "email successfully to all system admin with referenceId: []";
     private static final String VALID_WELCOME_REQUEST_BODY = "{\"email\": \""
         + RANDOM_EMAIL + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
 

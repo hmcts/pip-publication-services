@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
-import static uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient.NOTIFICATION_STATUS;
 import static uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient.NOTIFICATION_TYPE;
 
 @ActiveProfiles(profiles = "functional")
@@ -55,14 +54,14 @@ class BatchNotificationEmailTests extends FunctionalTestBase {
 
         Awaitility.with().pollInterval(1, TimeUnit.SECONDS).await().until(() -> {
             NotificationList notificationList = notificationClient.getNotifications(
-                NOTIFICATION_STATUS, NOTIFICATION_TYPE, referenceId, null
+                null, NOTIFICATION_TYPE, referenceId, null
             );
             return notificationList != null
                 && notificationList.getNotifications().size() == 2;
         });
 
         NotificationList notificationList = notificationClient.getNotifications(
-            NOTIFICATION_STATUS, NOTIFICATION_TYPE, referenceId, null
+            null, NOTIFICATION_TYPE, referenceId, null
         );
         Notification firstNotification = notificationList.getNotifications().get(0);
         Notification secondNotification = notificationList.getNotifications().get(0);
