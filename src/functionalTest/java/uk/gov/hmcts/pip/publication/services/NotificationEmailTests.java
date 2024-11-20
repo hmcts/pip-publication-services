@@ -15,7 +15,6 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.NotificationList;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,13 +48,17 @@ class NotificationEmailTests extends FunctionalTestBase {
         assertThat(referenceId)
             .isNotEmpty();
 
-        Awaitility.with().pollInterval(1, SECONDS).await().atMost(50, SECONDS).until(() -> {
-            NotificationList notificationList = notificationClient.getNotifications(
-                null, NOTIFICATION_TYPE, referenceId, null
-            );
-            return notificationList != null
-                && notificationList.getNotifications().size() == 1;
-        });
+        Awaitility.with()
+            .pollInterval(1, SECONDS)
+            .await()
+            .atMost(50, SECONDS)
+            .until(() -> {
+                NotificationList notificationList = notificationClient.getNotifications(
+                    null, NOTIFICATION_TYPE, referenceId, null
+                );
+                return notificationList != null
+                    && notificationList.getNotifications().size() == 1;
+            });
 
         NotificationList notificationList = notificationClient.getNotifications(
             null, NOTIFICATION_TYPE, referenceId, null

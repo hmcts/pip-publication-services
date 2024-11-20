@@ -52,13 +52,16 @@ class BatchNotificationEmailTests extends FunctionalTestBase {
         assertThat(referenceId)
             .isNotEmpty();
 
-        Awaitility.with().pollInterval(1, TimeUnit.SECONDS).await().until(() -> {
-            NotificationList notificationList = notificationClient.getNotifications(
-                null, NOTIFICATION_TYPE, referenceId, null
-            );
-            return notificationList != null
-                && notificationList.getNotifications().size() == 2;
-        });
+        Awaitility.with()
+            .pollInterval(1, TimeUnit.SECONDS)
+            .await()
+            .until(() -> {
+                NotificationList notificationList = notificationClient.getNotifications(
+                    null, NOTIFICATION_TYPE, referenceId, null
+                );
+                return notificationList != null
+                    && notificationList.getNotifications().size() == 2;
+            });
 
         NotificationList notificationList = notificationClient.getNotifications(
             null, NOTIFICATION_TYPE, referenceId, null
