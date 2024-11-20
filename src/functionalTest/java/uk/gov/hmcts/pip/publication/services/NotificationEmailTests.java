@@ -51,7 +51,6 @@ class NotificationEmailTests extends FunctionalTestBase {
         Awaitility.with()
             .pollInterval(1, SECONDS)
             .await()
-            .atMost(50, SECONDS)
             .until(() -> {
                 NotificationList notificationList = notificationClient.getNotifications(
                     null, NOTIFICATION_TYPE, referenceId, null
