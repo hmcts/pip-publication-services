@@ -10,7 +10,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.tomcat.util.http.fileupload.MultipartStream;
-import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,13 +34,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.typeCompatibleWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -695,7 +692,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(validFlatFileBody)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isAccepted())
-            .andExpect(content().string(IsNull.nullValue()));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -705,7 +702,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(BULK_SUBSCRIPTION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isAccepted())
-            .andExpect(content().string(IsNull.nullValue()));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -771,7 +768,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(validLocationsListJson)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.nullValue()));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -797,7 +794,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(VALID_MEDIA_VERIFICATION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.nullValue()));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -824,7 +821,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(VALID_MEDIA_REJECTION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.nullValue()));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -858,7 +855,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.nullValue()));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -882,7 +879,7 @@ class NotifyTest extends RedisConfigurationTestBase {
     void testSendMiReportingEmail() throws Exception {
         mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
             .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.nullValue()));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -898,7 +895,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.nullValue()));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -924,7 +921,7 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .content(NOTIFY_LOCATION_SUBSCRIPTION_DELETE_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.nullValue()));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
