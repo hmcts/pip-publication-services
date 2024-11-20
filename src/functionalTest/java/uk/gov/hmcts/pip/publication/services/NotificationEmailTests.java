@@ -17,6 +17,7 @@ import uk.gov.service.notify.NotificationList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
@@ -48,7 +49,7 @@ class NotificationEmailTests extends FunctionalTestBase {
         assertThat(referenceId)
             .isNotEmpty();
 
-        Awaitility.with().pollInterval(1, TimeUnit.SECONDS).await().until(() -> {
+        Awaitility.with().pollInterval(1, SECONDS).await().atMost(50, SECONDS).until(() -> {
             NotificationList notificationList = notificationClient.getNotifications(
                 null, NOTIFICATION_TYPE, referenceId, null
             );
