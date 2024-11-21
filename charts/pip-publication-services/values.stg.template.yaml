@@ -6,6 +6,8 @@ java:
     pip-ss-kv:
       resourceGroup: pip-ss-stg-rg
       secrets:
+        - name: gov-uk-notify-test-api-key
+          alias: NOTIFY_API_KEY
         - name: app-pip-publication-services-id
           alias: CLIENT_ID
         - name: app-pip-publication-services-pwd
@@ -32,8 +34,3 @@ java:
           alias: REDIS_PORT
         - name: REDIS-V6-PASSWORD
           alias: REDIS_PASSWORD
-    pip-bootstrap-kv:
-      resourceGroup: pip-bootstrap-stg-rg
-      secrets:
-        - name: gov-uk-notify-test-api-key
-          alias: NOTIFY_API_KEY
