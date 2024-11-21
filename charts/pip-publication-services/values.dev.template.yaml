@@ -32,7 +32,7 @@ java:
           alias: REDIS_PORT
         - name: REDIS-V6-PASSWORD
           alias: REDIS_PASSWORD
-    pip-bootstrap-stg-kv:
+    pip-bootstrap-kv:
       resourceGroup: pip-bootstrap-stg-rg
       secrets:
         - name: gov-uk-notify-test-api-key
