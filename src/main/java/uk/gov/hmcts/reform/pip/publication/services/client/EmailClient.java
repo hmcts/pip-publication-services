@@ -14,7 +14,7 @@ import uk.gov.service.notify.NotificationClient;
 public class EmailClient extends NotificationClient {
 
     /**
-     * Constructor to setup client with api key.
+     * Constructor to setup client with Notify api key.
      * @param apiKey API key used to connect to GovNotify taken from application.yaml
      */
     @Autowired
