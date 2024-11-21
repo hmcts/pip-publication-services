@@ -2,3 +2,35 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  keyVaults:
+    pip-ss-kv:
+      resourceGroup: pip-ss-stg-rg
+      secrets:
+        - name: gov-uk-notify-test-api-key
+          alias: NOTIFY_API_KEY
+        - name: app-pip-publication-services-id
+          alias: CLIENT_ID
+        - name: app-pip-publication-services-pwd
+          alias: CLIENT_SECRET
+        - name: app-tenant-id
+          alias: TENANT_ID
+        - name: app-pip-publication-services-scope
+          alias: APP_URI
+        - name: app-pip-data-management-scope
+          alias: DATA_MANAGEMENT_AZ_API
+        - name: app-pip-subscription-management-scope
+          alias: SUBSCRIPTION_MANAGEMENT_AZ_API
+        - name: app-pip-account-management-scope
+          alias: ACCOUNT_MANAGEMENT_AZ_API
+        - name: pip-team-email
+          alias: PI_TEAM_EMAIL
+        - name: courtel-certificate
+          alias: THIRD_PARTY_CERTIFICATE
+        - name: app-insights-java-connection-string
+          alias: APP_INSIGHTS_CONNECTION_STRING
+        - name: REDIS-V6-HOST
+          alias: REDIS_HOST
+        - name: REDIS-V6-PORT
+          alias: REDIS_PORT
+        - name: REDIS-V6-PASSWORD
+          alias: REDIS_PASSWORD
