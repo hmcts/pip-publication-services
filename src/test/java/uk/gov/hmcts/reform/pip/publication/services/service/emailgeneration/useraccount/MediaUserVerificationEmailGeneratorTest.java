@@ -29,6 +29,7 @@ class MediaUserVerificationEmailGeneratorTest extends RedisConfigurationTestBase
 
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
+    private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
     @Autowired
@@ -55,6 +56,10 @@ class MediaUserVerificationEmailGeneratorTest extends RedisConfigurationTestBase
         softly.assertThat(result.getTemplate())
             .as(NOTIFY_TEMPLATE_MESSAGE)
             .isEqualTo(MEDIA_USER_VERIFICATION_EMAIL.getTemplate());
+
+        softly.assertThat(result.getReferenceId())
+            .as(REFERENCE_ID_MESSAGE)
+            .isNotNull();
 
         Map<String, Object> personalisation = result.getPersonalisation();
 

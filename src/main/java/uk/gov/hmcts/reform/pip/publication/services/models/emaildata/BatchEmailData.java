@@ -12,5 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BatchEmailData {
-    List<String> emails;
+    private List<String> emails;
+    private String referenceId;
 }

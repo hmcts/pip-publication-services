@@ -20,8 +20,7 @@ public class OtpEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         OtpEmailData emailData = (OtpEmailData) email;
-        return generateEmail(emailData.getEmail(), OTP_EMAIL.getTemplate(),
-                             buildEmailPersonalisation(emailData));
+        return generateEmail(emailData, OTP_EMAIL.getTemplate(), buildEmailPersonalisation(emailData));
     }
 
     private Map<String, Object> buildEmailPersonalisation(OtpEmailData emailData) {

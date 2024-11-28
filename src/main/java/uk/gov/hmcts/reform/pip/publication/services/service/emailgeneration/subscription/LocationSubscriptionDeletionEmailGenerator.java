@@ -22,7 +22,7 @@ public class LocationSubscriptionDeletionEmailGenerator extends BatchEmailGenera
     public List<EmailToSend> buildEmail(BatchEmailData email, PersonalisationLinks personalisationLinks) {
         LocationSubscriptionDeletionEmailData emailData = (LocationSubscriptionDeletionEmailData) email;
         return generateEmail(emailData.getEmails(), DELETE_LOCATION_SUBSCRIPTION.getTemplate(),
-                             buildEmailPersonalisation(emailData));
+                             buildEmailPersonalisation(emailData), email.getReferenceId());
     }
 
     private Map<String, Object> buildEmailPersonalisation(LocationSubscriptionDeletionEmailData emailData) {

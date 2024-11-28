@@ -35,9 +35,6 @@ public class B2cNotificationController {
     @Operation(summary = "Send email containing B2C one-time password")
     @PostMapping("/otp")
     public ResponseEntity<String> sendOtpEmail(@Valid @RequestBody OtpEmail body) {
-        return ResponseEntity.ok(String.format(
-            "OTP email successfully sent with referenceId %s",
-            userNotificationService.handleOtpEmailRequest(body)
-        ));
+        return ResponseEntity.ok(userNotificationService.handleOtpEmailRequest(body));
     }
 }

@@ -57,6 +57,7 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
     private static final byte[] ARTEFACT_FLAT_FILE = "Test byte".getBytes();
     private static final String SUCCESS_REF_ID = "successRefId";
     private static final String TEST_EXCEPTION_MESSAGE = "Test Exception Message";
+    private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final Map<String, Object> PERSONALISATION_MAP = Map.of("email", EMAIL);
 
     private final Artefact artefact = new Artefact();
@@ -128,7 +129,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
                                                 eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientFlatFile);
 
-        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME);
+        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
+                                                                 SUCCESS_REF_ID);
 
         FlatFileSubscriptionEmailData flatFileSubscriptionEmailData = argument.getValue();
 
@@ -143,6 +145,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
             ARTEFACT_FLAT_FILE,
             "Incorrect artefact flat file"
         );
+
+        assertEquals(SUCCESS_REF_ID, flatFileSubscriptionEmailData.getReferenceId(), REFERENCE_ID_MESSAGE);
     }
 
     @Test
@@ -158,7 +162,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
+                                                                SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -174,6 +179,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
                           "Incorrect PDF content");
         assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getExcel(),
                           "Incorrect excel content");
+
+        assertEquals(SUCCESS_REF_ID, rawDataSubscriptionEmailData.getReferenceId(), REFERENCE_ID_MESSAGE);
     }
 
     @Test
@@ -188,8 +195,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         bulkSubscriptionEmailWithMultiple.setArtefactId(ARTEFACT_ID);
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 
-        notificationService.flatFileBulkSubscriptionEmailRequest(
-            bulkSubscriptionEmailWithMultiple, artefact, LOCATION_NAME);
+        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmailWithMultiple, artefact,
+                                                                 LOCATION_NAME, SUCCESS_REF_ID);
 
         verify(emailService, times(2))
             .handleEmailGeneration(any(FlatFileSubscriptionEmailData.class), eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL));
@@ -208,7 +215,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
+                                                                SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -229,7 +237,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
+                                                                SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -250,7 +259,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
+                                                                SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -271,7 +281,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
+                                                                SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -291,8 +302,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         bulkSubscriptionEmailWithMultiple.setArtefactId(ARTEFACT_ID);
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 
-        notificationService.flatFileBulkSubscriptionEmailRequest(
-            bulkSubscriptionEmailWithMultiple, artefact, LOCATION_NAME);
+        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmailWithMultiple, artefact,
+                                                                 LOCATION_NAME, SUCCESS_REF_ID);
 
         verify(emailService, times(2))
             .handleEmailGeneration(any(FlatFileSubscriptionEmailData.class), eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL));
@@ -311,8 +322,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 
         try (LogCaptor logCaptor = LogCaptor.forClass(SubscriptionNotificationService.class)) {
-            notificationService.flatFileBulkSubscriptionEmailRequest(
-                bulkSubscriptionEmailWithMultiple, artefact, LOCATION_NAME);
+            notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmailWithMultiple, artefact,
+                                                                     LOCATION_NAME, SUCCESS_REF_ID);
 
             verify(emailService, times(2)).handleEmailGeneration(
                     any(FlatFileSubscriptionEmailData.class),

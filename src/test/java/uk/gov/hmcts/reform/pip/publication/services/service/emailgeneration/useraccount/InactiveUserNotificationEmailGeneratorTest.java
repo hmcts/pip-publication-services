@@ -39,6 +39,7 @@ class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestB
 
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
+    private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
     private PersonalisationLinks personalisationLinks;
@@ -73,6 +74,10 @@ class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestB
             .as(NOTIFY_TEMPLATE_MESSAGE)
             .isEqualTo(INACTIVE_USER_NOTIFICATION_EMAIL_AAD.getTemplate());
 
+        softly.assertThat(result.getReferenceId())
+            .as(REFERENCE_ID_MESSAGE)
+            .isNotNull();
+
         verifyPersonalisation(softly, result.getPersonalisation());
         softly.assertAll();
     }
@@ -96,6 +101,10 @@ class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestB
             .as(NOTIFY_TEMPLATE_MESSAGE)
             .isEqualTo(INACTIVE_USER_NOTIFICATION_EMAIL_CFT.getTemplate());
 
+        softly.assertThat(result.getReferenceId())
+            .as(REFERENCE_ID_MESSAGE)
+            .isNotNull();
+
         verifyPersonalisation(softly, result.getPersonalisation());
         softly.assertAll();
     }
@@ -118,6 +127,10 @@ class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestB
         softly.assertThat(result.getTemplate())
             .as(NOTIFY_TEMPLATE_MESSAGE)
             .isEqualTo(INACTIVE_USER_NOTIFICATION_EMAIL_CRIME.getTemplate());
+
+        softly.assertThat(result.getReferenceId())
+            .as(REFERENCE_ID_MESSAGE)
+            .isNotNull();
 
         verifyPersonalisation(softly, result.getPersonalisation());
         softly.assertAll();

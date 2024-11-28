@@ -28,7 +28,7 @@ public class MediaApplicationReportingEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         MediaApplicationReportingEmailData emailData = (MediaApplicationReportingEmailData) email;
-        return generateEmail(emailData.getEmail(), MEDIA_APPLICATION_REPORTING_EMAIL.getTemplate(),
+        return generateEmail(emailData, MEDIA_APPLICATION_REPORTING_EMAIL.getTemplate(),
                              buildEmailPersonalisation(emailData));
     }
 

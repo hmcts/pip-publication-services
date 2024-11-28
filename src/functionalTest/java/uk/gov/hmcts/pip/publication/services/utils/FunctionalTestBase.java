@@ -24,7 +24,7 @@ public class FunctionalTestBase extends RedisConfigurationTestBase {
     @Autowired
     private OAuthClient authClient;
 
-    protected String accessToken;
+    protected String bearerToken;
 
     @Value("${test-url}")
     private String testUrl;
@@ -32,7 +32,7 @@ public class FunctionalTestBase extends RedisConfigurationTestBase {
     @BeforeEach
     void setUp() {
         RestAssured.baseURI = testUrl;
-        accessToken = authClient.generateAccessToken();
+        bearerToken = authClient.generateBearerToken();
     }
 
     protected Response doPostRequest(final String path, final Map<String, String> additionalHeaders,

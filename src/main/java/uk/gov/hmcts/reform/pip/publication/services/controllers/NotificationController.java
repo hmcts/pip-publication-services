@@ -82,10 +82,7 @@ public class NotificationController {
             + "send existing user emails ")
     @PostMapping("/welcome-email")
     public ResponseEntity<String> sendWelcomeEmail(@RequestBody WelcomeEmail body) {
-        return ResponseEntity.ok(String.format(
-            "Welcome email successfully sent with referenceId %s",
-            userNotificationService.mediaAccountWelcomeEmailRequest(body)
-        ));
+        return ResponseEntity.ok(userNotificationService.mediaAccountWelcomeEmailRequest(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Created admin welcome email "
@@ -95,10 +92,7 @@ public class NotificationController {
     @Operation(summary = "Send welcome email to new Azure Active Directory (AAD) user.")
     @PostMapping("/created/admin")
     public ResponseEntity<String> sendAdminAccountWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
-        return ResponseEntity.ok(String.format(
-            "Created admin welcome email successfully sent with referenceId %s",
-            userNotificationService.adminAccountWelcomeEmailRequest(body)
-        ));
+        return ResponseEntity.ok(userNotificationService.adminAccountWelcomeEmailRequest(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Media applications report "
@@ -109,10 +103,7 @@ public class NotificationController {
     @Operation(summary = "Send the media application report to the P&I team")
     @PostMapping("/media/report")
     public ResponseEntity<String> sendMediaReportingEmail(@RequestBody List<MediaApplication> mediaApplicationList) {
-        return ResponseEntity.ok(String.format(
-            "Media applications report email sent successfully with referenceId %s",
-                notificationService.handleMediaApplicationReportingRequest(
-                    mediaApplicationList)));
+        return ResponseEntity.ok(notificationService.handleMediaApplicationReportingRequest(mediaApplicationList));
     }
 
     @ApiResponse(responseCode = ACCEPTED_RESPONSE, description = "Subscription email successfully sent to email: "
@@ -121,8 +112,7 @@ public class NotificationController {
     @Operation(summary = "Bulk send email subscriptions to a list of users and associated config")
     @PostMapping("/v2/subscription")
     public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody BulkSubscriptionEmail body) {
-        notificationService.bulkSendSubscriptionEmail(body);
-        return ResponseEntity.accepted().body("Subscription email request accepted");
+        return ResponseEntity.accepted().body(notificationService.bulkSendSubscriptionEmail(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Unidentified blob email "
@@ -132,10 +122,7 @@ public class NotificationController {
     @Operation(summary = "Send the unidentified blob report to the P&I team")
     @PostMapping("/unidentified-blob")
     public ResponseEntity<String> sendUnidentifiedBlobEmail(@RequestBody List<NoMatchArtefact> noMatchArtefactList) {
-        return ResponseEntity.ok(String.format(
-            "Unidentified blob email successfully sent with reference id: %s",
-            notificationService.unidentifiedBlobEmailRequest(noMatchArtefactList)
-        ));
+        return ResponseEntity.ok(notificationService.unidentifiedBlobEmailRequest(noMatchArtefactList));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Duplicate media account email "
@@ -145,10 +132,7 @@ public class NotificationController {
     @Operation(summary = "Send duplicate email to new media account user.")
     @PostMapping("/duplicate/media")
     public ResponseEntity<String> sendDuplicateMediaAccountEmail(@RequestBody DuplicatedMediaEmail body) {
-        return ResponseEntity.ok(String.format(
-            "Duplicate media account email successfully sent with referenceId %s",
-            userNotificationService.mediaDuplicateUserEmailRequest(body)
-        ));
+        return ResponseEntity.ok(userNotificationService.mediaDuplicateUserEmailRequest(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Successfully sent list to {thirdParty} at: {api}")
@@ -174,10 +158,7 @@ public class NotificationController {
     @Operation(summary = "Send a media user a verification email")
     @PostMapping("/media/verification")
     public ResponseEntity<String> sendMediaUserVerificationEmail(@RequestBody MediaVerificationEmail body) {
-        return ResponseEntity.ok(String.format(
-            "Media user verification email successfully sent with referenceId: %s",
-            userNotificationService.mediaUserVerificationEmailRequest(body)
-        ));
+        return ResponseEntity.ok(userNotificationService.mediaUserVerificationEmailRequest(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Media user rejection email successfully "
@@ -187,10 +168,7 @@ public class NotificationController {
     @Operation(summary = "Send a media applicant a rejection email")
     @PostMapping("/media/reject")
     public ResponseEntity<String> sendMediaUserRejectionEmail(@RequestBody MediaRejectionEmail body) {
-        return ResponseEntity.ok(String.format(
-            "Media user rejection email successfully sent with referenceId: %s",
-            userNotificationService.mediaUserRejectionEmailRequest(body)
-        ));
+        return ResponseEntity.ok(userNotificationService.mediaUserRejectionEmailRequest(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Inactive user sign-in notification email "
@@ -200,10 +178,7 @@ public class NotificationController {
     @Operation(summary = "Send notification email to inactive users to remind them to sign in")
     @PostMapping("/user/sign-in")
     public ResponseEntity<String> sendNotificationToInactiveUsers(@RequestBody InactiveUserNotificationEmail body) {
-        return ResponseEntity.ok(String.format(
-            "Inactive user sign-in notification email successfully sent with referenceId: %s",
-            userNotificationService.inactiveUserNotificationEmailRequest(body)
-        ));
+        return ResponseEntity.ok(userNotificationService.inactiveUserNotificationEmailRequest(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "MI data reporting email successfully sent with "
@@ -212,10 +187,7 @@ public class NotificationController {
     @Operation(summary = "Send email with MI report")
     @PostMapping("/mi/report")
     public ResponseEntity<String> sendMiReportingEmail() {
-        return ResponseEntity.ok(String.format(
-            "MI data reporting email successfully sent with referenceId: %s",
-            notificationService.handleMiDataForReporting()
-        ));
+        return ResponseEntity.ok(notificationService.handleMiDataForReporting());
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "System Admin user email notification")
@@ -223,10 +195,7 @@ public class NotificationController {
     @Operation(summary = "Send notification email to system admin about update")
     @PostMapping("/sysadmin/update")
     public ResponseEntity<String> sendSystemAdminUpdate(@RequestBody SystemAdminAction body) {
-        return ResponseEntity.ok(String.format(
-            "Send notification email successfully to all system admin with referenceId: %s",
-            notificationService.sendSystemAdminUpdateEmailRequest(body)
-        ));
+        return ResponseEntity.ok(notificationService.sendSystemAdminUpdateEmailRequest(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Location subscription email "
@@ -236,9 +205,8 @@ public class NotificationController {
     @PostMapping("/location-subscription-delete")
     public ResponseEntity<String> sendDeleteLocationSubscriptionEmail(
         @RequestBody LocationSubscriptionDeletion locationSubscriptionDeletion) {
-        return ResponseEntity.ok(String.format(
-            "Location subscription email successfully sent with reference id: %s",
+        return ResponseEntity.ok(
             notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion)
-        ));
+        );
     }
 }
