@@ -51,6 +51,7 @@ class FlatFileSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase 
     private static final String LOCATION_NAME = "Location name";
     private static final ListType LIST_TYPE = ListType.SJP_PRESS_LIST;
     private static final byte[] FLAT_FILE = "Test byte".getBytes();
+    private static final String REFERENCE_ID = UUID.randomUUID().toString();
 
     private static final int FILE_RETENTION_WEEKS = 78;
     private static final RetentionPeriodDuration RETENTION_PERIOD_DURATION = new RetentionPeriodDuration(
@@ -88,7 +89,7 @@ class FlatFileSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase 
         artefact.setContentDate(LocalDateTime.of(2024, Month.MAY, 1, 0, 0));
 
         emailData = new FlatFileSubscriptionEmailData(subscriptionEmail, artefact, LOCATION_NAME, FLAT_FILE,
-                                                      FILE_RETENTION_WEEKS);
+                                                      FILE_RETENTION_WEEKS, REFERENCE_ID);
         personalisationLinks = notifyConfigProperties.getLinks();
     }
 

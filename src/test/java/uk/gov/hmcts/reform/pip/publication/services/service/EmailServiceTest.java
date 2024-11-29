@@ -46,6 +46,7 @@ class EmailServiceTest extends RedisConfigurationTestBase {
     private static final String FORENAME = "Forename";
     private static final String SURNAME = "Surname";
     private static final String LOCATION_NAME = "Location name";
+    private static final String REFERENCE_ID = UUID.randomUUID().toString();
 
     private static final String EMAIL_MESSAGE = "Email address does not match";
     private static final String TEMPLATE_MESSAGE = "Notify template does not match";
@@ -101,7 +102,7 @@ class EmailServiceTest extends RedisConfigurationTestBase {
             LOCATION_NAME, List.of(EMAIL1, EMAIL2, EMAIL3)
         );
         LocationSubscriptionDeletionEmailData emailData = new LocationSubscriptionDeletionEmailData(
-            locationSubscriptionDeletion
+            locationSubscriptionDeletion, REFERENCE_ID
         );
 
         when(rateLimitingService.isValid(anyString(), eq(DELETE_LOCATION_SUBSCRIPTION))).thenReturn(true);
@@ -135,7 +136,7 @@ class EmailServiceTest extends RedisConfigurationTestBase {
             LOCATION_NAME, List.of(EMAIL1, EMAIL2, EMAIL3)
         );
         LocationSubscriptionDeletionEmailData emailData = new LocationSubscriptionDeletionEmailData(
-            locationSubscriptionDeletion
+            locationSubscriptionDeletion, REFERENCE_ID
         );
 
         when(rateLimitingService.isValid(EMAIL1, DELETE_LOCATION_SUBSCRIPTION)).thenReturn(false);

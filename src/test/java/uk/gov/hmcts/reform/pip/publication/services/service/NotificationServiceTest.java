@@ -50,6 +50,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -86,6 +87,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
     private static final String FILE_CONTENT = "123";
     private static final Map<String, Object> PERSONALISATION_MAP = Map.of("email", EMAIL);
+    private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
 
     private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
     private final EmailToSend validEmailBodyForEmailClient = new EmailToSend(VALID_BODY_NEW.getEmail(),
@@ -209,10 +211,8 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
                                                      eq(Templates.SYSTEM_ADMIN_UPDATE_EMAIL)))
             .thenReturn(List.of(validEmailBodyForEmailClient));
 
-        assertEquals(List.of(SUCCESS_REF_ID), notificationService
-                         .sendSystemAdminUpdateEmailRequest(systemAdminActionEmailBody),
-                     SUCCESS_REF_ID
-        );
+        assertNotNull(notificationService.sendSystemAdminUpdateEmailRequest(systemAdminActionEmailBody),
+                      REFERENCE_ID_MESSAGE);
     }
 
     @Test
@@ -223,10 +223,8 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
                                                      eq(Templates.DELETE_LOCATION_SUBSCRIPTION)))
             .thenReturn(List.of(validEmailBodyForEmailClient));
 
-        assertEquals(List.of(SUCCESS_REF_ID), notificationService
-            .sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletionBody),
-                     SUCCESS_REF_ID
-        );
+        assertNotNull(notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletionBody),
+                      REFERENCE_ID_MESSAGE);
     }
 
     @Test
@@ -240,7 +238,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
                                                 eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientFlatFile);
 
-        notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail);
+        assertNotNull(notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail), REFERENCE_ID_MESSAGE);
 
         FlatFileSubscriptionEmailData flatFileSubscriptionEmailData = argument.getValue();
 
@@ -258,7 +256,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void testBulkSubscriptionEmailRequestWithRawData() {
+    void testBulkSendSubscriptionEmailRequestWithRawData() {
         artefact.setIsFlatFile(false);
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         artefact.setLanguage(Language.WELSH);
@@ -270,7 +268,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
 
-        notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail);
+        assertNotNull(notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail), REFERENCE_ID_MESSAGE);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 

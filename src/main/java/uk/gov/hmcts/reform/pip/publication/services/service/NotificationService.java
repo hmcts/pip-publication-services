@@ -20,8 +20,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscript
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
@@ -108,7 +108,9 @@ public class NotificationService {
             new MiDataReportingEmailData(piTeamEmail, excel, fileRetentionWeeks, envName),
             Templates.MI_DATA_REPORTING_EMAIL
         );
-        return emailService.sendEmail(email).getReference().orElse(null);
+        return emailService.sendEmail(email)
+            .getReference()
+            .orElse(null);
     }
 
     /**
@@ -117,35 +119,37 @@ public class NotificationService {
      * @param body The body of the system admin update email.
      * @return The ID that references the system admin update email.
      */
-    public List<String> sendSystemAdminUpdateEmailRequest(SystemAdminAction body) {
-        List<EmailToSend> email = emailService.handleBatchEmailGeneration(new SystemAdminUpdateEmailData(body, envName),
-                                                                          Templates.SYSTEM_ADMIN_UPDATE_EMAIL);
+    public String sendSystemAdminUpdateEmailRequest(SystemAdminAction body) {
+        String referenceId = UUID.randomUUID().toString();
+        List<EmailToSend> email = emailService.handleBatchEmailGeneration(
+            new SystemAdminUpdateEmailData(body, envName, referenceId), Templates.SYSTEM_ADMIN_UPDATE_EMAIL
+        );
 
-        List<String> sentEmails = new ArrayList<>();
-        email.forEach(emailToSend -> sentEmails.add(
-            emailService.sendEmail(emailToSend)
-                .getReference()
-                .orElse(null)
-        ));
-        return sentEmails;
+        email.forEach(emailService::sendEmail);
+        return referenceId;
     }
 
     /**
      * This method handles the bulk sending of subscription emails.
      *
      * @param bulkSubscriptionEmail The list of subscriptions that need to be fulfilled.
+     * @return The ID that references the subscription notification email.
      */
-    public void bulkSendSubscriptionEmail(BulkSubscriptionEmail bulkSubscriptionEmail) {
+    public String bulkSendSubscriptionEmail(BulkSubscriptionEmail bulkSubscriptionEmail) {
         Artefact artefact = dataManagementService.getArtefact(bulkSubscriptionEmail.getArtefactId());
         String locationName = dataManagementService.getLocation(artefact.getLocationId()).getName();
+        String referenceId = UUID.randomUUID().toString();
 
         if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
             subscriptionNotificationService.flatFileBulkSubscriptionEmailRequest(
-                bulkSubscriptionEmail, artefact, locationName);
+                bulkSubscriptionEmail, artefact, locationName, referenceId
+            );
         } else {
             subscriptionNotificationService.rawDataBulkSubscriptionEmailRequest(
-                bulkSubscriptionEmail, artefact, locationName);
+                bulkSubscriptionEmail, artefact, locationName, referenceId
+            );
         }
+        return referenceId;
     }
 
     /**
@@ -154,17 +158,13 @@ public class NotificationService {
      * @param body The body of the location subscription notification email.
      * @return The ID that references the location subscription notification email.
      */
-    public List<String> sendDeleteLocationSubscriptionEmail(LocationSubscriptionDeletion body) {
+    public String sendDeleteLocationSubscriptionEmail(LocationSubscriptionDeletion body) {
+        String referenceId = UUID.randomUUID().toString();
         List<EmailToSend> email = emailService.handleBatchEmailGeneration(
-            new LocationSubscriptionDeletionEmailData(body), Templates.DELETE_LOCATION_SUBSCRIPTION
+            new LocationSubscriptionDeletionEmailData(body, referenceId), Templates.DELETE_LOCATION_SUBSCRIPTION
         );
 
-        List<String> sentEmails = new ArrayList<>();
-        email.forEach(emailToSend -> sentEmails.add(
-            emailService.sendEmail(emailToSend)
-                .getReference()
-                .orElse(null)
-        ));
-        return sentEmails;
+        email.forEach(emailService::sendEmail);
+        return referenceId;
     }
 }

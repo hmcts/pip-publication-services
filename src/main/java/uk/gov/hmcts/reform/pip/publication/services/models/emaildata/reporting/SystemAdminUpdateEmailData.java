@@ -18,8 +18,8 @@ public class SystemAdminUpdateEmailData extends BatchEmailData {
     private String additionalChangeDetail;
     private String envName;
 
-    public SystemAdminUpdateEmailData(SystemAdminAction systemAdminAction, String envName) {
-        super(systemAdminAction.getEmailList());
+    public SystemAdminUpdateEmailData(SystemAdminAction systemAdminAction, String envName, String referenceId) {
+        super(systemAdminAction.getEmailList(), referenceId);
         this.requesterName = systemAdminAction.getRequesterName();
         this.actionResult = systemAdminAction.getActionResult();
         this.changeType = systemAdminAction.getChangeType();

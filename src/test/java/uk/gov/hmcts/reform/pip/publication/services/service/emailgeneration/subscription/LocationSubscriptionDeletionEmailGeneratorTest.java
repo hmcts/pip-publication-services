@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTest
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.DELETE_LOCATION_SUBSCRIPTION;
 
@@ -26,11 +27,13 @@ class LocationSubscriptionDeletionEmailGeneratorTest extends RedisConfigurationT
     private static final String EMAIL2 = "test2@testing.com";
     private static final String EMAIL3 = "test3@testing.com";
     private static final String LOCATION_NAME = "Location name";
+    private static final String REFERENCE_ID = UUID.randomUUID().toString();
     private static final String LOCATION_NAME_PERSONALISATION = "location-name";
 
     private static final String RESULTS_MESSAGE = "Returned result size does not match";
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
+    private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
     @Autowired
@@ -47,7 +50,7 @@ class LocationSubscriptionDeletionEmailGeneratorTest extends RedisConfigurationT
             LOCATION_NAME, List.of(EMAIL1, EMAIL2, EMAIL3)
         );
         LocationSubscriptionDeletionEmailData emailData = new LocationSubscriptionDeletionEmailData(
-            locationSubscriptionDeletion
+            locationSubscriptionDeletion, REFERENCE_ID
         );
 
         List<EmailToSend> results = emailGenerator.buildEmail(emailData, personalisationLinks);
@@ -73,6 +76,10 @@ class LocationSubscriptionDeletionEmailGeneratorTest extends RedisConfigurationT
         softly.assertThat(results.get(0).getTemplate())
             .as(NOTIFY_TEMPLATE_MESSAGE)
             .isEqualTo(DELETE_LOCATION_SUBSCRIPTION.getTemplate());
+
+        softly.assertThat(results.get(0).getReferenceId())
+            .as(REFERENCE_ID_MESSAGE)
+            .isEqualTo(REFERENCE_ID);
 
         Map<String, Object> personalisation = results.get(0).getPersonalisation();
 

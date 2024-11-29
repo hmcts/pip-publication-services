@@ -29,8 +29,8 @@ public class RawDataSubscriptionEmailData extends EmailData {
 
     public RawDataSubscriptionEmailData(SubscriptionEmail subscriptionEmail, Artefact artefact, String artefactSummary,
                                         byte[] pdf, byte[] additionalPdf, byte[] excel, String locationName,
-                                        int fileRetentionWeeks) {
-        super(subscriptionEmail.getEmail());
+                                        int fileRetentionWeeks, String referenceId) {
+        super(subscriptionEmail.getEmail(), referenceId);
         this.subscriptions = subscriptionEmail.getSubscriptions();
         this.artefact = artefact;
         this.locationName = locationName;

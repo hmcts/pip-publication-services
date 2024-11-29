@@ -7,6 +7,7 @@ import static io.restassured.RestAssured.given;
 
 @Component
 public class OAuthClient {
+    private static final String BEARER = "Bearer ";
 
     @Value("${CLIENT_ID_FT}")
     private String clientId;
@@ -20,7 +21,7 @@ public class OAuthClient {
     @Value("${APP_URI}")
     private String scope;
 
-    public String generateAccessToken() {
+    public String generateBearerToken() {
         String token = given()
             .relaxedHTTPSValidation()
             .header("content-type", "application/x-www-form-urlencoded")
@@ -37,7 +38,7 @@ public class OAuthClient {
         if (token == null) {
             throw new AuthException("Unable to generate access token for the API");
         }
-        return token;
+        return BEARER + token;
     }
 }
 
