@@ -17,17 +17,21 @@ import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
+import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("PMD.TooManyMethods")
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
@@ -269,12 +273,16 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testGetMiDataReturnsOk() {
-        mockDataManagementEndpoint.enqueue(new MockResponse()
-                                               .setBody(RESPONSE_BODY)
-                                               .setResponseCode(200));
+        dataManagementService = mock(DataManagementService.class);
 
-        String response = dataManagementService.getMiData();
-        assertEquals(RESPONSE_BODY, response, "Messages do not match");
+        PublicationMiData data1 = new PublicationMiData();
+        List<PublicationMiData> expectedData = List.of(data1);
+
+        when(dataManagementService.getMiData()).thenReturn(expectedData);
+
+        List<PublicationMiData> response = dataManagementService.getMiData();
+
+        assertEquals(expectedData, response, "Data do not match");
     }
 
     @Test

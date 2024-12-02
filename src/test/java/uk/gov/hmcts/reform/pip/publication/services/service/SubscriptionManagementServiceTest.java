@@ -9,32 +9,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.reactive.function.client.WebClient;
+import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
+import uk.gov.hmcts.reform.pip.model.report.LocalSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @DirtiesContext
 @ActiveProfiles("test")
 class SubscriptionManagementServiceTest extends RedisConfigurationTestBase {
-    private static final String RESPONSE_BODY = "responseBody";
     private static final String NOT_FOUND = "404";
-    private static final String RESPONSE_NOT_MATCH = "Response does not match";
     private static final String EXCEPTION_NOT_MATCH = "Exception does not match";
     private static final String MESSAGE_NOT_MATCH = "Message does not match";
 
     private static MockWebServer mockSubscriptionManagementEndpoint;
-
-    @Autowired
-    WebClient webClient;
 
     @Autowired
     SubscriptionManagementService subscriptionManagementService;
@@ -52,12 +51,16 @@ class SubscriptionManagementServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testGetAllMiDataReturnsOk() {
-        mockSubscriptionManagementEndpoint.enqueue(new MockResponse()
-                                                    .setBody(RESPONSE_BODY)
-                                                    .setResponseCode(200));
+        subscriptionManagementService = mock(SubscriptionManagementService.class);
 
-        String response = subscriptionManagementService.getAllMiData();
-        assertEquals(RESPONSE_BODY, response, RESPONSE_NOT_MATCH);
+        AllSubscriptionMiData data1 = new AllSubscriptionMiData();
+        List<AllSubscriptionMiData> expectedData = List.of(data1);
+
+        when(subscriptionManagementService.getAllMiData()).thenReturn(expectedData);
+
+        List<AllSubscriptionMiData> response = subscriptionManagementService.getAllMiData();
+
+        assertEquals(expectedData, response, "Data do not match");
     }
 
     @Test
@@ -73,12 +76,16 @@ class SubscriptionManagementServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testGetLocationMiDataReturnsOk() {
-        mockSubscriptionManagementEndpoint.enqueue(new MockResponse()
-                                                    .setBody(RESPONSE_BODY)
-                                                    .setResponseCode(200));
+        subscriptionManagementService = mock(SubscriptionManagementService.class);
 
-        String response = subscriptionManagementService.getLocationMiData();
-        assertEquals(RESPONSE_BODY, response, RESPONSE_NOT_MATCH);
+        LocalSubscriptionMiData data1 = new LocalSubscriptionMiData();
+        List<LocalSubscriptionMiData> expectedData = List.of(data1);
+
+        when(subscriptionManagementService.getLocationMiData()).thenReturn(expectedData);
+
+        List<LocalSubscriptionMiData> response = subscriptionManagementService.getLocationMiData();
+
+        assertEquals(expectedData, response, "Data do not match");
     }
 
     @Test

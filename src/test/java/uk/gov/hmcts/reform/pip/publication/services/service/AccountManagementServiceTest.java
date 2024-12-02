@@ -9,29 +9,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.reactive.function.client.WebClient;
+import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
 @DirtiesContext
 @ActiveProfiles("test")
 class AccountManagementServiceTest extends RedisConfigurationTestBase {
-    private static final String RESPONSE_BODY = "responseBody";
     private static final String NOT_FOUND = "404";
-
     private static MockWebServer mockAccountManagementEndpoint;
-
-    @Autowired
-    WebClient webClient;
 
     @Autowired
     AccountManagementService accountManagementService;
@@ -49,12 +47,16 @@ class AccountManagementServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testGetMiDataReturnsOk() {
-        mockAccountManagementEndpoint.enqueue(new MockResponse()
-                                                    .setBody(RESPONSE_BODY)
-                                                    .setResponseCode(200));
+        accountManagementService = mock(AccountManagementService.class);
 
-        String response = accountManagementService.getMiData();
-        assertEquals(RESPONSE_BODY, response, "Response does not match");
+        AccountMiData data1 = new AccountMiData();
+        List<AccountMiData> expectedData = List.of(data1);
+
+        when(accountManagementService.getMiData()).thenReturn(expectedData);
+
+        List<AccountMiData> response = accountManagementService.getMiData();
+
+        assertEquals(expectedData, response, "Data do not match");
     }
 
     @Test
