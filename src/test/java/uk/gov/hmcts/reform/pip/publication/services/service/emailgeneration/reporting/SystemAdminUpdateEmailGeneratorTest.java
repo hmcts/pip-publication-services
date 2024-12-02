@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTest
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.SYSTEM_ADMIN_UPDATE_EMAIL;
 
@@ -31,6 +32,7 @@ class SystemAdminUpdateEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String FULL_NAME = "Full name";
     private static final String ENV_NAME_ORIGINAL = "stg";
     private static final String ENV_NAME = "Staging";
+    private static final String REFERENCE_ID = UUID.randomUUID().toString();
 
     private static final String REQUESTER_NAME_PERSONALISATION = "requestor_name";
     private static final String ATTEMPTED_SUCCEEDED_PERSONALISATION = "attempted/succeeded";
@@ -41,6 +43,7 @@ class SystemAdminUpdateEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String RESULTS_MESSAGE = "Returned result size does not match";
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
+    private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
     @Autowired
@@ -60,7 +63,8 @@ class SystemAdminUpdateEmailGeneratorTest extends RedisConfigurationTestBase {
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
         systemAdminAction.setAccountEmail(ACCOUNT_EMAIL);
 
-        SystemAdminUpdateEmailData emailData = new SystemAdminUpdateEmailData(systemAdminAction, ENV_NAME_ORIGINAL);
+        SystemAdminUpdateEmailData emailData = new SystemAdminUpdateEmailData(systemAdminAction, ENV_NAME_ORIGINAL,
+                                                                              REFERENCE_ID);
 
         List<EmailToSend> results = emailGenerator.buildEmail(emailData, personalisationLinks);
 
@@ -81,6 +85,10 @@ class SystemAdminUpdateEmailGeneratorTest extends RedisConfigurationTestBase {
         softly.assertThat(results.get(0).getTemplate())
             .as(NOTIFY_TEMPLATE_MESSAGE)
             .isEqualTo(SYSTEM_ADMIN_UPDATE_EMAIL.getTemplate());
+
+        softly.assertThat(results.get(0).getReferenceId())
+            .as(REFERENCE_ID_MESSAGE)
+            .isEqualTo(REFERENCE_ID);
 
         Map<String, Object> personalisation = results.get(0).getPersonalisation();
 

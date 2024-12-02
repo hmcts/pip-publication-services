@@ -22,7 +22,7 @@ public class MediaAccountRejectionEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         MediaAccountRejectionEmailData emailData = (MediaAccountRejectionEmailData) email;
-        return generateEmail(emailData.getEmail(), MEDIA_USER_REJECTION_EMAIL.getTemplate(),
+        return generateEmail(emailData, MEDIA_USER_REJECTION_EMAIL.getTemplate(),
                              buildEmailPersonalisation(emailData, personalisationLinks));
     }
 

@@ -42,7 +42,7 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         RawDataSubscriptionEmailData emailData = (RawDataSubscriptionEmailData) email;
-        return generateEmail(emailData.getEmail(), MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(),
+        return generateEmail(emailData, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(),
                              buildEmailPersonalisation(emailData, emailData.getArtefact(), personalisationLinks));
     }
 

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.controllers;
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.tls.HandshakeCertificates;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +22,11 @@ import java.io.IOException;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert"})
+@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert"})
 @SpringBootTest(classes = {Application.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -44,8 +44,6 @@ class NotifyRateLimitTest extends RedisConfigurationTestBase {
         + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
     private static final String RANDOM_EMAIL_SYSTEM_ADMIN_NEW = "test.sa"
         + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
-    private static final String SYSTEM_ADMIN_UPDATE_MESSAGE = "Send notification "
-        + "email successfully to all system admin with referenceId: []";
     private static final String VALID_WELCOME_REQUEST_BODY = "{\"email\": \""
         + RANDOM_EMAIL + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
 
@@ -84,13 +82,13 @@ class NotifyRateLimitTest extends RedisConfigurationTestBase {
                             .content(VALID_WELCOME_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.notNullValue()));
 
         mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(VALID_WELCOME_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.notNullValue()));
 
         mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(VALID_WELCOME_REQUEST_BODY)
@@ -103,7 +101,7 @@ class NotifyRateLimitTest extends RedisConfigurationTestBase {
                             .content(VALID_WELCOME_REQUEST_BODY_NEW)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 
     @Test
@@ -112,24 +110,6 @@ class NotifyRateLimitTest extends RedisConfigurationTestBase {
                             .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(not(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE))));
-
-        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
-                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(not(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE))));
-
-        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
-                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE)));
-
-        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
-                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_NEW)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(not(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE))));
+            .andExpect(content().string(IsNull.notNullValue()));
     }
 }

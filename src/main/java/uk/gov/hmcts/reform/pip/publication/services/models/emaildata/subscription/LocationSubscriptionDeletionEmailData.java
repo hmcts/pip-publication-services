@@ -12,8 +12,9 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.BatchEmailD
 public class LocationSubscriptionDeletionEmailData extends BatchEmailData {
     private String locationName;
 
-    public LocationSubscriptionDeletionEmailData(LocationSubscriptionDeletion locationSubscriptionDeletion) {
-        super(locationSubscriptionDeletion.getSubscriberEmails());
+    public LocationSubscriptionDeletionEmailData(LocationSubscriptionDeletion locationSubscriptionDeletion,
+                                                 String referenceId) {
+        super(locationSubscriptionDeletion.getSubscriberEmails(), referenceId);
         this.locationName = locationSubscriptionDeletion.getLocationName();
     }
 }

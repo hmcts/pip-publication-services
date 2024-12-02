@@ -20,8 +20,7 @@ public class AdminWelcomeEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         AdminWelcomeEmailData emailData = (AdminWelcomeEmailData) email;
-        return generateEmail(emailData.getEmail(),
-                             ADMIN_ACCOUNT_CREATION_EMAIL.getTemplate(),
+        return generateEmail(emailData, ADMIN_ACCOUNT_CREATION_EMAIL.getTemplate(),
                              buildEmailPersonalisation(emailData, personalisationLinks));
     }
 
