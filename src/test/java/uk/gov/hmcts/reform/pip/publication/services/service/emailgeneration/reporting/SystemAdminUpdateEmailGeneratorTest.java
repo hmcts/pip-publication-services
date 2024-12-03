@@ -29,12 +29,12 @@ class SystemAdminUpdateEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String SYSTEM_ADMIN_EMAIL1 = "systemAdmin1@testing.com";
     private static final String SYSTEM_ADMIN_EMAIL2 = "systemAdmin2@testing.com";
     private static final String ACCOUNT_EMAIL = "testAccountEmail@testing.com";
-    private static final String FULL_NAME = "Full name";
+    private static final String REQUESTER_EMAIL = "test_email@justice.gov.uk";
     private static final String ENV_NAME_ORIGINAL = "stg";
     private static final String ENV_NAME = "Staging";
     private static final String REFERENCE_ID = UUID.randomUUID().toString();
 
-    private static final String REQUESTER_NAME_PERSONALISATION = "requestor_name";
+    private static final String REQUESTER_NAME_PERSONALISATION = "requester_email";
     private static final String ATTEMPTED_SUCCEEDED_PERSONALISATION = "attempted/succeeded";
     private static final String CHANGE_TYPE_PERSONALISATION = "change-type";
     private static final String CHANGE_DETAIL_PERSONALISATION = "Additional_change_detail";
@@ -57,7 +57,7 @@ class SystemAdminUpdateEmailGeneratorTest extends RedisConfigurationTestBase {
         PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
 
         CreateSystemAdminAction systemAdminAction = new CreateSystemAdminAction();
-        systemAdminAction.setRequesterName(FULL_NAME);
+        systemAdminAction.setRequesterEmail(REQUESTER_EMAIL);
         systemAdminAction.setEmailList(List.of(SYSTEM_ADMIN_EMAIL1, SYSTEM_ADMIN_EMAIL2));
         systemAdminAction.setChangeType(ChangeType.ADD_USER);
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
@@ -65,7 +65,6 @@ class SystemAdminUpdateEmailGeneratorTest extends RedisConfigurationTestBase {
 
         SystemAdminUpdateEmailData emailData = new SystemAdminUpdateEmailData(systemAdminAction, ENV_NAME_ORIGINAL,
                                                                               REFERENCE_ID);
-
         List<EmailToSend> results = emailGenerator.buildEmail(emailData, personalisationLinks);
 
         SoftAssertions softly = new SoftAssertions();
@@ -94,7 +93,7 @@ class SystemAdminUpdateEmailGeneratorTest extends RedisConfigurationTestBase {
 
         softly.assertThat(personalisation.get(REQUESTER_NAME_PERSONALISATION))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(FULL_NAME);
+            .isEqualTo(REQUESTER_EMAIL);
 
         softly.assertThat(personalisation.get(ATTEMPTED_SUCCEEDED_PERSONALISATION))
             .as(PERSONALISATION_MESSAGE)
