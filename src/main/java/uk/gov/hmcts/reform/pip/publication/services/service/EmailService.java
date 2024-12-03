@@ -60,7 +60,8 @@ public class EmailService {
             log.error(writeLog(String.format("Failed to send email. "
                                                        + "Reference ID: %s. "
                                                        + "Reason: %s", emailToSend.getReferenceId(), e)));
-            throw new NotifyException(e.getMessage());
+            //throw new NotifyException(e.getMessage());
+            return null;
         }
     }
 
