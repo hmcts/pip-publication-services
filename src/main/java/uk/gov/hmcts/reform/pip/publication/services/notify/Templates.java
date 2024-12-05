@@ -73,7 +73,7 @@ public enum Templates {
                             "MI data reporting email",
                             EmailLimit.STANDARD,
                             new MiDataReportingEmailGenerator()),
-    SYSTEM_ADMIN_UPDATE_EMAIL("0d47a89f-43b2-466c-b155-6ea5b82b9bbd",
+    SYSTEM_ADMIN_UPDATE_EMAIL("b3c0a60f-34ee-4bfa-857d-7ccbd678cf0c",
                               "System admin notification email",
                               EmailLimit.HIGH,
                               null,

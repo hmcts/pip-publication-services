@@ -181,12 +181,54 @@ class NotifyTest extends RedisConfigurationTestBase {
 
     private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY = """
         {
-            "requesterName": "reqName",
+            "requesterEmail": "test_user@justice.gov.uk",
             "actionResult": "ATTEMPTED",
             "changeType": "DELETE_LOCATION",
             "emailList": [
                 "test.system.admin@justice.gov.uk"
             ],
+            "detailString": "test"
+        }
+        """;
+
+    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_WITHOUT_EMAIL = """
+        {
+            "actionResult": "ATTEMPTED",
+            "changeType": "DELETE_LOCATION",
+            "emailList": [
+                "test.system.admin@justice.gov.uk"
+            ],
+            "detailString": "test"
+        }
+        """;
+
+    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_WITHOUT_RESULT = """
+        {
+            "requesterEmail": "test_user@justice.gov.uk",
+            "changeType": "DELETE_LOCATION",
+            "emailList": [
+                "test.system.admin@justice.gov.uk"
+            ],
+            "detailString": "test"
+        }
+        """;
+
+    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_WITHOUT_TYPE = """
+        {
+            "requesterEmail": "test_user@justice.gov.uk",
+            "actionResult": "ATTEMPTED",
+            "emailList": [
+                "test.system.admin@justice.gov.uk"
+            ],
+            "detailString": "test"
+        }
+        """;
+
+    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_WITHOUT_EMAIL_LIST = """
+        {
+            "requesterEmail": "test_user@justice.gov.uk",
+            "actionResult": "ATTEMPTED",
+            "changeType": "DELETE_LOCATION",
             "detailString": "test"
         }
         """;
@@ -896,6 +938,38 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(IsNull.notNullValue()));
+    }
+
+    @Test
+    void testSendSystemAdminMissingRequesterEmail() throws Exception {
+        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
+                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_WITHOUT_EMAIL)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testSendSystemAdminMissingActionResult() throws Exception {
+        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
+                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_WITHOUT_RESULT)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testSendSystemAdminMissingChangeType() throws Exception {
+        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
+                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_WITHOUT_TYPE)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testSendSystemAdminMissingEmailList() throws Exception {
+        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
+                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_WITHOUT_EMAIL_LIST)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

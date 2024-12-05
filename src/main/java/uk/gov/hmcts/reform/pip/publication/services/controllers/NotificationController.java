@@ -194,7 +194,7 @@ public class NotificationController {
     @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     @Operation(summary = "Send notification email to system admin about update")
     @PostMapping("/sysadmin/update")
-    public ResponseEntity<String> sendSystemAdminUpdate(@RequestBody SystemAdminAction body) {
+    public ResponseEntity<String> sendSystemAdminUpdate(@RequestBody @Valid SystemAdminAction body) {
         return ResponseEntity.ok(notificationService.sendSystemAdminUpdateEmailRequest(body));
     }
 

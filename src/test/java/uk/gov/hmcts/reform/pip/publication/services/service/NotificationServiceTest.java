@@ -72,6 +72,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
     );
 
     private static final String FULL_NAME = "fullName";
+    private static final String REQUESTER_EMAIL = "test_user@justice.gov.uk";
     private static final String EMAIL = "test@email.com";
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
         EMAIL, false, FULL_NAME);
@@ -133,7 +134,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
         NO_MATCH_ARTEFACT_LIST.add(new NoMatchArtefact(UUID.randomUUID(), "TEST", "1234"));
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
         systemAdminActionEmailBody = new DeleteLocationAction();
-        systemAdminActionEmailBody.setRequesterName(FULL_NAME);
+        systemAdminActionEmailBody.setRequesterEmail(REQUESTER_EMAIL);
         systemAdminActionEmailBody.setEmailList(List.of(EMAIL));
         systemAdminActionEmailBody.setChangeType(ChangeType.DELETE_LOCATION);
         systemAdminActionEmailBody.setActionResult(ActionResult.ATTEMPTED);
