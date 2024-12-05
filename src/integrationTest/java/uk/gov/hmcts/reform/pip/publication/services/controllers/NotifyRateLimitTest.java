@@ -42,21 +42,15 @@ class NotifyRateLimitTest extends RedisConfigurationTestBase {
         + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
     private static final String RANDOM_EMAIL_NEW = "test"
         + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
-    private static final String RANDOM_EMAIL_SYSTEM_ADMIN_NEW = "test.sa"
-        + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
     private static final String VALID_WELCOME_REQUEST_BODY = "{\"email\": \""
         + RANDOM_EMAIL + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
 
     private static final String VALID_WELCOME_REQUEST_BODY_NEW = "{\"email\": \""
         + RANDOM_EMAIL_NEW + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
 
-    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY = "{\"requesterName\": \"reqName\","
+    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY = "{\"requesterEmail\": \"test_user@justice.gov.uk\","
         + " \"actionResult\": \"ATTEMPTED\",\"changeType\": \"DELETE_LOCATION\", \"emailList\": "
         + "[\"" + RANDOM_EMAIL_SYSTEM_ADMIN + "\"],\"detailString\": \"test\"}";
-
-    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_NEW = "{\"requesterName\": \"reqName\","
-        + " \"actionResult\": \"ATTEMPTED\",\"changeType\": \"DELETE_LOCATION\", \"emailList\": "
-        + "[\"" + RANDOM_EMAIL_SYSTEM_ADMIN_NEW + "\"],\"detailString\": \"test\"}";
 
     private MockWebServer externalApiMockServer;
 
