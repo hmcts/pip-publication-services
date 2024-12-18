@@ -29,7 +29,7 @@ public class SystemAdminUpdateEmailGenerator extends BatchEmailGenerator {
 
     private Map<String, Object> buildEmailPersonalisation(SystemAdminUpdateEmailData emailData) {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
-        personalisation.put("requestor_name", emailData.getRequesterName());
+        personalisation.put("requester_email", emailData.getRequesterEmail());
         personalisation.put("attempted/succeeded", emailData.getActionResult().label.toLowerCase(Locale.ENGLISH));
         personalisation.put("change-type", emailData.getChangeType().label);
         personalisation.put("Additional_change_detail", emailData.getAdditionalChangeDetail());

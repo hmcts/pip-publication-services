@@ -56,6 +56,7 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
     private static final String FULL_NAME = "Test user";
+    private static final String REQUESTER_EMAIL = "test_user@justice.gov.uk";
     private static final String EMPLOYER = "Test employer";
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
@@ -125,7 +126,7 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         createMediaSetupEmail.setFullName("testName");
 
         systemAdminAction = new DeleteLocationAction();
-        systemAdminAction.setRequesterName(FULL_NAME);
+        systemAdminAction.setRequesterEmail(REQUESTER_EMAIL);
         systemAdminAction.setEmailList(List.of(VALID_EMAIL));
         systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
