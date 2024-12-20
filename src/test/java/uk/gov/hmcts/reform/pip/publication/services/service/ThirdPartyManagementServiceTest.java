@@ -7,9 +7,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
@@ -51,10 +51,10 @@ class ThirdPartyManagementServiceTest extends RedisConfigurationTestBase {
     @Autowired
     private ThirdPartyManagementService thirdPartyManagementService;
 
-    @MockBean
+    @MockitoBean
     private DataManagementService dataManagementService;
 
-    @MockBean
+    @MockitoBean
     private ThirdPartyService thirdPartyService;
 
     @BeforeAll
