@@ -197,6 +197,8 @@ dependencies {
   implementation group: 'org.redisson', name: 'redisson', version: '3.40.2'
   implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.12.8'
 
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
   testImplementation(platform('org.junit:junit-bom:5.11.4'))
