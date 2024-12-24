@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
@@ -58,10 +58,10 @@ class EmailServiceTest extends RedisConfigurationTestBase {
     @Autowired
     private EmailService emailService;
 
-    @MockBean
+    @MockitoBean
     private EmailClient emailClient;
 
-    @MockBean
+    @MockitoBean
     private RateLimitingService rateLimitingService;
 
     @Mock
