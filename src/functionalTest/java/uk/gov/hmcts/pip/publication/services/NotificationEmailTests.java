@@ -184,7 +184,7 @@ class NotificationEmailTests extends FunctionalTestBase {
     }
 
     @Test
-    void shouldSendNotificationEmailToInactiveACftUser() throws NotificationClientException {
+    void shouldSendNotificationEmailToInactiveCftUser() throws NotificationClientException {
         InactiveUserNotificationEmail requestBody = new InactiveUserNotificationEmail(TEST_EMAIL, TEST_FULL_NAME,
                                                                                       UserProvenances.CFT_IDAM.name(),
                                                                              "2023-12-12 11:49:28.532005"
