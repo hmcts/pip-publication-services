@@ -114,6 +114,7 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
 
     private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
     private final BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
+
     @Mock
     private SendEmailResponse sendEmailResponse;
 
