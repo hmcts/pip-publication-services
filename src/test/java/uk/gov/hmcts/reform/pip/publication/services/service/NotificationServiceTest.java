@@ -101,9 +101,6 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
     private SendEmailResponse sendEmailResponse;
 
     @Mock
-    private DataManagementService dataManagementService;
-
-    @Mock
     private FileCreationService fileCreationService;
 
     @Mock
@@ -139,6 +136,8 @@ class NotificationServiceTest extends RedisConfigurationTestBase {
         bulkSubscriptionEmail.setArtefactId(ARTEFACT_ID);
         bulkSubscriptionEmail.setSubscriptionEmails(List.of(subscriptionEmail));
 
+        ReflectionTestUtils.setField(notificationService, "piTeamEmail", "test@justice.gov.uk");
+        ReflectionTestUtils.setField(notificationService, "piTeamEmail", "test@justice.gov.uk");
         ReflectionTestUtils.setField(notificationService, "piTeamEmail", "test@justice.gov.uk");
     }
 
