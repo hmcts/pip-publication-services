@@ -2,18 +2,17 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.rep
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
 import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.model.system.admin.CreateSystemAdminAction;
-import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.SystemAdminUpdateEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.List;
 import java.util.Locale;
@@ -22,10 +21,9 @@ import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.SYSTEM_ADMIN_UPDATE_EMAIL;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class SystemAdminUpdateEmailGeneratorTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class SystemAdminUpdateEmailGeneratorTest {
     private static final String SYSTEM_ADMIN_EMAIL1 = "systemAdmin1@testing.com";
     private static final String SYSTEM_ADMIN_EMAIL2 = "systemAdmin2@testing.com";
     private static final String ACCOUNT_EMAIL = "testAccountEmail@testing.com";
@@ -46,16 +44,14 @@ class SystemAdminUpdateEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
-    @Autowired
-    private NotifyConfigProperties notifyConfigProperties;
+    @Mock
+    private PersonalisationLinks personalisationLinks;
 
-    @Autowired
+    @InjectMocks
     private SystemAdminUpdateEmailGenerator emailGenerator;
 
     @Test
     void testBuildSystemAdminUpdateEmail() {
-        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
-
         CreateSystemAdminAction systemAdminAction = new CreateSystemAdminAction();
         systemAdminAction.setRequesterEmail(REQUESTER_EMAIL);
         systemAdminAction.setEmailList(List.of(SYSTEM_ADMIN_EMAIL1, SYSTEM_ADMIN_EMAIL2));

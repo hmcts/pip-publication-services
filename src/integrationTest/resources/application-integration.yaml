@@ -1,3 +1,6 @@
+notify:
+  api:
+    key: testingApiKey
 rate-limit:
   email:
     capacity:

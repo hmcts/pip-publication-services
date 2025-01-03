@@ -3,27 +3,26 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.use
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.InactiveUserNotificationEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.Map;
 
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class InactiveUserNotificationEmailGeneratorTest {
     private static final String EMAIL = "test@testing.com";
     private static final String FULL_NAME = "Full name";
     private static final String AAD_USER_PROVENANCE = "PI_AAD";
@@ -37,22 +36,26 @@ class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestB
     private static final String CFT_SIGN_IN_PAGE_LINK = "cft_sign_in_link";
     private static final String CRIME_SIGN_IN_PAGE_LINK = "crime_sign_in_link";
 
+    private static final String SIGN_IN_PAGE_LINK_ADDRESS = "http://www.test-link1.com";
+    private static final String CFT_SIGN_IN_PAGE_LINK_ADDRESS = "http://www.test-link2.com";
+    private static final String CRIME_SIGN_IN_PAGE_LINK_ADDRESS = "http://www.test-link3.com";
+
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
     private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
+    @Mock
     private PersonalisationLinks personalisationLinks;
 
-    @Autowired
-    private NotifyConfigProperties notifyConfigProperties;
-
-    @Autowired
+    @InjectMocks
     private InactiveUserNotificationEmailGenerator emailGenerator;
 
     @BeforeEach
     void setup() {
-        personalisationLinks = notifyConfigProperties.getLinks();
+        when(personalisationLinks.getAadAdminSignInPageLink()).thenReturn(SIGN_IN_PAGE_LINK_ADDRESS);
+        when(personalisationLinks.getCftSignInPageLink()).thenReturn(CFT_SIGN_IN_PAGE_LINK_ADDRESS);
+        when(personalisationLinks.getCrimeSignInPageLink()).thenReturn(CRIME_SIGN_IN_PAGE_LINK_ADDRESS);
     }
 
     @Test
@@ -147,14 +150,14 @@ class InactiveUserNotificationEmailGeneratorTest extends RedisConfigurationTestB
 
         softly.assertThat(personalisation.get(AAD_SIGN_IN_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getAadAdminSignInPageLink());
+            .isEqualTo(SIGN_IN_PAGE_LINK_ADDRESS);
 
         softly.assertThat(personalisation.get(CFT_SIGN_IN_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getCftSignInPageLink());
+            .isEqualTo(CFT_SIGN_IN_PAGE_LINK_ADDRESS);
 
         softly.assertThat(personalisation.get(CRIME_SIGN_IN_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getCrimeSignInPageLink());
+            .isEqualTo(CRIME_SIGN_IN_PAGE_LINK_ADDRESS);
     }
 }

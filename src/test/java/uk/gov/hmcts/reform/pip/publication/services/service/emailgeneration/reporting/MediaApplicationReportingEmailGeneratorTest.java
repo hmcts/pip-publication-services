@@ -4,17 +4,16 @@ import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.MediaApplicationReportingEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.RetentionPeriodDuration;
@@ -27,10 +26,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_APPLICATION_REPORTING_EMAIL;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class MediaApplicationReportingEmailGeneratorTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class MediaApplicationReportingEmailGeneratorTest {
     private static final String EMAIL = "test@testing.com";
     private static final byte[] MEDIA_APPLICATION_CSV = "Test byte".getBytes();
     private static final int FILE_RETENTION_WEEKS = 78;
@@ -46,20 +44,18 @@ class MediaApplicationReportingEmailGeneratorTest extends RedisConfigurationTest
     private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
-    private PersonalisationLinks personalisationLinks;
     private MediaApplicationReportingEmailData emailData;
 
-    @Autowired
-    private NotifyConfigProperties notifyConfigProperties;
+    @Mock
+    private PersonalisationLinks personalisationLinks;
 
-    @Autowired
+    @InjectMocks
     private MediaApplicationReportingEmailGenerator emailGenerator;
 
     @BeforeEach
     void setup() {
         emailData = new MediaApplicationReportingEmailData(EMAIL, MEDIA_APPLICATION_CSV, FILE_RETENTION_WEEKS,
                                                            ENV_NAME_ORIGINAL);
-        personalisationLinks = notifyConfigProperties.getLinks();
     }
 
     @Test

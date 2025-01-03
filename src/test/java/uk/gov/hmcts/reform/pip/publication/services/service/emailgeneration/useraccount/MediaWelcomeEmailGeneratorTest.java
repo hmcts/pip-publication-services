@@ -3,26 +3,25 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.use
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaWelcomeEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.Map;
 
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.EXISTING_USER_WELCOME_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_NEW_ACCOUNT_SETUP;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class MediaWelcomeEmailGeneratorTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class MediaWelcomeEmailGeneratorTest {
     private static final String EMAIL = "test@testing.com";
     private static final String FULL_NAME = "Full name";
 
@@ -32,22 +31,28 @@ class MediaWelcomeEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String GOV_GUIDANCE_PAGE_LINK = "gov_guidance_page";
 
+    private static final String FORGOT_PASSWORD_LINK_ADDRESS = "http://www.test-link1.com";
+    private static final String SUBSCRIPTION_PAGE_LINK_ADDRESS = "http://www.test-link2.com";
+    private static final String START_PAGE_LINK_ADDRESS = "http://www.test-link3.com";
+    private static final String GOV_GUIDANCE_PAGE_LINK_ADDRESS = "http://www.test-link4.com";
+
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
     private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
+    @Mock
     private PersonalisationLinks personalisationLinks;
 
-    @Autowired
-    private NotifyConfigProperties notifyConfigProperties;
-
-    @Autowired
+    @InjectMocks
     private MediaWelcomeEmailGenerator emailGenerator;
 
     @BeforeEach
-    void setup() {
-        personalisationLinks = notifyConfigProperties.getLinks();
+    public void setup() {
+        when(personalisationLinks.getAadPwResetLinkMedia()).thenReturn(FORGOT_PASSWORD_LINK_ADDRESS);
+        when(personalisationLinks.getSubscriptionPageLink()).thenReturn(SUBSCRIPTION_PAGE_LINK_ADDRESS);
+        when(personalisationLinks.getStartPageLink()).thenReturn(START_PAGE_LINK_ADDRESS);
+        when(personalisationLinks.getGovGuidancePageLink()).thenReturn(GOV_GUIDANCE_PAGE_LINK_ADDRESS);
     }
 
     @Test
@@ -108,18 +113,18 @@ class MediaWelcomeEmailGeneratorTest extends RedisConfigurationTestBase {
 
         softly.assertThat(personalisation.get(FORGOT_PASSWORD_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getAadPwResetLinkMedia());
+            .isEqualTo(FORGOT_PASSWORD_LINK_ADDRESS);
 
         softly.assertThat(personalisation.get(SUBSCRIPTION_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getSubscriptionPageLink());
+            .isEqualTo(SUBSCRIPTION_PAGE_LINK_ADDRESS);
 
         softly.assertThat(personalisation.get(START_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getStartPageLink());
+            .isEqualTo(START_PAGE_LINK_ADDRESS);
 
         softly.assertThat(personalisation.get(GOV_GUIDANCE_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getGovGuidancePageLink());
+            .isEqualTo(GOV_GUIDANCE_PAGE_LINK_ADDRESS);
     }
 }

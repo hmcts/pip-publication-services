@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+@ActiveProfiles("test")
 class ExcelGenerationServiceTest {
     private static final String SHEET_COUNT_MESSAGE = "Incorrect number of sheets";
     private static final String ROW_COUNT_MESSAGE = "Incorrect number of rows";
