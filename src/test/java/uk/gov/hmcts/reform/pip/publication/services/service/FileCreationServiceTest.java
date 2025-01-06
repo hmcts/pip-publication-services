@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@Slf4j
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class FileCreationServiceTest {

@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDateTime;
@@ -52,7 +51,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("PMD.ExcessiveImports")
-class NotificationServiceTest extends RedisConfigurationTestBase {
+class NotificationServiceTest {
     private final Map<String, Object> personalisationMap = Map.ofEntries(
         entry("email", VALID_BODY_AAD.getEmail()),
         entry("surname", VALID_BODY_AAD.getSurname()),
