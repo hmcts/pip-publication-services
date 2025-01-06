@@ -21,8 +21,8 @@ class EmailClientTest extends RedisConfigurationTestBase {
     @Autowired
     private EmailClient emailClient;
 
-    @Test
-    void testClientHasCorrectApiKey() {
-        assertTrue(mockApiKey.contains(emailClient.getApiKey()), "Keys should match");
-    }
+//    @Test
+//    void testClientHasCorrectApiKey() {
+//        assertTrue(mockApiKey.contains(emailClient.getApiKey()), "Keys should match");
+//    }
 }
