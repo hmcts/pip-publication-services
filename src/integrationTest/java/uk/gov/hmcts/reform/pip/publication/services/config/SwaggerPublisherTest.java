@@ -5,11 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -22,13 +19,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Built-in feature which saves service's swagger specs in temporary directory.
  * Each travis run on master should automatically save and upload (if updated) documentation.
  */
-@SuppressWarnings("PMD.ImmutableField")
-@SpringBootTest(classes = {Application.class},
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @AutoConfigureMockMvc
-@DirtiesContext
 @ActiveProfiles("integration")
-class SwaggerPublisherTest extends RedisConfigurationTestBase {
+class SwaggerPublisherTest {
 
     @Autowired
     private MockMvc mvc;
