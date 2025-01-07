@@ -136,8 +136,6 @@ class NotificationServiceTest {
         bulkSubscriptionEmail.setSubscriptionEmails(List.of(subscriptionEmail));
 
         ReflectionTestUtils.setField(notificationService, "piTeamEmail", "test@justice.gov.uk");
-        ReflectionTestUtils.setField(notificationService, "piTeamEmail", "test@justice.gov.uk");
-        ReflectionTestUtils.setField(notificationService, "piTeamEmail", "test@justice.gov.uk");
     }
 
     @Test
