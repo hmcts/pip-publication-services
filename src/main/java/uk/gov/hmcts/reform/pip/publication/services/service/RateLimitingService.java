@@ -45,7 +45,7 @@ public class RateLimitingService {
         return bucket.tryConsume(1);
     }
 
-    private String getErrorMessage(String email, String emailescription) {
-        return String.format(ERROR_MESSAGE, emailescription, EmailHelper.maskEmail(email));
+    private String getErrorMessage(String email, String description) {
+        return String.format(ERROR_MESSAGE, description, EmailHelper.maskEmail(email));
     }
 }

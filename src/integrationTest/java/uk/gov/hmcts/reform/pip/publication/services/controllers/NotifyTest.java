@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
@@ -25,6 +26,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
+import uk.gov.hmcts.reform.pip.publication.services.service.AccountManagementService;
+import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
+import uk.gov.hmcts.reform.pip.publication.services.service.SubscriptionManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.ByteArrayInputStream;
@@ -346,6 +350,15 @@ class NotifyTest extends RedisConfigurationTestBase {
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
 
     private MockWebServer externalApiMockServer;
+
+    @MockBean
+    protected AccountManagementService accountManagementService;
+
+    @MockBean
+    protected DataManagementService dataManagementService;
+
+    @MockBean
+    protected SubscriptionManagementService subscriptionManagementService;
 
     @Autowired
     private MockMvc mockMvc;
