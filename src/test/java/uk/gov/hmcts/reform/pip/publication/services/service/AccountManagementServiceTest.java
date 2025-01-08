@@ -5,15 +5,9 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
 
@@ -21,25 +15,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
-@DirtiesContext
 @ActiveProfiles("test")
-class AccountManagementServiceTest extends RedisConfigurationTestBase {
+class AccountManagementServiceTest {
     private static final String RESPONSE_BODY = "responseBody";
     private static final String NOT_FOUND = "404";
 
-    private static MockWebServer mockAccountManagementEndpoint;
+    private final MockWebServer mockAccountManagementEndpoint = new MockWebServer();
 
-    @Autowired
-    WebClient webClient;
-
-    @Autowired
-    AccountManagementService accountManagementService;
+    private AccountManagementService accountManagementService;
 
     @BeforeEach
-    void setup() throws IOException {
-        mockAccountManagementEndpoint = new MockWebServer();
-        mockAccountManagementEndpoint.start(8081);
+    void setup() {
+        WebClient mockedWebClient = WebClient.builder()
+            .baseUrl(mockAccountManagementEndpoint.url("/").toString())
+            .build();
+        accountManagementService = new AccountManagementService(mockedWebClient);
     }
 
     @AfterEach

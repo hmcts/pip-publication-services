@@ -1,22 +1,22 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
 @ActiveProfiles("test")
-class B2cNotificationControllerTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class B2cNotificationControllerTest {
     private static final String VALID_EMAIL = "test@b2c.com";
     private static final String OTP = "123456";
     private static final String REFERENCE_ID = "999";

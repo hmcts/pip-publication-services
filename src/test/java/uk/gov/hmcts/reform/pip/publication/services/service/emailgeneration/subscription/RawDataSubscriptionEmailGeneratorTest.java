@@ -5,22 +5,21 @@ import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
-import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.RawDataSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.RetentionPeriodDuration;
@@ -37,13 +36,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("PMD.ExcessiveImports")
-class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
+class RawDataSubscriptionEmailGeneratorTest {
     private static final String EMAIL = "test@testing.com";
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
     private static final Map<SubscriptionTypes, List<String>> SUBSCRIPTIONS = Map.of(
@@ -78,19 +77,21 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String EXCEL_LINK_TEXT = "excel_link_text";
     private static final String EXCEL_LINK_TO_FILE = "excel_link_to_file";
 
+    private static final String START_PAGE_LINK_ADDRESS = "http://www.test-link1.com";
+    private static final String SUBSCRIPTION_PAGE_LINK_ADDRESS = "http://www.test-link2.com";
+
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
-    private PersonalisationLinks personalisationLinks;
     private RawDataSubscriptionEmailData emailData;
     private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
     private final Artefact artefact = new Artefact();
 
-    @Autowired
-    private NotifyConfigProperties notifyConfigProperties;
+    @Mock
+    private PersonalisationLinks personalisationLinks;
 
-    @Autowired
+    @InjectMocks
     private RawDataSubscriptionEmailGenerator emailGenerator;
 
     @BeforeEach
@@ -101,7 +102,8 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setContentDate(LocalDateTime.of(2024, Month.APRIL, 30, 0, 0));
 
-        personalisationLinks = notifyConfigProperties.getLinks();
+        when(personalisationLinks.getStartPageLink()).thenReturn(START_PAGE_LINK_ADDRESS);
+        when(personalisationLinks.getSubscriptionPageLink()).thenReturn(SUBSCRIPTION_PAGE_LINK_ADDRESS);
     }
 
     @Test
@@ -144,11 +146,11 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
 
         softly.assertThat(personalisation.get(START_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getStartPageLink());
+            .isEqualTo(START_PAGE_LINK_ADDRESS);
 
         softly.assertThat(personalisation.get(SUBSCRIPTION_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getSubscriptionPageLink());
+            .isEqualTo(SUBSCRIPTION_PAGE_LINK_ADDRESS);
 
         softly.assertThat(personalisation.get(SUMMARY_PERSONALISATION))
                 .as(PERSONALISATION_MESSAGE)
@@ -228,11 +230,11 @@ class RawDataSubscriptionEmailGeneratorTest extends RedisConfigurationTestBase {
 
         softly.assertThat(personalisation.get(START_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getStartPageLink());
+            .isEqualTo(START_PAGE_LINK_ADDRESS);
 
         softly.assertThat(personalisation.get(SUBSCRIPTION_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getSubscriptionPageLink());
+            .isEqualTo(SUBSCRIPTION_PAGE_LINK_ADDRESS);
 
         softly.assertThat(personalisation.get(SUMMARY_PERSONALISATION))
             .as(PERSONALISATION_MESSAGE)
