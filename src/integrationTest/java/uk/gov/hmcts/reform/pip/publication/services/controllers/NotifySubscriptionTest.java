@@ -50,7 +50,7 @@ class NotifySubscriptionTest extends RedisConfigurationTestBase {
     private static final byte[] FILE = "Test byte".getBytes();
     private static final String LOCATION_ID = "999";
     private static final String LOCATION_NAME = "Test court";
-    private static final String JSON = "Test JSON";
+    private static final String PAYLOAD = "Test JSON";
     private static final String PDF = "Test PDF";
 
     private static final String UNAUTHORIZED_USERNAME = "unauthorized_username";
@@ -111,7 +111,7 @@ class NotifySubscriptionTest extends RedisConfigurationTestBase {
 
     @Test
     void testValidPayloadForSubsEmailThrowsBadGateway() throws Exception {
-        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenThrow(new ServiceToServiceException("", ""));
+        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenThrow(ServiceToServiceException.class);
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
@@ -171,7 +171,7 @@ class NotifySubscriptionTest extends RedisConfigurationTestBase {
     void testSendBulkJsonEmail() throws Exception {
         when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
-        when(dataManagementService.getArtefactJsonBlob(ARTEFACT_ID)).thenReturn(JSON);
+        when(dataManagementService.getArtefactJsonBlob(ARTEFACT_ID)).thenReturn(PAYLOAD);
         when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(PDF);
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)

@@ -240,7 +240,7 @@ class NotifyTest extends RedisConfigurationTestBase {
 
     String validLocationsListJson;
 
-    private static final String JSON = "Test JSON";
+    private static final String PAYLOAD = "Test JSON";
     private static final String PDF = "Test PDF";
     private static final byte[] FILE = "Test byte".getBytes();
     private static final String LOCATION_ID = "999";
@@ -291,7 +291,7 @@ class NotifyTest extends RedisConfigurationTestBase {
         lenient().when(dataManagementService.getArtefact(any())).thenReturn(artefact);
         lenient().when(dataManagementService.getLocation(any())).thenReturn(location);
         lenient().when(dataManagementService.getArtefactFlatFile(any())).thenReturn(FILE);
-        lenient().when(dataManagementService.getArtefactJsonBlob(any())).thenReturn(JSON);
+        lenient().when(dataManagementService.getArtefactJsonBlob(any())).thenReturn(PAYLOAD);
         lenient().when(dataManagementService.getArtefactFile(any(), eq(FileType.PDF), anyBoolean())).thenReturn(PDF);
     }
 

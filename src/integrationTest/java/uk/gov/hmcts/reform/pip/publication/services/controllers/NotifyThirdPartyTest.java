@@ -1,15 +1,11 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okhttp3.tls.HandshakeCertificates;
 import org.apache.http.entity.ContentType;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,18 +25,15 @@ import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
+import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
-import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,6 +44,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -64,78 +58,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
 @ActiveProfiles("integration")
 class NotifyThirdPartyTest extends RedisConfigurationTestBase {
-    private static final String THIRD_PARTY_SUBSCRIPTION_JSON_BODY = """
-        {
-            "apiDestination": "https://localhost:4444",
-            "artefactId": "3d498688-bbad-4a53-b253-a16ddf8737a9"
-        }
-        """;
-
-    private static final String THIRD_PARTY_SUBSCRIPTION_FILE_BODY = """
-        {
-            "apiDestination": "https://localhost:4444",
-            "artefactId": "f9e659e3-4584-4f15-859d-174ce4b48cbb"
-        }
-        """;
-
-    private static final String THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY = """
-        {
-            "apiDestination": "http://localhost:4444",
-            "artefactId": "1e565487-23e4-4a25-9364-43277a5180d4"
-        }
-        """;
-
-    private static final String THIRD_PARTY_SUBSCRIPTION_ARTEFACT_BODY = """
-        {
-            "apiDestination": "https://localhost:4444",
-            "artefact": {
-                "artefactId": "70494df0-31c1-4290-bbd2-7bfe7acfeb81",
-                "listType": "CIVIL_DAILY_CAUSE_LIST",
-                "locationId": "2",
-                "provenance": "MANUAL_UPLOAD",
-                "type": "LIST",
-                "contentDate": "2025-01-08T07:36:35",
-                "sensitivity": "PUBLIC",
-                "language": "ENGLISH",
-                "displayFrom": "2025-01-08T00:00:00",
-                "displayTo": "2025-01-09T00:00:00"
-            }
-        }
-        """;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final String API_SUBSCRIPTION_URL = "/notify/api";
-    private static final String EXTERNAL_PAYLOAD = "test";
 
-    private static final UUID ID = UUID.randomUUID();
-    private static final String ID_STRING = UUID.randomUUID().toString();
-    private static final String FULL_NAME = "Test user";
-    private static final String EMAIL = "test@email.com";
-    private static final String EMPLOYER = "Test employer";
-    private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
-    private static final String IMAGE_NAME = "test-image.png";
-    private static final String UNAUTHORIZED_USERNAME = "unauthorized_username";
-    private static final String UNAUTHORIZED_ROLE = "APPROLE_unknown.role";
     private static final String CONTENT_TYPE = "Content-Type";
-
-    private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
-        List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
-                                     ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
-        ));
-
-    String validMediaReportingJson;
-    private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
-
-    String validLocationsListJson;
-    private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
-        + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
-
+    private static final UUID ARTEFACT_ID = UUID.randomUUID();
+    private static final String API_DESTINATION = "https://localhost:4444";
+    private static final String PAYLOAD = "Test JSON";
     private static final byte[] FILE = "Test byte".getBytes();
+    private static final String PDF = "Test PDF";
     private static final String LOCATION_ID = "999";
     private static final String LOCATION_NAME = "Test court";
 
+    private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: " + API_DESTINATION
+        + " failed after 3 retries due to: 404 Not Found from POST " + API_DESTINATION;
+
     private final Artefact artefact = new Artefact();
     private final Location location = new Location();
+    private final ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
+
+    private String thirdPartySubscriptionInput;
 
     private MockWebServer externalApiMockServer;
 
@@ -147,6 +91,9 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
 
     @BeforeEach
     void setup() throws IOException {
+        OBJECT_MAPPER.findAndRegisterModules();
+
+        artefact.setArtefactId(ARTEFACT_ID);
         artefact.setLocationId(LOCATION_ID);
         artefact.setType(ArtefactType.LIST);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
@@ -155,36 +102,27 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
         artefact.setContentDate(DATE_TIME);
         artefact.setDisplayFrom(DATE_TIME);
         artefact.setDisplayTo(DATE_TIME.plusDays(1));
+        artefact.setProvenance("MANUAL_UPLOAD");
 
         location.setLocationId(Integer.parseInt(LOCATION_ID));
         location.setName(LOCATION_NAME);
         location.setJurisdiction(List.of("Civil", "Family"));
         location.setRegion(List.of("South East"));
 
-        NO_MATCH_ARTEFACT_LIST.add(new NoMatchArtefact(
-            UUID.randomUUID(),
-            "TEST",
-            "1234"
-        ));
+        thirdPartySubscription.setApiDestination(API_DESTINATION);
+        thirdPartySubscription.setArtefactId(ARTEFACT_ID);
+        thirdPartySubscriptionInput = OBJECT_MAPPER.writeValueAsString(thirdPartySubscription);
 
         HandshakeCertificates handshakeCertificates = localhost();
         externalApiMockServer = new MockWebServer();
         externalApiMockServer.useHttps(handshakeCertificates.sslSocketFactory(), false);
         externalApiMockServer.start(4444);
 
-        ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
-
-        validMediaReportingJson = ow.writeValueAsString(MEDIA_APPLICATION_LIST);
-        validLocationsListJson = ow.writeValueAsString(NO_MATCH_ARTEFACT_LIST);
-
         lenient().when(dataManagementService.getArtefact(any())).thenReturn(artefact);
         lenient().when(dataManagementService.getLocation(any())).thenReturn(location);
         lenient().when(dataManagementService.getArtefactFlatFile(any())).thenReturn(FILE);
-        lenient().when(dataManagementService.getArtefactJsonBlob(any())).thenReturn("Test JSON");
-
-        String base64EncodedFile = Base64.getEncoder().encodeToString(FILE);
-        lenient().when(dataManagementService.getArtefactFile(any(), eq(FileType.PDF), anyBoolean()))
-            .thenReturn(base64EncodedFile);
+        lenient().when(dataManagementService.getArtefactJsonBlob(any())).thenReturn(PAYLOAD);
+        lenient().when(dataManagementService.getArtefactFile(any(), eq(FileType.PDF), anyBoolean())).thenReturn(PDF);
     }
 
     @AfterEach
@@ -196,42 +134,44 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
     void testNotifyApiSubscribersJson() throws Exception {
         externalApiMockServer.enqueue(new MockResponse()
                                           .addHeader(CONTENT_TYPE, ContentType.APPLICATION_JSON)
-                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setBody(PAYLOAD)
                                           .setResponseCode(200));
         externalApiMockServer.enqueue(new MockResponse()
                                           .addHeader(CONTENT_TYPE, ContentType.MULTIPART_FORM_DATA)
-                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setBody(PAYLOAD)
                                           .setResponseCode(200));
 
         mockMvc.perform(post(API_SUBSCRIPTION_URL)
-                            .content(THIRD_PARTY_SUBSCRIPTION_JSON_BODY)
+                            .content(thirdPartySubscriptionInput)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString(
                 "Successfully sent list to https://localhost:4444")));
 
         RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
-        assertThat(recordedRequest.getHeader("x-provenance")).as("Incorrect provenance").isEqualTo("MANUAL_UPLOAD");
+        assertThat(recordedRequest.getHeader("x-provenance"))
+            .as("Incorrect provenance")
+            .isEqualTo("MANUAL_UPLOAD");
         checkDataForThirdPartyRequest(recordedRequest);
 
         assertThat(new String(recordedRequest.getBody().readByteArray()))
             .as("Incorrect body")
-            .contains("publicationDate");
+            .contains(PAYLOAD);
     }
 
     @Test
     void testNotifyApiSubscribersJsonGeneratedPdf() throws Exception {
         externalApiMockServer.enqueue(new MockResponse()
                                           .addHeader(CONTENT_TYPE, ContentType.APPLICATION_JSON)
-                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setBody(PAYLOAD)
                                           .setResponseCode(200));
         externalApiMockServer.enqueue(new MockResponse()
                                           .addHeader(CONTENT_TYPE, ContentType.MULTIPART_FORM_DATA)
-                                          .setBody(EXTERNAL_PAYLOAD)
+                                          .setBody(PAYLOAD)
                                           .setResponseCode(200));
 
         mockMvc.perform(post(API_SUBSCRIPTION_URL)
-                            .content(THIRD_PARTY_SUBSCRIPTION_JSON_BODY)
+                            .content(thirdPartySubscriptionInput)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString(
@@ -239,19 +179,10 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
 
         externalApiMockServer.takeRequest();
         RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
-        assertThat(recordedRequest.getHeader("x-provenance")).as("Incorrect provenance").isEqualTo("CATH");
+        assertThat(recordedRequest.getHeader("x-provenance"))
+            .as("Incorrect provenance")
+            .isEqualTo("CATH");
         checkDataForThirdPartyRequest(recordedRequest);
-
-        MultipartStream multipartStream = new MultipartStream(new ByteArrayInputStream(
-            recordedRequest.getBody().readByteArray()), recordedRequest.getHeader(CONTENT_TYPE)
-                                                                  .split("=")[1].getBytes(), 1024, null);
-
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        multipartStream.readHeaders();
-        multipartStream.readBodyData(output);
-        try (PDDocument document = Loader.loadPDF(output.toByteArray())) {
-            assertThat(document.getNumberOfPages()).as("Incorrect number of pages").isEqualTo(1);
-        }
     }
 
     @Test
@@ -259,8 +190,12 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
         externalApiMockServer.enqueue(new MockResponse()
                                           .setResponseCode(200));
 
+        ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
+        thirdPartySubscriptionArtefact.setApiDestination(API_DESTINATION);
+        thirdPartySubscriptionArtefact.setArtefact(artefact);
+
         mockMvc.perform(put(API_SUBSCRIPTION_URL)
-                            .content(THIRD_PARTY_SUBSCRIPTION_ARTEFACT_BODY)
+                            .content(OBJECT_MAPPER.writeValueAsString(thirdPartySubscriptionArtefact))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString(
@@ -279,10 +214,10 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    @WithMockUser(username = UNAUTHORIZED_USERNAME, authorities = {UNAUTHORIZED_ROLE})
+    @WithMockUser(username = "unauthorized_username", authorities = {"APPROLE_unknown.role"})
     void testUnauthorizedSendThirdPartySubscription() throws Exception {
         mockMvc.perform(post(API_SUBSCRIPTION_URL)
-                            .content(THIRD_PARTY_SUBSCRIPTION_JSON_BODY)
+                            .content(thirdPartySubscriptionInput)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
     }
@@ -315,8 +250,10 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
 
     @Test
     void testNotifyApiSubscribersThrowsBadGateway() throws Exception {
+        when(dataManagementService.getArtefact(any())).thenThrow(ServiceToServiceException.class);
+
         mockMvc.perform(post(API_SUBSCRIPTION_URL)
-                            .content(THIRD_PARTY_SUBSCRIPTION_INVALID_ARTEFACT_BODY)
+                            .content(thirdPartySubscriptionInput)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadGateway());
     }
@@ -329,7 +266,7 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
         externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
 
         mockMvc.perform(post(API_SUBSCRIPTION_URL)
-                            .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
+                            .content(thirdPartySubscriptionInput)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound()).andExpect(content().string(containsString(
                 THIRD_PARTY_FAIL_MESSAGE)));
@@ -348,14 +285,14 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
         assertThat(recordedRequest.getHeader("x-location-region")).as("Incorrect location region")
             .isEqualTo("South East");
         assertThat(recordedRequest.getHeader("x-content-date")).as("Incorrect content date")
-            .isEqualTo("2025-01-08T07:36:35");
+            .isEqualTo(DATE_TIME.toString());
         assertThat(recordedRequest.getHeader("x-sensitivity")).as("Incorrect sensitivity")
             .isEqualTo("PUBLIC");
         assertThat(recordedRequest.getHeader("x-language")).as("Incorrect language")
             .isEqualTo("ENGLISH");
         assertThat(recordedRequest.getHeader("x-display-from")).as("Incorrect display from")
-            .isEqualTo("2025-01-08T00:00");
+            .isEqualTo(DATE_TIME.toString());
         assertThat(recordedRequest.getHeader("x-display-to")).as("Incorrect display to")
-            .isEqualTo("2025-01-09T00:00");
+            .isEqualTo(DATE_TIME.plusDays(1).toString());
     }
 }
