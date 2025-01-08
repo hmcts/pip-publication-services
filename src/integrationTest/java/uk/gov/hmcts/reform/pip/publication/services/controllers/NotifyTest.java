@@ -236,21 +236,6 @@ class NotifyTest extends RedisConfigurationTestBase {
             "detailString": "test"
         }
         """;
-    private static final String NONEXISTENT_BLOB_SUBS_EMAIL = """
-        {
-           "artefactId":"b190522a-5d9b-4089-a8c8-6918721c93df",
-           "subscriptionEmails":[
-              {
-                 "email": "test_account_admin@justice.gov.uk",
-                 "subscriptions":{
-                    "CASE_URN":[
-                       "123"
-                    ]
-                 }
-              }
-           ]
-        }
-        """;
 
     private static final String VALID_MEDIA_VERIFICATION_EMAIL_BODY = """
         {
@@ -301,40 +286,6 @@ class NotifyTest extends RedisConfigurationTestBase {
         }
         """;
 
-    private static final String BULK_SUBSCRIPTION_EMAIL_BODY = """
-        {
-           "artefactId":"30304c47-942e-40aa-9134-35bb40386a0b",
-           "subscriptionEmails":[
-              {
-                 "email":"test1@justice.gov.uk",
-                 "subscriptions":{
-                    "CASE_URN":[
-                       "123"
-                    ]
-                 }
-              },
-              {
-                 "email":"test2@justice.gov.uk",
-                 "subscriptions":{
-                    "CASE_URN":[
-                       "123"
-                    ]
-                 }
-              }
-           ]
-        }
-        """;
-
-    private static final String BULK_SUBSCRIPTION_EMAIL_BODY_BAD_REQUEST = """
-        {
-           "artefactId":"b190522a-5d9b-4089-a8c8-6918721c93df",
-           "subscriptionEmails":[
-                 "email":"test1@justice.gov.uk",
-                 "email":"test2@justice.gov.uk"
-           ]
-        }
-        """;
-
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
@@ -344,7 +295,6 @@ class NotifyTest extends RedisConfigurationTestBase {
     private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
 
     String validLocationsListJson;
-    private static final String BULK_SUBSCRIPTION_URL = "/notify/v2/subscription";
     private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
@@ -362,7 +312,6 @@ class NotifyTest extends RedisConfigurationTestBase {
 
     @Autowired
     private MockMvc mockMvc;
-
 
     @BeforeEach
     void setup() throws IOException {
@@ -440,7 +389,6 @@ class NotifyTest extends RedisConfigurationTestBase {
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
     }
-
 
     @Test
     void testSendAdminAccountWelcomeEmail() throws Exception {
@@ -663,118 +611,6 @@ class NotifyTest extends RedisConfigurationTestBase {
     void testUnauthorizedSendMediaReportingEmail() throws Exception {
         mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
                             .content(validMediaReportingJson)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void testMissingEmailForSubscriptionReturnsBadRequest() throws Exception {
-
-        String missingEmailJsonBody =
-            "{\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}, \"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
-
-        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(missingEmailJsonBody)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testValidPayloadForSubsEmailThrowsBadGateway() throws Exception {
-
-        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(NONEXISTENT_BLOB_SUBS_EMAIL)
-                            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadGateway());
-    }
-
-    @Test
-    void testInvalidEmailForSubscriptionReturnsBadRequest() throws Exception {
-
-        String invalidEmailJsonBody =
-            "{\"email\":\"abcd\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
-                + "\"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
-
-        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(invalidEmailJsonBody)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testMissingArtefactIdForSubscriptionReturnsBadRequest() throws Exception {
-
-        String missingArtefactIdJsonBody =
-            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}}";
-
-        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(missingArtefactIdJsonBody)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testInvalidSubscriptionCriteriaForSubscriptionReturnsBadRequest() throws Exception {
-
-        String invalidSubscriptionJsonBody =
-            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[]},"
-                + "\"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
-
-        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(invalidSubscriptionJsonBody)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testSendBulkFlatFileEmail() throws Exception {
-        String validFlatFileBody = """
-            {
-               "artefactId":"55995355-466b-4991-a7da-9d016cbaa591",
-               "subscriptionEmails":[
-                  {
-                     "email":"test1@justice.gov.uk",
-                     "subscriptions":{
-                        "CASE_URN":[
-                           "123"
-                        ]
-                     }
-                  }
-               ]
-            }
-            """;
-
-        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(validFlatFileBody)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isAccepted())
-            .andExpect(content().string(IsNull.notNullValue()));
-    }
-
-    @Test
-    void testSendBulkJsonEmail() throws Exception {
-
-        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(BULK_SUBSCRIPTION_EMAIL_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isAccepted())
-            .andExpect(content().string(IsNull.notNullValue()));
-    }
-
-    @Test
-    void testSendBulkEmailBadRequest() throws Exception {
-
-        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(BULK_SUBSCRIPTION_EMAIL_BODY_BAD_REQUEST)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(username = UNAUTHORIZED_USERNAME, authorities = {UNAUTHORIZED_ROLE})
-    void testUnauthorizedSendSubscriptionEmail() throws Exception {
-
-        mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
-                            .content(BULK_SUBSCRIPTION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
     }
