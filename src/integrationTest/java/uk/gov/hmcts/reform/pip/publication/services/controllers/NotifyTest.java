@@ -44,8 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert", "PMD.TooManyMethods",
-    "PMD.ImmutableField", "PMD.AvoidDuplicateLiterals", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert", "PMD.TooManyMethods", "PMD.ExcessiveImports"})
 @SpringBootTest(classes = {Application.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -105,6 +104,7 @@ class NotifyTest extends RedisConfigurationTestBase {
 
     private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
     private static final String NOTIFY_LOCATION_SUBSCRIPTION_DELETE_URL = "/notify/location-subscription-delete";
+    private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
 
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
@@ -116,6 +116,7 @@ class NotifyTest extends RedisConfigurationTestBase {
     private static final String IMAGE_NAME = "test-image.png";
     private static final String UNAUTHORIZED_USERNAME = "unauthorized_username";
     private static final String UNAUTHORIZED_ROLE = "APPROLE_unknown.role";
+    private static final String INVALID_CONTENT = "invalid content";
 
     private static final String NOTIFY_LOCATION_SUBSCRIPTION_DELETE_EMAIL_BODY = """
         {
@@ -238,7 +239,6 @@ class NotifyTest extends RedisConfigurationTestBase {
     private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
 
     String validLocationsListJson;
-    private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
 
     private static final String JSON = "Test JSON";
     private static final String PDF = "Test PDF";
@@ -400,7 +400,7 @@ class NotifyTest extends RedisConfigurationTestBase {
     @Test
     void testSendMediaReportingEmailBadRequest() throws Exception {
         mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
-                            .content("invalid content")
+                            .content(INVALID_CONTENT)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
@@ -426,7 +426,7 @@ class NotifyTest extends RedisConfigurationTestBase {
     @Test
     void testSendUnidentifiedBlobEmailBadRequest() throws Exception {
         mockMvc.perform(post(UNIDENTIFIED_BLOB_EMAIL_URL)
-                            .content("invalid content")
+                            .content(INVALID_CONTENT)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
@@ -461,7 +461,7 @@ class NotifyTest extends RedisConfigurationTestBase {
     @Test
     void testInvalidPayloadMediaVerificationEmail() throws Exception {
         mockMvc.perform(post(MEDIA_VERIFICATION_EMAIL_URL)
-                            .content("invalid content")
+                            .content(INVALID_CONTENT)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
@@ -522,7 +522,7 @@ class NotifyTest extends RedisConfigurationTestBase {
     @Test
     void testSendNotificationToInactiveUsersBadRequest() throws Exception {
         mockMvc.perform(post(INACTIVE_USER_NOTIFICATION_EMAIL_URL)
-                            .content("invalid content")
+                            .content(INVALID_CONTENT)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
@@ -611,7 +611,7 @@ class NotifyTest extends RedisConfigurationTestBase {
     @Test
     void testSendDeleteLocationSubscriptionEmailBadRequest() throws Exception {
         mockMvc.perform(post(NOTIFY_LOCATION_SUBSCRIPTION_DELETE_URL)
-                            .content("invalid content")
+                            .content(INVALID_CONTENT)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
