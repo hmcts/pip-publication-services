@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("integration")
 @SpringBootTest
 @DirtiesContext
-class EmailClientTest {
+class EmailClientTest extends RedisConfigurationTestBase {
 
     @Value("${notify.api.key}")
     private String mockApiKey;

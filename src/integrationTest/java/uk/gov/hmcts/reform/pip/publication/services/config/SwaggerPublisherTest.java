@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -24,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext
 @ActiveProfiles("integration")
-class SwaggerPublisherTest {
+class SwaggerPublisherTest extends RedisConfigurationTestBase {
 
     @Autowired
     private MockMvc mvc;

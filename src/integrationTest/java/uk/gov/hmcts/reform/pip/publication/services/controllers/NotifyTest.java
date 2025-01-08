@@ -23,6 +23,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.pip.model.location.Location;
+import uk.gov.hmcts.reform.pip.model.publication.Artefact;
+import uk.gov.hmcts.reform.pip.model.publication.ArtefactType;
+import uk.gov.hmcts.reform.pip.model.publication.FileType;
+import uk.gov.hmcts.reform.pip.model.publication.Language;
+import uk.gov.hmcts.reform.pip.model.publication.ListType;
+import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
@@ -43,6 +50,10 @@ import java.util.UUID;
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -299,6 +310,15 @@ class NotifyTest extends RedisConfigurationTestBase {
     private static final String THIRD_PARTY_FAIL_MESSAGE = "Third party request to: https://localhost:4444 "
         + "failed after 3 retries due to: 404 Not Found from POST https://localhost:4444";
 
+    private static final String JSON = "Test JSON";
+    private static final String PDF = "Test PDF";
+    private static byte[] FILE = "Test byte".getBytes();
+    private static final String LOCATION_ID = "999";
+    private static final String LOCATION_NAME = "Test court";
+
+    private final Artefact artefact = new Artefact();
+    private final Location location = new Location();
+
     private MockWebServer externalApiMockServer;
 
     @MockBean
@@ -315,6 +335,19 @@ class NotifyTest extends RedisConfigurationTestBase {
 
     @BeforeEach
     void setup() throws IOException {
+        artefact.setLocationId(LOCATION_ID);
+        artefact.setType(ArtefactType.LIST);
+        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setSensitivity(Sensitivity.PUBLIC);
+        artefact.setLanguage(Language.ENGLISH);
+        artefact.setContentDate(DATE_TIME);
+        artefact.setDisplayFrom(DATE_TIME);
+        artefact.setDisplayTo(DATE_TIME.plusDays(1));
+
+        location.setLocationId(Integer.parseInt(LOCATION_ID));
+        location.setName(LOCATION_NAME);
+        location.setJurisdiction(List.of("Civil", "Family"));
+        location.setRegion(List.of("South East"));
 
         NO_MATCH_ARTEFACT_LIST.add(new NoMatchArtefact(
             UUID.randomUUID(),
@@ -331,6 +364,12 @@ class NotifyTest extends RedisConfigurationTestBase {
 
         validMediaReportingJson = ow.writeValueAsString(MEDIA_APPLICATION_LIST);
         validLocationsListJson = ow.writeValueAsString(NO_MATCH_ARTEFACT_LIST);
+
+        lenient().when(dataManagementService.getArtefact(any())).thenReturn(artefact);
+        lenient().when(dataManagementService.getLocation(any())).thenReturn(location);
+        lenient().when(dataManagementService.getArtefactFlatFile(any())).thenReturn(FILE);
+        lenient().when(dataManagementService.getArtefactJsonBlob(any())).thenReturn(JSON);
+        lenient().when(dataManagementService.getArtefactFile(any(), eq(FileType.PDF), anyBoolean())).thenReturn(PDF);
     }
 
     @AfterEach
