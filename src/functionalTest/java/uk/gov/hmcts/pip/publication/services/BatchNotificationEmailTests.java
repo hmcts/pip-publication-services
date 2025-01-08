@@ -16,6 +16,7 @@ import uk.gov.service.notify.NotificationList;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,8 +30,12 @@ class BatchNotificationEmailTests extends FunctionalTestBase {
     private static final String NOTIFY_URL = "/notify";
     private static final String LOCATION_SUBSCRIPTION_DELETION_EMAIL_URL = NOTIFY_URL + "/location-subscription-delete";
 
-    private static final String TEST_EMAIL1 = "test_user1@justice.gov.uk";
-    private static final String TEST_EMAIL2 = "test_user2@justice.gov.uk";
+    private static final String TEST_EMAIL1 = String.format(
+        "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999)) + "@justice.gov.uk";
+
+    private static final String TEST_EMAIL2 = String.format(
+        "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999)) + "@justice.gov.uk";
+
     private static final String TEST_LOCATION_NAME = "Test location name";
 
     @Autowired
