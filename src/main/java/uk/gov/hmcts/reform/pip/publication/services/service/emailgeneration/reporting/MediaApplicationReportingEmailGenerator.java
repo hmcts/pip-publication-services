@@ -25,6 +25,7 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
  * Generate the media application reporting email with personalisation for GOV.UK Notify template.
  */
 public class MediaApplicationReportingEmailGenerator extends EmailGenerator {
+
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         MediaApplicationReportingEmailData emailData = (MediaApplicationReportingEmailData) email;
