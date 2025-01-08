@@ -14,12 +14,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.pip.model.location.Location;
-import uk.gov.hmcts.reform.pip.model.publication.Artefact;
-import uk.gov.hmcts.reform.pip.model.publication.ArtefactType;
-import uk.gov.hmcts.reform.pip.model.publication.Language;
-import uk.gov.hmcts.reform.pip.model.publication.ListType;
-import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
 import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
@@ -39,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert", "PMD.TooManyMethods", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert", "PMD.TooManyMethods"})
 @SpringBootTest(classes = {Application.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
