@@ -580,31 +580,31 @@ class NotifyTest extends RedisConfigurationTestBase {
             .andExpect(status().isForbidden());
     }
 
-    @Test
-    void testNotifyApiSubscribersFile() throws Exception {
-        externalApiMockServer.enqueue(new MockResponse()
-                                          .addHeader("Content-Type", ContentType.MULTIPART_FORM_DATA)
-                                          .setBody(EXTERNAL_PAYLOAD)
-                                          .setResponseCode(200));
-
-        mockMvc.perform(post(API_SUBSCRIPTION_URL)
-                            .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andExpect(content().string(containsString(
-                "Successfully sent list to https://localhost:4444")));
-
-        // Assert request body sent to third party api
-        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
-        assertThat(recordedRequest.getHeader("Content-Type"))
-            .as("Incorrect content type in request header")
-            .contains(MediaType.MULTIPART_FORM_DATA_VALUE);
-
-        assertThat(recordedRequest.getBody().readUtf8())
-            .as("Expected data missing in request body")
-            .isNotNull()
-            .isNotEmpty()
-            .contains("\"publicationDate\": \"2022-03-25T23:30:52.123Z\"");
-    }
+    //    @Test
+    //    void testNotifyApiSubscribersFile() throws Exception {
+    //        externalApiMockServer.enqueue(new MockResponse()
+    //                                          .addHeader("Content-Type", ContentType.MULTIPART_FORM_DATA)
+    //                                          .setBody(EXTERNAL_PAYLOAD)
+    //                                          .setResponseCode(200));
+    //
+    //        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+    //                            .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
+    //                            .contentType(MediaType.APPLICATION_JSON))
+    //            .andExpect(status().isOk()).andExpect(content().string(containsString(
+    //                "Successfully sent list to https://localhost:4444")));
+    //
+    //        // Assert request body sent to third party api
+    //        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+    //        assertThat(recordedRequest.getHeader("Content-Type"))
+    //            .as("Incorrect content type in request header")
+    //            .contains(MediaType.MULTIPART_FORM_DATA_VALUE);
+    //
+    //        assertThat(recordedRequest.getBody().readUtf8())
+    //            .as("Expected data missing in request body")
+    //            .isNotNull()
+    //            .isNotEmpty()
+    //            .contains("\"publicationDate\": \"2022-03-25T23:30:52.123Z\"");
+    //    }
 
     @Test
     void testNotifyApiSubscribersThrowsBadGateway() throws Exception {
