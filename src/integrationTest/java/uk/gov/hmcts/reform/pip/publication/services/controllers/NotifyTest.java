@@ -312,7 +312,7 @@ class NotifyTest extends RedisConfigurationTestBase {
 
     private static final String JSON = "Test JSON";
     private static final String PDF = "Test PDF";
-    private static byte[] FILE = "Test byte".getBytes();
+    private static final byte[] FILE = "Test byte".getBytes();
     private static final String LOCATION_ID = "999";
     private static final String LOCATION_NAME = "Test court";
 
