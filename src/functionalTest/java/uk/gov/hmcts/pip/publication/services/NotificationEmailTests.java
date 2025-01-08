@@ -45,6 +45,7 @@ class NotificationEmailTests extends FunctionalTestBase {
     private static final String TEST_USER_EMAIL_PREFIX = String.format(
         "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999));
     private static final String TEST_EMAIL = TEST_USER_EMAIL_PREFIX + "@justice.gov.uk";
+    private static final String LAST_SIGNED_IN_DATE = "2023-12-12 11:49:28.532005";
 
     private static final String TEST_FULL_NAME = "test user";
     private static final String EMAIL_ADDRESS_ERROR = "Email address does not match";
@@ -190,7 +191,7 @@ class NotificationEmailTests extends FunctionalTestBase {
 
         InactiveUserNotificationEmail requestBody =
             new InactiveUserNotificationEmail(TEST_EMAIL, TEST_FULL_NAME, UserProvenances.PI_AAD.name(),
-                                              "2023-12-12 11:49:28.532005");
+                                              LAST_SIGNED_IN_DATE);
 
         final Response response = doPostRequest(
             INACTIVE_USER_NOTIFICATION_EMAIL_URL,
@@ -210,6 +211,10 @@ class NotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
+            .contains(LAST_SIGNED_IN_DATE);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
             .contains("Click on the link to prevent your Court and tribunal hearings account being deleted");
 
         assertThat(notification.getBody())
@@ -221,7 +226,7 @@ class NotificationEmailTests extends FunctionalTestBase {
     void shouldSendNotificationEmailToInactiveCftUser() throws NotificationClientException {
         InactiveUserNotificationEmail requestBody = new InactiveUserNotificationEmail(TEST_EMAIL, TEST_FULL_NAME,
                                                                                       UserProvenances.CFT_IDAM.name(),
-                                                                             "2023-12-12 11:49:28.532005"
+                                                                                      LAST_SIGNED_IN_DATE
         );
 
         final Response response = doPostRequest(
@@ -247,7 +252,7 @@ class NotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("2023-12-12 11:49:28.532005");
+            .contains(LAST_SIGNED_IN_DATE);
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
