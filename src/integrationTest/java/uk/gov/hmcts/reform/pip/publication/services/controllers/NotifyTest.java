@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.ArtefactType;
-import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
@@ -35,10 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -60,6 +55,7 @@ class NotifyTest extends RedisConfigurationTestBase {
             "fullName": "fullName"
         }
         """;
+
     private static final String VALID_WELCOME_REQUEST_BODY_NEW = """
         {
             "email": "test@email.com",
@@ -67,6 +63,7 @@ class NotifyTest extends RedisConfigurationTestBase {
             "fullName": "fullName"
         }
         """;
+
     private static final String VALID_ADMIN_CREATION_REQUEST_BODY = """
         {
             "email": "test@email.com",
@@ -74,49 +71,27 @@ class NotifyTest extends RedisConfigurationTestBase {
             "forename": "forename"
         };
         """;
+
     private static final String INVALID_JSON_BODY = """
         {
             "email": "test@email.com",
             "isExisting":
         }
         """;
+
     private static final String VALID_DUPLICATE_MEDIA_REQUEST_BODY = """
         {
             "email": "test@email.com",
             "fullName": "fullName"
         };
         """;
+
     private static final String DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY = """
         {
             "email": "test@email.com",
             "fullName":
         }
         """;
-    private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
-    private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
-    private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
-    private static final String MI_REPORTING_EMAIL_URL = "/notify/mi/report";
-
-    private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
-    private static final String MEDIA_VERIFICATION_EMAIL_URL = "/notify/media/verification";
-    private static final String MEDIA_REJECTION_EMAIL_URL = "/notify/media/reject";
-    private static final String INACTIVE_USER_NOTIFICATION_EMAIL_URL = "/notify/user/sign-in";
-
-    private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
-    private static final String NOTIFY_LOCATION_SUBSCRIPTION_DELETE_URL = "/notify/location-subscription-delete";
-    private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
-
-    private static final UUID ID = UUID.randomUUID();
-    private static final String ID_STRING = UUID.randomUUID().toString();
-    private static final String FULL_NAME = "Test user";
-    private static final String EMAIL = "test@email.com";
-    private static final String EMPLOYER = "Test employer";
-    private static final String STATUS = "APPROVED";
-    private static final LocalDateTime DATE_TIME = LocalDateTime.now();
-    private static final String IMAGE_NAME = "test-image.png";
-    private static final String UNAUTHORIZED_USERNAME = "unauthorized_username";
-    private static final String UNAUTHORIZED_ROLE = "APPROLE_unknown.role";
-    private static final String INVALID_CONTENT = "invalid content";
 
     private static final String NOTIFY_LOCATION_SUBSCRIPTION_DELETE_EMAIL_BODY = """
         {
@@ -230,24 +205,45 @@ class NotifyTest extends RedisConfigurationTestBase {
         }
         """;
 
+    private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
+    private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
+    private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
+    private static final String MI_REPORTING_EMAIL_URL = "/notify/mi/report";
+    private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
+    private static final String MEDIA_VERIFICATION_EMAIL_URL = "/notify/media/verification";
+    private static final String MEDIA_REJECTION_EMAIL_URL = "/notify/media/reject";
+    private static final String INACTIVE_USER_NOTIFICATION_EMAIL_URL = "/notify/user/sign-in";
+    private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
+    private static final String NOTIFY_LOCATION_SUBSCRIPTION_DELETE_URL = "/notify/location-subscription-delete";
+    private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
+
+    private static final UUID ID = UUID.randomUUID();
+    private static final String ID_STRING = UUID.randomUUID().toString();
+    private static final String FULL_NAME = "Test user";
+    private static final String EMAIL = "test@email.com";
+    private static final String EMPLOYER = "Test employer";
+    private static final String STATUS = "APPROVED";
+    private static final LocalDateTime DATE_TIME = LocalDateTime.now();
+    private static final String IMAGE_NAME = "test-image.png";
+    private static final String UNAUTHORIZED_USERNAME = "unauthorized_username";
+    private static final String UNAUTHORIZED_ROLE = "APPROLE_unknown.role";
+    private static final String INVALID_CONTENT = "invalid content";
+
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
                                      ID_STRING, IMAGE_NAME, DATE_TIME, STATUS, DATE_TIME
         ));
 
-    String validMediaReportingJson;
+
     private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
-
-    String validLocationsListJson;
-
-    private static final String PAYLOAD = "Test JSON";
-    private static final String PDF = "Test PDF";
-    private static final byte[] FILE = "Test byte".getBytes();
     private static final String LOCATION_ID = "999";
     private static final String LOCATION_NAME = "Test court";
 
     private final Artefact artefact = new Artefact();
     private final Location location = new Location();
+
+    private String validMediaReportingJson;
+    private String validLocationsListJson;
 
     @MockBean
     protected AccountManagementService accountManagementService;
@@ -287,12 +283,6 @@ class NotifyTest extends RedisConfigurationTestBase {
 
         validMediaReportingJson = ow.writeValueAsString(MEDIA_APPLICATION_LIST);
         validLocationsListJson = ow.writeValueAsString(NO_MATCH_ARTEFACT_LIST);
-
-        lenient().when(dataManagementService.getArtefact(any())).thenReturn(artefact);
-        lenient().when(dataManagementService.getLocation(any())).thenReturn(location);
-        lenient().when(dataManagementService.getArtefactFlatFile(any())).thenReturn(FILE);
-        lenient().when(dataManagementService.getArtefactJsonBlob(any())).thenReturn(PAYLOAD);
-        lenient().when(dataManagementService.getArtefactFile(any(), eq(FileType.PDF), anyBoolean())).thenReturn(PDF);
     }
 
     @Test

@@ -21,9 +21,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Ser
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
-import uk.gov.hmcts.reform.pip.publication.services.service.AccountManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
-import uk.gov.hmcts.reform.pip.publication.services.service.SubscriptionManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.List;
@@ -53,9 +51,6 @@ class NotifySubscriptionTest extends RedisConfigurationTestBase {
     private static final String PAYLOAD = "Test JSON";
     private static final String PDF = "Test PDF";
 
-    private static final String UNAUTHORIZED_USERNAME = "unauthorized_username";
-    private static final String UNAUTHORIZED_ROLE = "APPROLE_unknown.role";
-
     private static final String BULK_SUBSCRIPTION_EMAIL_BODY_BAD_REQUEST = """
         {
            "artefactId":"b190522a-5d9b-4089-a8c8-6918721c93df",
@@ -72,13 +67,7 @@ class NotifySubscriptionTest extends RedisConfigurationTestBase {
     private final Location location = new Location();
 
     @MockBean
-    protected AccountManagementService accountManagementService;
-
-    @MockBean
     protected DataManagementService dataManagementService;
-
-    @MockBean
-    protected SubscriptionManagementService subscriptionManagementService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -190,7 +179,7 @@ class NotifySubscriptionTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    @WithMockUser(username = UNAUTHORIZED_USERNAME, authorities = {UNAUTHORIZED_ROLE})
+    @WithMockUser(username = "unauthorized_username", authorities = {"APPROLE_unknown.role"})
     void testUnauthorizedSendSubscriptionEmail() throws Exception {
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
