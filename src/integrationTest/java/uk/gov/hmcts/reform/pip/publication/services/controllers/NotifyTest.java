@@ -39,6 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -383,6 +384,12 @@ class NotifyTest extends RedisConfigurationTestBase {
 
     @Test
     void testSendMediaReportingEmail() throws Exception {
+        String miData = "field1,field2,field3";
+        when(dataManagementService.getMiData()).thenReturn(miData);
+        when(accountManagementService.getMiData()).thenReturn(miData);
+        when(subscriptionManagementService.getAllMiData()).thenReturn(miData);
+        when(subscriptionManagementService.getLocationMiData()).thenReturn(miData);
+
         mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
                             .content(validMediaReportingJson)
                             .contentType(MediaType.APPLICATION_JSON))
