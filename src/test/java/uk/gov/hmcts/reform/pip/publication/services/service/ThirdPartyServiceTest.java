@@ -6,11 +6,9 @@ import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
@@ -18,10 +16,7 @@ import uk.gov.hmcts.reform.pip.model.publication.ArtefactType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -31,18 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
-@DirtiesContext
 @ActiveProfiles("test")
 @SuppressWarnings("PMD.TooManyMethods")
-class ThirdPartyServiceTest extends RedisConfigurationTestBase {
-
-    @Autowired
-    private ThirdPartyService thirdPartyService;
-
-    @Autowired
-    WebClient.Builder webClient;
-
+class ThirdPartyServiceTest {
     private static final String API = "http://localhost:4444";
     private static final String PAYLOAD = "test payload";
     private static final byte[] BYTE_ARRAY_PAYLOAD = {1, 2, 3};
@@ -53,17 +39,17 @@ class ThirdPartyServiceTest extends RedisConfigurationTestBase {
     private static final String FAILED_REQUEST_NOTIFICATION = "Third party request to: %s failed";
     private static final String RETURN_MATCH = "Returned messages should match";
     private static final String EXCEPTION_MESSAGE = "Should throw ThirdPartyException";
-    private static MockWebServer mockPublicationServicesEndpoint;
 
     private final Artefact artefact = new Artefact();
     private final Location location = new Location();
     private static final LocalDateTime TODAY_DATE = LocalDateTime.now().toLocalDate().atStartOfDay();
 
+    private  MockWebServer mockPublicationServicesEndpoint = new MockWebServer();
+
+    private ThirdPartyService thirdPartyService;
+
     @BeforeEach
     void setup() throws IOException {
-        mockPublicationServicesEndpoint = new MockWebServer();
-        mockPublicationServicesEndpoint.start(4444);
-
         artefact.setProvenance("Provenance");
         artefact.setSourceArtefactId("SourceArtefactId");
         artefact.setType(ArtefactType.GENERAL_PUBLICATION);
@@ -77,11 +63,19 @@ class ThirdPartyServiceTest extends RedisConfigurationTestBase {
         location.setName("Location Name");
         location.setRegion(List.of("Venue Region A"));
         location.setJurisdiction(List.of("Venue Jurisdiction A"));
+
+        mockPublicationServicesEndpoint.start(4444);
+        WebClient.Builder mockedWebClient = WebClient.builder()
+            .baseUrl(mockPublicationServicesEndpoint.url(API).toString());
+        thirdPartyService = new ThirdPartyService(mockedWebClient);
+
+        ReflectionTestUtils.setField(thirdPartyService, "numOfRetries", 3);
+        ReflectionTestUtils.setField(thirdPartyService, "backoff", 2);
     }
 
     @AfterEach
     void after() throws IOException {
-        mockPublicationServicesEndpoint.shutdown();
+        mockPublicationServicesEndpoint.close();
     }
 
     @Test
