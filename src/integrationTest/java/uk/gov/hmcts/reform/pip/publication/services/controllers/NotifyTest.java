@@ -236,11 +236,6 @@ class NotifyTest extends RedisConfigurationTestBase {
 
 
     private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
-    private static final String LOCATION_ID = "999";
-    private static final String LOCATION_NAME = "Test court";
-
-    private final Artefact artefact = new Artefact();
-    private final Location location = new Location();
 
     private String validMediaReportingJson;
     private String validLocationsListJson;
@@ -259,20 +254,6 @@ class NotifyTest extends RedisConfigurationTestBase {
 
     @BeforeEach
     void setup() throws IOException {
-        artefact.setLocationId(LOCATION_ID);
-        artefact.setType(ArtefactType.LIST);
-        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
-        artefact.setSensitivity(Sensitivity.PUBLIC);
-        artefact.setLanguage(Language.ENGLISH);
-        artefact.setContentDate(DATE_TIME);
-        artefact.setDisplayFrom(DATE_TIME);
-        artefact.setDisplayTo(DATE_TIME.plusDays(1));
-
-        location.setLocationId(Integer.parseInt(LOCATION_ID));
-        location.setName(LOCATION_NAME);
-        location.setJurisdiction(List.of("Civil", "Family"));
-        location.setRegion(List.of("South East"));
-
         NO_MATCH_ARTEFACT_LIST.add(new NoMatchArtefact(
             UUID.randomUUID(),
             "TEST",
