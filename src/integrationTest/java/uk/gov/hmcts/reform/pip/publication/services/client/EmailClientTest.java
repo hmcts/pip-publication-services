@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("integration")
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class EmailClientTest extends RedisConfigurationTestBase {
 
     @Value("${notify.api.key}")
