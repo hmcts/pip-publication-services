@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext
 @ActiveProfiles("integration")
-class GetWelcomeTest extends RedisConfigurationTestBase {
+class GetWelcomeTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,5 +50,4 @@ class GetWelcomeTest extends RedisConfigurationTestBase {
 
         assertThat(response.getResponse().getContentAsString()).contains("Publication");
     }
-
 }

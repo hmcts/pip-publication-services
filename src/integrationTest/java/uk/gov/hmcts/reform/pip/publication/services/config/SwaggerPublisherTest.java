@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext
 @ActiveProfiles("integration")
-class SwaggerPublisherTest extends RedisConfigurationTestBase {
+class SwaggerPublisherTest {
 
     @Autowired
     private MockMvc mvc;
