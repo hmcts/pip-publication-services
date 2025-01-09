@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
@@ -50,9 +49,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert", "PMD.ExcessiveImports"})
-@SpringBootTest(classes = {Application.class},
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert", "PMD.TooManyMethods", "PMD.ExcessiveImports"})
+@SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
@@ -65,6 +63,8 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String CONTENT_TYPE = "Content-Type";
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
+    private static final UUID ARTEFACT_ID_FLAT_FILE = UUID.randomUUID();
+
     private static final String API_DESTINATION = "https://localhost:4444";
     private static final String PAYLOAD = "Test JSON";
     private static final byte[] FILE = "Test byte".getBytes();
@@ -76,11 +76,12 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
         + " failed after 3 retries due to: 404 Not Found from POST " + API_DESTINATION;
 
     private final Artefact artefact = new Artefact();
+    private final Artefact artefactFlatFile = new Artefact();
     private final Location location = new Location();
     private final ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
+    private final ThirdPartySubscription thirdPartySubscriptionFlatFile = new ThirdPartySubscription();
 
     private String thirdPartySubscriptionInput;
-
     private MockWebServer externalApiMockServer;
 
     @MockBean
@@ -93,16 +94,11 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
     void setup() throws IOException {
         OBJECT_MAPPER.findAndRegisterModules();
 
-        artefact.setArtefactId(ARTEFACT_ID);
-        artefact.setLocationId(LOCATION_ID);
-        artefact.setType(ArtefactType.LIST);
-        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
-        artefact.setSensitivity(Sensitivity.PUBLIC);
-        artefact.setLanguage(Language.ENGLISH);
-        artefact.setContentDate(DATE_TIME);
-        artefact.setDisplayFrom(DATE_TIME);
-        artefact.setDisplayTo(DATE_TIME.plusDays(1));
-        artefact.setProvenance("MANUAL_UPLOAD");
+        setupArtefact(artefact);
+        setupArtefact(artefactFlatFile);
+
+        artefactFlatFile.setArtefactId(ARTEFACT_ID_FLAT_FILE);
+        artefactFlatFile.setIsFlatFile(true);
 
         location.setLocationId(Integer.parseInt(LOCATION_ID));
         location.setName(LOCATION_NAME);
@@ -113,16 +109,15 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
         thirdPartySubscription.setArtefactId(ARTEFACT_ID);
         thirdPartySubscriptionInput = OBJECT_MAPPER.writeValueAsString(thirdPartySubscription);
 
+        thirdPartySubscriptionFlatFile.setApiDestination(API_DESTINATION);
+        thirdPartySubscriptionFlatFile.setArtefactId(ARTEFACT_ID_FLAT_FILE);
+
         HandshakeCertificates handshakeCertificates = localhost();
         externalApiMockServer = new MockWebServer();
         externalApiMockServer.useHttps(handshakeCertificates.sslSocketFactory(), false);
         externalApiMockServer.start(4444);
 
-        lenient().when(dataManagementService.getArtefact(any())).thenReturn(artefact);
-        lenient().when(dataManagementService.getLocation(any())).thenReturn(location);
-        lenient().when(dataManagementService.getArtefactFlatFile(any())).thenReturn(FILE);
-        lenient().when(dataManagementService.getArtefactJsonBlob(any())).thenReturn(PAYLOAD);
-        lenient().when(dataManagementService.getArtefactFile(any(), eq(FileType.PDF), anyBoolean())).thenReturn(PDF);
+        lenient().when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
     }
 
     @AfterEach
@@ -130,8 +125,25 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
         externalApiMockServer.close();
     }
 
+    private void setupArtefact(Artefact artefact) {
+        artefact.setArtefactId(ARTEFACT_ID);
+        artefact.setLocationId(LOCATION_ID);
+        artefact.setType(ArtefactType.LIST);
+        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setSensitivity(Sensitivity.PUBLIC);
+        artefact.setLanguage(Language.ENGLISH);
+        artefact.setContentDate(DATE_TIME);
+        artefact.setDisplayFrom(DATE_TIME);
+        artefact.setDisplayTo(DATE_TIME.plusDays(1));
+        artefact.setProvenance("MANUAL_UPLOAD");
+    }
+
     @Test
     void testNotifyApiSubscribersJson() throws Exception {
+        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
+        when(dataManagementService.getArtefactJsonBlob(ARTEFACT_ID)).thenReturn(PAYLOAD);
+        when(dataManagementService.getArtefactFile(eq(ARTEFACT_ID), eq(FileType.PDF), anyBoolean())).thenReturn(PDF);
+
         externalApiMockServer.enqueue(new MockResponse()
                                           .addHeader(CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                           .setBody(PAYLOAD)
@@ -161,6 +173,10 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
 
     @Test
     void testNotifyApiSubscribersJsonGeneratedPdf() throws Exception {
+        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
+        when(dataManagementService.getArtefactJsonBlob(ARTEFACT_ID)).thenReturn(PAYLOAD);
+        when(dataManagementService.getArtefactFile(eq(ARTEFACT_ID), eq(FileType.PDF), anyBoolean())).thenReturn(PDF);
+
         externalApiMockServer.enqueue(new MockResponse()
                                           .addHeader(CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                           .setBody(PAYLOAD)
@@ -187,6 +203,10 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
 
     @Test
     void testNotifyApiSubscribersForArtefactDeletion() throws Exception {
+        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
+        when(dataManagementService.getArtefactJsonBlob(ARTEFACT_ID)).thenReturn(PAYLOAD);
+        when(dataManagementService.getArtefactFile(eq(ARTEFACT_ID), eq(FileType.PDF), anyBoolean())).thenReturn(PDF);
+
         externalApiMockServer.enqueue(new MockResponse()
                                           .setResponseCode(200));
 
@@ -222,31 +242,28 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
             .andExpect(status().isForbidden());
     }
 
-    //    @Test
-    //    void testNotifyApiSubscribersFile() throws Exception {
-    //        externalApiMockServer.enqueue(new MockResponse()
-    //                                          .addHeader(CONTENT_TYPE, ContentType.MULTIPART_FORM_DATA)
-    //                                          .setBody(EXTERNAL_PAYLOAD)
-    //                                          .setResponseCode(200));
-    //
-    //        mockMvc.perform(post(API_SUBSCRIPTION_URL)
-    //                            .content(THIRD_PARTY_SUBSCRIPTION_FILE_BODY)
-    //                            .contentType(MediaType.APPLICATION_JSON))
-    //            .andExpect(status().isOk()).andExpect(content().string(containsString(
-    //                "Successfully sent list to https://localhost:4444")));
-    //
-    //        // Assert request body sent to third party api
-    //        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
-    //        assertThat(recordedRequest.getHeader(CONTENT_TYPE))
-    //            .as("Incorrect content type in request header")
-    //            .contains(MediaType.MULTIPART_FORM_DATA_VALUE);
-    //
-    //        assertThat(recordedRequest.getBody().readUtf8())
-    //            .as("Expected data missing in request body")
-    //            .isNotNull()
-    //            .isNotEmpty()
-    //            .contains("\"publicationDate\": \"2022-03-25T23:30:52.123Z\"");
-    //    }
+    @Test
+    void testNotifyApiSubscribersFile() throws Exception {
+        when(dataManagementService.getArtefact(ARTEFACT_ID_FLAT_FILE)).thenReturn(artefactFlatFile);
+        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID_FLAT_FILE)).thenReturn(FILE);
+
+        externalApiMockServer.enqueue(new MockResponse()
+                                          .addHeader(CONTENT_TYPE, ContentType.MULTIPART_FORM_DATA)
+                                          .setBody(PAYLOAD)
+                                          .setResponseCode(200));
+
+        mockMvc.perform(post(API_SUBSCRIPTION_URL)
+                            .content(OBJECT_MAPPER.writeValueAsString(thirdPartySubscriptionFlatFile))
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andExpect(content().string(containsString(
+                "Successfully sent list to https://localhost:4444")));
+
+        // Assert request body sent to third party api
+        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+        assertThat(recordedRequest.getHeader(CONTENT_TYPE))
+            .as("Incorrect content type in request header")
+            .contains(MediaType.MULTIPART_FORM_DATA_VALUE);
+    }
 
     @Test
     void testNotifyApiSubscribersThrowsBadGateway() throws Exception {
@@ -260,6 +277,10 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
 
     @Test
     void testNotifyApiSubscriberReturnsError() throws Exception {
+        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
+        when(dataManagementService.getArtefactJsonBlob(ARTEFACT_ID)).thenReturn(PAYLOAD);
+        when(dataManagementService.getArtefactFile(eq(ARTEFACT_ID), eq(FileType.PDF), anyBoolean())).thenReturn(PDF);
+
         externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
         externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
         externalApiMockServer.enqueue(new MockResponse().setResponseCode(404));
