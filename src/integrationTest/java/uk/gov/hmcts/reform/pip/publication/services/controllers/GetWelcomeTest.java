@@ -20,9 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DirtiesContext
 @ActiveProfiles("integration")
-class GetWelcomeTest {
+class GetWelcomeTest extends RedisConfigurationTestBase {
 
     @Autowired
     private MockMvc mockMvc;
