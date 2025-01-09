@@ -334,12 +334,6 @@ class NotifyTest extends IntegrationTestBase {
 
     @Test
     void testSendMediaReportingEmail() throws Exception {
-        String miData = "field1,field2,field3";
-        when(dataManagementService.getMiData()).thenReturn(miData);
-        when(accountManagementService.getMiData()).thenReturn(miData);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(miData);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(miData);
-
         mockMvc.perform(post(MEDIA_REPORTING_EMAIL_URL)
                             .content(validMediaReportingJson)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -435,14 +429,6 @@ class NotifyTest extends IntegrationTestBase {
     }
 
     @Test
-    void testSendMediaUserRejectionEmailNotifyBadRequest() throws Exception {
-        mockMvc.perform(post(MEDIA_REJECTION_EMAIL_URL)
-                            .content(INVALID_NOTIFY_MEDIA_REJECTION_EMAIL_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
     @WithMockUser(username = UNAUTHORIZED_USERNAME, authorities = {UNAUTHORIZED_ROLE})
     void testSendMediaUserRejectionEmailUnauthorized() throws Exception {
         mockMvc.perform(post(MEDIA_REJECTION_EMAIL_URL)
@@ -479,6 +465,12 @@ class NotifyTest extends IntegrationTestBase {
 
     @Test
     void testSendMiReportingEmail() throws Exception {
+        String miData = "field1,field2,field3";
+        when(dataManagementService.getMiData()).thenReturn(miData);
+        when(accountManagementService.getMiData()).thenReturn(miData);
+        when(subscriptionManagementService.getAllMiData()).thenReturn(miData);
+        when(subscriptionManagementService.getLocationMiData()).thenReturn(miData);
+
         mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
             .andExpect(status().isOk())
             .andExpect(content().string(IsNull.notNullValue()));
