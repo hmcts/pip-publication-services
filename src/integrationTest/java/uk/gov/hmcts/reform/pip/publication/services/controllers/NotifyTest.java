@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
@@ -16,10 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
-import uk.gov.hmcts.reform.pip.publication.services.service.AccountManagementService;
-import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
-import uk.gov.hmcts.reform.pip.publication.services.service.SubscriptionManagementService;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
+import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -38,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
 @ActiveProfiles("integration")
-class NotifyTest extends RedisConfigurationTestBase {
+class NotifyTest extends IntegrationTestBase {
 
     private static final String VALID_WELCOME_REQUEST_BODY_EXISTING = """
         {
@@ -231,15 +227,6 @@ class NotifyTest extends RedisConfigurationTestBase {
 
     private String validMediaReportingJson;
     private String validLocationsListJson;
-
-    @MockBean
-    protected AccountManagementService accountManagementService;
-
-    @MockBean
-    protected DataManagementService dataManagementService;
-
-    @MockBean
-    protected SubscriptionManagementService subscriptionManagementService;
 
     @Autowired
     private MockMvc mockMvc;

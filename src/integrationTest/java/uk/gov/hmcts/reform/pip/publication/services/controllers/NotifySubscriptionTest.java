@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
@@ -20,8 +19,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Ser
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
-import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
+import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
 @ActiveProfiles("integration")
-class NotifySubscriptionTest extends RedisConfigurationTestBase {
+class NotifySubscriptionTest extends IntegrationTestBase {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String BULK_SUBSCRIPTION_URL = "/notify/v2/subscription";
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
@@ -63,9 +61,6 @@ class NotifySubscriptionTest extends RedisConfigurationTestBase {
     private final BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
     private final Artefact artefact = new Artefact();
     private final Location location = new Location();
-
-    @MockBean
-    protected DataManagementService dataManagementService;
 
     @Autowired
     private MockMvc mockMvc;

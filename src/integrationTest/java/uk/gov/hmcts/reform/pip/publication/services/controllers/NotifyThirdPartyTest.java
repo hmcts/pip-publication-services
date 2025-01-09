@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
@@ -28,8 +27,7 @@ import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
-import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
+import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -55,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
 @ActiveProfiles("integration")
-class NotifyThirdPartyTest extends RedisConfigurationTestBase {
+class NotifyThirdPartyTest extends IntegrationTestBase {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final String API_SUBSCRIPTION_URL = "/notify/api";
@@ -83,9 +81,6 @@ class NotifyThirdPartyTest extends RedisConfigurationTestBase {
 
     private String thirdPartySubscriptionInput;
     private MockWebServer externalApiMockServer;
-
-    @MockBean
-    protected DataManagementService dataManagementService;
 
     @Autowired
     private MockMvc mockMvc;

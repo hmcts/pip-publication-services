@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
+import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin", "APPROLE_api.request.b2c"})
 @ActiveProfiles("integration-rate-limit")
-class NotifyRateLimitTest extends RedisConfigurationTestBase {
+class NotifyRateLimitTest extends IntegrationTestBase {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String OTP_EMAIL_URL = "/notify/otp";
