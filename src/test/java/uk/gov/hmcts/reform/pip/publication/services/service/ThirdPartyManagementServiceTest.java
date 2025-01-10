@@ -2,14 +2,14 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -31,10 +30,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class ThirdPartyManagementServiceTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class ThirdPartyManagementServiceTest {
     private static final String API_DESTINATION = "testUrl";
     private static final String MESSAGES_MATCH = "Messages should match";
     private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
@@ -48,13 +46,13 @@ class ThirdPartyManagementServiceTest extends RedisConfigurationTestBase {
     private static final Artefact ARTEFACT = new Artefact();
     private static final Location LOCATION = new Location();
 
-    @Autowired
+    @InjectMocks
     private ThirdPartyManagementService thirdPartyManagementService;
 
-    @MockitoBean
+    @Mock
     private DataManagementService dataManagementService;
 
-    @MockitoBean
+    @Mock
     private ThirdPartyService thirdPartyService;
 
     @BeforeAll
@@ -156,6 +154,7 @@ class ThirdPartyManagementServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testHandleThirdPartyEmpty() {
+        when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(LOCATION);
         when(thirdPartyService.handleDeleteThirdPartyCall(API_DESTINATION, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 

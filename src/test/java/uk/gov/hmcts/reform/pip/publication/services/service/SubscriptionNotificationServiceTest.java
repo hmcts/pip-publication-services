@@ -3,13 +3,12 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscriptio
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.util.Base64;
@@ -37,17 +35,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-@SuppressWarnings({"PMD.ExcessiveImports", "PMD.TooManyMethods"})
-class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+@SuppressWarnings("PMD.ExcessiveImports")
+class SubscriptionNotificationServiceTest {
     private static final String EMAIL = "test@email.com";
     private static final String FILE_CONTENT = "123";
     private static final String ARTEFACT_SUMMARY = "Test artefact summary";
@@ -73,13 +71,13 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
     @Mock
     private SendEmailResponse sendEmailResponse;
 
-    @MockitoBean
+    @Mock
     private EmailService emailService;
 
-    @MockitoBean
+    @Mock
     private DataManagementService dataManagementService;
 
-    @Autowired
+    @InjectMocks
     private SubscriptionNotificationService notificationService;
 
     @BeforeEach
@@ -108,14 +106,8 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setLocationId(LOCATION_ID.toString());
 
-        when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
-        when(emailService.sendEmail(any())).thenReturn(sendEmailResponse);
-
-        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
-        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
-        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
-        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.EXCEL, false)).thenReturn(FILE_CONTENT);
-        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(ARTEFACT_FLAT_FILE);
+        lenient().when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
+        lenient().when(emailService.sendEmail(any())).thenReturn(sendEmailResponse);
     }
 
     @Test
@@ -125,6 +117,7 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         ArgumentCaptor<FlatFileSubscriptionEmailData> argument =
             ArgumentCaptor.forClass(FlatFileSubscriptionEmailData.class);
 
+        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(ARTEFACT_FLAT_FILE);
         when(emailService.handleEmailGeneration(argument.capture(),
                                                 eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientFlatFile);
@@ -158,6 +151,10 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         ArgumentCaptor<RawDataSubscriptionEmailData> argument =
             ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
 
+        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.EXCEL, false)).thenReturn(FILE_CONTENT);
+
         when(emailService.handleEmailGeneration(argument.capture(),
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
@@ -187,6 +184,7 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
     void testBulkSubscriptionRequestWhenMultipleSubscriptions() {
         artefact.setIsFlatFile(true);
 
+        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(ARTEFACT_FLAT_FILE);
         when(emailService.handleEmailGeneration(any(FlatFileSubscriptionEmailData.class),
                                                 eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientFlatFile);
@@ -211,6 +209,9 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         ArgumentCaptor<RawDataSubscriptionEmailData> argument =
             ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
 
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
+
         when(emailService.handleEmailGeneration(argument.capture(),
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
@@ -232,6 +233,10 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
 
         ArgumentCaptor<RawDataSubscriptionEmailData> argument =
             ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
 
         when(emailService.handleEmailGeneration(argument.capture(),
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
@@ -255,6 +260,9 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
         ArgumentCaptor<RawDataSubscriptionEmailData> argument =
             ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
 
+        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
+
         when(emailService.handleEmailGeneration(argument.capture(),
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
@@ -276,6 +284,9 @@ class SubscriptionNotificationServiceTest extends RedisConfigurationTestBase {
 
         ArgumentCaptor<RawDataSubscriptionEmailData> argument =
             ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
 
         when(emailService.handleEmailGeneration(argument.capture(),
                                                 eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))

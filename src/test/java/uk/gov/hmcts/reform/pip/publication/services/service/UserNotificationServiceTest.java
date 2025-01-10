@@ -2,12 +2,11 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.AdminWelcomeEmailData;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.util.HashMap;
@@ -39,15 +37,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_EMAIL;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
-class UserNotificationServiceTest extends RedisConfigurationTestBase {
+class UserNotificationServiceTest {
 
     private static final String REJECTION_EMAIL_FIRST_LINE_JSON = "\"id\":\"123e4567-e89b-12d3-a456-426614174000\",";
     private static final String EMAIL = "test@email.com";
@@ -109,20 +107,18 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
     @Mock
     private SendEmailResponse sendEmailResponse;
 
-    @Autowired
-    private UserNotificationService userNotificationService;
-
-    @MockitoBean
+    @Mock
     private EmailService emailService;
+
+    @InjectMocks
+    private UserNotificationService userNotificationService;
 
     @BeforeEach
     void setup() {
         testReasons = new ConcurrentHashMap<>();
         testReasons.put("Reason 1", List.of("Reason short description",  "Reason long description"));
 
-        when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
-        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
-        when(emailService.sendEmail(validEmailBodyForDuplicateMediaUserClient)).thenReturn(sendEmailResponse);
+        lenient().when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
 
         location.setLocationId(LOCATION_ID);
         location.setName(LOCATION_NAME);
@@ -133,6 +129,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
         when(emailService.handleEmailGeneration(any(MediaWelcomeEmailData.class),
                                                 eq(Templates.EXISTING_USER_WELCOME_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
+        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.mediaAccountWelcomeEmailRequest(VALID_BODY_EXISTING),
                      REFERENCE_ID_MESSAGE
@@ -144,6 +141,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
         when(emailService.handleEmailGeneration(any(MediaWelcomeEmailData.class),
                                                 eq(Templates.MEDIA_NEW_ACCOUNT_SETUP)))
             .thenReturn(validEmailBodyForEmailClient);
+        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.mediaAccountWelcomeEmailRequest(VALID_BODY_NEW),
                      REFERENCE_ID_MESSAGE
@@ -155,6 +153,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
         when(emailService.handleEmailGeneration(any(AdminWelcomeEmailData.class),
                                                 eq(Templates.ADMIN_ACCOUNT_CREATION_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
+        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.adminAccountWelcomeEmailRequest(VALID_BODY_AAD),
                      "Azure user with valid JSON should return successful referenceId."
@@ -170,6 +169,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
         when(emailService.handleEmailGeneration(any(MediaDuplicatedAccountEmailData.class),
                                                 eq(Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL)))
             .thenReturn(validEmailBodyForDuplicateMediaUserClient);
+        when(emailService.sendEmail(validEmailBodyForDuplicateMediaUserClient)).thenReturn(sendEmailResponse);
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail),
                      REFERENCE_ID_MESSAGE
@@ -181,6 +181,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
         when(emailService.handleEmailGeneration(any(MediaUserVerificationEmailData.class),
                                                 eq(Templates.MEDIA_USER_VERIFICATION_EMAIL)))
             .thenReturn(validEmailBodyForEmailClient);
+        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
 
         assertEquals(
             SUCCESS_REF_ID,
@@ -194,6 +195,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
         when(emailService.handleEmailGeneration(any(InactiveUserNotificationEmailData.class),
                                                 eq(Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD)))
             .thenReturn(validEmailBodyForEmailClient);
+        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.inactiveUserNotificationEmailRequest(
                          INACTIVE_USER_NOTIFICATION_EMAIL_AAD),
@@ -206,6 +208,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
         when(emailService.handleEmailGeneration(any(InactiveUserNotificationEmailData.class),
                                                 eq(Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT)))
             .thenReturn(validEmailBodyForEmailClient);
+        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.inactiveUserNotificationEmailRequest(
                          INACTIVE_USER_NOTIFICATION_EMAIL_CFT),
@@ -218,6 +221,7 @@ class UserNotificationServiceTest extends RedisConfigurationTestBase {
         when(emailService.handleEmailGeneration(any(InactiveUserNotificationEmailData.class),
                                                 eq(Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME)))
             .thenReturn(validEmailBodyForEmailClient);
+        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
 
         assertEquals(SUCCESS_REF_ID, userNotificationService.inactiveUserNotificationEmailRequest(
                          INACTIVE_USER_NOTIFICATION_EMAIL_CRIME),

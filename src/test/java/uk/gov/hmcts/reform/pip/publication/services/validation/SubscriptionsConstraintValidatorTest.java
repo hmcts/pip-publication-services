@@ -30,5 +30,4 @@ class SubscriptionsConstraintValidatorTest {
         subscriptions.put(SubscriptionTypes.CASE_URN, List.of());
         assertFalse(subscriptionsConstraintValidator.isValid(subscriptions, null), "Marked as valid when invalid");
     }
-
 }
