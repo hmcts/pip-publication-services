@@ -1,15 +1,13 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelGenerationService;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -22,11 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@Slf4j
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class FileCreationServiceTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class FileCreationServiceTest {
 
     @Mock
     private DataManagementService dataManagementService;
@@ -42,6 +38,7 @@ class FileCreationServiceTest extends RedisConfigurationTestBase {
 
     @InjectMocks
     private FileCreationService fileCreationService;
+
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
     private static final byte[] TEST_BYTE = "Test byte".getBytes();

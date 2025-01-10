@@ -2,16 +2,15 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.sub
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
-import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.List;
 import java.util.Map;
@@ -19,10 +18,9 @@ import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.DELETE_LOCATION_SUBSCRIPTION;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class LocationSubscriptionDeletionEmailGeneratorTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class LocationSubscriptionDeletionEmailGeneratorTest {
     private static final String EMAIL1 = "test1@testing.com";
     private static final String EMAIL2 = "test2@testing.com";
     private static final String EMAIL3 = "test3@testing.com";
@@ -36,16 +34,14 @@ class LocationSubscriptionDeletionEmailGeneratorTest extends RedisConfigurationT
     private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
-    @Autowired
-    private NotifyConfigProperties notifyConfigProperties;
+    @Mock
+    private PersonalisationLinks personalisationLinks;
 
-    @Autowired
+    @InjectMocks
     private LocationSubscriptionDeletionEmailGenerator emailGenerator;
 
     @Test
     void testBuildLocationSubscriptionDeletionEmail() {
-        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
-
         LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion(
             LOCATION_NAME, List.of(EMAIL1, EMAIL2, EMAIL3)
         );

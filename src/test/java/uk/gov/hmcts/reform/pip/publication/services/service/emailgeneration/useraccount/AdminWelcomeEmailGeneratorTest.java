@@ -2,25 +2,24 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.use
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.AdminWelcomeEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.Map;
 
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.ADMIN_ACCOUNT_CREATION_EMAIL;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class AdminWelcomeEmailGeneratorTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class AdminWelcomeEmailGeneratorTest {
     private static final String EMAIL = "test@testing.com";
     private static final String NAME = "Name";
 
@@ -28,20 +27,24 @@ class AdminWelcomeEmailGeneratorTest extends RedisConfigurationTestBase {
     private static final String RESET_PASSWORD_LINK = "reset_password_link";
     private static final String ADMIN_DASHBOARD_LINK = "admin_dashboard_link";
 
+    private static final String RESET_PASSWORD_LINK_ADDRESS = "http://www.test-link1.com";
+    private static final String ADMIN_DASHBOARD_LINK_ADDRESS = "http://www.test-link2.com";
+
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
     private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
-    @Autowired
-    private NotifyConfigProperties notifyConfigProperties;
+    @Mock
+    private PersonalisationLinks personalisationLinks;
 
-    @Autowired
+    @InjectMocks
     private AdminWelcomeEmailGenerator emailGenerator;
 
     @Test
     void testBuildAdminAccountWelcomeEmail() {
-        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+        when(personalisationLinks.getAadPwResetLinkAdmin()).thenReturn(RESET_PASSWORD_LINK_ADDRESS);
+        when(personalisationLinks.getAdminDashboardLink()).thenReturn(ADMIN_DASHBOARD_LINK_ADDRESS);
 
         CreatedAdminWelcomeEmail welcomeEmail = new CreatedAdminWelcomeEmail(EMAIL, NAME, NAME);
         AdminWelcomeEmailData emailData = new AdminWelcomeEmailData(welcomeEmail);
@@ -70,10 +73,10 @@ class AdminWelcomeEmailGeneratorTest extends RedisConfigurationTestBase {
 
         softly.assertThat(personalisation.get(RESET_PASSWORD_LINK))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(personalisationLinks.getAadPwResetLinkAdmin());
+            .isEqualTo(RESET_PASSWORD_LINK_ADDRESS);
 
         softly.assertThat(personalisation.get(ADMIN_DASHBOARD_LINK))
-            .as(PERSONALISATION_MESSAGE)
+            .as(ADMIN_DASHBOARD_LINK_ADDRESS)
             .isEqualTo(personalisationLinks.getAdminDashboardLink());
 
         softly.assertAll();
