@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.service.AccountManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
@@ -25,16 +25,16 @@ public class IntegrationTestBase extends RedisConfigurationTestBase {
 
     private static String emailResponseValue;
 
-    @MockBean
+    @MockitoBean
     protected AccountManagementService accountManagementService;
 
-    @MockBean
+    @MockitoBean
     protected DataManagementService dataManagementService;
 
-    @MockBean
+    @MockitoBean
     protected SubscriptionManagementService subscriptionManagementService;
 
-    @MockBean
+    @MockitoBean
     EmailClient emailClient;
 
     @BeforeAll
