@@ -455,7 +455,7 @@ class NotificationEmailTests extends FunctionalTestBase {
                     null, NOTIFICATION_TYPE, referenceId, null
                 );
                 return notificationList != null
-                    && notificationList.getNotifications().size() == 2;
+                    && notificationList.getNotifications().size() == 1;
             });
 
         NotificationList notificationList = notificationClient.getNotifications(
