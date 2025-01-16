@@ -10,7 +10,6 @@ import uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient;
 import uk.gov.hmcts.pip.publication.services.utils.FunctionalTestBase;
 import uk.gov.hmcts.pip.publication.services.utils.OAuthClient;
 import uk.gov.hmcts.reform.pip.model.account.UserProvenances;
-import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
 import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.model.system.admin.CreateSystemAdminAction;
@@ -50,7 +49,6 @@ class NotificationEmailTests extends FunctionalTestBase {
     private static final String DUPLICATE_MEDIA_USER_EMAIL_URL = NOTIFY_URL + "/duplicate/media";
     private static final String REJECTED_MEDIA_ACCOUNT_EMAIL_URL = NOTIFY_URL + "/media/reject";
     private static final String CREATED_ADMIN_WELCOME_EMAIL = NOTIFY_URL + "/created/admin";
-    private static final String LOCATION_SUBSCRIPTION_EMAIL_URL = NOTIFY_URL + "/location-subscription-delete";
     private static final String SYSADMIN_UPDATE_EMAIL_URL = NOTIFY_URL + "/sysadmin/update";
 
     private static final String TEST_USER_EMAIL_PREFIX = String.format(
@@ -59,7 +57,6 @@ class NotificationEmailTests extends FunctionalTestBase {
     private static final String LAST_SIGNED_IN_DATE = "2023-12-12 11:49:28.532005";
     private static final String TEST_INVALID_EMAIL = "test_user";
     private static final String TEST_FULL_NAME = "test user";
-    private static final String TEST_LOCATION = "test location";
     private static final String TEST_EMAIL_SUBJECT = "Reportable action – Add User";
     private static final ActionResult TEST_ACTION = ATTEMPTED;
     private static final ChangeType TEST_CHANGE_TYPE = ADD_USER;
