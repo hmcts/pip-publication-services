@@ -46,6 +46,15 @@ public class FunctionalTestBase extends RedisConfigurationTestBase {
             .thenReturn();
     }
 
+    protected Response doPostRequestWithoutBody(final String path, final Map<String, String> additionalHeaders) {
+        return given()
+            .relaxedHTTPSValidation()
+            .headers(getRequestHeaders(additionalHeaders))
+            .when()
+            .post(path)
+            .thenReturn();
+    }
+
     private static Map<String, String> getRequestHeaders(final Map<String, String> additionalHeaders) {
         final Map<String, String> headers = new ConcurrentHashMap<>(Map.of(CONTENT_TYPE, CONTENT_TYPE_VALUE));
         if (!CollectionUtils.isEmpty(additionalHeaders)) {
