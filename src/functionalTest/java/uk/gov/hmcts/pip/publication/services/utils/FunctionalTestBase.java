@@ -66,8 +66,8 @@ public class FunctionalTestBase extends RedisConfigurationTestBase {
             .thenReturn();
     }
 
-    protected Response doDataManagementPostRequestMultiPart(final String path, final Map<String, String> additionalHeaders,
-                                                            final File multipartFile) {
+    protected Response doDataManagementPostRequestMultiPart(final String path, final Map<String,
+        String> additionalHeaders, final File multipartFile) {
 
         return given()
             .relaxedHTTPSValidation()

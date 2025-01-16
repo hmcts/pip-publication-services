@@ -15,8 +15,13 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient;
 import uk.gov.hmcts.pip.publication.services.utils.FunctionalTestBase;
 import uk.gov.hmcts.pip.publication.services.utils.OAuthClient;
-import uk.gov.hmcts.reform.pip.model.publication.*;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.*;
+import uk.gov.hmcts.reform.pip.model.publication.Artefact;
+import uk.gov.hmcts.reform.pip.model.publication.ArtefactType;
+import uk.gov.hmcts.reform.pip.model.publication.Language;
+import uk.gov.hmcts.reform.pip.model.publication.ListType;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.NotificationList;
@@ -41,6 +46,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient.NOTIFICATION_TYPE;
 import static uk.gov.hmcts.pip.publication.services.utils.TestUtil.randomLocationId;
 
+@SuppressWarnings({"PMD.ExcessiveImports"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles(profiles = "functional")
 @SpringBootTest(classes = {OAuthClient.class, EmailNotificationClient.class})
@@ -68,6 +74,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     private static final String TEST_CASE_URN = "Test Case URN";
     private static final String LOCATION_ID = randomLocationId();
     private static final String LOCATION_NAME = "TestLocation" + LOCATION_ID;
+    private static final String EMAIL_SUBJECT_TEXT = " – your email subscriptions";
     private static final String EMAIL_BODY = "Manage your subscriptions, view lists and additional case information";
     private static final String EMAIL_ADDRESS_ERROR = "Email address does not match";
     private static final String EMAIL_SUBJECT_ERROR = "Email subject does not match";
@@ -82,7 +89,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     private UUID jsonArtefactIdWelsh;
 
     private String getJsonString(String file) throws IOException {
-        try (InputStream jsonFile = this.getClass().getClassLoader()
+        try (InputStream jsonFile = Thread.currentThread().getContextClassLoader()
             .getResourceAsStream(file)) {
             return new String(jsonFile.readAllBytes(), StandardCharsets.UTF_8);
         }
@@ -128,7 +135,8 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         headerMapUploadFlatFile.put("x-language", LANGUAGE.toString());
         headerMapUploadFlatFile.put("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE);
 
-        String filePath = this.getClass().getClassLoader().getResource("data/testFlatFile.pdf").getPath();
+        String filePath = Thread.currentThread().getContextClassLoader()
+            .getResource("data/testFlatFile.pdf").getPath();
         File pdfFile = new File(filePath);
 
         final Response responseUploadFlatFile = doDataManagementPostRequestMultiPart(
@@ -227,7 +235,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
-            .hasValue(LOCATION_NAME + " – your email subscriptions");
+            .hasValue(LOCATION_NAME + EMAIL_SUBJECT_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_NAME_ERROR)
@@ -264,7 +272,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
-            .hasValue(LOCATION_NAME + " – your email subscriptions");
+            .hasValue(LOCATION_NAME + EMAIL_SUBJECT_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_NAME_ERROR)
@@ -301,7 +309,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
-            .hasValue(LOCATION_NAME + " – your email subscriptions");
+            .hasValue(LOCATION_NAME + EMAIL_SUBJECT_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_NAME_ERROR)
@@ -335,7 +343,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
             .hasValue("With case number or ID " + TEST_CASE_NUMBER
-                          + " (TestCaseName) " + LOCATION_NAME + " – your email subscriptions");
+                          + " (TestCaseName) " + LOCATION_NAME + EMAIL_SUBJECT_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_NAME_ERROR)
@@ -372,7 +380,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
             .hasValue("With unique reference number " + TEST_CASE_URN + " "
-                          + LOCATION_NAME + " – your email subscriptions");
+                          + LOCATION_NAME + EMAIL_SUBJECT_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_NAME_ERROR)
