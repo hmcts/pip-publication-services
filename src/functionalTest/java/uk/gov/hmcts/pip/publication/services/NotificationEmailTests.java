@@ -377,7 +377,7 @@ class NotificationEmailTests extends FunctionalTestBase {
     @Test
     void shouldSendLocationSubscriptionDeletionEmail() throws NotificationClientException {
         LocationSubscriptionDeletion requestBody = new LocationSubscriptionDeletion(TEST_LOCATION,
-                                                                                    List.of(TEST_EMAIL, TEST_EMAIL));
+                                                                                    List.of(TEST_EMAIL));
 
         final Response response = doPostRequest(
             LOCATION_SUBSCRIPTION_EMAIL_URL,
@@ -437,7 +437,7 @@ class NotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
-            .hasValue(String.format("Reportable Action - %s", TEST_CHANGE_TYPE));
+            .contains(String.format("Reportable Action - %s", TEST_CHANGE_TYPE));
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
