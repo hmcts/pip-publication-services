@@ -375,7 +375,7 @@ class NotificationEmailTests extends FunctionalTestBase {
     }
 
     @Test
-    void shouldSendLocationSubscriptionDeletionEmailToUser() throws NotificationClientException {
+    void shouldSendLocationSubscriptionDeletionEmail() throws NotificationClientException {
         LocationSubscriptionDeletion requestBody = new LocationSubscriptionDeletion(TEST_LOCATION,
                                                                                     List.of(TEST_EMAIL, TEST_EMAIL));
 
@@ -385,32 +385,20 @@ class NotificationEmailTests extends FunctionalTestBase {
             requestBody
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-
-        String referenceId = response.getBody().asString();
-        assertThat(referenceId)
-            .isNotEmpty();
-
-        Awaitility.with()
-            .pollInterval(1, SECONDS)
-            .await()
-            .until(() -> {
-                NotificationList notificationList = notificationClient.getNotifications(
-                    null, NOTIFICATION_TYPE, referenceId, null
-                );
-                return notificationList != null
-                    && notificationList.getNotifications().size() == 2;
-            });
-
-        NotificationList notificationList = notificationClient.getNotifications(
-            null, NOTIFICATION_TYPE, referenceId, null
-        );
-
-        Notification notification = notificationList.getNotifications().getFirst();
+        Notification notification = extractNotification(response);
 
         assertThat(notification.getEmailAddress())
             .as(EMAIL_ADDRESS_ERROR)
             .hasValue(TEST_EMAIL);
+
+        assertThat(notification.getSubject())
+            .as(EMAIL_SUBJECT_ERROR)
+            .hasValue(String.format("Subscription for %s has been deleted", TEST_LOCATION));
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains(String.format("As part of routine maintenance of the court and tribunal hearings service"
+                                       + " we have had to delete %s from our service", TEST_LOCATION));
     }
 
     @Test
@@ -441,36 +429,23 @@ class NotificationEmailTests extends FunctionalTestBase {
             systemAdminAction
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-
-        String referenceId = response.getBody().asString();
-        assertThat(referenceId)
-            .isNotEmpty();
-
-        Awaitility.with()
-            .pollInterval(1, SECONDS)
-            .await()
-            .until(() -> {
-                NotificationList notificationList = notificationClient.getNotifications(
-                    null, NOTIFICATION_TYPE, referenceId, null
-                );
-                return notificationList != null
-                    && notificationList.getNotifications().size() == 1;
-            });
-
-        NotificationList notificationList = notificationClient.getNotifications(
-            null, NOTIFICATION_TYPE, referenceId, null
-        );
-
-        Notification notification = notificationList.getNotifications().getFirst();
+        Notification notification = extractNotification(response);
 
         assertThat(notification.getEmailAddress())
             .as(EMAIL_ADDRESS_ERROR)
             .hasValue(TEST_EMAIL);
+
+        assertThat(notification.getSubject())
+            .as(EMAIL_SUBJECT_ERROR)
+            .hasValue(String.format("Reportable Action - %s", TEST_CHANGE_TYPE));
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains(String.format("Please be aware that %s has attempted to execute a Add User change", TEST_EMAIL));
     }
 
     @Test
-    void shouldReturnNotifyExceptionErrorMessageWhenTargetSystemAdminEmailIsInvalid() {
+    void shouldReturnBadPayloadExceptionErrorMessageWhenTargetSystemAdminEmailIsInvalid() {
         CreateSystemAdminAction systemAdminAction = createSystemAdminUpdateAction();
         systemAdminAction.setEmailList(List.of(TEST_INVALID_EMAIL));
 
