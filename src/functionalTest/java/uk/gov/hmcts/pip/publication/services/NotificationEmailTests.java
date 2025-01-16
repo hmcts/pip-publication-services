@@ -57,7 +57,6 @@ class NotificationEmailTests extends FunctionalTestBase {
     private static final String LAST_SIGNED_IN_DATE = "2023-12-12 11:49:28.532005";
     private static final String TEST_INVALID_EMAIL = "test_user";
     private static final String TEST_FULL_NAME = "test user";
-//    private static final String TEST_EMAIL_SUBJECT = "Reportable action – Add User";
     private static final ActionResult TEST_ACTION = ATTEMPTED;
     private static final ChangeType TEST_CHANGE_TYPE = ADD_USER;
 
@@ -387,10 +386,6 @@ class NotificationEmailTests extends FunctionalTestBase {
         assertThat(notification.getEmailAddress())
             .as(EMAIL_ADDRESS_ERROR)
             .hasValue(TEST_EMAIL);
-
-//        assertThat(notification.getSubject())
-//            .as(EMAIL_SUBJECT_ERROR)
-//            .contains(TEST_EMAIL_SUBJECT);
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
