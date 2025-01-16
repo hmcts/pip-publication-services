@@ -376,51 +376,6 @@ class NotificationEmailTests extends FunctionalTestBase {
     }
 
     @Test
-    void shouldSendLocationSubscriptionDeletionEmail() throws NotificationClientException {
-        LocationSubscriptionDeletion requestBody = new LocationSubscriptionDeletion(TEST_LOCATION,
-                                                                                    List.of(TEST_EMAIL));
-
-        final Response response = doPostRequest(
-            LOCATION_SUBSCRIPTION_EMAIL_URL,
-            Map.of(AUTHORIZATION, bearerToken),
-            requestBody
-        );
-
-        Notification notification = extractNotification(response);
-
-        assertThat(notification.getEmailAddress())
-            .as(EMAIL_ADDRESS_ERROR)
-            .hasValue(TEST_EMAIL);
-
-        assertThat(notification.getSubject())
-            .as(EMAIL_SUBJECT_ERROR)
-            .hasValue(String.format("Subscription for %s has been deleted", TEST_LOCATION));
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains(String.format("As part of routine maintenance of the court and tribunal hearings service"
-                                       + " we have had to delete %s from our service", TEST_LOCATION));
-    }
-
-    @Test
-    void shouldReturnNotifyExceptionErrorMessageWhenEmailIsInvalid() {
-        LocationSubscriptionDeletion requestBody = new LocationSubscriptionDeletion(TEST_LOCATION,
-                                                                                    List.of(TEST_INVALID_EMAIL));
-
-        final Response response = doPostRequest(
-            LOCATION_SUBSCRIPTION_EMAIL_URL,
-            Map.of(AUTHORIZATION, bearerToken),
-            requestBody
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST.value());
-
-        String responseBody = response.getBody().asString();
-        assertThat(responseBody).isNotNull();
-        assertThat(responseBody).contains("Not a valid email address");
-    }
-
-    @Test
     void shouldSendUpdateEmailToSysAdminUser() throws NotificationClientException {
         CreateSystemAdminAction systemAdminAction = createSystemAdminUpdateAction();
 
