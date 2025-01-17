@@ -121,7 +121,7 @@ public class DataManagementService {
             return webClient.get().uri(String.format("%s/publication/mi-data", url))
                 .retrieve()
                 .bodyToMono(String.class).block();
-        } catch (WebClientRequestException ex) {
+        } catch (WebClientResponseException | WebClientRequestException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
     }
