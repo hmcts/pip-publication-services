@@ -75,7 +75,7 @@ public class FileCreationService {
         return excelGenerationService.generateMultiSheetWorkBook(extractMiData());
     }
 
-    private Map<String, List<String[]>> extractMiData() {
+    Map<String, List<String[]>> extractMiData() {
         Map<String, List<String[]>> data = new ConcurrentHashMap<>();
 
         List<String[]> artefactData = formatData(dataManagementService.getMiData());
