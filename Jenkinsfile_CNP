@@ -40,6 +40,7 @@ def setupTestSecrets() {
     env.PI_TEAM_EMAIL = "${PI_TEAM_EMAIL}"
     env.CLIENT_ID_FT = "${CLIENT_ID_FT}"
     env.CLIENT_SECRET_FT = "${CLIENT_SECRET_FT}"
+    env.DATA_MANAGEMENT_URL = 'https://pip-data-management.staging.platform.hmcts.net'
   }
 }
 
