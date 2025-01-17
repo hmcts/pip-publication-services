@@ -95,8 +95,8 @@ class FileCreationServiceTest {
     void testExtractMiData() {
         when(dataManagementService.getMiData()).thenReturn("a,b,c\nd,e,f");
         when(accountManagementService.getMiData()).thenReturn("g,h,i\nj,k,l");
-        when(subscriptionManagementService.getAllMiData()).thenReturn("m,n,o\np,q,r");
-        when(subscriptionManagementService.getLocationMiData()).thenReturn("p,q,r");
+        when(subscriptionManagementService.getAllMiData()).thenReturn("m,n,o");
+        when(subscriptionManagementService.getLocationMiData()).thenReturn(null);
 
         Map<String, List<String[]>> results = fileCreationService.extractMiData();
 
@@ -114,7 +114,7 @@ class FileCreationServiceTest {
 
         assertThat(results)
             .as(MI_DATA_MATCH_MESSAGE)
-            .containsKey(LOCATION_SUBSCRIPTION_MI_DATA);
+            .doesNotContainKey(LOCATION_SUBSCRIPTION_MI_DATA);
 
         List<String[]> publicationMiData = results.get(PUBLICATION_MI_DATA);
         assertThat(publicationMiData)
@@ -137,18 +137,9 @@ class FileCreationServiceTest {
         List<String[]> allSubscriptionMiData = results.get(ALL_SUBSCRIPTION_MI_DATA);
         assertThat(allSubscriptionMiData)
             .as(MI_DATA_MATCH_MESSAGE)
-            .hasSize(2)
-            .containsExactly(
-                new String[]{"m", "n", "o"},
-                new String[]{"p", "q", "r"}
-            );
-
-        List<String[]> locationSubscriptionMiData = results.get(LOCATION_SUBSCRIPTION_MI_DATA);
-        assertThat(locationSubscriptionMiData)
-            .as(MI_DATA_MATCH_MESSAGE)
             .hasSize(1)
             .containsExactly(
-                new String[]{"p", "q", "r"}
+                new String[]{"m", "n", "o"}
             );
     }
 }
