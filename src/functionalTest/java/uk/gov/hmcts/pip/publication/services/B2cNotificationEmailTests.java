@@ -2,6 +2,7 @@ package uk.gov.hmcts.pip.publication.services;
 
 import io.restassured.response.Response;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient.NOTIFICATION_TYPE;
 
@@ -30,8 +32,9 @@ class B2cNotificationEmailTests extends FunctionalTestBase {
     private static final String NOTIFY_URL = "/notify";
     private static final String OTP_EMAIL_URL = NOTIFY_URL + "/otp";
 
-    private static final String TEST_EMAIL = String.format(
-        "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999)) + "@justice.gov.uk";
+    private static final String TEST_USER_EMAIL_PREFIX = String.format(
+        "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999));
+    private static final String TEST_EMAIL = TEST_USER_EMAIL_PREFIX + "@justice.gov.uk";
     private static final String TEST_OTP = "OTP1234";
     private static final String TEST_INVALID_EMAIL = "test";
 
@@ -42,13 +45,23 @@ class B2cNotificationEmailTests extends FunctionalTestBase {
     @Autowired
     private EmailNotificationClient notificationClient;
 
+    @Autowired
+    private OAuthClient authClient;
+
+    protected String b2cBearerToken;
+
+    @BeforeEach
+    void setUp() {
+        b2cBearerToken = authClient.generateB2cBearerToken();
+    }
+
     @Test
     void shouldSendOtpEmail() throws NotificationClientException {
         OtpEmail requestBody = new OtpEmail(TEST_OTP, TEST_EMAIL);
 
         final Response response = doPostRequest(
             OTP_EMAIL_URL,
-            Map.of(AUTHORIZATION, bearerToken),
+            Map.of(AUTHORIZATION, b2cBearerToken),
             requestBody
         );
 
@@ -95,7 +108,7 @@ class B2cNotificationEmailTests extends FunctionalTestBase {
 
         final Response response = doPostRequest(
             OTP_EMAIL_URL,
-            Map.of(AUTHORIZATION, bearerToken),
+            Map.of(AUTHORIZATION, b2cBearerToken),
             requestBody
         );
 
@@ -104,5 +117,18 @@ class B2cNotificationEmailTests extends FunctionalTestBase {
         String responseMessage = response.getBody().asString();
         assertThat(responseMessage).isNotEmpty();
         assertThat(responseMessage).contains("must be a well-formed email address");
+    }
+
+    @Test
+    void shouldReturnForbiddenWhenUserNotAuthorized() {
+        OtpEmail requestBody = new OtpEmail(TEST_OTP, TEST_EMAIL);
+
+        final Response response = doPostRequest(
+            OTP_EMAIL_URL,
+            Map.of(AUTHORIZATION, bearerToken),
+            requestBody
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN.value());
     }
 }
