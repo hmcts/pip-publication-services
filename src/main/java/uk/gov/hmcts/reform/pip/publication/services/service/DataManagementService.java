@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
@@ -120,7 +121,7 @@ public class DataManagementService {
             return webClient.get().uri(String.format("%s/publication/mi-data", url))
                 .retrieve()
                 .bodyToMono(String.class).block();
-        } catch (WebClientResponseException ex) {
+        } catch (WebClientRequestException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
     }
