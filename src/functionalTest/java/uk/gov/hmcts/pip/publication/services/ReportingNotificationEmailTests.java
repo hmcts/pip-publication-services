@@ -153,6 +153,19 @@ class ReportingNotificationEmailTests extends FunctionalTestBase {
         assertThat(notification.getEmailAddress())
             .as(EMAIL_ADDRESS_ERROR)
             .hasValue(PI_TEAM_EMAIL);
+
+        assertThat(notification.getSubject().get())
+            .as(EMAIL_SUBJECT_ERROR)
+            .contains("MI Reporting");
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains("Here is today’s MI report containing information for all user accounts, all subscriptions, "
+                          + "location subscriptions and all publications.");
+
+        assertThat(notification.getBody())
+            .as(EMAIL_LINK_ERROR)
+            .contains(NOTIFY_LINK);
     }
 
     private Notification readNotification(String referenceId) throws NotificationClientException {
