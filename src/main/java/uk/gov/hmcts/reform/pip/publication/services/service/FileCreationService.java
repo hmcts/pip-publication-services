@@ -101,7 +101,7 @@ public class FileCreationService {
     }
 
     private List<String[]> formatData(String data) {
-        return data == null ? Collections.emptyList() : data.lines()
+        return data.lines()
             .map(l -> l.split(","))
             .toList();
     }
