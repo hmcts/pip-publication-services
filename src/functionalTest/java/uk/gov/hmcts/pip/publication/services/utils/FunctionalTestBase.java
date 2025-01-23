@@ -53,6 +53,15 @@ public class FunctionalTestBase extends RedisConfigurationTestBase {
             .post(path)
             .thenReturn();
     }
+  
+    protected Response doPostRequestWithoutBody(final String path, final Map<String, String> additionalHeaders) {
+        return given()
+            .relaxedHTTPSValidation()
+            .headers(getRequestHeaders(additionalHeaders))
+            .when()
+            .post(path)
+            .thenReturn();
+    }
 
     protected Response doDataManagementPostRequest(final String path, final Map<String, String> additionalHeaders,
                                                    final Object body) {
