@@ -1,0 +1,140 @@
+{
+  "document": {
+    "publicationDate": "2016-09-13T23:30:52.123Z"
+  },
+  "venue": {
+    "venueName": "PRESTON",
+    "venueContact": {
+      "venueTelephone": "01772 844700",
+      "venueEmail": "court1@moj.gov.uk"
+    },
+    "venueAddress": {
+      "line": [
+        "Address Line 1"
+      ],
+      "postCode": "Postcode"
+    }
+  },
+  "courtLists": [
+    {
+      "courtHouse": {
+        "courtHouseName": "PRESTON",
+        "courtHouseAddress": {
+          "line": [
+            "Address Line 1"
+          ],
+          "postCode": "AA1 AA1"
+        },
+        "courtRoom": [
+          {
+            "courtRoomName": "1",
+            "session": [
+              {
+                "sessionChannel": [
+                  "VIDEO HEARING"
+                ],
+                "sittings": [
+                  {
+                    "sittingStart": "2023-05-15T16:00:00.000Z",
+                    "sittingEnd": "2023-05-15T16:00:00.000Z",
+                    "hearing": [
+                      {
+                        "hearingType": "Hearing Type",
+                        "party": [
+                          {
+                            "partyRole": "APPLICANT",
+                            "individualDetails": {
+                              "individualSurname": "Applicant Surname"
+                            }
+                          },
+                          {
+                            "partyRole": "RESPONDENT",
+                            "organisationDetails": {
+                              "organisationName": "Respondent Org Name"
+                            }
+                          },
+                          {
+                            "partyRole": "APPLICANT_REPRESENTATIVE",
+                            "individualDetails": {
+                              "individualSurname": "Applicant Rep Surname"
+                            }
+                          },
+                          {
+                            "partyRole": "RESPONDENT_REPRESENTATIVE",
+                            "organisationDetails": {
+                              "organisationName": "Respondent Rep Surname"
+                            }
+                          }
+                        ],
+                        "case": [
+                          {
+                            "caseName": "TestCaseName",
+                            "caseNumber": "987654321",
+                            "caseType": "Case Type"
+                          }
+                        ]
+                      },
+                      {
+                        "hearingType": "Hearing Type",
+                        "case": [
+                          {
+                            "caseName": "A Vs B",
+                            "caseNumber": "12345678",
+                            "caseSequenceIndicator": "2 of 3",
+                            "caseType": "Case Type"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "courtRoomName": "1",
+            "session": [
+              {
+                "sessionChannel": [
+                  "Session Channel"
+                ],
+                "judiciary": [
+                  {
+                    "johNameSurname": "Test Name",
+                    "johTitle": "District Judge"
+                  }
+                ],
+                "sittings": [
+                  {
+                    "sittingStart": "2023-05-15T16:00:00.000Z",
+                    "sittingEnd": "2023-05-15T16:00:00.000Z",
+                    "hearing": [
+                      {
+                        "hearingType": "Hearing Type",
+                        "case": [
+                          {
+                            "caseName": "John Smith v Jane Doe",
+                            "caseNumber": "4568454842",
+                            "caseType": "Case Type"
+                          },
+                          {
+                            "caseName": "This is another case name",
+                            "caseNumber": "This is a case number",
+                            "caseType": "Case Type"
+                          }
+                        ]
+                      }
+                    ],
+                    "channel": [
+                      "VIDEO HEARING"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

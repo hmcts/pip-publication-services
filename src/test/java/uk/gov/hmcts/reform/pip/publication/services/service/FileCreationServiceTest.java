@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,6 +57,12 @@ class FileCreationServiceTest {
         + REQUEST_DATE.format(DATE_TIME_FORMATTER) + "\",\"REJECTED\",\""
         + STATUS_DATE.format(DATE_TIME_FORMATTER) + "\"";
 
+    private static final String PUBLICATION_MI_DATA = "Publications";
+    private static final String ACCOUNT_MI_DATA = "User accounts";
+    private static final String ALL_SUBSCRIPTION_MI_DATA = "All subscriptions";
+    private static final String LOCATION_SUBSCRIPTION_MI_DATA = "Location subscriptions";
+    private static final String MI_DATA_MATCH_MESSAGE = "MI data does not match";
+
     @Test
     void testCreateMediaApplicationReportingCsvSuccess() {
         byte[] result = fileCreationService.createMediaApplicationReportingCsv(MEDIA_APPLICATION_LIST);
@@ -82,5 +89,66 @@ class FileCreationServiceTest {
         when(excelGenerationService.generateMultiSheetWorkBook(any())).thenReturn(TEST_BYTE);
 
         assertThat(fileCreationService.generateMiReport()).isEqualTo(TEST_BYTE);
+    }
+
+    @Test
+    void testExtractMiData() {
+        when(dataManagementService.getMiData()).thenReturn("a,b,c\nd,e,f");
+        when(accountManagementService.getMiData()).thenReturn("g,h,i\nj,k,l");
+        when(subscriptionManagementService.getAllMiData()).thenReturn("m,n,o\np,q,r");
+        when(subscriptionManagementService.getLocationMiData()).thenReturn("m,n,o");
+
+        Map<String, List<String[]>> results = fileCreationService.extractMiData();
+
+        assertThat(results)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .containsKey(PUBLICATION_MI_DATA);
+
+        assertThat(results)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .containsKey(ACCOUNT_MI_DATA);
+
+        assertThat(results)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .containsKey(ALL_SUBSCRIPTION_MI_DATA);
+
+        assertThat(results)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .containsKey(LOCATION_SUBSCRIPTION_MI_DATA);
+
+        List<String[]> publicationMiData = results.get(PUBLICATION_MI_DATA);
+        assertThat(publicationMiData)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .hasSize(2)
+            .containsExactly(
+                new String[]{"a", "b", "c"},
+                new String[]{"d", "e", "f"}
+            );
+
+        List<String[]> accountMiData = results.get(ACCOUNT_MI_DATA);
+        assertThat(accountMiData)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .hasSize(2)
+            .containsExactly(
+                new String[]{"g", "h", "i"},
+                new String[]{"j", "k", "l"}
+            );
+
+        List<String[]> allSubscriptionMiData = results.get(ALL_SUBSCRIPTION_MI_DATA);
+        assertThat(allSubscriptionMiData)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .hasSize(2)
+            .containsExactly(
+                new String[]{"m", "n", "o"},
+                new String[]{"p", "q", "r"}
+            );
+
+        List<String[]> locationSubscriptionMiData = results.get(LOCATION_SUBSCRIPTION_MI_DATA);
+        assertThat(locationSubscriptionMiData)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .hasSize(1)
+            .containsExactly(
+                new String[]{"m", "n", "o"}
+            );
     }
 }
