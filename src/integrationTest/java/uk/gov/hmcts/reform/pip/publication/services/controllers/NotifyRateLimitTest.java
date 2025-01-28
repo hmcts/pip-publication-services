@@ -15,10 +15,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
+import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
 import java.io.IOException;
 
@@ -29,13 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings({"PMD.UnitTestShouldIncludeAssert"})
-@SpringBootTest(classes = {Application.class},
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @AutoConfigureMockMvc
-@DirtiesContext
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin", "APPROLE_api.request.b2c"})
 @ActiveProfiles("integration-rate-limit")
-class NotifyRateLimitTest extends RedisConfigurationTestBase {
+class NotifyRateLimitTest extends IntegrationTestBase {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String OTP_EMAIL_URL = "/notify/otp";
