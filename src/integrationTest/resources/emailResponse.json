@@ -1,0 +1,13 @@
+{
+  "id": "70494df0-31c1-4290-bbd2-7bfe7acfeb81",
+  "reference": "reference",
+  "content": {
+    "body": "body",
+    "subject": "subject"
+  },
+  "template": {
+    "id": "70494df0-31c1-4290-bbd2-7bfe7acfeb82",
+    "version": 1,
+    "uri": "uri"
+  }
+}
