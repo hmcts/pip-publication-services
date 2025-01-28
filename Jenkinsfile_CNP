@@ -18,16 +18,22 @@ def setupTestSecrets() {
       secret('gov-uk-notify-test-api-key', 'NOTIFY_API_KEY'),
       secret('pip-team-email', 'PI_TEAM_EMAIL'),
       secret('app-pip-publication-services-scope', 'APP_URI'),
+      secret('app-pip-data-management-scope', 'DATA_MANAGEMENT_AZ_API'),
       secret('app-tenant', 'TENANT_ID'),
       secret('app-pip-data-management-id', 'CLIENT_ID_FT'),
-      secret('app-pip-data-management-pwd', 'CLIENT_SECRET_FT')
+      secret('app-pip-data-management-pwd', 'CLIENT_SECRET_FT'),
+      secret('app-pip-apim-admin-id', 'CLIENT_ID_B2C_FT'),
+      secret('app-pip-apim-admin-pwd', 'CLIENT_SECRET_B2C_FT')
     ]) {
     env.NOTIFY_API_KEY = "${NOTIFY_API_KEY}"
     env.APP_URI = "${APP_URI}"
+    env.DATA_MANAGEMENT_AZ_API = "${DATA_MANAGEMENT_AZ_API}"
     env.TENANT_ID = "${TENANT_ID}"
     env.PI_TEAM_EMAIL = "${PI_TEAM_EMAIL}"
     env.CLIENT_ID_FT = "${CLIENT_ID_FT}"
     env.CLIENT_SECRET_FT = "${CLIENT_SECRET_FT}"
+    env.CLIENT_ID_B2C_FT = "${CLIENT_ID_B2C_FT}"
+    env.CLIENT_SECRET_B2C_FT = "${CLIENT_SECRET_B2C_FT}"
   }
 }
 
