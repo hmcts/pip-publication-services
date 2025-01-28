@@ -25,7 +25,9 @@ def setupTestSecrets() {
       secret('app-pip-account-management-scope', 'ACCOUNT_MANAGEMENT_AZ_API'),
       secret('app-tenant', 'TENANT_ID'),
       secret('app-pip-data-management-id', 'CLIENT_ID_FT'),
-      secret('app-pip-data-management-pwd', 'CLIENT_SECRET_FT')
+      secret('app-pip-data-management-pwd', 'CLIENT_SECRET_FT'),
+      secret('app-pip-apim-admin-id', 'CLIENT_ID_B2C_FT'),
+      secret('app-pip-apim-admin-pwd', 'CLIENT_SECRET_B2C_FT')
     ]) {
     env.NOTIFY_API_KEY = "${NOTIFY_API_KEY}"
     env.APP_URI = "${APP_URI}"
@@ -38,6 +40,8 @@ def setupTestSecrets() {
     env.PI_TEAM_EMAIL = "${PI_TEAM_EMAIL}"
     env.CLIENT_ID_FT = "${CLIENT_ID_FT}"
     env.CLIENT_SECRET_FT = "${CLIENT_SECRET_FT}"
+    env.CLIENT_ID_B2C_FT = "${CLIENT_ID_B2C_FT}"
+    env.CLIENT_SECRET_B2C_FT = "${CLIENT_SECRET_B2C_FT}"
   }
 }
 

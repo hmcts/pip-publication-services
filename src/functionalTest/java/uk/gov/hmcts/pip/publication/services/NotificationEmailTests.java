@@ -10,6 +10,9 @@ import uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient;
 import uk.gov.hmcts.pip.publication.services.utils.FunctionalTestBase;
 import uk.gov.hmcts.pip.publication.services.utils.OAuthClient;
 import uk.gov.hmcts.reform.pip.model.account.UserProvenances;
+import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
+import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
+import uk.gov.hmcts.reform.pip.model.system.admin.CreateSystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
@@ -28,26 +31,35 @@ import java.util.stream.Stream;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient.NOTIFICATION_TYPE;
+import static uk.gov.hmcts.reform.pip.model.system.admin.ActionResult.ATTEMPTED;
+import static uk.gov.hmcts.reform.pip.model.system.admin.ChangeType.ADD_USER;
 
 @ActiveProfiles(profiles = "functional")
 @SpringBootTest(classes = {OAuthClient.class, EmailNotificationClient.class})
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
 class NotificationEmailTests extends FunctionalTestBase {
     private static final String NOTIFY_URL = "/notify";
     private static final String MEDIA_WELCOME_EMAIL_URL = NOTIFY_URL + "/welcome-email";
     private static final String MEDIA_VERIFICATION_EMAIL_URL = NOTIFY_URL + "/media/verification";
     private static final String INACTIVE_USER_NOTIFICATION_EMAIL_URL = NOTIFY_URL + "/user/sign-in";
+
     private static final String DUPLICATE_MEDIA_USER_EMAIL_URL = NOTIFY_URL + "/duplicate/media";
     private static final String REJECTED_MEDIA_ACCOUNT_EMAIL_URL = NOTIFY_URL + "/media/reject";
     private static final String CREATED_ADMIN_WELCOME_EMAIL = NOTIFY_URL + "/created/admin";
+    private static final String SYSADMIN_UPDATE_EMAIL_URL = NOTIFY_URL + "/sysadmin/update";
 
     private static final String TEST_USER_EMAIL_PREFIX = String.format(
         "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999));
     private static final String TEST_EMAIL = TEST_USER_EMAIL_PREFIX + "@justice.gov.uk";
     private static final String LAST_SIGNED_IN_DATE = "2023-12-12 11:49:28.532005";
-
+    private static final String TEST_INVALID_EMAIL = "test_user";
     private static final String TEST_FULL_NAME = "test user";
+    private static final ActionResult TEST_ACTION = ATTEMPTED;
+    private static final ChangeType TEST_CHANGE_TYPE = ADD_USER;
+
     private static final String EMAIL_ADDRESS_ERROR = "Email address does not match";
     private static final String EMAIL_SUBJECT_ERROR = "Email subject does not match";
     private static final String EMAIL_NAME_ERROR = "Name in email body does not match";
@@ -358,4 +370,54 @@ class NotificationEmailTests extends FunctionalTestBase {
             .as(EMAIL_BODY_ERROR)
             .contains("p=B2C_1A_PASSWORD_RESET");
     }
+
+    @Test
+    void shouldSendUpdateEmailToSysAdminUser() throws NotificationClientException {
+        CreateSystemAdminAction systemAdminAction = createSystemAdminUpdateAction();
+
+        final Response response = doPostRequest(
+            SYSADMIN_UPDATE_EMAIL_URL,
+            Map.of(AUTHORIZATION, bearerToken),
+            systemAdminAction
+        );
+
+        Notification notification = extractNotification(response);
+
+        assertThat(notification.getSubject().get())
+            .as(EMAIL_SUBJECT_ERROR)
+            .contains("Reportable action – Add User");
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains(String.format("Please be aware that %s has attempted to execute a Add User change", TEST_EMAIL));
+    }
+
+    @Test
+    void shouldReturnBadPayloadExceptionErrorMessageWhenTargetSystemAdminEmailIsInvalid() {
+        CreateSystemAdminAction systemAdminAction = createSystemAdminUpdateAction();
+        systemAdminAction.setEmailList(List.of(TEST_INVALID_EMAIL));
+
+        final Response response = doPostRequest(
+            SYSADMIN_UPDATE_EMAIL_URL,
+            Map.of(AUTHORIZATION, bearerToken),
+            systemAdminAction
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST.value());
+
+        String responseBody = response.getBody().asString();
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody).contains("Not a valid email address");
+    }
+
+    private CreateSystemAdminAction createSystemAdminUpdateAction() {
+        CreateSystemAdminAction systemAdminAction = new CreateSystemAdminAction();
+        systemAdminAction.setAccountEmail(TEST_EMAIL);
+        systemAdminAction.setEmailList(List.of(TEST_EMAIL));
+        systemAdminAction.setRequesterEmail(TEST_EMAIL);
+        systemAdminAction.setActionResult(TEST_ACTION);
+        systemAdminAction.setChangeType(TEST_CHANGE_TYPE);
+        return systemAdminAction;
+    }
+
 }
