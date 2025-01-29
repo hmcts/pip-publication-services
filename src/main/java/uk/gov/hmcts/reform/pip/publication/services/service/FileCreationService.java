@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
 import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
-import uk.gov.hmcts.reform.pip.model.report.LocalSubscriptionMiData;
+import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
@@ -83,7 +83,7 @@ public class FileCreationService {
         return excelGenerationService.generateMultiSheetWorkBook(extractMiData());
     }
 
-    private Map<String, List<String[]>> extractMiData() {
+    Map<String, List<String[]>> extractMiData() {
         Map<String, List<String[]>> data = new ConcurrentHashMap<>();
 
         List<String[]> artefactData = formatData(dataManagementService.getMiData(), PublicationMiData.class);
@@ -106,7 +106,7 @@ public class FileCreationService {
 
         List<String[]> locationSubscriptionData = formatData(
             subscriptionManagementService.getLocationMiData(),
-            LocalSubscriptionMiData.class
+            LocationSubscriptionMiData.class
         );
         if (!locationSubscriptionData.isEmpty()) {
             data.put("Location subscriptions", locationSubscriptionData);

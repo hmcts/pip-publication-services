@@ -1,27 +1,26 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
 import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
-import uk.gov.hmcts.reform.pip.model.report.LocalSubscriptionMiData;
+import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
 import uk.gov.hmcts.reform.pip.model.subscription.Channel;
 import uk.gov.hmcts.reform.pip.model.subscription.SearchType;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelGenerationService;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,11 +34,10 @@ import static uk.gov.hmcts.reform.pip.model.publication.ListType.FAMILY_DAILY_CA
 import static uk.gov.hmcts.reform.pip.model.publication.Sensitivity.PUBLIC;
 import static uk.gov.hmcts.reform.pip.model.subscription.SearchType.CASE_ID;
 
-@Slf4j
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class FileCreationServiceTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+@SuppressWarnings("PMD.CouplingBetweenObjects")
+class FileCreationServiceTest {
 
     @Mock
     private DataManagementService dataManagementService;
@@ -55,6 +53,7 @@ class FileCreationServiceTest extends RedisConfigurationTestBase {
 
     @InjectMocks
     private FileCreationService fileCreationService;
+
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
@@ -87,26 +86,31 @@ class FileCreationServiceTest extends RedisConfigurationTestBase {
     public static final String SOURCE_ARTEFACT_ID = "1234";
     public static final Integer SUPERSEDED_COUNT = 0;
     public static final LocalDateTime CONTENT_DATE = LocalDateTime.now();
-    private static final String LOCATION_NAME_WITH_ID_3 = "Oxford Combined Court Centre";
 
     private static final AccountMiData ACCOUNT_MI_RECORD = new AccountMiData(USER_ID, ID, PI_AAD, INTERNAL_ADMIN_CTSC,
                                                                      CREATED_DATE, LAST_SIGNED_IN);
     private static final AllSubscriptionMiData ALL_SUBS_MI_RECORD = new AllSubscriptionMiData(
         USER_ID, EMAIL, SEARCH_TYPE, ID, LOCATION_NAME, CREATED_DATE
     );
-    private static final LocalSubscriptionMiData LOCAL_SUBS_MI_RECORD = new LocalSubscriptionMiData(
+    private static final LocationSubscriptionMiData LOCAL_SUBS_MI_RECORD = new LocationSubscriptionMiData(
         USER_ID, SEARCH_VALUE, EMAIL, ID, LOCATION_NAME, CREATED_DATE
     );
     private static final PublicationMiData PUBLICATION_MI_RECORD = new PublicationMiData(
         ARTEFACT_ID, DISPLAY_FROM, DISPLAY_TO, BI_LINGUAL, MANUAL_UPLOAD_PROVENANCE, PUBLIC, SOURCE_ARTEFACT_ID,
-        SUPERSEDED_COUNT, LIST, CONTENT_DATE, "3", LOCATION_NAME_WITH_ID_3, FAMILY_DAILY_CAUSE_LIST);
+        SUPERSEDED_COUNT, LIST, CONTENT_DATE, "3", FAMILY_DAILY_CAUSE_LIST);
 
     private static final List<AccountMiData> ACCOUNT_MI_DATA = List.of(ACCOUNT_MI_RECORD, ACCOUNT_MI_RECORD);
     private static final List<AllSubscriptionMiData> ALL_SUBS_MI_DATA = List.of(ALL_SUBS_MI_RECORD, ALL_SUBS_MI_RECORD);
-    private static final List<LocalSubscriptionMiData> LOCAL_SUBS_MI_DATA = List.of(LOCAL_SUBS_MI_RECORD,
+    private static final List<LocationSubscriptionMiData> LOCAL_SUBS_MI_DATA = List.of(LOCAL_SUBS_MI_RECORD,
                                                                                     LOCAL_SUBS_MI_RECORD);
     private static final List<PublicationMiData> PUBLICATION_MI_DATA = List.of(PUBLICATION_MI_RECORD,
                                                                                PUBLICATION_MI_RECORD);
+
+    private static final String PUBLICATION_MI_DATA_KEY = "Publications";
+    private static final String ACCOUNT_MI_DATA_KEY = "User accounts";
+    private static final String ALL_SUBSCRIPTION_MI_DATA_KEY = "All subscriptions";
+    private static final String LOCATION_SUBSCRIPTION_MI_DATA_KEY = "Location subscriptions";
+    private static final String MI_DATA_MATCH_MESSAGE = "MI data does not match";
 
     @Test
     void testCreateMediaApplicationReportingCsvSuccess() {
@@ -133,5 +137,75 @@ class FileCreationServiceTest extends RedisConfigurationTestBase {
         when(excelGenerationService.generateMultiSheetWorkBook(any())).thenReturn(TEST_BYTE);
 
         assertThat(fileCreationService.generateMiReport()).isEqualTo(TEST_BYTE);
+    }
+
+    @Test
+    void testExtractMiData() {
+        when(dataManagementService.getMiData()).thenReturn(PUBLICATION_MI_DATA);
+        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
+        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
+        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+
+        Map<String, List<String[]>> results = fileCreationService.extractMiData();
+
+        assertThat(results)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .containsKey(PUBLICATION_MI_DATA_KEY);
+
+        assertThat(results)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .containsKey(ACCOUNT_MI_DATA_KEY);
+
+        assertThat(results)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .containsKey(ALL_SUBSCRIPTION_MI_DATA_KEY);
+
+        assertThat(results)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .containsKey(LOCATION_SUBSCRIPTION_MI_DATA_KEY);
+
+        List<String[]> publicationMiData = results.get(PUBLICATION_MI_DATA_KEY);
+        assertThat(publicationMiData)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .hasSize(3)
+            .contains(
+                new String[]{"artefactId", "displayFrom", "displayTo", "language", "provenance", "sensitivity",
+                             "sourceArtefactId", "supersededCount", "type", "contentDate", "locationId", "listType"},
+                new String[]{ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
+                    BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
+                    SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "3",
+                    FAMILY_DAILY_CAUSE_LIST.toString() }
+            );
+
+        List<String[]> accountMiData = results.get(ACCOUNT_MI_DATA_KEY);
+        assertThat(accountMiData)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .hasSize(3)
+            .contains(
+                new String[]{"userId", "provenanceUserId", "userProvenance", "roles",
+                    "createdDate", "lastSignedInDate"},
+                new String[]{USER_ID.toString(), ID, PI_AAD.toString(), INTERNAL_ADMIN_CTSC.toString(),
+                    CREATED_DATE.toString(), LAST_SIGNED_IN.toString()}
+            );
+
+        List<String[]> allSubscriptionMiData = results.get(ALL_SUBSCRIPTION_MI_DATA_KEY);
+        assertThat(allSubscriptionMiData)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .hasSize(3)
+            .contains(
+                new String[]{"id", "channel", "searchType", "userId", "locationName", "createdDate"},
+                new String[]{USER_ID.toString(), EMAIL.toString(), SEARCH_TYPE.toString(), ID,
+                    LOCATION_NAME, CREATED_DATE.toString()}
+            );
+
+        List<String[]> locationSubscriptionMiData = results.get(LOCATION_SUBSCRIPTION_MI_DATA_KEY);
+        assertThat(locationSubscriptionMiData)
+            .as(MI_DATA_MATCH_MESSAGE)
+            .hasSize(3)
+            .contains(
+                new String[]{"id", "searchValue", "channel", "userId", "locationName", "createdDate"},
+                new String[]{USER_ID.toString(), SEARCH_VALUE, EMAIL.toString(), ID,
+                    LOCATION_NAME, CREATED_DATE.toString()}
+            );
     }
 }

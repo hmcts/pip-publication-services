@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
-import uk.gov.hmcts.reform.pip.model.report.LocalSubscriptionMiData;
+import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class SubscriptionManagementService {
 
     public List<AllSubscriptionMiData> getAllMiData() {
         try {
-            return webClient.get().uri(String.format("%s/subscription/mi-data-all", url))
+            return webClient.get().uri(String.format("%s/subscription/v2/mi-data-all", url))
                 .attributes(clientRegistrationId("subscriptionManagementApi"))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<AllSubscriptionMiData>>() {})
@@ -43,12 +43,12 @@ public class SubscriptionManagementService {
         }
     }
 
-    public List<LocalSubscriptionMiData> getLocationMiData() {
+    public List<LocationSubscriptionMiData> getLocationMiData() {
         try {
-            return webClient.get().uri(String.format("%s/subscription/mi-data-local", url))
+            return webClient.get().uri(String.format("%s/subscription/v2/mi-data-local", url))
                 .attributes(clientRegistrationId("subscriptionManagementApi"))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<LocalSubscriptionMiData>>() {})
+                .bodyToMono(new ParameterizedTypeReference<List<LocationSubscriptionMiData>>() {})
                 .block();
         } catch (WebClientResponseException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());

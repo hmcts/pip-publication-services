@@ -9,42 +9,34 @@ import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@SuppressWarnings("PMD.TooManyMethods")
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
-@DirtiesContext
 @ActiveProfiles("test")
-class DataManagementServiceTest extends RedisConfigurationTestBase {
+@SuppressWarnings("PMD.TooManyMethods")
+class DataManagementServiceTest {
+    private static final UUID ARTEFACT_ID = UUID.randomUUID();
     private static final String RESPONSE_BODY = "responseBody";
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final String EXCEPTION_THROWN_MESSAGE = "Expected exception has not been thrown";
     private static final String EXCEPTION_RESPONSE_MESSAGE =
         "Exception response does not contain the status code in the message";
 
-    private static MockWebServer mockDataManagementEndpoint;
+    private final MockWebServer mockDataManagementEndpoint = new MockWebServer();
 
     private static final String NOT_FOUND = "404";
     private static final String NO_STATUS_CODE_IN_EXCEPTION = "Exception response does not contain the status code in"
@@ -53,21 +45,16 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
     private static final String HELLO = "hello";
 
     private final ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-
-    @Autowired
-    WebClient webClient;
-
-    @Autowired
-    DataManagementService dataManagementService;
-
-    private UUID uuid;
+    private DataManagementService dataManagementService;
 
     @BeforeEach
-    void setup() throws IOException {
-        mockDataManagementEndpoint = new MockWebServer();
-        mockDataManagementEndpoint.start(8081);
-        uuid = UUID.randomUUID();
+    void setup() {
+        WebClient mockedWebClient = WebClient.builder()
+            .baseUrl(mockDataManagementEndpoint.url("/").toString())
+            .build();
+        dataManagementService = new DataManagementService(mockedWebClient);
     }
 
     @AfterEach
@@ -79,11 +66,11 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
     void testGetArtefactReturnsOk() {
         mockDataManagementEndpoint.enqueue(new MockResponse()
                                                .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
-                                               .setBody("{\"artefactId\": \"" + uuid + "\"}")
+                                               .setBody("{\"artefactId\": \"" + ARTEFACT_ID + "\"}")
                                                .setResponseCode(200));
 
-        Artefact artefact = dataManagementService.getArtefact(uuid);
-        assertEquals(uuid, artefact.getArtefactId(), "Returned artefact does not match expected artefact");
+        Artefact artefact = dataManagementService.getArtefact(ARTEFACT_ID);
+        assertEquals(ARTEFACT_ID, artefact.getArtefactId(), "Returned artefact does not match expected artefact");
     }
 
     @Test
@@ -91,7 +78,7 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
         mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(501));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
-                                                           dataManagementService.getArtefact(uuid),
+                                                           dataManagementService.getArtefact(ARTEFACT_ID),
                      NO_EXPECTED_EXCEPTION);
 
         assertTrue(notifyException.getMessage().contains("501"),
@@ -105,7 +92,7 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
                                                .setBody(RESPONSE_BODY)
                                                .setResponseCode(200));
 
-        byte[] returnedContent = dataManagementService.getArtefactFlatFile(uuid);
+        byte[] returnedContent = dataManagementService.getArtefactFlatFile(ARTEFACT_ID);
         assertEquals(RESPONSE_BODY, new String(returnedContent),
                      "Returned file content does not match expected file content");
     }
@@ -115,7 +102,7 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
         mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(501));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
-                                                           dataManagementService.getArtefactFlatFile(uuid),
+                                                           dataManagementService.getArtefactFlatFile(ARTEFACT_ID),
                                                        EXCEPTION_THROWN_MESSAGE);
 
         assertTrue(notifyException.getMessage().contains("501"),
@@ -156,17 +143,16 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
                                                .setBody(RESPONSE_BODY)
                                                .setResponseCode(200));
 
-        String returnedContent = dataManagementService.getArtefactJsonBlob(uuid);
+        String returnedContent = dataManagementService.getArtefactJsonBlob(ARTEFACT_ID);
         assertEquals(RESPONSE_BODY, returnedContent, "Returned payload does not match expected data");
     }
 
     @Test
     void testGetArtefactJsonBlobThrowsException() {
-
         mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
-                                                           dataManagementService.getArtefactFlatFile(uuid),
+                                                           dataManagementService.getArtefactFlatFile(ARTEFACT_ID),
                                                        NO_EXPECTED_EXCEPTION);
 
         assertTrue(notifyException.getMessage().contains(NOT_FOUND),
@@ -176,21 +162,19 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
 
     @Test
     void testGetArtefactJsonPayload() {
-        UUID uuid = UUID.randomUUID();
         mockDataManagementEndpoint.enqueue(new MockResponse()
                                                .setBody("testJsonString")
                                                .setResponseCode(200));
-        String jsonPayload = dataManagementService.getArtefactJsonBlob(uuid);
+        String jsonPayload = dataManagementService.getArtefactJsonBlob(ARTEFACT_ID);
         assertEquals("testJsonString", jsonPayload, "Messages do not match");
     }
 
     @Test
     void testFailedGetArtefactJsonPayload() {
-        UUID uuid = UUID.randomUUID();
         mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class, () ->
-                                                           dataManagementService.getArtefactJsonBlob(uuid),
+                                                           dataManagementService.getArtefactJsonBlob(ARTEFACT_ID),
                                                        NO_EXPECTED_EXCEPTION);
         assertTrue(notifyException.getMessage().contains(NOT_FOUND),
                    NO_STATUS_CODE_IN_EXCEPTION);
@@ -203,7 +187,7 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
             com.azure.core.http.ContentType.APPLICATION_JSON
         ).setBody(HELLO));
 
-        String returnedString = dataManagementService.getArtefactSummary(UUID.randomUUID());
+        String returnedString = dataManagementService.getArtefactSummary(ARTEFACT_ID);
 
         assertEquals(HELLO, returnedString, "Return does not match");
     }
@@ -215,7 +199,7 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
             com.azure.core.http.ContentType.APPLICATION_JSON
         ));
 
-        String returnedString = dataManagementService.getArtefactSummary(UUID.randomUUID());
+        String returnedString = dataManagementService.getArtefactSummary(ARTEFACT_ID);
 
         assertEquals("", returnedString, "Return does not match");
     }
@@ -224,9 +208,8 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
     void testGetArtefactSummaryError() {
         mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        UUID artefactId = UUID.randomUUID();
         ServiceToServiceException exception = assertThrows(ServiceToServiceException.class,
-                                                           () -> dataManagementService.getArtefactSummary(artefactId),
+                                                           () -> dataManagementService.getArtefactSummary(ARTEFACT_ID),
                                                            "Exception");
 
         assertTrue(exception.getMessage().contains("404"), "Exception didn't contain correct message");
@@ -240,7 +223,7 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
                 .setBody(ow.writeValueAsString(HELLO))
         );
 
-        String response = dataManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF, true);
+        String response = dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true);
         assertTrue(response.length() > 0, "Response doesn't exist");
     }
 
@@ -248,7 +231,7 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
     void testGetArtefactFileNotFound() {
         mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-        String response = dataManagementService.getArtefactFile(UUID.randomUUID(), FileType.EXCEL, false);
+        String response = dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.EXCEL, false);
         assertEquals(0, response.length(), "Response not empty");
     }
 
@@ -256,7 +239,7 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
     void testGetArtefactFileTooLarge() {
         mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(413));
 
-        String response = dataManagementService.getArtefactFile(UUID.randomUUID(), FileType.PDF, false);
+        String response = dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false);
         assertEquals(0, response.length(), "Response not empty");
     }
 
@@ -264,25 +247,25 @@ class DataManagementServiceTest extends RedisConfigurationTestBase {
     void testGetArtefactFileError() {
         mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(500));
 
-        UUID artefactId = UUID.randomUUID();
         ServiceToServiceException exception = assertThrows(ServiceToServiceException.class, () ->
-            dataManagementService.getArtefactFile(artefactId, FileType.PDF, false), "Exception");
+            dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false), "Exception");
 
         assertTrue(exception.getMessage().contains("500"), "Exception didn't contain correct message");
     }
 
     @Test
-    void testGetMiDataReturnsOk() {
-        dataManagementService = mock(DataManagementService.class);
-
+    void testGetMiDataReturnsOk() throws JsonProcessingException {
         PublicationMiData data1 = new PublicationMiData();
         List<PublicationMiData> expectedData = List.of(data1);
 
-        when(dataManagementService.getMiData()).thenReturn(expectedData);
+        mockDataManagementEndpoint.enqueue(new MockResponse()
+                                               .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                               .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
+                                               .setResponseCode(200));
 
         List<PublicationMiData> response = dataManagementService.getMiData();
 
-        assertEquals(expectedData, response, "Data do not match");
+        assertIterableEquals(expectedData, response, "Data does not match");
     }
 
     @Test
