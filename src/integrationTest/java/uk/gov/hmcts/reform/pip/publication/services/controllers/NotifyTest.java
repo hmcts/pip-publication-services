@@ -9,6 +9,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hamcrest.core.IsNull;
 import org.jose4j.base64url.Base64;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -274,14 +275,17 @@ class NotifyTest extends IntegrationTestBase {
         ARTEFACT_ID, DISPLAY_FROM, DISPLAY_TO, BI_LINGUAL, MANUAL_UPLOAD_PROVENANCE, PUBLIC, SOURCE_ARTEFACT_ID,
         SUPERSEDED_COUNT, LIST, CONTENT_DATE, "3", FAMILY_DAILY_CAUSE_LIST);
 
+    private static final PublicationMiData PUBLICATION_MI_RECORD_WITHOUT_LOCATION_NAME = new PublicationMiData(
+        ARTEFACT_ID, DISPLAY_FROM, DISPLAY_TO, BI_LINGUAL, MANUAL_UPLOAD_PROVENANCE, PUBLIC, SOURCE_ARTEFACT_ID,
+        SUPERSEDED_COUNT, LIST, CONTENT_DATE, "NoMatch4", FAMILY_DAILY_CAUSE_LIST);
+
     private static final List<NoMatchArtefact> NO_MATCH_ARTEFACT_LIST = new ArrayList<>();
 
     private static final List<AccountMiData> ACCOUNT_MI_DATA = List.of(ACCOUNT_MI_RECORD, ACCOUNT_MI_RECORD);
     private static final List<AllSubscriptionMiData> ALL_SUBS_MI_DATA = List.of(ALL_SUBS_MI_RECORD, ALL_SUBS_MI_RECORD);
     private static final List<LocationSubscriptionMiData> LOCAL_SUBS_MI_DATA = List.of(LOCAL_SUBS_MI_RECORD,
                                                                                        LOCAL_SUBS_MI_RECORD);
-    private static final List<PublicationMiData> PUBLICATION_MI_DATA = List.of(PUBLICATION_MI_RECORD,
-                                                                               PUBLICATION_MI_RECORD);
+    private static List<PublicationMiData> publicationMiData;
 
     private String validMediaReportingJson;
     private String validLocationsListJson;
@@ -291,6 +295,13 @@ class NotifyTest extends IntegrationTestBase {
     private WebClient webClient;
     @Autowired
     private EmailClient emailClient;
+
+    @BeforeAll
+    public static void setupAll() {
+        PUBLICATION_MI_RECORD.setLocationName(LOCATION_NAME);
+
+        publicationMiData = List.of(PUBLICATION_MI_RECORD, PUBLICATION_MI_RECORD_WITHOUT_LOCATION_NAME);
+    }
 
     @BeforeEach
     void setup() throws IOException {
@@ -526,7 +537,7 @@ class NotifyTest extends IntegrationTestBase {
 
     @Test
     void testSendMiReportingEmailForPublications() throws Exception {
-        when(dataManagementService.getMiData()).thenReturn(PUBLICATION_MI_DATA);
+        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
         when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
         when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
         when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
@@ -550,19 +561,27 @@ class NotifyTest extends IntegrationTestBase {
         assertThat(publicationsSheet.getRow(0))
             .extracting(Cell::getStringCellValue)
             .containsExactly("artefactId", "displayFrom", "displayTo", "language", "provenance", "sensitivity",
-                             "sourceArtefactId", "supersededCount", "type", "contentDate", "locationId", "listType");
+                             "sourceArtefactId", "supersededCount", "type", "contentDate", "locationId",
+                             "locationName", "listType");
 
         assertThat(publicationsSheet.getRow(1))
             .extracting(Cell::getStringCellValue)
             .containsExactly(ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
                              BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
-                             SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "3",
+                             SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "3", LOCATION_NAME,
+                             FAMILY_DAILY_CAUSE_LIST.toString());
+
+        assertThat(publicationsSheet.getRow(2))
+            .extracting(Cell::getStringCellValue)
+            .containsExactly(ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
+                             BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
+                             SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "NoMatch4", "",
                              FAMILY_DAILY_CAUSE_LIST.toString());
     }
 
     @Test
     void testSendMiReportingEmailForAccounts() throws Exception {
-        when(dataManagementService.getMiData()).thenReturn(PUBLICATION_MI_DATA);
+        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
         when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
         when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
         when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
@@ -596,7 +615,7 @@ class NotifyTest extends IntegrationTestBase {
 
     @Test
     void testSendMiReportingEmailForAllSubscriptions() throws Exception {
-        when(dataManagementService.getMiData()).thenReturn(PUBLICATION_MI_DATA);
+        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
         when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
         when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
         when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
@@ -627,7 +646,7 @@ class NotifyTest extends IntegrationTestBase {
 
     @Test
     void testSendMiReportingEmailForLocationSubscriptions() throws Exception {
-        when(dataManagementService.getMiData()).thenReturn(PUBLICATION_MI_DATA);
+        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
         when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
         when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
         when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -99,18 +100,29 @@ class FileCreationServiceTest {
         ARTEFACT_ID, DISPLAY_FROM, DISPLAY_TO, BI_LINGUAL, MANUAL_UPLOAD_PROVENANCE, PUBLIC, SOURCE_ARTEFACT_ID,
         SUPERSEDED_COUNT, LIST, CONTENT_DATE, "3", FAMILY_DAILY_CAUSE_LIST);
 
+    private static final PublicationMiData PUBLICATION_MI_RECORD_WITHOUT_LOCATION_NAME = new PublicationMiData(
+        ARTEFACT_ID, DISPLAY_FROM, DISPLAY_TO, BI_LINGUAL, MANUAL_UPLOAD_PROVENANCE, PUBLIC, SOURCE_ARTEFACT_ID,
+        SUPERSEDED_COUNT, LIST, CONTENT_DATE, "NoMatch4", FAMILY_DAILY_CAUSE_LIST);
+
     private static final List<AccountMiData> ACCOUNT_MI_DATA = List.of(ACCOUNT_MI_RECORD, ACCOUNT_MI_RECORD);
     private static final List<AllSubscriptionMiData> ALL_SUBS_MI_DATA = List.of(ALL_SUBS_MI_RECORD, ALL_SUBS_MI_RECORD);
     private static final List<LocationSubscriptionMiData> LOCAL_SUBS_MI_DATA = List.of(LOCAL_SUBS_MI_RECORD,
                                                                                     LOCAL_SUBS_MI_RECORD);
-    private static final List<PublicationMiData> PUBLICATION_MI_DATA = List.of(PUBLICATION_MI_RECORD,
-                                                                               PUBLICATION_MI_RECORD);
-
     private static final String PUBLICATION_MI_DATA_KEY = "Publications";
     private static final String ACCOUNT_MI_DATA_KEY = "User accounts";
     private static final String ALL_SUBSCRIPTION_MI_DATA_KEY = "All subscriptions";
     private static final String LOCATION_SUBSCRIPTION_MI_DATA_KEY = "Location subscriptions";
     private static final String MI_DATA_MATCH_MESSAGE = "MI data does not match";
+
+    private static List<PublicationMiData> publicationMiData;
+
+    @BeforeAll
+    public static void setup() {
+        PUBLICATION_MI_RECORD.setLocationName(LOCATION_NAME);
+
+        publicationMiData = List.of(PUBLICATION_MI_RECORD, PUBLICATION_MI_RECORD_WITHOUT_LOCATION_NAME);
+    }
+
 
     @Test
     void testCreateMediaApplicationReportingCsvSuccess() {
@@ -130,7 +142,7 @@ class FileCreationServiceTest {
 
     @Test
     void testGenerateMiReportSuccess() throws IOException {
-        when(dataManagementService.getMiData()).thenReturn(PUBLICATION_MI_DATA);
+        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
         when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
         when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
         when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
@@ -141,7 +153,7 @@ class FileCreationServiceTest {
 
     @Test
     void testExtractMiData() {
-        when(dataManagementService.getMiData()).thenReturn(PUBLICATION_MI_DATA);
+        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
         when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
         when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
         when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
@@ -170,10 +182,15 @@ class FileCreationServiceTest {
             .hasSize(3)
             .contains(
                 new String[]{"artefactId", "displayFrom", "displayTo", "language", "provenance", "sensitivity",
-                             "sourceArtefactId", "supersededCount", "type", "contentDate", "locationId", "listType"},
+                             "sourceArtefactId", "supersededCount", "type", "contentDate", "locationId",
+                             "locationName", "listType"},
                 new String[]{ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
                     BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
-                    SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "3",
+                    SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "3", LOCATION_NAME,
+                    FAMILY_DAILY_CAUSE_LIST.toString() },
+                new String[]{ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
+                    BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
+                    SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "NoMatch4", "",
                     FAMILY_DAILY_CAUSE_LIST.toString() }
             );
 
