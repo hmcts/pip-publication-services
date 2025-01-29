@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.pip.publication.services.utils;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -15,8 +17,8 @@ import uk.gov.service.notify.SendEmailResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +36,9 @@ public class IntegrationTestBase extends RedisConfigurationTestBase {
     @MockitoBean
     protected SubscriptionManagementService subscriptionManagementService;
 
+    @Captor
+    protected ArgumentCaptor<Map<String, Object>> personalisationCapture;
+
     @MockitoBean
     EmailClient emailClient;
 
@@ -48,6 +53,7 @@ public class IntegrationTestBase extends RedisConfigurationTestBase {
     @BeforeEach
     void setupEmailClient() throws NotificationClientException {
         SendEmailResponse emailResponse = new SendEmailResponse(emailResponseValue);
-        when(emailClient.sendEmail(anyString(), anyString(), anyMap(), anyString())).thenReturn(emailResponse);
+        when(emailClient.sendEmail(anyString(), anyString(), personalisationCapture.capture(),
+                                   anyString())).thenReturn(emailResponse);
     }
 }

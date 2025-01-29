@@ -2,7 +2,13 @@ package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hamcrest.core.IsNull;
+import org.jose4j.base64url.Base64;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,22 +19,26 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
 import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
 import uk.gov.hmcts.reform.pip.model.subscription.Channel;
 import uk.gov.hmcts.reform.pip.model.subscription.SearchType;
+import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -41,14 +51,14 @@ import static uk.gov.hmcts.reform.pip.model.publication.ListType.FAMILY_DAILY_CA
 import static uk.gov.hmcts.reform.pip.model.publication.Sensitivity.PUBLIC;
 import static uk.gov.hmcts.reform.pip.model.subscription.SearchType.CASE_ID;
 
-@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert", "PMD.TooManyMethods", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert", "PMD.TooManyMethods",
+    "PMD.ExcessiveImports", "PMD.CouplingBetweenObjects"})
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
 @ActiveProfiles("integration")
 class NotifyTest extends IntegrationTestBase {
-
     private static final String VALID_WELCOME_REQUEST_BODY_EXISTING = """
         {
             "email": "test@email.com",
@@ -243,6 +253,8 @@ class NotifyTest extends IntegrationTestBase {
     public static final String SOURCE_ARTEFACT_ID = "1234";
     public static final Integer SUPERSEDED_COUNT = 0;
     public static final LocalDateTime CONTENT_DATE = LocalDateTime.now();
+    private static final String FILE_PERSONALISATION = "link_to_file";
+    private static final String FILE_NAME_PERSONALISATION = "file";
 
     private static final List<MediaApplication> MEDIA_APPLICATION_LIST =
         List.of(new MediaApplication(ID, FULL_NAME, EMAIL, EMPLOYER,
@@ -276,6 +288,9 @@ class NotifyTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;
+    private WebClient webClient;
+    @Autowired
+    private EmailClient emailClient;
 
     @BeforeEach
     void setup() throws IOException {
@@ -510,7 +525,7 @@ class NotifyTest extends IntegrationTestBase {
     }
 
     @Test
-    void testSendMiReportingEmail() throws Exception {
+    void testSendMiReportingEmailForPublications() throws Exception {
         when(dataManagementService.getMiData()).thenReturn(PUBLICATION_MI_DATA);
         when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
         when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
@@ -519,6 +534,128 @@ class NotifyTest extends IntegrationTestBase {
         mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
             .andExpect(status().isOk())
             .andExpect(content().string(IsNull.notNullValue()));
+
+        byte[] file = Base64.decode(((JSONObject) personalisationCapture.getValue().get(FILE_PERSONALISATION))
+                                        .get(FILE_NAME_PERSONALISATION).toString());
+
+        ByteArrayInputStream outputFile = new ByteArrayInputStream(file);
+        Workbook workbook = new XSSFWorkbook(outputFile);
+
+        assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
+
+        assertThat(workbook.getSheet("Publications")).isNotNull();
+
+        Sheet publicationsSheet = workbook.getSheet("Publications");
+
+        assertThat(publicationsSheet.getRow(0))
+            .extracting(Cell::getStringCellValue)
+            .containsExactly("artefactId", "displayFrom", "displayTo", "language", "provenance", "sensitivity",
+                             "sourceArtefactId", "supersededCount", "type", "contentDate", "locationId", "listType");
+
+        assertThat(publicationsSheet.getRow(1))
+            .extracting(Cell::getStringCellValue)
+            .containsExactly(ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
+                             BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
+                             SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "3",
+                             FAMILY_DAILY_CAUSE_LIST.toString());
+    }
+
+    @Test
+    void testSendMiReportingEmailForAccounts() throws Exception {
+        when(dataManagementService.getMiData()).thenReturn(PUBLICATION_MI_DATA);
+        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
+        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
+        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+
+        mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.notNullValue()));
+
+        byte[] file = Base64.decode(((JSONObject) personalisationCapture.getValue().get(FILE_PERSONALISATION))
+                                        .get(FILE_NAME_PERSONALISATION).toString());
+
+        ByteArrayInputStream outputFile = new ByteArrayInputStream(file);
+        Workbook workbook = new XSSFWorkbook(outputFile);
+
+        assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
+
+        assertThat(workbook.getSheet("User accounts")).isNotNull();
+
+        Sheet userAccountSheet = workbook.getSheet("User accounts");
+
+        assertThat(userAccountSheet.getRow(0))
+            .extracting(Cell::getStringCellValue)
+            .containsExactly("userId", "provenanceUserId", "userProvenance", "roles",
+                             "createdDate", "lastSignedInDate");
+
+        assertThat(userAccountSheet.getRow(1))
+            .extracting(Cell::getStringCellValue)
+            .containsExactly(USER_ID.toString(), ID.toString(), PI_AAD.toString(), INTERNAL_ADMIN_CTSC.toString(),
+                             CREATED_DATE.toString(), LAST_SIGNED_IN.toString());
+    }
+
+    @Test
+    void testSendMiReportingEmailForAllSubscriptions() throws Exception {
+        when(dataManagementService.getMiData()).thenReturn(PUBLICATION_MI_DATA);
+        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
+        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
+        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+
+        mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.notNullValue()));
+
+        byte[] file = Base64.decode(((JSONObject) personalisationCapture.getValue().get(FILE_PERSONALISATION))
+                                        .get(FILE_NAME_PERSONALISATION).toString());
+
+        ByteArrayInputStream outputFile = new ByteArrayInputStream(file);
+        Workbook workbook = new XSSFWorkbook(outputFile);
+
+        assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
+
+        Sheet allSubscriptionsSheet = workbook.getSheet("All subscriptions");
+
+        assertThat(allSubscriptionsSheet.getRow(0))
+            .extracting(Cell::getStringCellValue)
+            .containsExactly("id", "channel", "searchType", "userId", "locationName", "createdDate");
+
+        assertThat(allSubscriptionsSheet.getRow(1))
+            .extracting(Cell::getStringCellValue)
+            .containsExactly(USER_ID.toString(), EMAIL_CHANNEL.toString(), SEARCH_TYPE.toString(), ID.toString(),
+                             LOCATION_NAME, CREATED_DATE.toString());
+    }
+
+    @Test
+    void testSendMiReportingEmailForLocationSubscriptions() throws Exception {
+        when(dataManagementService.getMiData()).thenReturn(PUBLICATION_MI_DATA);
+        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
+        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
+        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+
+        mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.notNullValue()));
+
+        byte[] file = Base64.decode(((JSONObject) personalisationCapture.getValue().get(FILE_PERSONALISATION))
+                                        .get(FILE_NAME_PERSONALISATION).toString());
+
+        ByteArrayInputStream outputFile = new ByteArrayInputStream(file);
+        Workbook workbook = new XSSFWorkbook(outputFile);
+
+        assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
+
+        assertThat(workbook.getSheet("Location subscriptions")).isNotNull();
+
+        Sheet locationSubscriptionsSheet = workbook.getSheet("Location subscriptions");
+
+        assertThat(locationSubscriptionsSheet.getRow(0))
+            .extracting(Cell::getStringCellValue)
+            .containsExactly("id", "searchValue", "channel", "userId", "locationName", "createdDate");
+
+        assertThat(locationSubscriptionsSheet.getRow(1))
+            .extracting(Cell::getStringCellValue)
+            .containsExactly(USER_ID.toString(), SEARCH_VALUE, EMAIL_CHANNEL.toString(), ID.toString(),
+                             LOCATION_NAME, CREATED_DATE.toString());
     }
 
     @Test

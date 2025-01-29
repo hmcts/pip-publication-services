@@ -33,7 +33,7 @@ public class AccountManagementService {
     public List<AccountMiData> getMiData() {
         try {
             return webClient.get()
-                .uri(String.format("%s/account/mi-data", url))
+                .uri(String.format("%s/account/v2/mi-data", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<AccountMiData>>() {})
