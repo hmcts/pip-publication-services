@@ -76,6 +76,7 @@ class FileCreationServiceTest {
     private static final String ID = "1234";
     private static final LocalDateTime CREATED_DATE = LocalDateTime.of(2022, 1, 19, 13, 45, 50);
     private static final LocalDateTime LAST_SIGNED_IN = LocalDateTime.of(2023,1, 25, 14, 22, 43);
+    private static final String CREATED_DATE_STRING = "2022-01-19 13:45:50";
     private static final Channel EMAIL = Channel.EMAIL;
     private static final SearchType SEARCH_TYPE = CASE_ID;
     private static final String SEARCH_VALUE = "193254";
@@ -86,7 +87,7 @@ class FileCreationServiceTest {
     public static final String MANUAL_UPLOAD_PROVENANCE = "MANUAL_UPLOAD";
     public static final String SOURCE_ARTEFACT_ID = "1234";
     public static final Integer SUPERSEDED_COUNT = 0;
-    public static final LocalDateTime CONTENT_DATE = LocalDateTime.now();
+    public static final LocalDateTime CONTENT_DATE = LocalDateTime.of(2024,1, 19, 13, 45);
 
     private static final AccountMiData ACCOUNT_MI_RECORD = new AccountMiData(USER_ID, ID, PI_AAD, INTERNAL_ADMIN_CTSC,
                                                                      CREATED_DATE, LAST_SIGNED_IN);
@@ -184,13 +185,13 @@ class FileCreationServiceTest {
                 new String[]{"artefact_id", "display_from", "display_to", "language", "provenance", "sensitivity",
                              "source_artefact_id", "superseded_count", "type", "content_date", "court_id",
                              "court_name", "list_type"},
-                new String[]{ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
+                new String[]{ARTEFACT_ID.toString(), CREATED_DATE_STRING, "2025-01-19 13:45:50",
                     BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
-                    SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "3", LOCATION_NAME,
+                    SUPERSEDED_COUNT.toString(), LIST.toString(), "2024-01-19 13:45:00", "3", LOCATION_NAME,
                     FAMILY_DAILY_CAUSE_LIST.toString() },
-                new String[]{ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
+                new String[]{ARTEFACT_ID.toString(), CREATED_DATE_STRING, "2025-01-19 13:45:50",
                     BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
-                    SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "NoMatch4", null,
+                    SUPERSEDED_COUNT.toString(), LIST.toString(), "2024-01-19 13:45:00", "NoMatch4", "",
                     FAMILY_DAILY_CAUSE_LIST.toString() }
             );
 
@@ -202,7 +203,7 @@ class FileCreationServiceTest {
                 new String[]{"user_id", "provenance_user_id", "user_provenance", "roles",
                     "created_date", "last_signed_in_date"},
                 new String[]{USER_ID.toString(), ID, PI_AAD.toString(), INTERNAL_ADMIN_CTSC.toString(),
-                    CREATED_DATE.toString(), LAST_SIGNED_IN.toString()}
+                    CREATED_DATE_STRING, "2023-01-25 14:22:43"}
             );
 
         List<String[]> allSubscriptionMiData = results.get(ALL_SUBSCRIPTION_MI_DATA_KEY);
@@ -212,7 +213,7 @@ class FileCreationServiceTest {
             .contains(
                 new String[]{"id", "channel", "search_type", "user_id", "court_name", "created_date"},
                 new String[]{USER_ID.toString(), EMAIL.toString(), SEARCH_TYPE.toString(), ID,
-                    LOCATION_NAME, CREATED_DATE.toString()}
+                    LOCATION_NAME, CREATED_DATE_STRING}
             );
 
         List<String[]> locationSubscriptionMiData = results.get(LOCATION_SUBSCRIPTION_MI_DATA_KEY);
@@ -222,7 +223,7 @@ class FileCreationServiceTest {
             .contains(
                 new String[]{"id", "search_value", "channel", "user_id", "court_name", "created_date"},
                 new String[]{USER_ID.toString(), SEARCH_VALUE, EMAIL.toString(), ID,
-                    LOCATION_NAME, CREATED_DATE.toString()}
+                    LOCATION_NAME, CREATED_DATE_STRING}
             );
     }
 }

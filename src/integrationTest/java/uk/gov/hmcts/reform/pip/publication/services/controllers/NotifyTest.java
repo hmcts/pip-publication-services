@@ -243,6 +243,7 @@ class NotifyTest extends IntegrationTestBase {
     private static final String UNAUTHORIZED_ROLE = "APPROLE_unknown.role";
     private static final String INVALID_CONTENT = "invalid content";
     private static final LocalDateTime CREATED_DATE = LocalDateTime.of(2022, 1, 19, 13, 45, 50);
+    private static final String CREATED_DATE_STRING = "2022-01-19 13:45:50";
     private static final LocalDateTime LAST_SIGNED_IN = LocalDateTime.of(2023,1, 25, 14, 22, 43);
     private static final SearchType SEARCH_TYPE = CASE_ID;
     private static final String SEARCH_VALUE = "1234";
@@ -253,7 +254,7 @@ class NotifyTest extends IntegrationTestBase {
     public static final String MANUAL_UPLOAD_PROVENANCE = "MANUAL_UPLOAD";
     public static final String SOURCE_ARTEFACT_ID = "1234";
     public static final Integer SUPERSEDED_COUNT = 0;
-    public static final LocalDateTime CONTENT_DATE = LocalDateTime.now();
+    public static final LocalDateTime CONTENT_DATE = LocalDateTime.of(2025,1, 19, 13, 45);
     private static final String FILE_PERSONALISATION = "link_to_file";
     private static final String FILE_NAME_PERSONALISATION = "file";
 
@@ -567,16 +568,16 @@ class NotifyTest extends IntegrationTestBase {
 
         assertThat(publicationsSheet.getRow(1))
             .extracting(Cell::getStringCellValue)
-            .containsExactly(ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
+            .containsExactly(ARTEFACT_ID.toString(), CREATED_DATE_STRING, "2025-01-19 13:45:50",
                              BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
-                             SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "3", LOCATION_NAME,
+                             SUPERSEDED_COUNT.toString(), LIST.toString(), "2025-01-19 13:45:00", "3", LOCATION_NAME,
                              FAMILY_DAILY_CAUSE_LIST.toString());
 
         assertThat(publicationsSheet.getRow(2))
             .extracting(Cell::getStringCellValue)
-            .containsExactly(ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
+            .containsExactly(ARTEFACT_ID.toString(), CREATED_DATE_STRING, "2025-01-19 13:45:50",
                              BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
-                             SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "NoMatch4", "",
+                             SUPERSEDED_COUNT.toString(), LIST.toString(), "2025-01-19 13:45:00", "NoMatch4", "",
                              FAMILY_DAILY_CAUSE_LIST.toString());
     }
 
@@ -611,7 +612,7 @@ class NotifyTest extends IntegrationTestBase {
         assertThat(userAccountSheet.getRow(1))
             .extracting(Cell::getStringCellValue)
             .containsExactly(USER_ID.toString(), ID.toString(), PI_AAD.toString(), INTERNAL_ADMIN_CTSC.toString(),
-                             CREATED_DATE.toString(), LAST_SIGNED_IN.toString());
+                             CREATED_DATE_STRING, "2023-01-25 14:22:43");
     }
 
     @Test
@@ -642,7 +643,7 @@ class NotifyTest extends IntegrationTestBase {
         assertThat(allSubscriptionsSheet.getRow(1))
             .extracting(Cell::getStringCellValue)
             .containsExactly(USER_ID.toString(), EMAIL_CHANNEL.toString(), SEARCH_TYPE.toString(), ID.toString(),
-                             LOCATION_NAME, CREATED_DATE.toString());
+                             LOCATION_NAME, CREATED_DATE_STRING);
     }
 
     @Test
@@ -670,12 +671,12 @@ class NotifyTest extends IntegrationTestBase {
 
         assertThat(locationSubscriptionsSheet.getRow(0))
             .extracting(Cell::getStringCellValue)
-            .containsExactly("id", "search_value", "channel", "user_id", "location_name", "created_date");
+            .containsExactly("id", "search_value", "channel", "user_id", "court_name", "created_date");
 
         assertThat(locationSubscriptionsSheet.getRow(1))
             .extracting(Cell::getStringCellValue)
             .containsExactly(USER_ID.toString(), SEARCH_VALUE, EMAIL_CHANNEL.toString(), ID.toString(),
-                             LOCATION_NAME, CREATED_DATE.toString());
+                             LOCATION_NAME, CREATED_DATE_STRING);
     }
 
     @Test
