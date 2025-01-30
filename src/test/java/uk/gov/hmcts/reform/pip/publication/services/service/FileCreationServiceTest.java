@@ -181,16 +181,16 @@ class FileCreationServiceTest {
             .as(MI_DATA_MATCH_MESSAGE)
             .hasSize(3)
             .contains(
-                new String[]{"artefactId", "displayFrom", "displayTo", "language", "provenance", "sensitivity",
-                             "sourceArtefactId", "supersededCount", "type", "contentDate", "locationId",
-                             "locationName", "listType"},
+                new String[]{"artefact_id", "display_from", "display_to", "language", "provenance", "sensitivity",
+                             "source_artefact_id", "superseded_count", "type", "content_date", "court_id",
+                             "court_name", "list_type"},
                 new String[]{ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
                     BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
                     SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "3", LOCATION_NAME,
                     FAMILY_DAILY_CAUSE_LIST.toString() },
                 new String[]{ARTEFACT_ID.toString(), DISPLAY_FROM.toString(), DISPLAY_TO.toString(),
                     BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
-                    SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "NoMatch4", "",
+                    SUPERSEDED_COUNT.toString(), LIST.toString(), CONTENT_DATE.toString(), "NoMatch4", null,
                     FAMILY_DAILY_CAUSE_LIST.toString() }
             );
 
@@ -199,8 +199,8 @@ class FileCreationServiceTest {
             .as(MI_DATA_MATCH_MESSAGE)
             .hasSize(3)
             .contains(
-                new String[]{"userId", "provenanceUserId", "userProvenance", "roles",
-                    "createdDate", "lastSignedInDate"},
+                new String[]{"user_id", "provenance_user_id", "user_provenance", "roles",
+                    "created_date", "last_signed_in_date"},
                 new String[]{USER_ID.toString(), ID, PI_AAD.toString(), INTERNAL_ADMIN_CTSC.toString(),
                     CREATED_DATE.toString(), LAST_SIGNED_IN.toString()}
             );
@@ -210,7 +210,7 @@ class FileCreationServiceTest {
             .as(MI_DATA_MATCH_MESSAGE)
             .hasSize(3)
             .contains(
-                new String[]{"id", "channel", "searchType", "userId", "locationName", "createdDate"},
+                new String[]{"id", "channel", "search_type", "user_id", "court_name", "created_date"},
                 new String[]{USER_ID.toString(), EMAIL.toString(), SEARCH_TYPE.toString(), ID,
                     LOCATION_NAME, CREATED_DATE.toString()}
             );
@@ -220,7 +220,7 @@ class FileCreationServiceTest {
             .as(MI_DATA_MATCH_MESSAGE)
             .hasSize(3)
             .contains(
-                new String[]{"id", "searchValue", "channel", "userId", "locationName", "createdDate"},
+                new String[]{"id", "search_value", "channel", "user_id", "court_name", "created_date"},
                 new String[]{USER_ID.toString(), SEARCH_VALUE, EMAIL.toString(), ID,
                     LOCATION_NAME, CREATED_DATE.toString()}
             );

@@ -4,26 +4,19 @@ import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
-import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
-import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
-import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
+import uk.gov.hmcts.reform.pip.model.report.MiDataInterface;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelGenerationService;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 /**
  * Service to create files to send in emails.
@@ -86,57 +79,32 @@ public class FileCreationService {
     Map<String, List<String[]>> extractMiData() {
         Map<String, List<String[]>> data = new ConcurrentHashMap<>();
 
-        List<String[]> artefactData = formatData(dataManagementService.getMiData(), PublicationMiData.class);
+        List<String[]> artefactData = formatData(dataManagementService.getMiData());
         if (!artefactData.isEmpty()) {
             data.put("Publications", artefactData);
         }
 
-        List<String[]> userData = formatData(accountManagementService.getMiData(), AccountMiData.class);
+        List<String[]> userData = formatData(accountManagementService.getMiData());
         if (!userData.isEmpty()) {
             data.put("User accounts", userData);
         }
 
-        List<String[]> allSubscriptionData = formatData(
-            subscriptionManagementService.getAllMiData(),
-            AllSubscriptionMiData.class
-        );
+        List<String[]> allSubscriptionData = formatData(subscriptionManagementService.getAllMiData());
         if (!allSubscriptionData.isEmpty()) {
             data.put("All subscriptions", allSubscriptionData);
         }
 
-        List<String[]> locationSubscriptionData = formatData(
-            subscriptionManagementService.getLocationMiData(),
-            LocationSubscriptionMiData.class
-        );
+        List<String[]> locationSubscriptionData = formatData(subscriptionManagementService.getLocationMiData());
         if (!locationSubscriptionData.isEmpty()) {
             data.put("Location subscriptions", locationSubscriptionData);
         }
         return data;
     }
 
-    public static <T> List<String[]> formatData(List<T> data, Class<T> className) {
-        Field[] fields = className.getDeclaredFields();
-        String[] header = Arrays.stream(fields)
-            .map(Field::getName)
-            .toArray(String[]::new);
+    private List<String[]> formatData(List<? extends MiDataInterface> data) {
         List<String[]> formattedData = new ArrayList<>();
-        formattedData.add(header);
-
-        data.stream().map(d -> Arrays.stream(fields)
-            .map(field -> {
-                field.setAccessible(true);
-                try {
-                    Object value = field.get(d);
-                    return value != null ? value.toString() : "";
-                } catch (IllegalAccessException e) {
-                    log.error(writeLog(String.format(
-                        "Failed to access field: %s, %s", field.getName(), e.getMessage()
-                    )));
-                    return "";
-                }
-            })
-            .toArray(String[]::new)).forEach(formattedData::add);
-
+        formattedData.add(data.getFirst().generateReportHeaders());
+        data.forEach(item -> formattedData.add(item.generateReportData()));
         return formattedData;
     }
 }

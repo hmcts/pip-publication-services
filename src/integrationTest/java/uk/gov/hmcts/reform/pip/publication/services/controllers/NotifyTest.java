@@ -560,9 +560,10 @@ class NotifyTest extends IntegrationTestBase {
 
         assertThat(publicationsSheet.getRow(0))
             .extracting(Cell::getStringCellValue)
-            .containsExactly("artefactId", "displayFrom", "displayTo", "language", "provenance", "sensitivity",
-                             "sourceArtefactId", "supersededCount", "type", "contentDate", "locationId",
-                             "locationName", "listType");
+            .containsExactly("artefact_id", "display_from",
+                             "display_to", "language", "provenance", "sensitivity",
+                             "source_artefact_id", "superseded_count", "type", "content_date", "court_id",
+                             "court_name", "list_type");
 
         assertThat(publicationsSheet.getRow(1))
             .extracting(Cell::getStringCellValue)
@@ -604,8 +605,8 @@ class NotifyTest extends IntegrationTestBase {
 
         assertThat(userAccountSheet.getRow(0))
             .extracting(Cell::getStringCellValue)
-            .containsExactly("userId", "provenanceUserId", "userProvenance", "roles",
-                             "createdDate", "lastSignedInDate");
+            .containsExactly("user_id", "provenance_user_id", "user_provenance", "roles",
+                             "created_date", "last_signed_in_date");
 
         assertThat(userAccountSheet.getRow(1))
             .extracting(Cell::getStringCellValue)
@@ -636,7 +637,7 @@ class NotifyTest extends IntegrationTestBase {
 
         assertThat(allSubscriptionsSheet.getRow(0))
             .extracting(Cell::getStringCellValue)
-            .containsExactly("id", "channel", "searchType", "userId", "locationName", "createdDate");
+            .containsExactly("id", "channel", "search_type", "user_id", "court_name", "created_date");
 
         assertThat(allSubscriptionsSheet.getRow(1))
             .extracting(Cell::getStringCellValue)
@@ -669,7 +670,7 @@ class NotifyTest extends IntegrationTestBase {
 
         assertThat(locationSubscriptionsSheet.getRow(0))
             .extracting(Cell::getStringCellValue)
-            .containsExactly("id", "searchValue", "channel", "userId", "locationName", "createdDate");
+            .containsExactly("id", "search_value", "channel", "user_id", "location_name", "created_date");
 
         assertThat(locationSubscriptionsSheet.getRow(1))
             .extracting(Cell::getStringCellValue)
