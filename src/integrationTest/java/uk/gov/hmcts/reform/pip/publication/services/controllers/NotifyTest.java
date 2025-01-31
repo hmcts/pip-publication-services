@@ -286,6 +286,20 @@ class NotifyTest extends IntegrationTestBase {
     private static final List<AllSubscriptionMiData> ALL_SUBS_MI_DATA = List.of(ALL_SUBS_MI_RECORD, ALL_SUBS_MI_RECORD);
     private static final List<LocationSubscriptionMiData> LOCAL_SUBS_MI_DATA = List.of(LOCAL_SUBS_MI_RECORD,
                                                                                        LOCAL_SUBS_MI_RECORD);
+
+    private static final String[] EXPECTED_PUBLICATION_HEADERS = {"artefact_id", "display_from",
+        "display_to", "language", "provenance", "sensitivity", "source_artefact_id", "superseded_count", "type",
+        "content_date", "court_id", "court_name", "list_type"};
+
+    private static final String[] EXPECTED_ACCOUNT_HEADERS = {"user_id", "provenance_user_id",
+        "user_provenance", "roles", "created_date", "last_signed_in_date"};
+
+    private static final String[] EXPECTED_ALL_SUBSCRIPTION_HEADERS =  {"id", "channel",
+        "search_type", "user_id", "court_name", "created_date"};
+
+    private static final String[] EXPECTED_LOCATION_SUBSCRIPTION_HEADERS = {"id", "search_value",
+        "channel", "user_id", "court_name", "created_date"};
+
     private static List<PublicationMiData> publicationMiData;
 
     private String validMediaReportingJson;
@@ -316,6 +330,42 @@ class NotifyTest extends IntegrationTestBase {
 
         validMediaReportingJson = ow.writeValueAsString(MEDIA_APPLICATION_LIST);
         validLocationsListJson = ow.writeValueAsString(NO_MATCH_ARTEFACT_LIST);
+    }
+
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+    private Workbook setupMiEndpointWithData() throws Exception {
+        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
+        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
+        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
+        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+
+        mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.notNullValue()));
+
+        byte[] file = Base64.decode(((JSONObject) personalisationCapture.getValue().get(FILE_PERSONALISATION))
+                                        .get(FILE_NAME_PERSONALISATION).toString());
+
+        ByteArrayInputStream outputFile = new ByteArrayInputStream(file);
+        return new XSSFWorkbook(outputFile);
+    }
+
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+    private Workbook setupMiEndpointNoData() throws Exception {
+        when(dataManagementService.getMiData()).thenReturn(List.of());
+        when(accountManagementService.getMiData()).thenReturn(List.of());
+        when(subscriptionManagementService.getAllMiData()).thenReturn(List.of());
+        when(subscriptionManagementService.getLocationMiData()).thenReturn(List.of());
+
+        mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.notNullValue()));
+
+        byte[] file = Base64.decode(((JSONObject) personalisationCapture.getValue().get(FILE_PERSONALISATION))
+                                        .get(FILE_NAME_PERSONALISATION).toString());
+
+        ByteArrayInputStream outputFile = new ByteArrayInputStream(file);
+        return new XSSFWorkbook(outputFile);
     }
 
     @Test
@@ -538,145 +588,161 @@ class NotifyTest extends IntegrationTestBase {
 
     @Test
     void testSendMiReportingEmailForPublications() throws Exception {
-        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
-        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+        try (Workbook workbook = setupMiEndpointWithData()) {
 
-        mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
-            .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.notNullValue()));
+            assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
 
-        byte[] file = Base64.decode(((JSONObject) personalisationCapture.getValue().get(FILE_PERSONALISATION))
-                                        .get(FILE_NAME_PERSONALISATION).toString());
+            assertThat(workbook.getSheet("Publications")).isNotNull();
 
-        ByteArrayInputStream outputFile = new ByteArrayInputStream(file);
-        Workbook workbook = new XSSFWorkbook(outputFile);
+            Sheet publicationsSheet = workbook.getSheet("Publications");
 
-        assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
+            assertThat(publicationsSheet.getRow(0))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(EXPECTED_PUBLICATION_HEADERS);
 
-        assertThat(workbook.getSheet("Publications")).isNotNull();
+            assertThat(publicationsSheet.getRow(1))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(ARTEFACT_ID.toString(),
+                                 CREATED_DATE_STRING,
+                                 "2025-01-19 13:45:50",
+                                 BI_LINGUAL.toString(),
+                                 MANUAL_UPLOAD_PROVENANCE,
+                                 PUBLIC.toString(),
+                                 SOURCE_ARTEFACT_ID,
+                                 SUPERSEDED_COUNT.toString(),
+                                 LIST.toString(),
+                                 "2025-01-19 13:45:00",
+                                 "3",
+                                 LOCATION_NAME,
+                                 FAMILY_DAILY_CAUSE_LIST.toString()
+                );
 
-        Sheet publicationsSheet = workbook.getSheet("Publications");
+            assertThat(publicationsSheet.getRow(2))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(ARTEFACT_ID.toString(), CREATED_DATE_STRING, "2025-01-19 13:45:50",
+                                 BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
+                                 SUPERSEDED_COUNT.toString(), LIST.toString(), "2025-01-19 13:45:00", "NoMatch4", "",
+                                 FAMILY_DAILY_CAUSE_LIST.toString()
+                );
+        }
+    }
 
-        assertThat(publicationsSheet.getRow(0))
-            .extracting(Cell::getStringCellValue)
-            .containsExactly("artefact_id", "display_from",
-                             "display_to", "language", "provenance", "sensitivity",
-                             "source_artefact_id", "superseded_count", "type", "content_date", "court_id",
-                             "court_name", "list_type");
+    @Test
+    void testSendMiReportingEmailForPublicationsWhenNoData() throws Exception {
+        try (Workbook workbook = setupMiEndpointNoData()) {
 
-        assertThat(publicationsSheet.getRow(1))
-            .extracting(Cell::getStringCellValue)
-            .containsExactly(ARTEFACT_ID.toString(), CREATED_DATE_STRING, "2025-01-19 13:45:50",
-                             BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
-                             SUPERSEDED_COUNT.toString(), LIST.toString(), "2025-01-19 13:45:00", "3", LOCATION_NAME,
-                             FAMILY_DAILY_CAUSE_LIST.toString());
+            Sheet publicationsSheet = workbook.getSheet("Publications");
 
-        assertThat(publicationsSheet.getRow(2))
-            .extracting(Cell::getStringCellValue)
-            .containsExactly(ARTEFACT_ID.toString(), CREATED_DATE_STRING, "2025-01-19 13:45:50",
-                             BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
-                             SUPERSEDED_COUNT.toString(), LIST.toString(), "2025-01-19 13:45:00", "NoMatch4", "",
-                             FAMILY_DAILY_CAUSE_LIST.toString());
+            assertThat(publicationsSheet.getLastRowNum()).isEqualTo(0);
+
+            assertThat(publicationsSheet.getRow(0))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(EXPECTED_PUBLICATION_HEADERS);
+        }
     }
 
     @Test
     void testSendMiReportingEmailForAccounts() throws Exception {
-        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
-        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+        try (Workbook workbook = setupMiEndpointWithData()) {
+            assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
 
-        mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
-            .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.notNullValue()));
+            assertThat(workbook.getSheet("User accounts")).isNotNull();
 
-        byte[] file = Base64.decode(((JSONObject) personalisationCapture.getValue().get(FILE_PERSONALISATION))
-                                        .get(FILE_NAME_PERSONALISATION).toString());
+            Sheet userAccountSheet = workbook.getSheet("User accounts");
 
-        ByteArrayInputStream outputFile = new ByteArrayInputStream(file);
-        Workbook workbook = new XSSFWorkbook(outputFile);
+            assertThat(userAccountSheet.getRow(0))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(EXPECTED_ACCOUNT_HEADERS);
 
-        assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
+            assertThat(userAccountSheet.getRow(1))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(USER_ID.toString(), ID.toString(), PI_AAD.toString(), INTERNAL_ADMIN_CTSC.toString(),
+                                 CREATED_DATE_STRING, "2023-01-25 14:22:43"
+                );
+        }
+    }
 
-        assertThat(workbook.getSheet("User accounts")).isNotNull();
+    @Test
+    void testSendMiReportingEmailForAccountsWhenNoData() throws Exception {
+        try (Workbook workbook = setupMiEndpointWithData()) {
 
-        Sheet userAccountSheet = workbook.getSheet("User accounts");
+            Sheet userAccountsSheet = workbook.getSheet("User accounts");
 
-        assertThat(userAccountSheet.getRow(0))
-            .extracting(Cell::getStringCellValue)
-            .containsExactly("user_id", "provenance_user_id", "user_provenance", "roles",
-                             "created_date", "last_signed_in_date");
+            assertThat(userAccountsSheet.getLastRowNum()).isEqualTo(0);
 
-        assertThat(userAccountSheet.getRow(1))
-            .extracting(Cell::getStringCellValue)
-            .containsExactly(USER_ID.toString(), ID.toString(), PI_AAD.toString(), INTERNAL_ADMIN_CTSC.toString(),
-                             CREATED_DATE_STRING, "2023-01-25 14:22:43");
+            assertThat(userAccountsSheet.getRow(0))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(EXPECTED_ACCOUNT_HEADERS);
+        }
     }
 
     @Test
     void testSendMiReportingEmailForAllSubscriptions() throws Exception {
-        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
-        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+        try (Workbook workbook = setupMiEndpointWithData()) {
+            assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
 
-        mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
-            .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.notNullValue()));
+            Sheet allSubscriptionsSheet = workbook.getSheet("All subscriptions");
 
-        byte[] file = Base64.decode(((JSONObject) personalisationCapture.getValue().get(FILE_PERSONALISATION))
-                                        .get(FILE_NAME_PERSONALISATION).toString());
+            assertThat(allSubscriptionsSheet.getRow(0))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(EXPECTED_ALL_SUBSCRIPTION_HEADERS);
 
-        ByteArrayInputStream outputFile = new ByteArrayInputStream(file);
-        Workbook workbook = new XSSFWorkbook(outputFile);
+            assertThat(allSubscriptionsSheet.getRow(1))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(USER_ID.toString(), EMAIL_CHANNEL.toString(), SEARCH_TYPE.toString(), ID.toString(),
+                                 LOCATION_NAME, CREATED_DATE_STRING
+                );
+        }
+    }
 
-        assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
+    @Test
+    void testSendMiReportingEmailForAllSubscriptionsWhenNoData() throws Exception {
+        try (Workbook workbook = setupMiEndpointNoData()) {
 
-        Sheet allSubscriptionsSheet = workbook.getSheet("All subscriptions");
+            Sheet allSubscriptionsSheet = workbook.getSheet("All subscriptions");
 
-        assertThat(allSubscriptionsSheet.getRow(0))
-            .extracting(Cell::getStringCellValue)
-            .containsExactly("id", "channel", "search_type", "user_id", "court_name", "created_date");
+            assertThat(allSubscriptionsSheet.getLastRowNum()).isEqualTo(0);
 
-        assertThat(allSubscriptionsSheet.getRow(1))
-            .extracting(Cell::getStringCellValue)
-            .containsExactly(USER_ID.toString(), EMAIL_CHANNEL.toString(), SEARCH_TYPE.toString(), ID.toString(),
-                             LOCATION_NAME, CREATED_DATE_STRING);
+            assertThat(allSubscriptionsSheet.getRow(0))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(EXPECTED_ALL_SUBSCRIPTION_HEADERS);
+        }
     }
 
     @Test
     void testSendMiReportingEmailForLocationSubscriptions() throws Exception {
-        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
-        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+        try (Workbook workbook = setupMiEndpointWithData()) {
 
-        mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
-            .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.notNullValue()));
+            assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
 
-        byte[] file = Base64.decode(((JSONObject) personalisationCapture.getValue().get(FILE_PERSONALISATION))
-                                        .get(FILE_NAME_PERSONALISATION).toString());
+            assertThat(workbook.getSheet("Location subscriptions")).isNotNull();
 
-        ByteArrayInputStream outputFile = new ByteArrayInputStream(file);
-        Workbook workbook = new XSSFWorkbook(outputFile);
+            Sheet locationSubscriptionsSheet = workbook.getSheet("Location subscriptions");
 
-        assertThat(workbook.getNumberOfSheets()).isEqualTo(4);
+            assertThat(locationSubscriptionsSheet.getRow(0))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(EXPECTED_LOCATION_SUBSCRIPTION_HEADERS);
 
-        assertThat(workbook.getSheet("Location subscriptions")).isNotNull();
+            assertThat(locationSubscriptionsSheet.getRow(1))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(USER_ID.toString(), SEARCH_VALUE, EMAIL_CHANNEL.toString(), ID.toString(),
+                                 LOCATION_NAME, CREATED_DATE_STRING
+                );
+        }
+    }
 
-        Sheet locationSubscriptionsSheet = workbook.getSheet("Location subscriptions");
+    @Test
+    void testSendMiReportingEmailForLocationSubscriptionsWhenNoData() throws Exception {
+        try (Workbook workbook = setupMiEndpointNoData()) {
 
-        assertThat(locationSubscriptionsSheet.getRow(0))
-            .extracting(Cell::getStringCellValue)
-            .containsExactly("id", "search_value", "channel", "user_id", "court_name", "created_date");
+            Sheet locationSubscriptionsSheet = workbook.getSheet("Location subscriptions");
 
-        assertThat(locationSubscriptionsSheet.getRow(1))
-            .extracting(Cell::getStringCellValue)
-            .containsExactly(USER_ID.toString(), SEARCH_VALUE, EMAIL_CHANNEL.toString(), ID.toString(),
-                             LOCATION_NAME, CREATED_DATE_STRING);
+            assertThat(locationSubscriptionsSheet.getLastRowNum()).isEqualTo(0);
+
+            assertThat(locationSubscriptionsSheet.getRow(0))
+                .extracting(Cell::getStringCellValue)
+                .containsExactly(EXPECTED_LOCATION_SUBSCRIPTION_HEADERS);
+        }
     }
 
     @Test
