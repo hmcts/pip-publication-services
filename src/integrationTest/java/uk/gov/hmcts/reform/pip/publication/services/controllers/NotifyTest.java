@@ -664,7 +664,7 @@ class NotifyTest extends IntegrationTestBase {
 
     @Test
     void testSendMiReportingEmailForAccountsWhenNoData() throws Exception {
-        try (Workbook workbook = setupMiEndpointWithData()) {
+        try (Workbook workbook = setupMiEndpointNoData()) {
 
             Sheet userAccountsSheet = workbook.getSheet("User accounts");
 
