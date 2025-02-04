@@ -19,6 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AccountManagementServiceTest {
     private static final String RESPONSE_BODY = "responseBody";
     private static final String NOT_FOUND = "404";
+    private static final String RESPONSE_NOT_MATCH = "Response does not match";
+    private static final String EXCEPTION_NOT_MATCH = "Exception does not match";
+    private static final String MESSAGE_NOT_MATCH = "Message does not match";
 
     private final MockWebServer mockAccountManagementEndpoint = new MockWebServer();
 
@@ -38,13 +41,13 @@ class AccountManagementServiceTest {
     }
 
     @Test
-    void testGetMiDataReturnsOk() {
+    void testGetAccountMiDataReturnsOk() {
         mockAccountManagementEndpoint.enqueue(new MockResponse()
                                                     .setBody(RESPONSE_BODY)
                                                     .setResponseCode(200));
 
-        String response = accountManagementService.getMiData();
-        assertEquals(RESPONSE_BODY, response, "Response does not match");
+        String response = accountManagementService.getAccountMiData();
+        assertEquals(RESPONSE_BODY, response, RESPONSE_NOT_MATCH);
     }
 
     @Test
@@ -52,9 +55,52 @@ class AccountManagementServiceTest {
         mockAccountManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class,
-                                                                 accountManagementService::getMiData,
-                                                                 "Exception does not match");
+                                                                 accountManagementService::getAccountMiData,
+                                                                 EXCEPTION_NOT_MATCH);
 
         assertTrue(notifyException.getMessage().contains(NOT_FOUND), "Message does not match");
+    }
+
+    @Test
+    void testGetAllMiDataReturnsOk() {
+        mockAccountManagementEndpoint.enqueue(new MockResponse()
+                                                  .setBody(RESPONSE_BODY)
+                                                  .setResponseCode(200));
+
+        String response = accountManagementService.getAllSubscriptionMiData();
+        assertEquals(RESPONSE_BODY, response, RESPONSE_NOT_MATCH);
+    }
+
+    @Test
+    void testGetAllMiDataThrowsException() {
+        mockAccountManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class,
+                                                                 accountManagementService::getAllSubscriptionMiData,
+                                                                 EXCEPTION_NOT_MATCH);
+
+        assertTrue(notifyException.getMessage().contains(NOT_FOUND), MESSAGE_NOT_MATCH);
+    }
+
+    @Test
+    void testGetLocationMiDataReturnsOk() {
+        mockAccountManagementEndpoint.enqueue(new MockResponse()
+                                                  .setBody(RESPONSE_BODY)
+                                                  .setResponseCode(200));
+
+        String response = accountManagementService.getLocationSubscriptionMiData();
+        assertEquals(RESPONSE_BODY, response, RESPONSE_NOT_MATCH);
+    }
+
+    @Test
+    void testGetLocationMiDataThrowsException() {
+        mockAccountManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+        ServiceToServiceException notifyException = assertThrows(
+            ServiceToServiceException.class, accountManagementService::getLocationSubscriptionMiData,
+            EXCEPTION_NOT_MATCH
+        );
+
+        assertTrue(notifyException.getMessage().contains(NOT_FOUND), MESSAGE_NOT_MATCH);
     }
 }

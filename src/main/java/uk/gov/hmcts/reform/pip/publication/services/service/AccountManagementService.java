@@ -26,9 +26,31 @@ public class AccountManagementService {
         this.webClient = webClient;
     }
 
-    public String getMiData() {
+    public String getAccountMiData() {
         try {
             return webClient.get().uri(String.format("%s/account/mi-data", url))
+                .attributes(clientRegistrationId("accountManagementApi"))
+                .retrieve()
+                .bodyToMono(String.class).block();
+        } catch (WebClientResponseException ex) {
+            throw new ServiceToServiceException(SERVICE, ex.getMessage());
+        }
+    }
+
+    public String getAllSubscriptionMiData() {
+        try {
+            return webClient.get().uri(String.format("%s/subscription/mi-data-all", url))
+                .attributes(clientRegistrationId("accountManagementApi"))
+                .retrieve()
+                .bodyToMono(String.class).block();
+        } catch (WebClientResponseException ex) {
+            throw new ServiceToServiceException(SERVICE, ex.getMessage());
+        }
+    }
+
+    public String getLocationSubscriptionMiData() {
+        try {
+            return webClient.get().uri(String.format("%s/subscription/mi-data-local", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
                 .bodyToMono(String.class).block();
