@@ -115,7 +115,7 @@ Any endpoint that should require authentication, needs to be annotated either at
 
 ## Architecture Diagram
 
-![Architecture Diagram for pip-publication-services](./publication-services-arch.png)
+![Architecture Diagram for pip-publication-services](service-diagram.png)
 
 ## Getting Started
 
