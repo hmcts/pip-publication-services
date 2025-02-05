@@ -59,8 +59,8 @@ public class FileCreationService {
     }
 
     /**
-     * Calls out to data management, account management and subscription management services to get the MI data and
-     * generates an Excel spreadsheet returned as a byte array.
+     * Calls out to data management and account management services to get the MI data and generates an Excel
+     * spreadsheet returned as a byte array.
      *
      * @return a byte array of the Excel spreadsheet.
      * @throws IOException if an error appears during Excel generation.
