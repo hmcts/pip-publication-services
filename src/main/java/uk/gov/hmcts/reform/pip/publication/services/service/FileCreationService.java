@@ -25,25 +25,19 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("PMD.PreserveStackTrace")
 public class FileCreationService {
 
-    private final DataManagementService dataManagementService;
-
-    private final AccountManagementService accountManagementService;
-
-    private final SubscriptionManagementService subscriptionManagementService;
-
-    private final ExcelGenerationService excelGenerationService;
-
     private static final String[] HEADINGS = {"Full name", "Email", "Employer",
         "Request date", "Status", "Status date"};
+
+    private final DataManagementService dataManagementService;
+    private final AccountManagementService accountManagementService;
+    private final ExcelGenerationService excelGenerationService;
 
     @Autowired
     public FileCreationService(DataManagementService dataManagementService,
                                AccountManagementService accountManagementService,
-                               SubscriptionManagementService subscriptionManagementService,
                                ExcelGenerationService excelGenerationService) {
         this.dataManagementService = dataManagementService;
         this.accountManagementService = accountManagementService;
-        this.subscriptionManagementService = subscriptionManagementService;
         this.excelGenerationService = excelGenerationService;
     }
 
@@ -65,8 +59,8 @@ public class FileCreationService {
     }
 
     /**
-     * Calls out to data management, account management and subscription management services to get the MI data and
-     * generates an Excel spreadsheet returned as a byte array.
+     * Calls out to data management and account management services to get the MI data and generates an Excel
+     * spreadsheet returned as a byte array.
      *
      * @return a byte array of the Excel spreadsheet.
      * @throws IOException if an error appears during Excel generation.
@@ -83,17 +77,17 @@ public class FileCreationService {
             data.put("Publications", artefactData);
         }
 
-        List<String[]> userData = formatData(accountManagementService.getMiData());
+        List<String[]> userData = formatData(accountManagementService.getAccountMiData());
         if (!userData.isEmpty()) {
             data.put("User accounts", userData);
         }
 
-        List<String[]> allSubscriptionData = formatData(subscriptionManagementService.getAllMiData());
+        List<String[]> allSubscriptionData = formatData(accountManagementService.getAllSubscriptionMiData());
         if (!allSubscriptionData.isEmpty()) {
             data.put("All subscriptions", allSubscriptionData);
         }
 
-        List<String[]> locationSubscriptionData = formatData(subscriptionManagementService.getLocationMiData());
+        List<String[]> locationSubscriptionData = formatData(accountManagementService.getLocationSubscriptionMiData());
         if (!locationSubscriptionData.isEmpty()) {
             data.put("Location subscriptions", locationSubscriptionData);
         }

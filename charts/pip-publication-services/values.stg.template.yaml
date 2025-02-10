@@ -18,8 +18,6 @@ java:
           alias: APP_URI
         - name: app-pip-data-management-scope
           alias: DATA_MANAGEMENT_AZ_API
-        - name: app-pip-subscription-management-scope
-          alias: SUBSCRIPTION_MANAGEMENT_AZ_API
         - name: app-pip-account-management-scope
           alias: ACCOUNT_MANAGEMENT_AZ_API
         - name: pip-team-email

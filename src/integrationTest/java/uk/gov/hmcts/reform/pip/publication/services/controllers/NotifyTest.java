@@ -467,9 +467,9 @@ class NotifyTest extends IntegrationTestBase {
     void testSendMiReportingEmail() throws Exception {
         String miData = "field1,field2,field3";
         when(dataManagementService.getMiData()).thenReturn(miData);
-        when(accountManagementService.getMiData()).thenReturn(miData);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(miData);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(miData);
+        when(accountManagementService.getAccountMiData()).thenReturn(miData);
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(miData);
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(miData);
 
         mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
             .andExpect(status().isOk())

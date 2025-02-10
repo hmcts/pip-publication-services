@@ -32,9 +32,6 @@ class FileCreationServiceTest {
     private AccountManagementService accountManagementService;
 
     @Mock
-    private SubscriptionManagementService subscriptionManagementService;
-
-    @Mock
     private ExcelGenerationService excelGenerationService;
 
     @InjectMocks
@@ -83,9 +80,9 @@ class FileCreationServiceTest {
     void testGenerateMiReportSuccess() throws IOException {
         String data = "1,2,3";
         when(dataManagementService.getMiData()).thenReturn(data);
-        when(accountManagementService.getMiData()).thenReturn(data);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(data);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(data);
+        when(accountManagementService.getAccountMiData()).thenReturn(data);
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(data);
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(data);
         when(excelGenerationService.generateMultiSheetWorkBook(any())).thenReturn(TEST_BYTE);
 
         assertThat(fileCreationService.generateMiReport()).isEqualTo(TEST_BYTE);
@@ -94,9 +91,9 @@ class FileCreationServiceTest {
     @Test
     void testExtractMiData() {
         when(dataManagementService.getMiData()).thenReturn("a,b,c\nd,e,f");
-        when(accountManagementService.getMiData()).thenReturn("g,h,i\nj,k,l");
-        when(subscriptionManagementService.getAllMiData()).thenReturn("m,n,o\np,q,r");
-        when(subscriptionManagementService.getLocationMiData()).thenReturn("m,n,o");
+        when(accountManagementService.getAccountMiData()).thenReturn("g,h,i\nj,k,l");
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn("m,n,o\np,q,r");
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn("m,n,o");
 
         Map<String, List<String[]>> results = fileCreationService.extractMiData();
 
