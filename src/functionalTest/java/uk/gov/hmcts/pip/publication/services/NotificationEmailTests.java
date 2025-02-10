@@ -428,7 +428,7 @@ class NotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getSubject().get())
             .as(EMAIL_SUBJECT_ERROR)
-            .contains("Local – MI Reporting");
+            .contains("Staging – MI Reporting");
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
