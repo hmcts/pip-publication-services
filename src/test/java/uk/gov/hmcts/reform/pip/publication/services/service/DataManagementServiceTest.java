@@ -14,12 +14,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
+import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,6 +45,7 @@ class DataManagementServiceTest {
     private static final String HELLO = "hello";
 
     private final ObjectWriter ow = new ObjectMapper().findAndRegisterModules().writer().withDefaultPrettyPrinter();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private DataManagementService dataManagementService;
 
@@ -250,13 +254,18 @@ class DataManagementServiceTest {
     }
 
     @Test
-    void testGetMiDataReturnsOk() {
+    void testGetMiDataReturnsOk() throws JsonProcessingException {
+        PublicationMiData data1 = new PublicationMiData();
+        List<PublicationMiData> expectedData = List.of(data1);
+
         mockDataManagementEndpoint.enqueue(new MockResponse()
-                                               .setBody(RESPONSE_BODY)
+                                               .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                               .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
                                                .setResponseCode(200));
 
-        String response = dataManagementService.getMiData();
-        assertEquals(RESPONSE_BODY, response, "Messages do not match");
+        List<PublicationMiData> response = dataManagementService.getMiData();
+
+        assertIterableEquals(expectedData, response, "Data does not match");
     }
 
     @Test

@@ -3,10 +3,15 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
+import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
+
+import java.util.List;
 
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
 
@@ -26,23 +31,25 @@ public class SubscriptionManagementService {
         this.webClient = webClient;
     }
 
-    public String getAllMiData() {
+    public List<AllSubscriptionMiData> getAllMiData() {
         try {
-            return webClient.get().uri(String.format("%s/subscription/mi-data-all", url))
+            return webClient.get().uri(String.format("%s/subscription/v2/mi-data-all", url))
                 .attributes(clientRegistrationId("subscriptionManagementApi"))
                 .retrieve()
-                .bodyToMono(String.class).block();
+                .bodyToMono(new ParameterizedTypeReference<List<AllSubscriptionMiData>>() {})
+                .block();
         } catch (WebClientResponseException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
     }
 
-    public String getLocationMiData() {
+    public List<LocationSubscriptionMiData> getLocationMiData() {
         try {
-            return webClient.get().uri(String.format("%s/subscription/mi-data-local", url))
+            return webClient.get().uri(String.format("%s/subscription/v2/mi-data-location", url))
                 .attributes(clientRegistrationId("subscriptionManagementApi"))
                 .retrieve()
-                .bodyToMono(String.class).block();
+                .bodyToMono(new ParameterizedTypeReference<List<LocationSubscriptionMiData>>() {})
+                .block();
         } catch (WebClientResponseException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
