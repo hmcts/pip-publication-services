@@ -20,9 +20,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SmokeTestBase {
-    protected String accessToken;
-    protected String b2cAccessToken;
-
     @Value("${TEST_URL:http://localhost:8081}")
     private String testUrl;
 
@@ -32,8 +29,6 @@ public class SmokeTestBase {
     @BeforeAll
     void startup() {
         RestAssured.baseURI = testUrl;
-        accessToken = authClient.generateAccessToken();
-        b2cAccessToken = authClient.generateB2cAccessToken();
     }
 
     protected Response doGetRequest(final String path) {
@@ -44,9 +39,9 @@ public class SmokeTestBase {
             .thenReturn();
     }
 
-    protected Response doPostRequest(final String path, final Object body, String accessToken) {
+    protected Response doPostRequest(final String path, final Object body) {
         final Map<String, String> headers = new ConcurrentHashMap<>();
-        headers.put(AUTHORIZATION, "bearer " + accessToken);
+        headers.put(AUTHORIZATION, "bearer " + authClient.generateAccessToken());
         headers.put(CONTENT_TYPE, "application/json");
 
         return given()
