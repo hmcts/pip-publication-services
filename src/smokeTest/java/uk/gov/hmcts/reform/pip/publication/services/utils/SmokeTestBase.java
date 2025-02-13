@@ -7,7 +7,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
