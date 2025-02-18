@@ -47,9 +47,6 @@ class FileCreationServiceTest {
     private AccountManagementService accountManagementService;
 
     @Mock
-    private SubscriptionManagementService subscriptionManagementService;
-
-    @Mock
     private ExcelGenerationService excelGenerationService;
 
     @InjectMocks
@@ -157,9 +154,9 @@ class FileCreationServiceTest {
     @Test
     void testGenerateMiReportSuccess() throws IOException {
         when(dataManagementService.getMiData()).thenReturn(publicationMiData);
-        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+        when(accountManagementService.getAccountMiData()).thenReturn(ACCOUNT_MI_DATA);
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(ALL_SUBS_MI_DATA);
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
         when(excelGenerationService.generateMultiSheetWorkBook(any())).thenReturn(TEST_BYTE);
 
         assertThat(fileCreationService.generateMiReport()).isEqualTo(TEST_BYTE);
@@ -168,9 +165,9 @@ class FileCreationServiceTest {
     @Test
     void testExtractMiData() {
         when(dataManagementService.getMiData()).thenReturn(publicationMiData);
-        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+        when(accountManagementService.getAccountMiData()).thenReturn(ACCOUNT_MI_DATA);
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(ALL_SUBS_MI_DATA);
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
 
         Map<String, List<String[]>> results = fileCreationService.extractMiData();
 
@@ -240,9 +237,9 @@ class FileCreationServiceTest {
     @Test
     void testExtractMiDataWhenNoData() {
         when(dataManagementService.getMiData()).thenReturn(List.of());
-        when(accountManagementService.getMiData()).thenReturn(List.of());
-        when(subscriptionManagementService.getAllMiData()).thenReturn(List.of());
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(List.of());
+        when(accountManagementService.getAccountMiData()).thenReturn(List.of());
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(List.of());
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(List.of());
 
         Map<String, List<String[]>> results = fileCreationService.extractMiData();
 
