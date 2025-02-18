@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
+import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
+import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
 import java.io.IOException;
@@ -48,7 +50,7 @@ class AccountManagementServiceTest {
     }
 
     @Test
-    void testGetAccountMiDataReturnsOk() {
+    void testGetAccountMiDataReturnsOk() throws JsonProcessingException {
         AccountMiData data1 = new AccountMiData();
         List<AccountMiData> expectedData = List.of(data1);
 
@@ -73,13 +75,18 @@ class AccountManagementServiceTest {
     }
 
     @Test
-    void testGetAllMiDataReturnsOk() {
+    void testGetAllMiDataReturnsOk() throws JsonProcessingException {
+        AllSubscriptionMiData data1 = new AllSubscriptionMiData();
+        List<AllSubscriptionMiData> expectedData = List.of(data1);
+
         mockAccountManagementEndpoint.enqueue(new MockResponse()
-                                                  .setBody(RESPONSE_BODY)
+                                                  .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                                  .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
                                                   .setResponseCode(200));
 
-        String response = accountManagementService.getAllSubscriptionMiData();
-        assertEquals(RESPONSE_BODY, response, RESPONSE_NOT_MATCH);
+        List<AllSubscriptionMiData> response = accountManagementService.getAllSubscriptionMiData();
+
+        assertEquals(expectedData, response, "Data does not match");
     }
 
     @Test
@@ -94,13 +101,17 @@ class AccountManagementServiceTest {
     }
 
     @Test
-    void testGetLocationMiDataReturnsOk() {
+    void testGetLocationMiDataReturnsOk() throws JsonProcessingException {
+        LocationSubscriptionMiData data1 = new LocationSubscriptionMiData();
+        List<LocationSubscriptionMiData> expectedData = List.of(data1);
+
         mockAccountManagementEndpoint.enqueue(new MockResponse()
-                                                  .setBody(RESPONSE_BODY)
+                                                  .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                                  .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
                                                   .setResponseCode(200));
 
-        String response = accountManagementService.getLocationSubscriptionMiData();
-        assertEquals(RESPONSE_BODY, response, RESPONSE_NOT_MATCH);
+        List<LocationSubscriptionMiData> response = accountManagementService.getLocationSubscriptionMiData();
+        assertEquals(expectedData, response, "Data does not match");
     }
 
     @Test

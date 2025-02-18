@@ -102,10 +102,4 @@ public class FileCreationService {
 
         return data;
     }
-
-    private List<String[]> formatData(String data) {
-        return data.lines()
-            .map(l -> l.split(","))
-            .toList();
-    }
 }

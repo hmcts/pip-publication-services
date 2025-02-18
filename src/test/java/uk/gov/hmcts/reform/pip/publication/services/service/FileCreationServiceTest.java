@@ -237,9 +237,9 @@ class FileCreationServiceTest {
     @Test
     void testExtractMiDataWhenNoData() {
         when(dataManagementService.getMiData()).thenReturn(List.of());
-        when(accountManagementService.getMiData()).thenReturn(List.of());
-        when(subscriptionManagementService.getAllMiData()).thenReturn(List.of());
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(List.of());
+        when(accountManagementService.getAccountMiData()).thenReturn(List.of());
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(List.of());
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(List.of());
 
         Map<String, List<String[]>> results = fileCreationService.extractMiData();
 

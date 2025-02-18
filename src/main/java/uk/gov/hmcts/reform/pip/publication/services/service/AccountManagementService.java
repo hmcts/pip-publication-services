@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
+import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
+import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
 import java.util.List;
@@ -43,25 +45,27 @@ public class AccountManagementService {
         }
     }
 
-    public String getAllSubscriptionMiData() {
+    public List<AllSubscriptionMiData> getAllSubscriptionMiData() {
         try {
             return webClient.get()
-                .uri(String.format("%s/subscription/mi-data-all", url))
+                .uri(String.format("%s/subscription/v2/mi-data-all", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
-                .bodyToMono(String.class).block();
+                .bodyToMono(new ParameterizedTypeReference<List<AllSubscriptionMiData>>() {})
+                .block();
         } catch (WebClientResponseException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
     }
 
-    public String getLocationSubscriptionMiData() {
+    public List<LocationSubscriptionMiData> getLocationSubscriptionMiData() {
         try {
             return webClient.get()
-                .uri(String.format("%s/subscription/mi-data-local", url))
+                .uri(String.format("%s/subscription/v2/mi-data-local", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
-                .bodyToMono(String.class).block();
+                .bodyToMono(new ParameterizedTypeReference<List<LocationSubscriptionMiData>>() {})
+                .block();
         } catch (WebClientResponseException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }

@@ -336,8 +336,8 @@ class NotifyTest extends IntegrationTestBase {
     private Workbook setupMiEndpointWithData() throws Exception {
         when(dataManagementService.getMiData()).thenReturn(publicationMiData);
         when(accountManagementService.getAccountMiData()).thenReturn(ACCOUNT_MI_DATA);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(ALL_SUBS_MI_DATA);
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
 
         mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
             .andExpect(status().isOk())
@@ -353,9 +353,9 @@ class NotifyTest extends IntegrationTestBase {
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     private Workbook setupMiEndpointNoData() throws Exception {
         when(dataManagementService.getMiData()).thenReturn(List.of());
-        when(accountManagementService.getMiData()).thenReturn(List.of());
-        when(subscriptionManagementService.getAllMiData()).thenReturn(List.of());
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(List.of());
+        when(accountManagementService.getAccountMiData()).thenReturn(List.of());
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(List.of());
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(List.of());
 
         mockMvc.perform(post(MI_REPORTING_EMAIL_URL))
             .andExpect(status().isOk())
