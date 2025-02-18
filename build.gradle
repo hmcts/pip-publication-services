@@ -57,7 +57,7 @@ configurations {
   functionalTestImplementation.extendsFrom testImplementation
   functionalTestRuntimeOnly.extendsFrom runtimeOnly
 
-  smokeTestImplementation.extendsFrom testImplementation
+  smokeTestImplementation.extendsFrom functionalTestImplementation
   smokeTestRuntimeOnly.extendsFrom runtimeOnly
 
   all {

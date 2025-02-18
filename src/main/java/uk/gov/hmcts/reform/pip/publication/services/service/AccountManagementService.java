@@ -3,10 +3,14 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
+
+import java.util.List;
 
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
 
@@ -26,12 +30,14 @@ public class AccountManagementService {
         this.webClient = webClient;
     }
 
-    public String getAccountMiData() {
+    public List<AccountMiData> getAccountMiData() {
         try {
-            return webClient.get().uri(String.format("%s/account/mi-data", url))
+            return webClient.get()
+                .uri(String.format("%s/account/v2/mi-data", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
-                .bodyToMono(String.class).block();
+                .bodyToMono(new ParameterizedTypeReference<List<AccountMiData>>() {})
+                .block();
         } catch (WebClientResponseException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
@@ -39,7 +45,8 @@ public class AccountManagementService {
 
     public String getAllSubscriptionMiData() {
         try {
-            return webClient.get().uri(String.format("%s/subscription/mi-data-all", url))
+            return webClient.get()
+                .uri(String.format("%s/subscription/mi-data-all", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
                 .bodyToMono(String.class).block();
@@ -50,7 +57,8 @@ public class AccountManagementService {
 
     public String getLocationSubscriptionMiData() {
         try {
-            return webClient.get().uri(String.format("%s/subscription/mi-data-local", url))
+            return webClient.get()
+                .uri(String.format("%s/subscription/mi-data-local", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
                 .bodyToMono(String.class).block();

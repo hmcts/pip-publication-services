@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient;
@@ -50,6 +51,7 @@ class NotificationEmailTests extends FunctionalTestBase {
     private static final String REJECTED_MEDIA_ACCOUNT_EMAIL_URL = NOTIFY_URL + "/media/reject";
     private static final String CREATED_ADMIN_WELCOME_EMAIL = NOTIFY_URL + "/created/admin";
     private static final String SYSADMIN_UPDATE_EMAIL_URL = NOTIFY_URL + "/sysadmin/update";
+    private static final String MI_REPORT_EMAIL_URL = NOTIFY_URL + "/mi/report";
 
     private static final String TEST_USER_EMAIL_PREFIX = String.format(
         "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999));
@@ -65,10 +67,13 @@ class NotificationEmailTests extends FunctionalTestBase {
     private static final String EMAIL_NAME_ERROR = "Name in email body does not match";
     private static final String EMAIL_BODY_ERROR = "Email body does not match";
 
+    @Value("${PI_TEAM_EMAIL}")
+    private String teamEmail;
+
     @Autowired
     private EmailNotificationClient notificationClient;
 
-    private Notification extractNotification(Response response) throws NotificationClientException {
+    private Notification extractNotification(Response response, String email) throws NotificationClientException {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
         String referenceId = response.getBody().asString();
@@ -94,7 +99,7 @@ class NotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getEmailAddress())
             .as(EMAIL_ADDRESS_ERROR)
-            .hasValue(TEST_EMAIL);
+            .hasValue(email);
 
         return notification;
     }
@@ -112,7 +117,7 @@ class NotificationEmailTests extends FunctionalTestBase {
             requestBody
         );
 
-        Notification notification = extractNotification(response);
+        Notification notification = extractNotification(response, TEST_EMAIL);
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
@@ -144,7 +149,7 @@ class NotificationEmailTests extends FunctionalTestBase {
             requestBody
         );
 
-        Notification notification = extractNotification(response);
+        Notification notification = extractNotification(response, TEST_EMAIL);
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
@@ -177,7 +182,7 @@ class NotificationEmailTests extends FunctionalTestBase {
             requestBody
         );
 
-        Notification notification = extractNotification(response);
+        Notification notification = extractNotification(response, TEST_EMAIL);
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
@@ -203,7 +208,8 @@ class NotificationEmailTests extends FunctionalTestBase {
 
         InactiveUserNotificationEmail requestBody =
             new InactiveUserNotificationEmail(TEST_EMAIL, TEST_FULL_NAME, UserProvenances.PI_AAD.name(),
-                                              LAST_SIGNED_IN_DATE);
+                                              LAST_SIGNED_IN_DATE
+            );
 
         final Response response = doPostRequest(
             INACTIVE_USER_NOTIFICATION_EMAIL_URL,
@@ -211,7 +217,7 @@ class NotificationEmailTests extends FunctionalTestBase {
             requestBody
         );
 
-        Notification notification = extractNotification(response);
+        Notification notification = extractNotification(response, TEST_EMAIL);
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
@@ -247,7 +253,7 @@ class NotificationEmailTests extends FunctionalTestBase {
             requestBody
         );
 
-        Notification notification = extractNotification(response);
+        Notification notification = extractNotification(response, TEST_EMAIL);
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
@@ -283,7 +289,7 @@ class NotificationEmailTests extends FunctionalTestBase {
             requestBody
         );
 
-        Notification notification = extractNotification(response);
+        Notification notification = extractNotification(response, TEST_EMAIL);
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
@@ -321,7 +327,7 @@ class NotificationEmailTests extends FunctionalTestBase {
             mediaRejectionEmail
         );
 
-        Notification notification = extractNotification(response);
+        Notification notification = extractNotification(response, TEST_EMAIL);
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
@@ -334,7 +340,7 @@ class NotificationEmailTests extends FunctionalTestBase {
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
             .contains("Your request for a court and tribunal hearings "
-                         + "account has been rejected for the following reason(s):");
+                          + "account has been rejected for the following reason(s):");
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
@@ -345,14 +351,15 @@ class NotificationEmailTests extends FunctionalTestBase {
     @Test
     void shouldSendCreatedAdminEmail() throws NotificationClientException {
         CreatedAdminWelcomeEmail requestBody = new CreatedAdminWelcomeEmail(TEST_EMAIL,
-                                                                            "TEST_FIRST_NAME", "TEST_SURNAME");
+                                                                            "TEST_FIRST_NAME", "TEST_SURNAME"
+        );
         final Response response = doPostRequest(
             CREATED_ADMIN_WELCOME_EMAIL,
             Map.of(AUTHORIZATION, bearerToken),
             requestBody
         );
 
-        Notification notification = extractNotification(response);
+        Notification notification = extractNotification(response, TEST_EMAIL);
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
@@ -381,7 +388,7 @@ class NotificationEmailTests extends FunctionalTestBase {
             systemAdminAction
         );
 
-        Notification notification = extractNotification(response);
+        Notification notification = extractNotification(response, TEST_EMAIL);
 
         assertThat(notification.getSubject().get())
             .as(EMAIL_SUBJECT_ERROR)
@@ -410,6 +417,24 @@ class NotificationEmailTests extends FunctionalTestBase {
         assertThat(responseBody).contains("Not a valid email address");
     }
 
+    @Test
+    void shouldSendMiReportEmail() throws NotificationClientException {
+        final Response response = doPostRequestWithoutBody(
+            MI_REPORT_EMAIL_URL,
+            Map.of(AUTHORIZATION, bearerToken)
+        );
+
+        Notification notification = extractNotification(response, teamEmail);
+
+        assertThat(notification.getSubject().get())
+            .as(EMAIL_SUBJECT_ERROR)
+            .contains("Staging – MI Reporting");
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains("To download the Excel report please click the following link:");
+    }
+
     private CreateSystemAdminAction createSystemAdminUpdateAction() {
         CreateSystemAdminAction systemAdminAction = new CreateSystemAdminAction();
         systemAdminAction.setAccountEmail(TEST_EMAIL);
@@ -419,5 +444,6 @@ class NotificationEmailTests extends FunctionalTestBase {
         systemAdminAction.setChangeType(TEST_CHANGE_TYPE);
         return systemAdminAction;
     }
+
 
 }
