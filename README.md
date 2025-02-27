@@ -190,13 +190,8 @@ Secrets required for getting integration tests to run correctly can be found in 
 
 | Variable                       | Description                                                                                                              |
 |:-------------------------------|:-------------------------------------------------------------------------------------------------------------------------|
-| CLIENT_ID                      | As above                                                                                                                 |
-| CLIENT_SECRET                  | As above                                                                                                                 |
 | APP_URI                        | As above                                                                                                                 |
 | TENANT_ID                      | As above                                                                                                                 |
-| ACCOUNT_MANAGEMENT_AZ_API      | As above                                                                                                                 |
-| DATA_MANAGEMENT_AZ_API         | As above                                                                                                                 |
-| SUBSCRIPTION_MANAGEMENT_AZ_API | As above                                                                                                                 |
 | NOTIFY_API_KEY                 | As above. Only the test API key should be used when running integration tests.                                           |
 | PI_TEAM_EMAIL                  | As above                                                                                                                 |
 | CLIENT_ID_FT                   | Client ID of external service used for authentication with publication-services application in the functional tests.     |
@@ -207,6 +202,10 @@ The service can also be adapted using the yaml files found in the following loca
 - [src/main/resources/application.yaml](./src/main/resources/application.yaml) for changes to the behaviour of the service itself.
 - [src/main/resources/application-dev.yaml](./src/main/resources/application-dev.yaml) for changes to the behaviour of the service when running locally.
 - [src/test/resources/application-test.yaml](./src/test/resources/application-test.yaml) for changes to other test types (e.g. unit tests).
+- [src/functionalTest/resources/application-functional.yaml](./src/functionalTest/resources/application-functional.yaml) for changes to the application when it's running functional tests.
+- [src/integrationTest/resources/application-integration.yaml](./src/integrationTest/resources/application-integration.yaml) for changes to the application when it's running integration tests.
+- [src/integrationTest/resources/application-integration-rate-limit.yaml](./src/integrationTest/resources/application-integration-rate-limit.yaml) for changes to the application when testing rate-limiting functionalities in integration tests.
+
 
 ## API Documentation
 Our full API specification can be found within our Swagger-UI page.
@@ -296,7 +295,7 @@ Integration tests can be run on demand using `./gradlew integration`.
 
 For our integration tests, we are using Square's [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver) library. This allows us to test the full HTTP stack for our service-to-service interactions.
 
-The mock server interacts with external CaTH services on staging.
+Interaction with external CaTH services is mocked in integration tests.
 
 ### Functional tests
 

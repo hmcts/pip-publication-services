@@ -1,21 +1,22 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.annotation.DirtiesContext;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
+import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.TooManyEmailsException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
+import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.AdminWelcomeEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
@@ -34,10 +35,9 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.ADMI
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.DELETE_LOCATION_SUBSCRIPTION;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class EmailServiceTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class EmailServiceTest {
 
     private static final String EMAIL = "test@email.com";
     private static final String EMAIL1 = "test1@testing.com";
@@ -46,6 +46,9 @@ class EmailServiceTest extends RedisConfigurationTestBase {
     private static final String FORENAME = "Forename";
     private static final String SURNAME = "Surname";
     private static final String LOCATION_NAME = "Location name";
+    private static final String REFERENCE_ID = UUID.randomUUID().toString();
+    private static final String PASSWORD_RESET_LINK = "http://test-link1.com";
+    private static final String ADMIN_DASHBOARD_LINK = "http://test-link2.com";
 
     private static final String EMAIL_MESSAGE = "Email address does not match";
     private static final String TEMPLATE_MESSAGE = "Notify template does not match";
@@ -54,20 +57,35 @@ class EmailServiceTest extends RedisConfigurationTestBase {
 
     private static final TooManyEmailsException TOO_MANY_EMAILS_EXCEPTION = new TooManyEmailsException(ERROR_MESSAGE);
 
-    @Autowired
-    private EmailService emailService;
-
-    @MockBean
+    @Mock
     private EmailClient emailClient;
 
-    @MockBean
+    @Mock
     private RateLimitingService rateLimitingService;
 
     @Mock
     private SendEmailResponse sendEmailResponse;
 
+    @Mock
+    private PersonalisationLinks personalisationLinks;
+
+    @Mock
+    private NotifyConfigProperties notifyConfigProperties;
+
+    @InjectMocks
+    private EmailService emailService;
+
+    @BeforeEach
+    void setup() {
+
+    }
+
     @Test
     void testHandleEmailGenerationWithinRateLimit() {
+        when(notifyConfigProperties.getLinks()).thenReturn(personalisationLinks);
+        when(personalisationLinks.getAadPwResetLinkAdmin()).thenReturn(PASSWORD_RESET_LINK);
+        when(personalisationLinks.getAdminDashboardLink()).thenReturn(ADMIN_DASHBOARD_LINK);
+
         CreatedAdminWelcomeEmail welcomeEmail = new CreatedAdminWelcomeEmail(EMAIL, FORENAME, SURNAME);
         AdminWelcomeEmailData emailData = new AdminWelcomeEmailData(welcomeEmail);
         doNothing().when(rateLimitingService).validate(EMAIL, ADMIN_ACCOUNT_CREATION_EMAIL);
@@ -101,7 +119,7 @@ class EmailServiceTest extends RedisConfigurationTestBase {
             LOCATION_NAME, List.of(EMAIL1, EMAIL2, EMAIL3)
         );
         LocationSubscriptionDeletionEmailData emailData = new LocationSubscriptionDeletionEmailData(
-            locationSubscriptionDeletion
+            locationSubscriptionDeletion, REFERENCE_ID
         );
 
         when(rateLimitingService.isValid(anyString(), eq(DELETE_LOCATION_SUBSCRIPTION))).thenReturn(true);
@@ -135,7 +153,7 @@ class EmailServiceTest extends RedisConfigurationTestBase {
             LOCATION_NAME, List.of(EMAIL1, EMAIL2, EMAIL3)
         );
         LocationSubscriptionDeletionEmailData emailData = new LocationSubscriptionDeletionEmailData(
-            locationSubscriptionDeletion
+            locationSubscriptionDeletion, REFERENCE_ID
         );
 
         when(rateLimitingService.isValid(EMAIL1, DELETE_LOCATION_SUBSCRIPTION)).thenReturn(false);

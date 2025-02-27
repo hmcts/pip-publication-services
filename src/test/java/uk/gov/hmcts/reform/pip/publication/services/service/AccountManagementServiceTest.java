@@ -1,45 +1,41 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
+import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
-@DirtiesContext
 @ActiveProfiles("test")
-class AccountManagementServiceTest extends RedisConfigurationTestBase {
-    private static final String RESPONSE_BODY = "responseBody";
+class AccountManagementServiceTest {
     private static final String NOT_FOUND = "404";
+    private static final String CONTENT_TYPE_HEADER = "Content-Type";
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static MockWebServer mockAccountManagementEndpoint;
+    private final MockWebServer mockAccountManagementEndpoint = new MockWebServer();
 
-    @Autowired
-    WebClient webClient;
-
-    @Autowired
-    AccountManagementService accountManagementService;
+    private AccountManagementService accountManagementService;
 
     @BeforeEach
-    void setup() throws IOException {
-        mockAccountManagementEndpoint = new MockWebServer();
-        mockAccountManagementEndpoint.start(8081);
+    void setup() {
+        WebClient mockedWebClient = WebClient.builder()
+            .baseUrl(mockAccountManagementEndpoint.url("/").toString())
+            .build();
+        accountManagementService = new AccountManagementService(mockedWebClient);
     }
 
     @AfterEach
@@ -48,13 +44,18 @@ class AccountManagementServiceTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void testGetMiDataReturnsOk() {
-        mockAccountManagementEndpoint.enqueue(new MockResponse()
-                                                    .setBody(RESPONSE_BODY)
-                                                    .setResponseCode(200));
+    void testGetMiDataReturnsOk() throws JsonProcessingException {
+        AccountMiData data1 = new AccountMiData();
+        List<AccountMiData> expectedData = List.of(data1);
 
-        String response = accountManagementService.getMiData();
-        assertEquals(RESPONSE_BODY, response, "Response does not match");
+        mockAccountManagementEndpoint.enqueue(new MockResponse()
+                                                  .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                                  .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
+                                                  .setResponseCode(200));
+
+        List<AccountMiData> response = accountManagementService.getMiData();
+
+        assertEquals(expectedData, response, "Data does not match");
     }
 
     @Test

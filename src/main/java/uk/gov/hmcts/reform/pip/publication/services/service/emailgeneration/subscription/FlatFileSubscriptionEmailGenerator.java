@@ -31,7 +31,7 @@ public class FlatFileSubscriptionEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         FlatFileSubscriptionEmailData emailData = (FlatFileSubscriptionEmailData) email;
-        return generateEmail(emailData.getEmail(), MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getTemplate(),
+        return generateEmail(emailData, MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getTemplate(),
                              buildEmailPersonalisation(emailData, emailData.getArtefact(), personalisationLinks));
     }
 

@@ -40,27 +40,27 @@ public class SubscriptionNotificationService {
         this.dataManagementService = dataManagementService;
     }
 
-    private String flatFileSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact,
-                                                    byte[] artefactFlatFile, String locationName) {
+    private String flatFileSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact, byte[] artefactFlatFile,
+                                                    String locationName, String referenceId) {
         FlatFileSubscriptionEmailData emailData = new FlatFileSubscriptionEmailData(
-            body, artefact, locationName, artefactFlatFile, fileRetentionWeeks
+            body, artefact, locationName, artefactFlatFile, fileRetentionWeeks, referenceId
         );
-        EmailToSend email = emailService.handleEmailGeneration(emailData,
-                                                               Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL);
+        EmailToSend email = emailService.handleEmailGeneration(
+            emailData, Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL
+        );
 
         return emailService.sendEmail(email)
             .getReference()
             .orElse(null);
     }
 
-    private String rawDataSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact,
-                                                   String artefactSummary, byte[] pdf, byte[] additionalPdf,
-                                                   byte[] excel, String locationName) {
+    private String rawDataSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact, String artefactSummary,
+                                                   byte[] pdf, byte[] additionalPdf, byte[] excel, String locationName,
+                                                   String referenceId) {
         RawDataSubscriptionEmailData emailData = new RawDataSubscriptionEmailData(
-            body, artefact, artefactSummary, pdf, additionalPdf, excel, locationName, fileRetentionWeeks
+            body, artefact, artefactSummary, pdf, additionalPdf, excel, locationName, fileRetentionWeeks, referenceId
         );
-        EmailToSend email = emailService.handleEmailGeneration(emailData,
-                                                               Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL);
+        EmailToSend email = emailService.handleEmailGeneration(emailData, Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL);
 
         return emailService.sendEmail(email)
             .getReference()
@@ -68,9 +68,8 @@ public class SubscriptionNotificationService {
     }
 
     @Async
-    public void flatFileBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail,
-                                                     Artefact artefact,
-                                                     String locationName) {
+    public void flatFileBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
+                                                     String locationName, String referenceId) {
 
         byte[] flatFileData = dataManagementService.getArtefactFlatFile(artefact.getArtefactId());
         bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
@@ -78,7 +77,7 @@ public class SubscriptionNotificationService {
                 log.info(writeLog(String.format("Sending subscription email for user %s",
                                             EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
 
-                flatFileSubscriptionEmailRequest(subscriptionEmail, artefact, flatFileData, locationName);
+                flatFileSubscriptionEmailRequest(subscriptionEmail, artefact, flatFileData, locationName, referenceId);
             } catch (TooManyEmailsException ex) {
                 log.error(writeLog(ex.getMessage()));
             } catch (NotifyException ignored) {
@@ -89,8 +88,8 @@ public class SubscriptionNotificationService {
     }
 
     @Async
-    public void rawDataBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail,
-                                                    Artefact artefact, String locationName) {
+    public void rawDataBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
+                                                    String locationName, String referenceId) {
         String artefactSummary = getArtefactSummary(artefact);
         byte[] pdf = getFileBytes(artefact, FileType.PDF, false);
         boolean hasAdditionalPdf = artefact.getListType().hasAdditionalPdf()
@@ -106,7 +105,7 @@ public class SubscriptionNotificationService {
                 log.info(writeLog(String.format("Sending subscription email for user %s",
                                                 EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
                 rawDataSubscriptionEmailRequest(subscriptionEmail, artefact, artefactSummary, pdf, additionalPdf,
-                                                    excel, locationName);
+                                                excel, locationName, referenceId);
             } catch (TooManyEmailsException ex) {
                 log.error(writeLog(ex.getMessage()));
             } catch (NotifyException ignored) {

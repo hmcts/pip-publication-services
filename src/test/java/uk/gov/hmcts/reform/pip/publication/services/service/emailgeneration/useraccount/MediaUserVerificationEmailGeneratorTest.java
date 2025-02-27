@@ -2,44 +2,46 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.use
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaUserVerificationEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.Map;
 
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_VERIFICATION_EMAIL;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class MediaUserVerificationEmailGeneratorTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class MediaUserVerificationEmailGeneratorTest {
     private static final String EMAIL = "test@testing.com";
     private static final String FULL_NAME = "Full name";
 
     private static final String FULL_NAME_PERSONALISATION = "full_name";
     private static final String VERIFICATION_PAGE_LINK = "verification_page_link";
+    private static final String VERIFICATION_PAGE_LINK_ADDRESS = "http://www.test-link.com";
+
 
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
+    private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
-    @Autowired
-    private NotifyConfigProperties notifyConfigProperties;
+    @Mock
+    private PersonalisationLinks personalisationLinks;
 
-    @Autowired
+    @InjectMocks
     private MediaUserVerificationEmailGenerator emailGenerator;
 
     @Test
     void testBuildMediaUserVerificationEmail() {
-        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
+        when(personalisationLinks.getMediaVerificationPageLink()).thenReturn(VERIFICATION_PAGE_LINK_ADDRESS);
 
         MediaVerificationEmail mediaEmail = new MediaVerificationEmail(FULL_NAME, EMAIL);
         MediaUserVerificationEmailData emailData = new MediaUserVerificationEmailData(mediaEmail);
@@ -55,6 +57,10 @@ class MediaUserVerificationEmailGeneratorTest extends RedisConfigurationTestBase
         softly.assertThat(result.getTemplate())
             .as(NOTIFY_TEMPLATE_MESSAGE)
             .isEqualTo(MEDIA_USER_VERIFICATION_EMAIL.getTemplate());
+
+        softly.assertThat(result.getReferenceId())
+            .as(REFERENCE_ID_MESSAGE)
+            .isNotNull();
 
         Map<String, Object> personalisation = result.getPersonalisation();
 

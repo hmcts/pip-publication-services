@@ -1,48 +1,44 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.configuration.WebClientTestConfiguration;
+import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
+import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = {Application.class, WebClientTestConfiguration.class})
-@DirtiesContext
 @ActiveProfiles("test")
-class SubscriptionManagementServiceTest extends RedisConfigurationTestBase {
-    private static final String RESPONSE_BODY = "responseBody";
+class SubscriptionManagementServiceTest {
     private static final String NOT_FOUND = "404";
-    private static final String RESPONSE_NOT_MATCH = "Response does not match";
     private static final String EXCEPTION_NOT_MATCH = "Exception does not match";
     private static final String MESSAGE_NOT_MATCH = "Message does not match";
+    private static final String CONTENT_TYPE_HEADER = "Content-Type";
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static MockWebServer mockSubscriptionManagementEndpoint;
+    private final MockWebServer mockSubscriptionManagementEndpoint = new MockWebServer();
 
-    @Autowired
-    WebClient webClient;
-
-    @Autowired
     SubscriptionManagementService subscriptionManagementService;
 
     @BeforeEach
-    void setup() throws IOException {
-        mockSubscriptionManagementEndpoint = new MockWebServer();
-        mockSubscriptionManagementEndpoint.start(8081);
+    void setup() {
+        WebClient mockedWebClient = WebClient.builder()
+            .baseUrl(mockSubscriptionManagementEndpoint.url("/").toString())
+            .build();
+        subscriptionManagementService = new SubscriptionManagementService(mockedWebClient);
     }
 
     @AfterEach
@@ -51,13 +47,18 @@ class SubscriptionManagementServiceTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void testGetAllMiDataReturnsOk() {
-        mockSubscriptionManagementEndpoint.enqueue(new MockResponse()
-                                                    .setBody(RESPONSE_BODY)
-                                                    .setResponseCode(200));
+    void testGetAllMiDataReturnsOk() throws JsonProcessingException {
+        AllSubscriptionMiData data1 = new AllSubscriptionMiData();
+        List<AllSubscriptionMiData> expectedData = List.of(data1);
 
-        String response = subscriptionManagementService.getAllMiData();
-        assertEquals(RESPONSE_BODY, response, RESPONSE_NOT_MATCH);
+        mockSubscriptionManagementEndpoint.enqueue(new MockResponse()
+                                                       .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                                       .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
+                                                       .setResponseCode(200));
+
+        List<AllSubscriptionMiData> response = subscriptionManagementService.getAllMiData();
+
+        assertEquals(expectedData, response, "Data does not match");
     }
 
     @Test
@@ -72,13 +73,18 @@ class SubscriptionManagementServiceTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void testGetLocationMiDataReturnsOk() {
-        mockSubscriptionManagementEndpoint.enqueue(new MockResponse()
-                                                    .setBody(RESPONSE_BODY)
-                                                    .setResponseCode(200));
+    void testGetLocationMiDataReturnsOk() throws JsonProcessingException {
+        LocationSubscriptionMiData data1 = new LocationSubscriptionMiData();
+        List<LocationSubscriptionMiData> expectedData = List.of(data1);
 
-        String response = subscriptionManagementService.getLocationMiData();
-        assertEquals(RESPONSE_BODY, response, RESPONSE_NOT_MATCH);
+        mockSubscriptionManagementEndpoint.enqueue(new MockResponse()
+                                                       .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                                       .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
+                                                       .setResponseCode(200));
+
+        List<LocationSubscriptionMiData> response = subscriptionManagementService.getLocationMiData();
+
+        assertEquals(expectedData, response, "Data does not match");
     }
 
     @Test

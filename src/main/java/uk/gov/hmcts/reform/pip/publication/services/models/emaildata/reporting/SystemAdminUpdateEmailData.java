@@ -12,15 +12,15 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.BatchEmailD
 @Setter
 @NoArgsConstructor
 public class SystemAdminUpdateEmailData extends BatchEmailData {
-    private String requesterName;
+    private String requesterEmail;
     private ActionResult actionResult;
     private ChangeType changeType;
     private String additionalChangeDetail;
     private String envName;
 
-    public SystemAdminUpdateEmailData(SystemAdminAction systemAdminAction, String envName) {
-        super(systemAdminAction.getEmailList());
-        this.requesterName = systemAdminAction.getRequesterName();
+    public SystemAdminUpdateEmailData(SystemAdminAction systemAdminAction, String envName, String referenceId) {
+        super(systemAdminAction.getEmailList(), referenceId);
+        this.requesterEmail = systemAdminAction.getRequesterEmail();
         this.actionResult = systemAdminAction.getActionResult();
         this.changeType = systemAdminAction.getChangeType();
         this.additionalChangeDetail = systemAdminAction.createAdditionalChangeDetail();

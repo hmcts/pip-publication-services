@@ -20,7 +20,7 @@ public class MediaDuplicatedAccountEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         MediaDuplicatedAccountEmailData emailData = (MediaDuplicatedAccountEmailData) email;
-        return generateEmail(emailData.getEmail(), MEDIA_DUPLICATE_ACCOUNT_EMAIL.getTemplate(),
+        return generateEmail(emailData, MEDIA_DUPLICATE_ACCOUNT_EMAIL.getTemplate(),
                              buildEmailPersonalisation(emailData, personalisationLinks));
     }
 

@@ -2,12 +2,14 @@ package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
@@ -30,14 +32,11 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,12 +44,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.TooManyFields", "PMD.CouplingBetweenObjects",
     "PMD.UseEnumCollections"})
-class NotificationControllerTest extends RedisConfigurationTestBase {
+class NotificationControllerTest {
 
     private static final String VALID_EMAIL = "test@email.com";
     private static final boolean TRUE_BOOL = true;
@@ -58,12 +57,13 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
     private static final UUID ID = UUID.randomUUID();
     private static final String ID_STRING = UUID.randomUUID().toString();
     private static final String FULL_NAME = "Test user";
+    private static final String REQUESTER_EMAIL = "test_user@justice.gov.uk";
     private static final String EMPLOYER = "Test employer";
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
     private static final String IMAGE_NAME = "test-image.png";
-    private static final String SUCCESS_ID = "SuccessId";
+    private static final String REFERENCE_ID = UUID.randomUUID().toString();
     private static final String MESSAGES_MATCH = "Messages should match";
     private static final String STATUS_CODES_MATCH = "Status codes should match";
 
@@ -127,42 +127,42 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         createMediaSetupEmail.setFullName("testName");
 
         systemAdminAction = new DeleteLocationAction();
-        systemAdminAction.setRequesterName(FULL_NAME);
+        systemAdminAction.setRequesterEmail(REQUESTER_EMAIL);
         systemAdminAction.setEmailList(List.of(VALID_EMAIL));
         systemAdminAction.setChangeType(ChangeType.DELETE_LOCATION);
         systemAdminAction.setActionResult(ActionResult.ATTEMPTED);
 
-        when(userNotificationService.mediaAccountWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(SUCCESS_ID);
+        when(userNotificationService.mediaAccountWelcomeEmailRequest(validRequestBodyTrue)).thenReturn(REFERENCE_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
-            .thenReturn(SUCCESS_ID);
+            .thenReturn(REFERENCE_ID);
 
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test", "500"));
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test2", "123"));
 
         when(userNotificationService.adminAccountWelcomeEmailRequest(createdAdminWelcomeEmailValidBody))
-            .thenReturn(SUCCESS_ID);
-        when(thirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(SUCCESS_ID);
-        when(userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(SUCCESS_ID);
+            .thenReturn(REFERENCE_ID);
+        when(thirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(REFERENCE_ID);
+        when(userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(REFERENCE_ID);
         when(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact))
-            .thenReturn(SUCCESS_ID);
+            .thenReturn(REFERENCE_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
-            .thenReturn(SUCCESS_ID);
+            .thenReturn(REFERENCE_ID);
         when(notificationService.unidentifiedBlobEmailRequest(noMatchArtefactList))
-            .thenReturn(SUCCESS_ID);
+            .thenReturn(REFERENCE_ID);
         when(userNotificationService.mediaUserVerificationEmailRequest(mediaVerificationEmail))
-            .thenReturn(SUCCESS_ID);
+            .thenReturn(REFERENCE_ID);
         when(userNotificationService.inactiveUserNotificationEmailRequest(inactiveUserNotificationEmail))
-            .thenReturn(SUCCESS_ID);
-        when(notificationService.sendSystemAdminUpdateEmailRequest(systemAdminAction)).thenReturn(List.of());
+            .thenReturn(REFERENCE_ID);
+        when(notificationService.sendSystemAdminUpdateEmailRequest(systemAdminAction)).thenReturn(REFERENCE_ID);
+        when(notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion))
+            .thenReturn(REFERENCE_ID);
+        when(notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail)).thenReturn(REFERENCE_ID);
     }
 
     @Test
     void testValidBodyShouldReturnSuccessMessage() {
-        assertTrue(
-            notificationController.sendWelcomeEmail(validRequestBodyTrue).getBody()
-                .contains("Welcome email successfully sent with referenceId SuccessId"),
-            MESSAGES_MATCH
-        );
+        assertEquals(REFERENCE_ID, notificationController.sendWelcomeEmail(validRequestBodyTrue).getBody(),
+                     MESSAGES_MATCH);
     }
 
     @Test
@@ -177,23 +177,20 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
         ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmail(bulkSubscriptionEmail);
 
         assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode(), STATUS_CODES_MATCH);
-        assertEquals("Subscription email request accepted", Objects.requireNonNull(responseEntity.getBody()),
-                   "Response body should contain accepted message");
+        assertEquals(REFERENCE_ID, responseEntity.getBody(), "Response body should contain accepted message");
     }
 
     @Test
     void testSendMediaReportingEmailReturnsSuccessMessage() {
-        assertTrue(
-            notificationController.sendMediaReportingEmail(validMediaApplicationList).getBody()
-                .contains("Media applications report email sent successfully with referenceId SuccessId"),
-            MESSAGES_MATCH);
+        assertEquals(REFERENCE_ID, notificationController.sendMediaReportingEmail(validMediaApplicationList).getBody(),
+                     MESSAGES_MATCH);
     }
 
     @Test
     void testSendAdminAccountWelcomeEmail() {
-        assertTrue(notificationController.sendAdminAccountWelcomeEmail(createdAdminWelcomeEmailValidBody).getBody()
-                       .contains("Created admin welcome email successfully sent with referenceId SuccessId"),
-                   MESSAGES_MATCH);
+        assertEquals(REFERENCE_ID,
+                     notificationController.sendAdminAccountWelcomeEmail(createdAdminWelcomeEmailValidBody).getBody(),
+                     MESSAGES_MATCH);
     }
 
     @Test
@@ -206,7 +203,7 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
     @Test
     void testSendThirdPartySubscription() {
         assertTrue(notificationController.sendThirdPartySubscription(thirdPartySubscription).getBody()
-                       .contains(SUCCESS_ID), MESSAGES_MATCH);
+                       .contains(REFERENCE_ID), MESSAGES_MATCH);
     }
 
     @Test
@@ -227,16 +224,13 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
             .sendDuplicateMediaAccountEmail(createMediaSetupEmail);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), STATUS_CODES_MATCH);
-        assertTrue(Objects.requireNonNull(responseEntity.getBody()).contains(SUCCESS_ID),
-                   "Response content does not contain the ID");
+        assertEquals(REFERENCE_ID, responseEntity.getBody(), "Response content does not contain the ID");
     }
 
     @Test
     void testSendUnidentifiedBlobEmailReturnsSuccessMessage() {
-        assertTrue(
-            notificationController.sendUnidentifiedBlobEmail(noMatchArtefactList).getBody()
-                .contains("Unidentified blob email successfully sent with reference id: SuccessId"),
-            MESSAGES_MATCH);
+        assertEquals(REFERENCE_ID, notificationController.sendUnidentifiedBlobEmail(noMatchArtefactList).getBody(),
+                     MESSAGES_MATCH);
     }
 
     @Test
@@ -256,8 +250,10 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
 
     @Test
     void testSendThirdPartySubscriptionEmptyList() {
-        assertTrue(notificationController.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact).getBody()
-                       .contains(SUCCESS_ID), MESSAGES_MATCH);
+        assertEquals(REFERENCE_ID,
+                     notificationController.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact)
+                         .getBody(),
+                     MESSAGES_MATCH);
     }
 
     @Test
@@ -268,14 +264,14 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void testSendMediaRejectionEmailReturnsOk() throws IOException {
+    void testSendMediaRejectionEmailReturnsOk() {
         assertEquals(HttpStatus.OK, notificationController
                          .sendMediaUserRejectionEmail(mediaRejectionEmail).getStatusCode(),
                      STATUS_CODES_MATCH);
     }
 
     @Test
-    @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
+    @SuppressWarnings("PMD.UnitTestAssertionsShouldIncludeMessage")
     void testSendInactiveUserNotificationEmailReturnsOk() {
         assertThat(notificationController.sendNotificationToInactiveUsers(inactiveUserNotificationEmail))
             .as("Response does not match")
@@ -283,16 +279,16 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
                 ResponseEntity::getStatusCode,
                 ResponseEntity::getBody
             )
-            .contains(
+            .containsExactly(
                 HttpStatus.OK,
-                "Inactive user sign-in notification email successfully sent with referenceId: SuccessId"
+                REFERENCE_ID
             );
     }
 
     @Test
-    @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
+    @SuppressWarnings("PMD.UnitTestAssertionsShouldIncludeMessage")
     void testSendMiReportingEmailReturnsOk() {
-        when(notificationService.handleMiDataForReporting()).thenReturn(SUCCESS_ID);
+        when(notificationService.handleMiDataForReporting()).thenReturn(REFERENCE_ID);
 
         assertThat(notificationController.sendMiReportingEmail())
             .as("Response does not match")
@@ -300,43 +296,37 @@ class NotificationControllerTest extends RedisConfigurationTestBase {
                 ResponseEntity::getStatusCode,
                 ResponseEntity::getBody
             )
-            .contains(
+            .containsExactly(
                 HttpStatus.OK,
-                "MI data reporting email successfully sent with referenceId: " + SUCCESS_ID
+                REFERENCE_ID
             );
     }
 
     @Test
     void testSendSystemAdminUpdateShouldReturnSuccessMessage() {
-        assertTrue(
-            notificationController.sendSystemAdminUpdate(systemAdminAction).getBody()
-                .contains("Send notification email successfully to all system admin with referenceId"),
-            MESSAGES_MATCH
-        );
+        assertEquals(REFERENCE_ID, notificationController.sendSystemAdminUpdate(systemAdminAction).getBody(),
+                     MESSAGES_MATCH);
     }
 
     @Test
     void testSendSystemAdminUpdateShouldReturnOkResponse() {
         assertEquals(HttpStatus.OK, notificationController
                          .sendSystemAdminUpdate(systemAdminAction).getStatusCode(),
-                     STATUS_CODES_MATCH
-        );
+                     STATUS_CODES_MATCH);
     }
 
     @Test
     void testSendDeleteLocationSubscriptionEmailShouldReturnSuccessMessage() {
-        assertTrue(
-            notificationController.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion).getBody()
-                .contains("Location subscription email successfully sent with reference id"),
-            MESSAGES_MATCH
-        );
+        assertEquals(REFERENCE_ID,
+                     notificationController.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion)
+                         .getBody(),
+                     MESSAGES_MATCH);
     }
 
     @Test
     void testSendDeleteLocationSubscriptionEmailShouldReturnOkResponse() {
         assertEquals(HttpStatus.OK, notificationController
                          .sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion).getStatusCode(),
-                     STATUS_CODES_MATCH
-        );
+                     STATUS_CODES_MATCH);
     }
 }

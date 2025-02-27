@@ -28,8 +28,7 @@ public class MiDataReportingEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         MiDataReportingEmailData emailData = (MiDataReportingEmailData) email;
-        return generateEmail(emailData.getEmail(), MI_DATA_REPORTING_EMAIL.getTemplate(),
-                             buildEmailPersonalisation(emailData));
+        return generateEmail(emailData, MI_DATA_REPORTING_EMAIL.getTemplate(), buildEmailPersonalisation(emailData));
     }
 
     private Map<String, Object> buildEmailPersonalisation(MiDataReportingEmailData emailData) {

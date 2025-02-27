@@ -2,16 +2,15 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.rep
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.UnidentifiedBlobEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
 
 import java.util.List;
 import java.util.Map;
@@ -19,10 +18,9 @@ import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.BAD_BLOB_EMAIL;
 
-@SpringBootTest
-@DirtiesContext
 @ActiveProfiles("test")
-class UnidentifiedBlobEmailGeneratorTest extends RedisConfigurationTestBase {
+@ExtendWith(MockitoExtension.class)
+class UnidentifiedBlobEmailGeneratorTest {
     private static final String EMAIL = "test@testing.com";
     private static final String PROVENANCE = "Provenance";
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
@@ -38,17 +36,17 @@ class UnidentifiedBlobEmailGeneratorTest extends RedisConfigurationTestBase {
 
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
+    private static final String REFERENCE_ID_MESSAGE = "Reference ID does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
 
-    @Autowired
-    private NotifyConfigProperties notifyConfigProperties;
+    @Mock
+    private PersonalisationLinks personalisationLinks;
 
-    @Autowired
+    @InjectMocks
     private UnidentifiedBlobEmailGenerator emailGenerator;
 
     @Test
     void testBuildUnidentifiedBlobEmailSuccess() {
-        PersonalisationLinks personalisationLinks = notifyConfigProperties.getLinks();
         UnidentifiedBlobEmailData emailData = new UnidentifiedBlobEmailData(EMAIL, NO_MATCH_ARTEFACTS,
                                                                             ENV_NAME_ORIGINAL);
 
@@ -63,6 +61,10 @@ class UnidentifiedBlobEmailGeneratorTest extends RedisConfigurationTestBase {
         softly.assertThat(result.getTemplate())
             .as(NOTIFY_TEMPLATE_MESSAGE)
             .isEqualTo(BAD_BLOB_EMAIL.getTemplate());
+
+        softly.assertThat(result.getReferenceId())
+            .as(REFERENCE_ID_MESSAGE)
+            .isNotNull();
 
         Map<String, Object> personalisation = result.getPersonalisation();
 

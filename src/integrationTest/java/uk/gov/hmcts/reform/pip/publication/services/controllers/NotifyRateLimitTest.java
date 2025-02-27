@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.pip.publication.services.controllers;
 
-import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.tls.HandshakeCertificates;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,51 +15,36 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.pip.publication.services.Application;
-import uk.gov.hmcts.reform.pip.publication.services.utils.RedisConfigurationTestBase;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
 import java.io.IOException;
 
 import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert"})
-@SpringBootTest(classes = {Application.class},
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert"})
+@SpringBootTest
 @AutoConfigureMockMvc
-@DirtiesContext
-@WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin", "APPROLE_api.request.b2c"})
 @ActiveProfiles("integration-rate-limit")
-class NotifyRateLimitTest extends RedisConfigurationTestBase {
-    private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
+class NotifyRateLimitTest extends IntegrationTestBase {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
-    private static final String RANDOM_EMAIL = "test"
-        + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
-    private static final String RANDOM_EMAIL_SYSTEM_ADMIN = "test.sa"
-        + RandomStringUtils.randomAlphanumeric(5) + "@justice.gov.uk";
-    private static final String RANDOM_EMAIL_NEW = "test"
-        + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
-    private static final String RANDOM_EMAIL_SYSTEM_ADMIN_NEW = "test.sa"
-        + RandomStringUtils.randomAlphanumeric(5) + "@hmcts.net";
-    private static final String SYSTEM_ADMIN_UPDATE_MESSAGE = "Send notification "
-        + "email successfully to all system admin with referenceId: []";
-    private static final String VALID_WELCOME_REQUEST_BODY = "{\"email\": \""
-        + RANDOM_EMAIL + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
+    private static final String OTP_EMAIL_URL = "/notify/otp";
 
-    private static final String VALID_WELCOME_REQUEST_BODY_NEW = "{\"email\": \""
-        + RANDOM_EMAIL_NEW + "\", \"isExisting\": \"false\", \"fullName\": \"fullName\"}";
-
-    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY = "{\"requesterName\": \"reqName\","
-        + " \"actionResult\": \"ATTEMPTED\",\"changeType\": \"DELETE_LOCATION\", \"emailList\": "
-        + "[\"" + RANDOM_EMAIL_SYSTEM_ADMIN + "\"],\"detailString\": \"test\"}";
-
-    private static final String NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_NEW = "{\"requesterName\": \"reqName\","
-        + " \"actionResult\": \"ATTEMPTED\",\"changeType\": \"DELETE_LOCATION\", \"emailList\": "
-        + "[\"" + RANDOM_EMAIL_SYSTEM_ADMIN_NEW + "\"],\"detailString\": \"test\"}";
+    private static final String FULL_NAME = "test full name";
+    private static final String TEST_EMAIL = "test-email@justice.gov.uk";
+    private static final String TEST_EMAIL2 = "test-email2@justice.gov.uk";
+    private static final String TEST_EMAIL3 = "test-email3@justice.gov.uk";
+    private static final String TEST_EMAIL4 = "test-email4@justice.gov.uk";
+    private static final String TEST_EMAIL5 = "test-email5@justice.gov.uk";
+    private static final String TEST_EMAIL6 = "test-email6@justice.gov.uk";
 
     private MockWebServer externalApiMockServer;
 
@@ -79,57 +65,107 @@ class NotifyRateLimitTest extends RedisConfigurationTestBase {
     }
 
     @Test
-    void testRateLimitStandardWelcomeRequestNew() throws Exception {
-        mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(VALID_WELCOME_REQUEST_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+    void testRateLimitWithStandardCapacity() throws Exception {
+        WelcomeEmail welcomeEmail = new WelcomeEmail(TEST_EMAIL, false, FULL_NAME);
+        String welcomeEmailContent = OBJECT_MAPPER.writeValueAsString(welcomeEmail);
 
         mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(VALID_WELCOME_REQUEST_BODY)
+                            .content(welcomeEmailContent)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
+            .andExpect(content().string(IsNull.notNullValue()));
 
         mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(VALID_WELCOME_REQUEST_BODY)
+                            .content(welcomeEmailContent)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isTooManyRequests())
             .andExpect(content().string(containsString("Rate limit has been exceeded. "
                                                            + "New media account welcome email failed to be sent to")));
-
-        mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(VALID_WELCOME_REQUEST_BODY_NEW)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Welcome email successfully sent with referenceId")));
     }
 
     @Test
-    void testRateLimitHighSendSystemAdminUpdate() throws Exception {
-        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
-                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(not(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE))));
+    void testRateLimitWithHighCapacity() throws Exception {
+        OtpEmail otpEmail = new OtpEmail("12345", TEST_EMAIL2);
+        String otpEmailContent = OBJECT_MAPPER.writeValueAsString(otpEmail);
 
-        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
-                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
+        mockMvc.perform(post(OTP_EMAIL_URL)
+                            .content(otpEmailContent)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(not(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE))));
+            .andExpect(content().string(IsNull.notNullValue()));
 
-        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
-                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY)
+        mockMvc.perform(post(OTP_EMAIL_URL)
+                            .content(otpEmailContent)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE)));
+            .andExpect(content().string(IsNull.notNullValue()));
 
-        mockMvc.perform(post(NOTIFY_SYSTEM_ADMIN_URL)
-                            .content(NOTIFY_SYSTEM_ADMIN_EMAIL_BODY_NEW)
+        mockMvc.perform(post(OTP_EMAIL_URL)
+                            .content(otpEmailContent)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isTooManyRequests())
+            .andExpect(content().string(containsString("Rate limit has been exceeded. "
+                                                           + "B2C OTP email failed to be sent to")));
+    }
+
+    @Test
+    void testRateLimitUsingDifferentEmails() throws Exception {
+        WelcomeEmail welcomeEmail = new WelcomeEmail(TEST_EMAIL3, false, FULL_NAME);
+        mockMvc.perform(post(WELCOME_EMAIL_URL)
+                            .content(OBJECT_MAPPER.writeValueAsString(welcomeEmail))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(not(containsString(SYSTEM_ADMIN_UPDATE_MESSAGE))));
+            .andExpect(content().string(IsNull.notNullValue()));
+
+        welcomeEmail = new WelcomeEmail(TEST_EMAIL4, false, FULL_NAME);
+        mockMvc.perform(post(WELCOME_EMAIL_URL)
+                            .content(OBJECT_MAPPER.writeValueAsString(welcomeEmail))
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.notNullValue()));
+
+        welcomeEmail = new WelcomeEmail(TEST_EMAIL5, false, FULL_NAME);
+        mockMvc.perform(post(WELCOME_EMAIL_URL)
+                            .content(OBJECT_MAPPER.writeValueAsString(welcomeEmail))
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.notNullValue()));
+    }
+
+    @Test
+    void testRateLimitUsingSameEmailButDifferentCapacity() throws Exception {
+        WelcomeEmail welcomeEmail = new WelcomeEmail(TEST_EMAIL6, false, FULL_NAME);
+        String welcomeEmailContent = OBJECT_MAPPER.writeValueAsString(welcomeEmail);
+
+        mockMvc.perform(post(WELCOME_EMAIL_URL)
+                            .content(welcomeEmailContent)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.notNullValue()));
+
+        OtpEmail otpEmail = new OtpEmail("12345", TEST_EMAIL6);
+        String otpEmailContent = OBJECT_MAPPER.writeValueAsString(otpEmail);
+
+        mockMvc.perform(post(OTP_EMAIL_URL)
+                            .content(otpEmailContent)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.notNullValue()));
+
+        mockMvc.perform(post(OTP_EMAIL_URL)
+                            .content(otpEmailContent)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(IsNull.notNullValue()));
+
+        mockMvc.perform(post(OTP_EMAIL_URL)
+                            .content(otpEmailContent)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isTooManyRequests());
+
+        mockMvc.perform(post(WELCOME_EMAIL_URL)
+                            .content(welcomeEmailContent)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isTooManyRequests());
     }
 }

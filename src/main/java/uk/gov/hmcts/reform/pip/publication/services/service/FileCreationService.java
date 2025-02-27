@@ -4,6 +4,10 @@ import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
+import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
+import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
+import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelGenerationService;
@@ -22,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Service
-@SuppressWarnings("PMD.PreserveStackTrace")
+@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.AvoidAccessibilityAlteration"})
 public class FileCreationService {
 
     private final DataManagementService dataManagementService;
@@ -75,34 +79,33 @@ public class FileCreationService {
         return excelGenerationService.generateMultiSheetWorkBook(extractMiData());
     }
 
-    private Map<String, List<String[]>> extractMiData() {
+    Map<String, List<String[]>> extractMiData() {
         Map<String, List<String[]>> data = new ConcurrentHashMap<>();
 
-        List<String[]> artefactData = formatData(dataManagementService.getMiData());
-        if (!artefactData.isEmpty()) {
-            data.put("Publications", artefactData);
-        }
+        List<String[]> artefactData = new ArrayList<>();
+        artefactData.add(PublicationMiData.generateReportHeaders());
+        artefactData.addAll(dataManagementService.getMiData()
+                                .stream().map(PublicationMiData::generateReportData).toList());
+        data.put("Publications", artefactData);
 
-        List<String[]> userData = formatData(accountManagementService.getMiData());
-        if (!userData.isEmpty()) {
-            data.put("User accounts", userData);
-        }
+        List<String[]> userData = new ArrayList<>();
+        userData.add(AccountMiData.generateReportHeaders());
+        userData.addAll(accountManagementService.getMiData()
+                                .stream().map(AccountMiData::generateReportData).toList());
+        data.put("User accounts", userData);
 
-        List<String[]> allSubscriptionData = formatData(subscriptionManagementService.getAllMiData());
-        if (!allSubscriptionData.isEmpty()) {
-            data.put("All subscriptions", allSubscriptionData);
-        }
+        List<String[]> allSubscriptionData = new ArrayList<>();
+        allSubscriptionData.add(AllSubscriptionMiData.generateReportHeaders());
+        allSubscriptionData.addAll(subscriptionManagementService.getAllMiData()
+                                .stream().map(AllSubscriptionMiData::generateReportData).toList());
+        data.put("All subscriptions", allSubscriptionData);
 
-        List<String[]> locationSubscriptionData = formatData(subscriptionManagementService.getLocationMiData());
-        if (!locationSubscriptionData.isEmpty()) {
-            data.put("Location subscriptions", locationSubscriptionData);
-        }
+        List<String[]> locationSubscriptionData = new ArrayList<>();
+        locationSubscriptionData.add(LocationSubscriptionMiData.generateReportHeaders());
+        locationSubscriptionData.addAll(subscriptionManagementService.getLocationMiData()
+                                .stream().map(LocationSubscriptionMiData::generateReportData).toList());
+        data.put("Location subscriptions", locationSubscriptionData);
+
         return data;
-    }
-
-    private List<String[]> formatData(String data) {
-        return data.lines()
-            .map(l -> l.split(","))
-            .toList();
     }
 }
