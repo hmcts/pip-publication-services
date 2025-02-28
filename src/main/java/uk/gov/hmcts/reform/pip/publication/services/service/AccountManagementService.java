@@ -35,7 +35,7 @@ public class AccountManagementService {
     public List<AccountMiData> getAccountMiData() {
         try {
             return webClient.get()
-                .uri(String.format("%s/account/v2/mi-data", url))
+                .uri(String.format("%s/account/mi-data", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<AccountMiData>>() {})
@@ -48,7 +48,7 @@ public class AccountManagementService {
     public List<AllSubscriptionMiData> getAllSubscriptionMiData() {
         try {
             return webClient.get()
-                .uri(String.format("%s/subscription/v2/mi-data-all", url))
+                .uri(String.format("%s/subscription/mi-data-all", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<AllSubscriptionMiData>>() {})
@@ -61,7 +61,7 @@ public class AccountManagementService {
     public List<LocationSubscriptionMiData> getLocationSubscriptionMiData() {
         try {
             return webClient.get()
-                .uri(String.format("%s/subscription/v2/mi-data-local", url))
+                .uri(String.format("%s/subscription/mi-data-local", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<LocationSubscriptionMiData>>() {})

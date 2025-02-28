@@ -121,7 +121,7 @@ public class DataManagementService {
     public List<PublicationMiData> getMiData() {
         try {
             return webClient.get()
-                .uri(String.format("%s/publication/v2/mi-data", url))
+                .uri(String.format("%s/publication/mi-data", url))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<PublicationMiData>>() {})
                 .block();
