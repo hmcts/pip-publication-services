@@ -61,7 +61,7 @@ public class AccountManagementService {
     public List<LocationSubscriptionMiData> getLocationSubscriptionMiData() {
         try {
             return webClient.get()
-                .uri(String.format("%s/subscription/mi-data-local", url))
+                .uri(String.format("%s/subscription/mi-data-location", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<LocationSubscriptionMiData>>() {})
