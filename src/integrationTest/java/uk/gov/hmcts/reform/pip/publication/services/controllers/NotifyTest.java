@@ -21,6 +21,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.reactive.function.client.WebClient;
+import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
 import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
@@ -107,7 +108,7 @@ class NotifyTest extends IntegrationTestBase {
 
     private static final String NOTIFY_LOCATION_SUBSCRIPTION_DELETE_EMAIL_BODY = """
         {
-            "locationName": "Test Location",
+            "locationId": "123",
             "subscriberEmails": [
                 "test.system.admin@justice.gov.uk"
             ]
@@ -196,19 +197,6 @@ class NotifyTest extends IntegrationTestBase {
         }
          """;
 
-    private static final String INVALID_NOTIFY_MEDIA_REJECTION_EMAIL_BODY = """
-        {
-            "fullName": "fullName",
-            "email": "test",
-            "reasons": {
-                "noMatch": [
-                    "Details provided do not match.",
-                    "The name, email address and Press ID do not match each other."
-                ]
-            }
-        }
-         """;
-
     private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY = """
         {
             "email": "test@test.com",
@@ -247,6 +235,7 @@ class NotifyTest extends IntegrationTestBase {
     private static final LocalDateTime LAST_SIGNED_IN = LocalDateTime.of(2023,1, 25, 14, 22, 43);
     private static final SearchType SEARCH_TYPE = CASE_ID;
     private static final String SEARCH_VALUE = "1234";
+    private static final String LOCATION_ID = "123";
     private static final String LOCATION_NAME = "Location";
     public static final UUID ARTEFACT_ID = UUID.randomUUID();
     public static final LocalDateTime DISPLAY_FROM = LocalDateTime.of(2022, 1, 19, 13, 45, 50);
@@ -308,6 +297,7 @@ class NotifyTest extends IntegrationTestBase {
     @Autowired
     private MockMvc mockMvc;
     private WebClient webClient;
+
     @Autowired
     private EmailClient emailClient;
 
@@ -812,6 +802,11 @@ class NotifyTest extends IntegrationTestBase {
 
     @Test
     void testSendDeleteLocationSubscriptionEmail() throws Exception {
+        Location location = new Location();
+        location.setLocationId(Integer.parseInt(LOCATION_ID));
+        location.setName(LOCATION_NAME);
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+
         mockMvc.perform(post(NOTIFY_LOCATION_SUBSCRIPTION_DELETE_URL)
                             .content(NOTIFY_LOCATION_SUBSCRIPTION_DELETE_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
