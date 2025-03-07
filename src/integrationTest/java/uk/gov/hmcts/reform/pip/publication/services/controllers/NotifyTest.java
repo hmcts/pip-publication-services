@@ -267,10 +267,10 @@ class NotifyTest extends IntegrationTestBase {
                                                                              INTERNAL_ADMIN_CTSC,
                                                                              CREATED_DATE, LAST_SIGNED_IN);
     private static final AllSubscriptionMiData ALL_SUBS_MI_RECORD = new AllSubscriptionMiData(
-        USER_ID, EMAIL_CHANNEL, SEARCH_TYPE, ID.toString(), LOCATION_NAME, CREATED_DATE
+        USER_ID, EMAIL_CHANNEL, SEARCH_TYPE, ID, LOCATION_NAME, CREATED_DATE
     );
     private static final LocationSubscriptionMiData LOCAL_SUBS_MI_RECORD = new LocationSubscriptionMiData(
-        USER_ID, SEARCH_VALUE, EMAIL_CHANNEL, ID.toString(), LOCATION_NAME, CREATED_DATE
+        USER_ID, SEARCH_VALUE, EMAIL_CHANNEL, ID, LOCATION_NAME, CREATED_DATE
     );
     private static final PublicationMiData PUBLICATION_MI_RECORD = new PublicationMiData(
         ARTEFACT_ID, DISPLAY_FROM, DISPLAY_TO, BI_LINGUAL, MANUAL_UPLOAD_PROVENANCE, PUBLIC, SOURCE_ARTEFACT_ID,
