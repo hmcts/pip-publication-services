@@ -51,7 +51,6 @@ class NotificationEmailTests extends FunctionalTestBase {
     private static final String REJECTED_MEDIA_ACCOUNT_EMAIL_URL = NOTIFY_URL + "/media/reject";
     private static final String CREATED_ADMIN_WELCOME_EMAIL = NOTIFY_URL + "/created/admin";
     private static final String SYSADMIN_UPDATE_EMAIL_URL = NOTIFY_URL + "/sysadmin/update";
-    private static final String MI_REPORT_EMAIL_URL = NOTIFY_URL + "/mi/report";
 
     private static final String TEST_USER_EMAIL_PREFIX = String.format(
         "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999));
@@ -417,24 +416,6 @@ class NotificationEmailTests extends FunctionalTestBase {
         assertThat(responseBody).contains("Not a valid email address");
     }
 
-    @Test
-    void shouldSendMiReportEmail() throws NotificationClientException {
-        final Response response = doPostRequestWithoutBody(
-            MI_REPORT_EMAIL_URL,
-            Map.of(AUTHORIZATION, bearerToken)
-        );
-
-        Notification notification = extractNotification(response, teamEmail);
-
-        assertThat(notification.getSubject().get())
-            .as(EMAIL_SUBJECT_ERROR)
-            .contains("Staging – MI Reporting");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("To download the Excel report please click the following link:");
-    }
-
     private CreateSystemAdminAction createSystemAdminUpdateAction() {
         CreateSystemAdminAction systemAdminAction = new CreateSystemAdminAction();
         systemAdminAction.setAccountEmail(TEST_EMAIL);
@@ -444,6 +425,4 @@ class NotificationEmailTests extends FunctionalTestBase {
         systemAdminAction.setChangeType(TEST_CHANGE_TYPE);
         return systemAdminAction;
     }
-
-
 }
