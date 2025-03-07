@@ -2,7 +2,10 @@ package uk.gov.hmcts.pip.publication.services;
 
 import io.restassured.response.Response;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -23,12 +26,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient.NOTIFICATION_TYPE;
+import static uk.gov.hmcts.pip.publication.services.utils.TestUtil.randomLocationId;
 
 @ActiveProfiles(profiles = "functional")
 @SpringBootTest(classes = {OAuthClient.class, EmailNotificationClient.class})
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BatchNotificationEmailTests extends FunctionalTestBase {
     private static final String NOTIFY_URL = "/notify";
     private static final String LOCATION_SUBSCRIPTION_DELETION_EMAIL_URL = NOTIFY_URL + "/location-subscription-delete";
+    private static final String TESTING_SUPPORT_LOCATION_URL = "/testing-support/location/";
 
     private static final String TEST_EMAIL1 = String.format(
         "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999)) + "@justice.gov.uk";
@@ -36,15 +42,34 @@ class BatchNotificationEmailTests extends FunctionalTestBase {
     private static final String TEST_EMAIL2 = String.format(
         "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999)) + "@justice.gov.uk";
 
-    private static final String TEST_LOCATION_NAME = "Test location name";
+    private static final String LOCATION_ID = randomLocationId();
+    private static final String LOCATION_NAME = "TestLocation" + LOCATION_ID;
+    private static final String BEARER = "Bearer ";
 
     @Autowired
     private EmailNotificationClient notificationClient;
 
+
+    @BeforeAll
+    public void setup() {
+        doDataManagementPostRequest(
+            TESTING_SUPPORT_LOCATION_URL + LOCATION_ID,
+            Map.of(AUTHORIZATION, BEARER + dataManagementAccessToken), LOCATION_NAME
+        );
+    }
+
+    @AfterAll
+    public void teardown() {
+        doDataManagementDeleteRequest(
+            TESTING_SUPPORT_LOCATION_URL + LOCATION_NAME,
+            Map.of(AUTHORIZATION, BEARER + dataManagementAccessToken)
+        );
+    }
+
     @Test
     void shouldSendLocationDeletionEmail() throws NotificationClientException {
         LocationSubscriptionDeletion requestBody = new LocationSubscriptionDeletion(
-            TEST_LOCATION_NAME, List.of(TEST_EMAIL1, TEST_EMAIL2)
+            LOCATION_ID, List.of(TEST_EMAIL1, TEST_EMAIL2)
         );
 
         final Response response = doPostRequest(LOCATION_SUBSCRIPTION_DELETION_EMAIL_URL,
@@ -84,12 +109,12 @@ class BatchNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(firstNotification.getSubject())
             .as("Email subject does not match")
-            .hasValue(String.format("Subscription for %s has been deleted", TEST_LOCATION_NAME));
+            .hasValue(String.format("Subscription for %s has been deleted", LOCATION_NAME));
 
         assertThat(firstNotification.getBody())
             .as("Email body does not match")
             .contains(String.format("As part of routine maintenance of the court and tribunal hearings service "
                                         + "we have had to delete %s from our service, in doing so we have also had "
-                                        + "to delete your subscriptions for this location.", TEST_LOCATION_NAME));
+                                        + "to delete your subscriptions for this location.", LOCATION_NAME));
     }
 }
