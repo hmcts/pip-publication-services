@@ -110,7 +110,7 @@ public class NotificationController {
         + "{recipientEmail} with reference id: {reference id}")
     @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     @Operation(summary = "Bulk send email subscriptions to a list of users and associated config")
-    @PostMapping("/v2/subscription")
+    @PostMapping("/subscription")
     public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody BulkSubscriptionEmail body) {
         return ResponseEntity.accepted().body(notificationService.bulkSendSubscriptionEmail(body));
     }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
+import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
+import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
 import java.util.List;
@@ -30,13 +32,39 @@ public class AccountManagementService {
         this.webClient = webClient;
     }
 
-    public List<AccountMiData> getMiData() {
+    public List<AccountMiData> getAccountMiData() {
         try {
             return webClient.get()
-                .uri(String.format("%s/account/v2/mi-data", url))
+                .uri(String.format("%s/account/mi-data", url))
                 .attributes(clientRegistrationId("accountManagementApi"))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<AccountMiData>>() {})
+                .block();
+        } catch (WebClientResponseException ex) {
+            throw new ServiceToServiceException(SERVICE, ex.getMessage());
+        }
+    }
+
+    public List<AllSubscriptionMiData> getAllSubscriptionMiData() {
+        try {
+            return webClient.get()
+                .uri(String.format("%s/subscription/mi-data-all", url))
+                .attributes(clientRegistrationId("accountManagementApi"))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<AllSubscriptionMiData>>() {})
+                .block();
+        } catch (WebClientResponseException ex) {
+            throw new ServiceToServiceException(SERVICE, ex.getMessage());
+        }
+    }
+
+    public List<LocationSubscriptionMiData> getLocationSubscriptionMiData() {
+        try {
+            return webClient.get()
+                .uri(String.format("%s/subscription/mi-data-location", url))
+                .attributes(clientRegistrationId("accountManagementApi"))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<LocationSubscriptionMiData>>() {})
                 .block();
         } catch (WebClientResponseException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());

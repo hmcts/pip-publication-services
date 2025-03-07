@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
@@ -42,11 +41,8 @@ class LocationSubscriptionDeletionEmailGeneratorTest {
 
     @Test
     void testBuildLocationSubscriptionDeletionEmail() {
-        LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion(
-            LOCATION_NAME, List.of(EMAIL1, EMAIL2, EMAIL3)
-        );
         LocationSubscriptionDeletionEmailData emailData = new LocationSubscriptionDeletionEmailData(
-            locationSubscriptionDeletion, REFERENCE_ID
+            List.of(EMAIL1, EMAIL2, EMAIL3), LOCATION_NAME, REFERENCE_ID
         );
 
         List<EmailToSend> results = emailGenerator.buildEmail(emailData, personalisationLinks);
