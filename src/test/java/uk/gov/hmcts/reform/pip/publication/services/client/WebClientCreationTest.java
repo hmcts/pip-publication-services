@@ -22,7 +22,6 @@ class WebClientCreationTest {
 
     @Test
     void createWebClient() {
-
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
         WebClient webClient = webClientConfiguration.webClient(authorizedClientManager);
 
@@ -31,7 +30,6 @@ class WebClientCreationTest {
 
     @Test
     void createMiWebClient() {
-
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
         WebClient webClient = webClientConfiguration.miWebClient(authorizedClientManager);
 
@@ -40,7 +38,6 @@ class WebClientCreationTest {
 
     @Test
     void createAuthorizedClientManager() {
-
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
         OAuth2AuthorizedClientManager clientManager =
             webClientConfiguration.authorizedClientManager(clientRegistrationRepository);
@@ -51,7 +48,6 @@ class WebClientCreationTest {
 
     @Test
     void createWebClientInsecure() {
-
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
         WebClient webClient =
             webClientConfiguration.webClientInsecure();
