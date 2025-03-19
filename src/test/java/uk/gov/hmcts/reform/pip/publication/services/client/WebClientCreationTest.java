@@ -24,10 +24,18 @@ class WebClientCreationTest {
     void createWebClient() {
 
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
-        WebClient webClient =
-            webClientConfiguration.webClient(authorizedClientManager);
+        WebClient webClient = webClientConfiguration.webClient(authorizedClientManager);
 
         assertNotNull(webClient, "WebClient has not been created successfully");
+    }
+
+    @Test
+    void createMiWebClient() {
+
+        WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
+        WebClient webClient = webClientConfiguration.miWebClient(authorizedClientManager);
+
+        assertNotNull(webClient, "MI WebClient has not been created successfully");
     }
 
     @Test
