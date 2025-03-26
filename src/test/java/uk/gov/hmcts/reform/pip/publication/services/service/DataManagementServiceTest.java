@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +16,11 @@ import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
+import uk.gov.hmcts.reform.pip.publication.services.config.WebClientConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,9 +55,15 @@ class DataManagementServiceTest {
     @BeforeEach
     void setup() {
         WebClient mockedWebClient = WebClient.builder()
+            .exchangeStrategies(WebClientConfiguration.STRATEGIES)
             .baseUrl(mockDataManagementEndpoint.url("/").toString())
             .build();
-        dataManagementService = new DataManagementService(mockedWebClient);
+
+        WebClient miMockedWebClient = WebClient.builder()
+            .exchangeStrategies(WebClientConfiguration.DATA_MANAGEMENT_MI_STRATEGIES)
+            .baseUrl(mockDataManagementEndpoint.url("/").toString())
+            .build();
+        dataManagementService = new DataManagementService(mockedWebClient, miMockedWebClient);
     }
 
     @AfterEach
@@ -269,6 +278,36 @@ class DataManagementServiceTest {
     }
 
     @Test
+    void testGetMiDataReturnsOkWhenOver3MbAndBelow5Mb() throws JsonProcessingException {
+        PublicationMiData data1 = new PublicationMiData();
+        List<PublicationMiData> expectedData = Collections.nCopies(20_000, data1);
+
+        mockDataManagementEndpoint.enqueue(new MockResponse()
+                                               .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                               .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
+                                               .setResponseCode(200));
+
+        List<PublicationMiData> response = dataManagementService.getMiData();
+
+        assertIterableEquals(expectedData, response, "Data does not match");
+    }
+
+
+    @Test
+    void testGetMiDataThrowsExceptionWhenOver5Mb() throws JsonProcessingException {
+        PublicationMiData data1 = new PublicationMiData();
+        List<PublicationMiData> expectedData = Collections.nCopies(25_000, data1);
+
+        mockDataManagementEndpoint.enqueue(new MockResponse()
+                                               .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
+                                               .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
+                                               .setResponseCode(200));
+
+        assertThrows(ServiceToServiceException.class, dataManagementService::getMiData,
+                     "Exception not thrown when over 5MB");
+    }
+
+    @Test
     void testGetMiDataThrowsException() {
         mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
@@ -277,5 +316,17 @@ class DataManagementServiceTest {
                                                                  NO_EXPECTED_EXCEPTION);
 
         assertTrue(notifyException.getMessage().contains(NOT_FOUND), NO_STATUS_CODE_IN_EXCEPTION);
+    }
+
+    @Test
+    void testGetArtefactJsonThrowsExceptionWhenOver3Mb() {
+        byte[] byteArray = RandomUtils.secure().randomBytes(4_000_000);
+
+        mockDataManagementEndpoint.enqueue(new MockResponse()
+                                               .setBody(new String(byteArray))
+                                               .setResponseCode(200));
+
+        assertThrows(ServiceToServiceException.class, () -> dataManagementService.getArtefactJsonBlob(ARTEFACT_ID),
+                     "Exception not thrown when over 3MB");
     }
 }

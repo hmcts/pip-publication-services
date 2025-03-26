@@ -22,17 +22,22 @@ class WebClientCreationTest {
 
     @Test
     void createWebClient() {
-
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
-        WebClient webClient =
-            webClientConfiguration.webClient(authorizedClientManager);
+        WebClient webClient = webClientConfiguration.webClient(authorizedClientManager);
 
         assertNotNull(webClient, "WebClient has not been created successfully");
     }
 
     @Test
-    void createAuthorizedClientManager() {
+    void createMiWebClient() {
+        WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
+        WebClient webClient = webClientConfiguration.miWebClient(authorizedClientManager);
 
+        assertNotNull(webClient, "MI WebClient has not been created successfully");
+    }
+
+    @Test
+    void createAuthorizedClientManager() {
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
         OAuth2AuthorizedClientManager clientManager =
             webClientConfiguration.authorizedClientManager(clientRegistrationRepository);
@@ -43,7 +48,6 @@ class WebClientCreationTest {
 
     @Test
     void createWebClientInsecure() {
-
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
         WebClient webClient =
             webClientConfiguration.webClientInsecure();
