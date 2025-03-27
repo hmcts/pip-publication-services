@@ -36,10 +36,12 @@ public class DataManagementService {
     private String url;
 
     private final WebClient webClient;
+    private final WebClient miWebClient;
 
     @Autowired
-    public DataManagementService(WebClient webClient) {
+    public DataManagementService(WebClient webClient, WebClient miWebClient) {
         this.webClient = webClient;
+        this.miWebClient = miWebClient;
     }
 
     public Artefact getArtefact(UUID artefactId) {
@@ -120,7 +122,7 @@ public class DataManagementService {
 
     public List<PublicationMiData> getMiData() {
         try {
-            return webClient.get()
+            return miWebClient.get()
                 .uri(String.format("%s/publication/v2/mi-data", url))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<PublicationMiData>>() {})
