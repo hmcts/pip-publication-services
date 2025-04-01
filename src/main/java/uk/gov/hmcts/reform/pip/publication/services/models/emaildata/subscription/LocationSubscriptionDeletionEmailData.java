@@ -3,8 +3,9 @@ package uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscripti
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.BatchEmailData;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,9 +13,9 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.BatchEmailD
 public class LocationSubscriptionDeletionEmailData extends BatchEmailData {
     private String locationName;
 
-    public LocationSubscriptionDeletionEmailData(LocationSubscriptionDeletion locationSubscriptionDeletion,
+    public LocationSubscriptionDeletionEmailData(List<String> subscriberEmails, String locationName,
                                                  String referenceId) {
-        super(locationSubscriptionDeletion.getSubscriberEmails(), referenceId);
-        this.locationName = locationSubscriptionDeletion.getLocationName();
+        super(subscriberEmails, referenceId);
+        this.locationName = locationName;
     }
 }

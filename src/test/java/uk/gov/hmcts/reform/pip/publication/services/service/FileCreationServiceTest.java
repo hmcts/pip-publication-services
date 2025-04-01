@@ -47,9 +47,6 @@ class FileCreationServiceTest {
     private AccountManagementService accountManagementService;
 
     @Mock
-    private SubscriptionManagementService subscriptionManagementService;
-
-    @Mock
     private ExcelGenerationService excelGenerationService;
 
     @InjectMocks
@@ -73,7 +70,7 @@ class FileCreationServiceTest {
         + STATUS_DATE.format(DATE_TIME_FORMATTER) + "\"";
 
     private static final UUID USER_ID = UUID.randomUUID();
-    private static final String ID = "1234";
+    private static final UUID ID = UUID.randomUUID();
     private static final LocalDateTime CREATED_DATE = LocalDateTime.of(2022, 1, 19, 13, 45, 50);
     private static final LocalDateTime LAST_SIGNED_IN = LocalDateTime.of(2023,1, 25, 14, 22, 43);
     private static final String CREATED_DATE_STRING = "2022-01-19 13:45:50";
@@ -89,8 +86,9 @@ class FileCreationServiceTest {
     public static final Integer SUPERSEDED_COUNT = 0;
     public static final LocalDateTime CONTENT_DATE = LocalDateTime.of(2024,1, 19, 13, 45);
 
-    private static final AccountMiData ACCOUNT_MI_RECORD = new AccountMiData(USER_ID, ID, PI_AAD, INTERNAL_ADMIN_CTSC,
-                                                                     CREATED_DATE, LAST_SIGNED_IN);
+    private static final AccountMiData ACCOUNT_MI_RECORD = new AccountMiData(
+        USER_ID, ID.toString(), PI_AAD, INTERNAL_ADMIN_CTSC, CREATED_DATE, LAST_SIGNED_IN
+    );
     private static final AllSubscriptionMiData ALL_SUBS_MI_RECORD = new AllSubscriptionMiData(
         USER_ID, EMAIL, SEARCH_TYPE, ID, LOCATION_NAME, CREATED_DATE
     );
@@ -157,9 +155,9 @@ class FileCreationServiceTest {
     @Test
     void testGenerateMiReportSuccess() throws IOException {
         when(dataManagementService.getMiData()).thenReturn(publicationMiData);
-        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+        when(accountManagementService.getAccountMiData()).thenReturn(ACCOUNT_MI_DATA);
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(ALL_SUBS_MI_DATA);
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
         when(excelGenerationService.generateMultiSheetWorkBook(any())).thenReturn(TEST_BYTE);
 
         assertThat(fileCreationService.generateMiReport()).isEqualTo(TEST_BYTE);
@@ -168,9 +166,9 @@ class FileCreationServiceTest {
     @Test
     void testExtractMiData() {
         when(dataManagementService.getMiData()).thenReturn(publicationMiData);
-        when(accountManagementService.getMiData()).thenReturn(ACCOUNT_MI_DATA);
-        when(subscriptionManagementService.getAllMiData()).thenReturn(ALL_SUBS_MI_DATA);
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
+        when(accountManagementService.getAccountMiData()).thenReturn(ACCOUNT_MI_DATA);
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(ALL_SUBS_MI_DATA);
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
 
         Map<String, List<String[]>> results = fileCreationService.extractMiData();
 
@@ -212,7 +210,7 @@ class FileCreationServiceTest {
             .hasSize(3)
             .contains(
                 EXPECTED_ACCOUNT_HEADERS,
-                new String[]{USER_ID.toString(), ID, PI_AAD.toString(), INTERNAL_ADMIN_CTSC.toString(),
+                new String[]{USER_ID.toString(), ID.toString(), PI_AAD.toString(), INTERNAL_ADMIN_CTSC.toString(),
                     CREATED_DATE_STRING, "2023-01-25 14:22:43"}
             );
 
@@ -222,7 +220,7 @@ class FileCreationServiceTest {
             .hasSize(3)
             .contains(
                 EXPECTED_ALL_SUBSCRIPTION_HEADERS,
-                new String[]{USER_ID.toString(), EMAIL.toString(), SEARCH_TYPE.toString(), ID,
+                new String[]{USER_ID.toString(), EMAIL.toString(), SEARCH_TYPE.toString(), ID.toString(),
                     LOCATION_NAME, CREATED_DATE_STRING}
             );
 
@@ -232,7 +230,7 @@ class FileCreationServiceTest {
             .hasSize(3)
             .contains(
                 EXPECTED_LOCATION_SUBSCRIPTION_HEADERS,
-                new String[]{USER_ID.toString(), SEARCH_VALUE, EMAIL.toString(), ID,
+                new String[]{USER_ID.toString(), SEARCH_VALUE, EMAIL.toString(), ID.toString(),
                     LOCATION_NAME, CREATED_DATE_STRING}
             );
     }
@@ -240,9 +238,9 @@ class FileCreationServiceTest {
     @Test
     void testExtractMiDataWhenNoData() {
         when(dataManagementService.getMiData()).thenReturn(List.of());
-        when(accountManagementService.getMiData()).thenReturn(List.of());
-        when(subscriptionManagementService.getAllMiData()).thenReturn(List.of());
-        when(subscriptionManagementService.getLocationMiData()).thenReturn(List.of());
+        when(accountManagementService.getAccountMiData()).thenReturn(List.of());
+        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(List.of());
+        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(List.of());
 
         Map<String, List<String[]>> results = fileCreationService.extractMiData();
 
