@@ -36,10 +36,12 @@ public class DataManagementService {
     private String url;
 
     private final WebClient webClient;
+    private final WebClient miWebClient;
 
     @Autowired
-    public DataManagementService(WebClient webClient) {
+    public DataManagementService(WebClient webClient, WebClient miWebClient) {
         this.webClient = webClient;
+        this.miWebClient = miWebClient;
     }
 
     public Artefact getArtefact(UUID artefactId) {

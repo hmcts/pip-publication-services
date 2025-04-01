@@ -33,9 +33,14 @@ public class WebClientConfiguration {
     // Currently we allow a maximum 2MB of PDF/Excel file to be transferred from data-management (same as GOV.UK
     // Notify file size constraint). The file content is sent as a Base64 encoded string which add roughly 33% space
     // overhead. Hence we increase the service-to-service size constraint to 3MB.
-    private static final ExchangeStrategies STRATEGIES =  ExchangeStrategies.builder()
+    public static final ExchangeStrategies STRATEGIES =  ExchangeStrategies.builder()
         .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
             .maxInMemorySize(3 * 1024 * 1024))
+        .build();
+
+    public static final ExchangeStrategies DATA_MANAGEMENT_MI_STRATEGIES =  ExchangeStrategies.builder()
+        .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
+            .maxInMemorySize(5 * 1024 * 1024))
         .build();
 
     @Value("${third-party.certificate}")
@@ -65,6 +70,19 @@ public class WebClientConfiguration {
             new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
         oauth2Client.setDefaultClientRegistrationId("dataManagementApi");
         return WebClient.builder().exchangeStrategies(STRATEGIES)
+            .apply(oauth2Client.oauth2Configuration()).build();
+    }
+
+    /**
+     * A specific web client for MI requests to Data Management, due to requiring a larger response size.
+     */
+    @Bean
+    @Profile("!dev")
+    public WebClient miWebClient(OAuth2AuthorizedClientManager authorizedClientManager) {
+        ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2Client =
+            new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
+        oauth2Client.setDefaultClientRegistrationId("dataManagementApi");
+        return WebClient.builder().exchangeStrategies(DATA_MANAGEMENT_MI_STRATEGIES)
             .apply(oauth2Client.oauth2Configuration()).build();
     }
 
