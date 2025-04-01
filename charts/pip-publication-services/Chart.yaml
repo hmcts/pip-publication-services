@@ -3,7 +3,7 @@ appVersion: "1.0"
 description: A Helm chart for pip-publication-services App
 name: pip-publication-services
 home: https://github.com/hmcts/pip-publication-services
-version: 0.0.38
+version: 0.0.39
 maintainers:
   - name: HMCTS PIP Team
 dependencies:
