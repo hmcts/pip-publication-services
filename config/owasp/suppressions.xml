@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
   <suppress>
-    <notes><![CDATA[file name: spring-cloud-azure-starter-active-directory-5.19.0.jar]]></notes>
+    <notes><![CDATA[file name: spring-cloud-azure-starter-active-directory-5.21.0.jar]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.azure\.spring/spring\-cloud\-azure\-starter\-active\-directory@.*$</packageUrl>
     <cve>CVE-2021-42306</cve>
   </suppress>
