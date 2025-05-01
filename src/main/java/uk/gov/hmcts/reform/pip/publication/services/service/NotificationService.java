@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
@@ -160,8 +161,11 @@ public class NotificationService {
      */
     public String sendDeleteLocationSubscriptionEmail(LocationSubscriptionDeletion body) {
         String referenceId = UUID.randomUUID().toString();
+        Location location = dataManagementService.getLocation(body.getLocationId());
+
         List<EmailToSend> email = emailService.handleBatchEmailGeneration(
-            new LocationSubscriptionDeletionEmailData(body, referenceId), Templates.DELETE_LOCATION_SUBSCRIPTION
+            new LocationSubscriptionDeletionEmailData(body.getSubscriberEmails(), location.getName(), referenceId),
+            Templates.DELETE_LOCATION_SUBSCRIPTION
         );
 
         email.forEach(emailService::sendEmail);

@@ -55,7 +55,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     @Autowired
     private EmailNotificationClient notificationClient;
 
-    private static final String BULK_SUBSCRIPTION_URL = "/notify/v2/subscription";
+    private static final String BULK_SUBSCRIPTION_URL = "/notify/subscription";
     private static final String TESTING_SUPPORT_LOCATION_URL = "/testing-support/location/";
     private static final String TESTING_SUPPORT_PUBLICATION_URL = "/testing-support/publication";
     private static final String PUBLICATION_URL = "/publication";

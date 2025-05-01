@@ -31,10 +31,6 @@ spring:
             authorization-grant-type: client_credentials
             scopes:
               - ${DATA_MANAGEMENT_AZ_API}/.default
-          subscriptionManagementApi:
-            authorization-grant-type: client_credentials
-            scopes:
-              - ${SUBSCRIPTION_MANAGEMENT_AZ_API}/.default
           accountManagementApi:
             authorization-grant-type: client_credentials
             scopes:
@@ -46,7 +42,6 @@ spring:
 
 service-to-service:
   data-management: ${DATA_MANAGEMENT_URL:https://pip-data-management.staging.platform.hmcts.net}
-  subscription-management: ${SUBSCRIPTION_MANAGEMENT_URL:https://pip-subscription-management.staging.platform.hmcts.net}
   account-management: ${ACCOUNT_MANAGEMENT_URL:https://pip-account-management.staging.platform.hmcts.net}
 
 notify:
