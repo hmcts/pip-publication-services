@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.config.NotifyConfigProperties;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
@@ -115,11 +114,8 @@ class EmailServiceTest {
 
     @Test
     void testHandleBatchEmailGenerationWithinRateLimit() {
-        LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion(
-            LOCATION_NAME, List.of(EMAIL1, EMAIL2, EMAIL3)
-        );
         LocationSubscriptionDeletionEmailData emailData = new LocationSubscriptionDeletionEmailData(
-            locationSubscriptionDeletion, REFERENCE_ID
+            List.of(EMAIL1, EMAIL2, EMAIL3), LOCATION_NAME, REFERENCE_ID
         );
 
         when(rateLimitingService.isValid(anyString(), eq(DELETE_LOCATION_SUBSCRIPTION))).thenReturn(true);
@@ -149,11 +145,8 @@ class EmailServiceTest {
 
     @Test
     void testHandleBatchEmailGenerationWithSomeEmailsOverRateLimit() {
-        LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion(
-            LOCATION_NAME, List.of(EMAIL1, EMAIL2, EMAIL3)
-        );
         LocationSubscriptionDeletionEmailData emailData = new LocationSubscriptionDeletionEmailData(
-            locationSubscriptionDeletion, REFERENCE_ID
+            List.of(EMAIL1, EMAIL2, EMAIL3), LOCATION_NAME, REFERENCE_ID
         );
 
         when(rateLimitingService.isValid(EMAIL1, DELETE_LOCATION_SUBSCRIPTION)).thenReturn(false);

@@ -103,6 +103,9 @@ class NotificationServiceTest {
     private FileCreationService fileCreationService;
 
     @Mock
+    private DataManagementService dataManagementService;
+
+    @Mock
     private EmailService emailService;
 
     @InjectMocks
@@ -193,8 +196,10 @@ class NotificationServiceTest {
 
     @Test
     void testValidPayloadReturnsDeleteLocationSubscriptionEmail() {
-        locationSubscriptionDeletionBody.setLocationName(LOCATION_NAME);
+        locationSubscriptionDeletionBody.setLocationId(String.valueOf(LOCATION_ID));
         locationSubscriptionDeletionBody.setSubscriberEmails(List.of(EMAIL));
+
+        when(dataManagementService.getLocation(String.valueOf(LOCATION_ID))).thenReturn(location);
         when(emailService.handleBatchEmailGeneration(any(LocationSubscriptionDeletionEmailData.class),
                                                      eq(Templates.DELETE_LOCATION_SUBSCRIPTION)))
             .thenReturn(List.of(validEmailBodyForEmailClient));

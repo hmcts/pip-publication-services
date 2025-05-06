@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration")
 class NotifySubscriptionTest extends IntegrationTestBase {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final String BULK_SUBSCRIPTION_URL = "/notify/v2/subscription";
+    private static final String BULK_SUBSCRIPTION_URL = "/notify/subscription";
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
     private static final String EMAIL = "test@justice.gov.uk";
     private static final byte[] FILE = "Test byte".getBytes();
