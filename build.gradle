@@ -186,7 +186,7 @@ dependencies {
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
-  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: 'PUB-2822-SNAPSHOT', {
+  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: 'PUB-2864-SNAPSHOT', {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 
