@@ -157,7 +157,9 @@ dependencyCheck {
 repositories {
   mavenLocal()
   mavenCentral()
-  maven { url 'https://jitpack.io' }
+  maven {
+    url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
+  }
 }
 
 ext {
@@ -186,7 +188,7 @@ dependencies {
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
-  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: 'PUB-2883-SNAPSHOT', {
+  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: 'PUB-2883-b97d33c', {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 
@@ -206,7 +208,7 @@ dependencies {
   testImplementation group: 'com.redis', name: 'testcontainers-redis', version: '2.2.4'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter'
   testImplementation group: 'io.github.hakky54', name: 'logcaptor', version: '2.11.0'
-  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.8', classifier: 'all'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.9', classifier: 'all'
   functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured'
 }
 
