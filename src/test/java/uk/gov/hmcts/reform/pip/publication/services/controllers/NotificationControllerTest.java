@@ -271,7 +271,6 @@ class NotificationControllerTest {
     }
 
     @Test
-    @SuppressWarnings("PMD.UnitTestAssertionsShouldIncludeMessage")
     void testSendInactiveUserNotificationEmailReturnsOk() {
         assertThat(notificationController.sendNotificationToInactiveUsers(inactiveUserNotificationEmail))
             .as("Response does not match")
@@ -286,7 +285,6 @@ class NotificationControllerTest {
     }
 
     @Test
-    @SuppressWarnings("PMD.UnitTestAssertionsShouldIncludeMessage")
     void testSendMiReportingEmailReturnsOk() {
         when(notificationService.handleMiDataForReporting()).thenReturn(REFERENCE_ID);
 

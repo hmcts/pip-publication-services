@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.PAYLOAD_TOO_LARGE;
 
 @Slf4j
 @Service
-@SuppressWarnings({"PMD.PreserveStackTrace", "PMD.ImmutableField"})
+@SuppressWarnings({"PMD.PreserveStackTrace"})
 public class DataManagementService {
 
     private static final String SERVICE = "Data Management";

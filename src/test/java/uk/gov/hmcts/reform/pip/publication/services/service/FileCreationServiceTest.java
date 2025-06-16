@@ -37,7 +37,6 @@ import static uk.gov.hmcts.reform.pip.model.subscription.SearchType.CASE_ID;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("PMD.CouplingBetweenObjects")
 class FileCreationServiceTest {
 
     @Mock
