@@ -4,7 +4,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.7'
-  id 'org.springframework.boot' version '3.4.6'
+  id 'org.springframework.boot' version '3.4.7'
   id 'org.owasp.dependencycheck' version '10.0.3'
   id 'com.github.ben-manes.versions' version '0.52.0'
   id 'org.sonarqube' version '6.2.0.5505'
@@ -188,7 +188,7 @@ dependencies {
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
-  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.3.13', {
+  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.3.14', {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 
