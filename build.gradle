@@ -21,34 +21,18 @@ java {
   }
 }
 
-sourceSets {
-  integrationTest {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/integrationTest/java')
+def configureSourceSet(String name) {
+  sourceSets.create(name) { sourceSet ->
+    sourceSet.java {
+      compileClasspath += sourceSets.main.output + sourceSets.test.output
+      runtimeClasspath += sourceSets.main.output + sourceSets.test.output
+      srcDir "src/${name}/java"
     }
-    resources.srcDir file('src/integrationTest/resources')
-  }
-
-  functionalTest {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/functionalTest/java')
-    }
-    resources.srcDir file('src/functionalTest/resources')
-  }
-
-  smokeTest {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/smokeTest/java')
-    }
-    resources.srcDir file('src/smokeTest/resources')
+    sourceSet.resources.srcDir "src/${name}/resources"
   }
 }
+
+['smokeTest', 'integrationTest', 'functionalTest'].each { configureSourceSet(it) }
 
 configurations {
   integrationTestImplementation.extendsFrom testImplementation
@@ -86,21 +70,21 @@ test {
   failFast = true
 }
 
-task integration(type: Test) {
-  description = "Runs integration tests"
-  group = "Verification"
-  testClassesDirs = sourceSets.integrationTest.output.classesDirs
-  classpath = sourceSets.integrationTest.runtimeClasspath
-}
-
-task functional(type: Test) {
+tasks.register('functional', Test) {
   description = "Runs functional tests"
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
 }
 
-task smoke(type: Test) {
+tasks.register('integration', Test) {
+  description = "Runs integration tests"
+  group = "Verification"
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+}
+
+tasks.register('smoke', Test) {
   description = "Runs Smoke Tests"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath
@@ -147,6 +131,7 @@ dependencyCheck {
   // range of 0-10 fails the build, anything greater and it doesn't fail the build
   failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
   suppressionFile = 'config/owasp/suppressions.xml'
+  skipTestGroups  = false
 
   analyzers {
     // Disable scanning of .NET related binaries
@@ -166,7 +151,6 @@ ext {
   log4JVersion = '2.24.3'
   reformLogging = '6.1.9'
 }
-
 
 dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -212,7 +196,7 @@ dependencies {
   functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured'
 }
 
-task fortifyScan(type: JavaExec)  {
+tasks.register('fortifyScan', JavaExec) {
   mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
