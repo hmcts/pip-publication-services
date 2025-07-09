@@ -14,8 +14,4 @@
     <notes>This vulnerability exists across azure identity and microsoft authentication libraries </notes>
     <cve>CVE-2024-35255</cve>
   </suppress>
-  <suppress>
-    <notes>Brought in by Spring. To be fixed on upgrade to springboot 3.4.7</notes>
-    <cve>CVE-2025-48988</cve>
-  </suppress>
 </suppressions>
