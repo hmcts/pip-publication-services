@@ -34,3 +34,7 @@ java:
           alias: REDIS_PORT
         - name: REDIS-V6-PASSWORD
           alias: REDIS_PASSWORD
+        - name: xhibit-s3-access-key
+          alias: XHIBIT_S3_ACCESS_KEY
+        - name: xhibit-s3-access-key-secret
+          alias: XHIBIT_S3_SECRET_KEY
