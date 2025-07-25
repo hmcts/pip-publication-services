@@ -46,7 +46,7 @@ import java.util.List;
 @ApiResponse(responseCode = "403", description = "User has not been authorized")
 @IsAdmin
 @SecurityRequirement(name = "bearerAuth")
-@SuppressWarnings("PMD.TooManyMethods")
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
 public class NotificationController {
 
     private final NotificationService notificationService;

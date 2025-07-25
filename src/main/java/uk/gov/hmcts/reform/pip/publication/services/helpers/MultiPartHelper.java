@@ -9,6 +9,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Locale;
 
 public final class MultiPartHelper {
     private MultiPartHelper() {
@@ -43,6 +44,6 @@ public final class MultiPartHelper {
         if (lastDotIndex == -1) {
             return ""; // No extension found
         }
-        return originalFilename.substring(lastDotIndex + 1).toLowerCase();
+        return originalFilename.substring(lastDotIndex + 1).toLowerCase(Locale.ROOT);
     }
 }

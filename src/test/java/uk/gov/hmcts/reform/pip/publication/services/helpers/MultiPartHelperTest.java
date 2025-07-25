@@ -2,15 +2,19 @@ package uk.gov.hmcts.reform.pip.publication.services.helpers;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MultiPartHelperTest {
     @Test
@@ -61,4 +65,55 @@ class MultiPartHelperTest {
             .as("Incorrect byte array data")
             .isEqualTo(data2);
     }
+
+
+    @Test
+    void testGetFileExtension() {
+        MultipartFile file = new MockMultipartFile(
+            "test.html",
+            "test.html",
+            "text/html",
+            new byte[0]);
+
+        String ext = MultiPartHelper.getFileExtension(file);
+        assertEquals("html", ext,
+                     "Expected extension to be html");
+    }
+
+    @Test
+    void testGetFileExtensionWithUppercaseExtension() {
+        MultipartFile file = new MockMultipartFile(
+            "test.HTML",
+            "test.HTML",
+            "text/html",
+            new byte[0]);
+
+        String ext = MultiPartHelper.getFileExtension(file);
+        assertEquals("html", ext,
+                     "Expected extension to be in lowercase");
+    }
+
+    @Test
+    void testGetFileExtensionWithNoExtension() {
+        MultipartFile fileWithNoExtension = new MockMultipartFile(
+            "test",
+            "test",
+            "text/plain",
+            new byte[0]);
+
+        String ext = MultiPartHelper.getFileExtension(fileWithNoExtension);
+        assertEquals("", ext,
+                     "Expected extension to be empty when there is no extension in filename");
+    }
+
+    @Test
+    void testGetFileExtensionWithNoFilename() {
+        MultipartFile mockEmptyFile = Mockito.mock(MultipartFile.class);
+        Mockito.when(mockEmptyFile.getOriginalFilename()).thenReturn(null);
+
+        String ext = MultiPartHelper.getFileExtension(mockEmptyFile);
+        assertEquals("", ext,
+                     "Expected extension to be empty when filename is null");
+    }
+
 }

@@ -34,7 +34,7 @@ public class AwsS3Service {
 
             s3Client.putObject(request, RequestBody.fromInputStream(fileStream, fileStream.available()));
         } catch (S3Exception e) {
-            throw new S3UploadException("Failed to upload file to S3: " + e.getMessage());
+            throw new S3UploadException("Failed to upload file to S3: " + e.getMessage(), e);
         }
     }
 }

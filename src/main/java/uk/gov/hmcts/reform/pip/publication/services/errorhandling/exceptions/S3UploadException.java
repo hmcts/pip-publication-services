@@ -6,8 +6,9 @@ public class S3UploadException extends RuntimeException {
     /**
      * Constructor for the Exception.
      * @param message The message to return to the end user
+     * @param cause The cause exception return
      */
-    public S3UploadException(String message) {
-        super(message);
+    public S3UploadException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
