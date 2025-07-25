@@ -180,6 +180,7 @@ dependencies {
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.4.1'
   implementation group: 'org.redisson', name: 'redisson', version: '3.49.0'
   implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.12.10'
+  implementation group: 'software.amazon.awssdk', name: 's3', version: '2.31.65'
 
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
