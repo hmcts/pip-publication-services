@@ -10,7 +10,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
-@Profile("!test & !integration & !integration-basic")
+@Profile("!test & !integration & !integration-rate-limit")
 public class AwsS3Configuration {
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
