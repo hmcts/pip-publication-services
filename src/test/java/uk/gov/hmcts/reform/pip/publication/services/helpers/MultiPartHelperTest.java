@@ -17,16 +17,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MultiPartHelperTest {
+    private static final String FILE = "file";
+
     @Test
     void testCreateSingleMultiPartByteArrayBody() {
         byte[] data = {10, 20, 30};
         List<Triple<String, byte[], String>> input = Collections.singletonList(
-            Triple.of("file", data, "filename.pdf")
+            Triple.of(FILE, data, "filename.pdf")
         );
         MultiValueMap<String, HttpEntity<?>> output = MultiPartHelper.createMultiPartByteArrayBody(input);
 
         assertThat(output).hasSize(1);
-        HttpEntity<?> result = output.get("file").get(0);
+        HttpEntity<?> result = output.get(FILE).get(0);
         assertThat(result.getHeaders().get("Content-Disposition"))
             .as("Incorrect content disposition")
             .hasSize(1)
@@ -70,7 +72,7 @@ class MultiPartHelperTest {
     @Test
     void testGetFileExtension() {
         MultipartFile file = new MockMultipartFile(
-            "test.html",
+            FILE,
             "test.html",
             "text/html",
             new byte[0]);
@@ -83,7 +85,7 @@ class MultiPartHelperTest {
     @Test
     void testGetFileExtensionWithUppercaseExtension() {
         MultipartFile file = new MockMultipartFile(
-            "test.HTML",
+            FILE,
             "test.HTML",
             "text/html",
             new byte[0]);
@@ -96,7 +98,7 @@ class MultiPartHelperTest {
     @Test
     void testGetFileExtensionWithNoExtension() {
         MultipartFile fileWithNoExtension = new MockMultipartFile(
-            "test",
+            FILE,
             "test",
             "text/plain",
             new byte[0]);

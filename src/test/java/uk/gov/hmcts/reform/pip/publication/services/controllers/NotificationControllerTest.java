@@ -76,6 +76,7 @@ class NotificationControllerTest {
     private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
     private static final String IMAGE_NAME = "test-image.png";
     private static final String HTML_FILE = "test.html";
+    private static final String FORM_FILE_FIELD_NAME = "file";
     private static final String REFERENCE_ID = UUID.randomUUID().toString();
     private static final String MESSAGES_MATCH = "Messages should match";
     private static final String STATUS_CODES_MATCH = "Status codes should match";
@@ -347,7 +348,7 @@ class NotificationControllerTest {
     @Test
     void testUploadHtmlToAwsS3BucketReturnOkResponse() throws IOException {
         MultipartFile file = new MockMultipartFile(
-            HTML_FILE,
+            FORM_FILE_FIELD_NAME,
             HTML_FILE,
             "text/html",
             "<html><body>Test</body></html>".getBytes());
@@ -366,7 +367,7 @@ class NotificationControllerTest {
     @Test
     void testUploadHtmlToAwsS3BucketReturnsBadRequestForEmptyFile() {
         MultipartFile emptyFile = new MockMultipartFile(
-            HTML_FILE,
+            FORM_FILE_FIELD_NAME,
             HTML_FILE,
             "text/html",
             new byte[0]);
@@ -381,7 +382,7 @@ class NotificationControllerTest {
     @Test
     void testUploadHtmlToAwsS3BucketReturnsUnsupportedMediaType() {
         MultipartFile nonHtmlFile = new MockMultipartFile(
-            "test.pdf",
+            FORM_FILE_FIELD_NAME,
             "test.pdf",
             "text/html",
             "Test".getBytes());
