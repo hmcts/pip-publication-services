@@ -77,6 +77,7 @@ class NotificationControllerTest {
     private static final String IMAGE_NAME = "test-image.png";
     private static final String HTML_FILE = "test.html";
     private static final String FORM_FILE_FIELD_NAME = "file";
+    private static final String HTML_FILE_CONTENT_TYPE = "text/html";
     private static final String REFERENCE_ID = UUID.randomUUID().toString();
     private static final String MESSAGES_MATCH = "Messages should match";
     private static final String STATUS_CODES_MATCH = "Status codes should match";
@@ -346,11 +347,30 @@ class NotificationControllerTest {
     }
 
     @Test
+    void testUploadHtmlFileWithHtmExtensionToAwsS3BucketReturnOkResponse() throws IOException {
+        MultipartFile file = new MockMultipartFile(
+            FORM_FILE_FIELD_NAME,
+            "test.htm",
+            HTML_FILE_CONTENT_TYPE,
+            "<html><body>Test</body></html>".getBytes());
+
+        doNothing().when(awsS3Service).uploadFile(anyString(), any(InputStream.class));
+
+        ResponseEntity<String> response = notificationController.uploadHtmlToAwsS3Bucket(file);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode(), STATUS_CODES_MATCH);
+        assertEquals("File uploaded successfully to AWS S3 Bucket",
+                     response.getBody(), "File upload message should match");
+        verify(awsS3Service, times(1))
+            .uploadFile(anyString(), any(InputStream.class));
+    }
+
+    @Test
     void testUploadHtmlToAwsS3BucketReturnOkResponse() throws IOException {
         MultipartFile file = new MockMultipartFile(
             FORM_FILE_FIELD_NAME,
             HTML_FILE,
-            "text/html",
+            HTML_FILE_CONTENT_TYPE,
             "<html><body>Test</body></html>".getBytes());
 
         doNothing().when(awsS3Service).uploadFile(anyString(), any(InputStream.class));
@@ -369,7 +389,7 @@ class NotificationControllerTest {
         MultipartFile emptyFile = new MockMultipartFile(
             FORM_FILE_FIELD_NAME,
             HTML_FILE,
-            "text/html",
+            HTML_FILE_CONTENT_TYPE,
             new byte[0]);
 
         ResponseEntity<String> response = notificationController.uploadHtmlToAwsS3Bucket(emptyFile);
@@ -384,13 +404,13 @@ class NotificationControllerTest {
         MultipartFile nonHtmlFile = new MockMultipartFile(
             FORM_FILE_FIELD_NAME,
             "test.pdf",
-            "text/html",
+            HTML_FILE_CONTENT_TYPE,
             "Test".getBytes());
 
         ResponseEntity<String> response = notificationController.uploadHtmlToAwsS3Bucket(nonHtmlFile);
 
         assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, response.getStatusCode(), STATUS_CODES_MATCH);
-        assertEquals("Only HTML files are allowed", response.getBody(),
+        assertEquals("Only HTM/HTML files are allowed", response.getBody(),
                      "Unsupported media type message should match");
     }
 

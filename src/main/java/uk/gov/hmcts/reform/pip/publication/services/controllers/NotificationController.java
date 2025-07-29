@@ -236,9 +236,10 @@ public class NotificationController {
         }
 
         String extension = MultiPartHelper.getFileExtension(file);
-        if (!extension.startsWith("htm")) {
+        if (!"htm".equals(extension)
+            && !"html".equals(extension)) {
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                .body("Only HTML files are allowed");
+                .body("Only HTM/HTML files are allowed");
         }
 
         try {

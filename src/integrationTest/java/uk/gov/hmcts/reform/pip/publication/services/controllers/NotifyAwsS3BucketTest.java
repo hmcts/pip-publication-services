@@ -82,7 +82,7 @@ class NotifyAwsS3BucketTest  extends IntegrationTestBase {
                             .file(jsonFile)
                             .contentType(MediaType.MULTIPART_FORM_DATA))
             .andExpect(status().isUnsupportedMediaType())
-            .andExpect(content().string("Only HTML files are allowed"));
+            .andExpect(content().string("Only HTM/HTML files are allowed"));
     }
 
     @Test

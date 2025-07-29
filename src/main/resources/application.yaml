@@ -47,7 +47,7 @@ cloud:
       secret-key: ${XHIBIT_S3_SECRET_KEY}
     region:
       static: eu-west-1
-    s3-bucket-name: staging.xhibit.justice.gov.uk
+    s3-bucket-name: ${XHIBIT_S3_BUCKET_NAME:staging.xhibit.justice.gov.uk}
 
 service-to-service:
   data-management: ${DATA_MANAGEMENT_URL:https://pip-data-management.staging.platform.hmcts.net}
