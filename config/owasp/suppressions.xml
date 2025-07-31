@@ -15,8 +15,7 @@
     <cve>CVE-2024-35255</cve>
   </suppress>
   <suppress>
-    <notes><![CDATA[file name: commons-lang3-3.17.0.jar]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons-lang3@3\.17\.0.*$</packageUrl>
+    <notes>commons-lang3 library brought in by a number of dependencies</notes>
     <cve>CVE-2025-48924</cve>
   </suppress>
 </suppressions>
