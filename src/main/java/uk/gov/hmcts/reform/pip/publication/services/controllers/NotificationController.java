@@ -222,7 +222,7 @@ public class NotificationController {
         );
     }
 
-    @ApiResponse(responseCode = OK_RESPONSE, description = "Successfully sent html to AWS S3 Bucket")
+    @ApiResponse(responseCode = OK_RESPONSE, description = "File uploaded successfully to AWS S3 Bucket")
     @ApiResponse(responseCode = BAD_REQUEST, description = "Invalid file format or bad request")
     @ApiResponse(responseCode = UNSUPPORTED_MEDIA_TYPE, description = "Unsupported media type")
     @ApiResponse(responseCode = INTERNAL_SERVER_ERROR,
