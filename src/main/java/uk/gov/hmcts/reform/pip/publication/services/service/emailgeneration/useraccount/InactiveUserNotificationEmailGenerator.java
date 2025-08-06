@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 /**
  * Generate the inactive user notification email with personalisation for GOV.UK Notify template.
+ * This is only used for CFT and Crime IDAM users. PI_AAD users are notified via Media User Verification Email process.
  */
 public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
     @Override
@@ -27,10 +28,6 @@ public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
     }
 
     private Templates selectInactiveUserNotificationEmailTemplate(String userProvenance) {
-        if (UserProvenances.PI_AAD.name().equals(userProvenance)) {
-            return Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
-        }
-
         return UserProvenances.CFT_IDAM.name().equals(userProvenance)
             ? Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT
             : Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
@@ -41,7 +38,6 @@ public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
         personalisation.put("full_name", emailData.getFullName());
         personalisation.put("last_signed_in_date", emailData.getLastSignedInDate());
-        personalisation.put("sign_in_page_link", personalisationLinks.getAadAdminSignInPageLink());
         personalisation.put("cft_sign_in_link", personalisationLinks.getCftSignInPageLink());
         personalisation.put("crime_sign_in_link", personalisationLinks.getCrimeSignInPageLink());
         return personalisation;

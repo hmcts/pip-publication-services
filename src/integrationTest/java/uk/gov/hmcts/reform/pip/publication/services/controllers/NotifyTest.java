@@ -20,7 +20,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
 import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
@@ -75,14 +74,6 @@ class NotifyTest extends IntegrationTestBase {
             "isExisting": "false",
             "fullName": "fullName"
         }
-        """;
-
-    private static final String VALID_ADMIN_CREATION_REQUEST_BODY = """
-        {
-            "email": "test@email.com",
-            "surname": "surname",
-            "forename": "forename"
-        };
         """;
 
     private static final String INVALID_JSON_BODY = """
@@ -206,7 +197,6 @@ class NotifyTest extends IntegrationTestBase {
         """;
 
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
-    private static final String ADMIN_CREATED_WELCOME_EMAIL_URL = "/notify/created/admin";
     private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
     private static final String MI_REPORTING_EMAIL_URL = "/notify/mi/report";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
@@ -296,7 +286,6 @@ class NotifyTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;
-    private WebClient webClient;
 
     @Autowired
     private EmailClient emailClient;
@@ -406,32 +395,6 @@ class NotifyTest extends IntegrationTestBase {
     void testUnauthorizedDuplicateMediaAccountEmail() throws Exception {
         mockMvc.perform(post(DUPLICATE_MEDIA_EMAIL_URL)
                             .content(VALID_DUPLICATE_MEDIA_REQUEST_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void testSendAdminAccountWelcomeEmail() throws Exception {
-        mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
-                            .content(VALID_ADMIN_CREATION_REQUEST_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(IsNull.notNullValue()));
-    }
-
-    @Test
-    void testSendAdminAccountWelcomeEmailBadRequest() throws Exception {
-        mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
-                            .content(INVALID_JSON_BODY)
-                            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(username = UNAUTHORIZED_USERNAME, authorities = {UNAUTHORIZED_ROLE})
-    void testUnauthorizedSendAdminAccountWelcomeEmail() throws Exception {
-        mockMvc.perform(post(ADMIN_CREATED_WELCOME_EMAIL_URL)
-                            .content(VALID_ADMIN_CREATION_REQUEST_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
     }

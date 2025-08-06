@@ -4,7 +4,6 @@ import io.restassured.response.Response;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.reform.pip.model.account.UserProvenances;
 import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
 import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.model.system.admin.CreateSystemAdminAction;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
@@ -40,7 +38,7 @@ import static uk.gov.hmcts.reform.pip.model.system.admin.ChangeType.ADD_USER;
 
 @ActiveProfiles(profiles = "functional")
 @SpringBootTest(classes = {OAuthClient.class, EmailNotificationClient.class})
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.TooManyMethods"})
 class NotificationEmailTests extends FunctionalTestBase {
     private static final String NOTIFY_URL = "/notify";
     private static final String MEDIA_WELCOME_EMAIL_URL = NOTIFY_URL + "/welcome-email";
@@ -49,7 +47,6 @@ class NotificationEmailTests extends FunctionalTestBase {
 
     private static final String DUPLICATE_MEDIA_USER_EMAIL_URL = NOTIFY_URL + "/duplicate/media";
     private static final String REJECTED_MEDIA_ACCOUNT_EMAIL_URL = NOTIFY_URL + "/media/reject";
-    private static final String CREATED_ADMIN_WELCOME_EMAIL = NOTIFY_URL + "/created/admin";
     private static final String SYSADMIN_UPDATE_EMAIL_URL = NOTIFY_URL + "/sysadmin/update";
 
     private static final String TEST_USER_EMAIL_PREFIX = String.format(
@@ -65,9 +62,6 @@ class NotificationEmailTests extends FunctionalTestBase {
     private static final String EMAIL_SUBJECT_ERROR = "Email subject does not match";
     private static final String EMAIL_NAME_ERROR = "Name in email body does not match";
     private static final String EMAIL_BODY_ERROR = "Email body does not match";
-
-    @Value("${PI_TEAM_EMAIL}")
-    private String teamEmail;
 
     @Autowired
     private EmailNotificationClient notificationClient;
@@ -345,36 +339,6 @@ class NotificationEmailTests extends FunctionalTestBase {
             .as(EMAIL_BODY_ERROR)
             .matches(body -> Stream.of("Reason 1", "Reason 2", "Reason 3", "Reason 4")
                 .allMatch(body::contains));
-    }
-
-    @Test
-    void shouldSendCreatedAdminEmail() throws NotificationClientException {
-        CreatedAdminWelcomeEmail requestBody = new CreatedAdminWelcomeEmail(TEST_EMAIL,
-                                                                            "TEST_FIRST_NAME", "TEST_SURNAME"
-        );
-        final Response response = doPostRequest(
-            CREATED_ADMIN_WELCOME_EMAIL,
-            Map.of(AUTHORIZATION, bearerToken),
-            requestBody
-        );
-
-        Notification notification = extractNotification(response, TEST_EMAIL);
-
-        assertThat(notification.getSubject())
-            .as(EMAIL_SUBJECT_ERROR)
-            .hasValue("Court and tribunal hearings service – Admin account creation");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_NAME_ERROR)
-            .contains("TEST_FIRST_NAME");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("Click on the link below to confirm your email address and finish creating your account.");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("p=B2C_1A_PASSWORD_RESET");
     }
 
     @Test
