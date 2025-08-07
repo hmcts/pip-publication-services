@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import uk.gov.hmcts.pip.publication.services.config.AwsS3ConfigurationFunctional;
@@ -461,11 +462,16 @@ class NotificationEmailTests extends FunctionalTestBase {
             .isEqualTo("File uploaded successfully to AWS S3 Bucket");
 
         String key = "testFile.html";
+        assertThat(isFileExistsInAwsS3Bucket(key)).isTrue();
 
-        assertThat(isFileExists(key)).isTrue();
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+            .bucket(bucketName)
+            .key(key)
+            .build();
+        s3Client.deleteObject(deleteObjectRequest);
     }
 
-    private boolean isFileExists(String key) {
+    private boolean isFileExistsInAwsS3Bucket(String key) {
         try {
             HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
                 .bucket(bucketName)
