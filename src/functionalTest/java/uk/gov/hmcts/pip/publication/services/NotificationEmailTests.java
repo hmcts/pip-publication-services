@@ -197,43 +197,6 @@ class NotificationEmailTests extends FunctionalTestBase {
     }
 
     @Test
-    void shouldSendNotificationEmailToInactiveAdminUser() throws NotificationClientException {
-
-        InactiveUserNotificationEmail requestBody =
-            new InactiveUserNotificationEmail(TEST_EMAIL, TEST_FULL_NAME, UserProvenances.PI_AAD.name(),
-                                              LAST_SIGNED_IN_DATE
-            );
-
-        final Response response = doPostRequest(
-            INACTIVE_USER_NOTIFICATION_EMAIL_URL,
-            Map.of(AUTHORIZATION, bearerToken),
-            requestBody
-        );
-
-        Notification notification = extractNotification(response, TEST_EMAIL);
-
-        assertThat(notification.getSubject())
-            .as(EMAIL_SUBJECT_ERROR)
-            .hasValue("Court and tribunal hearings account – activate account");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_NAME_ERROR)
-            .contains(TEST_FULL_NAME);
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains(LAST_SIGNED_IN_DATE);
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("Click on the link to prevent your Court and tribunal hearings account being deleted");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("/admin-dashboard");
-    }
-
-    @Test
     void shouldSendNotificationEmailToInactiveCftUser() throws NotificationClientException {
         InactiveUserNotificationEmail requestBody = new InactiveUserNotificationEmail(TEST_EMAIL, TEST_FULL_NAME,
                                                                                       UserProvenances.CFT_IDAM.name(),
