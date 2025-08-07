@@ -1,12 +1,21 @@
 package uk.gov.hmcts.pip.publication.services;
 
+import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.HttpHeaders;
 import io.restassured.response.Response;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
+import uk.gov.hmcts.pip.publication.services.config.AwsS3ConfigurationFunctional;
 import uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient;
 import uk.gov.hmcts.pip.publication.services.utils.FunctionalTestBase;
 import uk.gov.hmcts.pip.publication.services.utils.OAuthClient;
@@ -23,6 +32,7 @@ import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.NotificationList;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,8 +48,9 @@ import static uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClien
 import static uk.gov.hmcts.reform.pip.model.system.admin.ActionResult.ATTEMPTED;
 import static uk.gov.hmcts.reform.pip.model.system.admin.ChangeType.ADD_USER;
 
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles(profiles = "functional")
-@SpringBootTest(classes = {OAuthClient.class, EmailNotificationClient.class})
+@SpringBootTest(classes = {OAuthClient.class, EmailNotificationClient.class, AwsS3ConfigurationFunctional.class})
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
 class NotificationEmailTests extends FunctionalTestBase {
     private static final String NOTIFY_URL = "/notify";
@@ -51,6 +62,7 @@ class NotificationEmailTests extends FunctionalTestBase {
     private static final String REJECTED_MEDIA_ACCOUNT_EMAIL_URL = NOTIFY_URL + "/media/reject";
     private static final String CREATED_ADMIN_WELCOME_EMAIL = NOTIFY_URL + "/created/admin";
     private static final String SYSADMIN_UPDATE_EMAIL_URL = NOTIFY_URL + "/sysadmin/update";
+    private static final String UPLOAD_HTML_TO_AWSS3BUCKET_URL = NOTIFY_URL + "/upload-html-to-s3";
 
     private static final String TEST_USER_EMAIL_PREFIX = String.format(
         "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999));
@@ -71,6 +83,17 @@ class NotificationEmailTests extends FunctionalTestBase {
 
     @Autowired
     private EmailNotificationClient notificationClient;
+
+    @Value("${cloud.aws.s3-bucket-name}")
+    private String bucketName;
+
+    private final S3Client s3Client;
+
+    @Autowired
+    public NotificationEmailTests(S3Client s3Client) {
+        super();
+        this.s3Client = s3Client;
+    }
 
     private Notification extractNotification(Response response, String email) throws NotificationClientException {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -206,8 +229,9 @@ class NotificationEmailTests extends FunctionalTestBase {
     void shouldSendNotificationEmailToInactiveAdminUser() throws NotificationClientException {
 
         InactiveUserNotificationEmail requestBody =
-            new InactiveUserNotificationEmail(TEST_EMAIL, TEST_FULL_NAME, UserProvenances.PI_AAD.name(),
-                                              LAST_SIGNED_IN_DATE
+            new InactiveUserNotificationEmail(
+                TEST_EMAIL, TEST_FULL_NAME, UserProvenances.PI_AAD.name(),
+                LAST_SIGNED_IN_DATE
             );
 
         final Response response = doPostRequest(
@@ -241,9 +265,10 @@ class NotificationEmailTests extends FunctionalTestBase {
 
     @Test
     void shouldSendNotificationEmailToInactiveCftUser() throws NotificationClientException {
-        InactiveUserNotificationEmail requestBody = new InactiveUserNotificationEmail(TEST_EMAIL, TEST_FULL_NAME,
-                                                                                      UserProvenances.CFT_IDAM.name(),
-                                                                                      LAST_SIGNED_IN_DATE
+        InactiveUserNotificationEmail requestBody = new InactiveUserNotificationEmail(
+            TEST_EMAIL, TEST_FULL_NAME,
+            UserProvenances.CFT_IDAM.name(),
+            LAST_SIGNED_IN_DATE
         );
 
         final Response response = doPostRequest(
@@ -349,8 +374,9 @@ class NotificationEmailTests extends FunctionalTestBase {
 
     @Test
     void shouldSendCreatedAdminEmail() throws NotificationClientException {
-        CreatedAdminWelcomeEmail requestBody = new CreatedAdminWelcomeEmail(TEST_EMAIL,
-                                                                            "TEST_FIRST_NAME", "TEST_SURNAME"
+        CreatedAdminWelcomeEmail requestBody = new CreatedAdminWelcomeEmail(
+            TEST_EMAIL,
+            "TEST_FIRST_NAME", "TEST_SURNAME"
         );
         final Response response = doPostRequest(
             CREATED_ADMIN_WELCOME_EMAIL,
@@ -414,6 +440,49 @@ class NotificationEmailTests extends FunctionalTestBase {
         String responseBody = response.getBody().asString();
         assertThat(responseBody).isNotNull();
         assertThat(responseBody).contains("Not a valid email address");
+    }
+
+    @Test
+    void shouldUploadHtmlToAwsS3Bucket() throws NotificationClientException {
+        Map<String, String> headerMapUploadHtmlFile = new ConcurrentHashMap<>();
+        headerMapUploadHtmlFile.put(HttpHeaders.AUTHORIZATION, bearerToken);
+        headerMapUploadHtmlFile.put("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE);
+
+        String filePath = Thread.currentThread().getContextClassLoader()
+            .getResource("data/testFile.html").getPath();
+        File htmlFile = new File(filePath);
+
+        final Response responseUploadHtmlFile = doPostRequestMultiPart(
+            UPLOAD_HTML_TO_AWSS3BUCKET_URL,
+            headerMapUploadHtmlFile, htmlFile
+        );
+
+        assertThat(responseUploadHtmlFile.getStatusCode()).isEqualTo(OK.value());
+        assertThat(responseUploadHtmlFile.getBody().asString())
+            .isEqualTo("File uploaded successfully to AWS S3 Bucket");
+
+        String key = "testFile.html";
+        assertThat(isFileExistsInAwsS3Bucket(key)).isTrue();
+
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+            .bucket(bucketName)
+            .key(key)
+            .build();
+        s3Client.deleteObject(deleteObjectRequest);
+    }
+
+    private boolean isFileExistsInAwsS3Bucket(String key) {
+        try {
+            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+
+            s3Client.headObject(headObjectRequest);
+            return true;
+        } catch (S3Exception e) {
+            return false;
+        }
     }
 
     private CreateSystemAdminAction createSystemAdminUpdateAction() {

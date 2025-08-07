@@ -80,10 +80,8 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     private static final String EMAIL_SUBJECT_ERROR = "Email subject does not match";
     private static final String EMAIL_NAME_ERROR = "Name in email body does not match";
     private static final String EMAIL_BODY_ERROR = "Email body does not match";
-    private static final String BEARER = "Bearer ";
     private static final LocalDateTime CONTENT_DATE = LocalDateTime.now().toLocalDate().atStartOfDay()
         .truncatedTo(ChronoUnit.SECONDS);
-    private Map<String, String> authorisationHeaders;
     private UUID jsonArtefactId;
     private UUID flatFileArtefactId;
     private UUID jsonArtefactIdWelsh;
@@ -97,7 +95,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
     private Artefact uploadArtefact(String language, String listType, String jsonFile) throws IOException {
         Map<String, String> headerMapUploadJsonFile = new ConcurrentHashMap<>();
-        headerMapUploadJsonFile.put(HttpHeaders.AUTHORIZATION, BEARER + dataManagementAccessToken);
+        headerMapUploadJsonFile.put(HttpHeaders.AUTHORIZATION, dataManagementAccessToken);
         headerMapUploadJsonFile.put("x-type", ARTEFACT_TYPE.toString());
         headerMapUploadJsonFile.put("x-provenance", PROVENANCE);
         headerMapUploadJsonFile.put("x-source-artefact-id", SOURCE_ARTEFACT_ID);
@@ -122,7 +120,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
     private Artefact uploadFlatFile() {
         Map<String, String> headerMapUploadFlatFile = new ConcurrentHashMap<>();
-        headerMapUploadFlatFile.put(HttpHeaders.AUTHORIZATION, BEARER + dataManagementAccessToken);
+        headerMapUploadFlatFile.put(HttpHeaders.AUTHORIZATION, dataManagementAccessToken);
         headerMapUploadFlatFile.put("x-type", ARTEFACT_TYPE.toString());
         headerMapUploadFlatFile.put("x-provenance", PROVENANCE);
         headerMapUploadFlatFile.put("x-source-artefact-id", SOURCE_ARTEFACT_ID);
@@ -181,11 +179,10 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
     @BeforeAll
     public void setup() throws IOException {
-        authorisationHeaders = Map.of(AUTHORIZATION, BEARER + bearerToken);
 
         doDataManagementPostRequest(
             TESTING_SUPPORT_LOCATION_URL + LOCATION_ID,
-            Map.of(AUTHORIZATION, BEARER + dataManagementAccessToken), LOCATION_NAME
+            Map.of(AUTHORIZATION, dataManagementAccessToken), LOCATION_NAME
         );
 
         jsonArtefactId = uploadArtefact(
@@ -205,11 +202,11 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     public void teardown() {
         doDataManagementDeleteRequest(
             TESTING_SUPPORT_PUBLICATION_URL + LOCATION_NAME,
-            Map.of(AUTHORIZATION, BEARER + dataManagementAccessToken)
+            Map.of(AUTHORIZATION, dataManagementAccessToken)
         );
         doDataManagementDeleteRequest(
             TESTING_SUPPORT_LOCATION_URL + LOCATION_NAME,
-            Map.of(AUTHORIZATION, BEARER + dataManagementAccessToken)
+            Map.of(AUTHORIZATION, dataManagementAccessToken)
         );
     }
 

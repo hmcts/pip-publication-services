@@ -44,7 +44,6 @@ class BatchNotificationEmailTests extends FunctionalTestBase {
 
     private static final String LOCATION_ID = randomLocationId();
     private static final String LOCATION_NAME = "TestLocation" + LOCATION_ID;
-    private static final String BEARER = "Bearer ";
 
     @Autowired
     private EmailNotificationClient notificationClient;
@@ -54,7 +53,7 @@ class BatchNotificationEmailTests extends FunctionalTestBase {
     public void setup() {
         doDataManagementPostRequest(
             TESTING_SUPPORT_LOCATION_URL + LOCATION_ID,
-            Map.of(AUTHORIZATION, BEARER + dataManagementAccessToken), LOCATION_NAME
+            Map.of(AUTHORIZATION, dataManagementAccessToken), LOCATION_NAME
         );
     }
 
@@ -62,7 +61,7 @@ class BatchNotificationEmailTests extends FunctionalTestBase {
     public void teardown() {
         doDataManagementDeleteRequest(
             TESTING_SUPPORT_LOCATION_URL + LOCATION_NAME,
-            Map.of(AUTHORIZATION, BEARER + dataManagementAccessToken)
+            Map.of(AUTHORIZATION, dataManagementAccessToken)
         );
     }
 
@@ -72,9 +71,11 @@ class BatchNotificationEmailTests extends FunctionalTestBase {
             LOCATION_ID, List.of(TEST_EMAIL1, TEST_EMAIL2)
         );
 
-        final Response response = doPostRequest(LOCATION_SUBSCRIPTION_DELETION_EMAIL_URL,
-                                                Map.of(AUTHORIZATION, bearerToken),
-                                                requestBody);
+        final Response response = doPostRequest(
+            LOCATION_SUBSCRIPTION_DELETION_EMAIL_URL,
+            Map.of(AUTHORIZATION, bearerToken),
+            requestBody
+        );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
@@ -113,8 +114,10 @@ class BatchNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(firstNotification.getBody())
             .as("Email body does not match")
-            .contains(String.format("As part of routine maintenance of the court and tribunal hearings service "
-                                        + "we have had to delete %s from our service, in doing so we have also had "
-                                        + "to delete your subscriptions for this location.", LOCATION_NAME));
+            .contains(String.format(
+                "As part of routine maintenance of the court and tribunal hearings service "
+                    + "we have had to delete %s from our service, in doing so we have also had "
+                    + "to delete your subscriptions for this location.", LOCATION_NAME
+            ));
     }
 }
