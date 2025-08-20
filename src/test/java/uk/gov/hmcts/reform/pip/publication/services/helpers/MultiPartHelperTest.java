@@ -2,27 +2,33 @@ package uk.gov.hmcts.reform.pip.publication.services.helpers;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MultiPartHelperTest {
+    private static final String FILE = "file";
+
     @Test
     void testCreateSingleMultiPartByteArrayBody() {
         byte[] data = {10, 20, 30};
         List<Triple<String, byte[], String>> input = Collections.singletonList(
-            Triple.of("file", data, "filename.pdf")
+            Triple.of(FILE, data, "filename.pdf")
         );
         MultiValueMap<String, HttpEntity<?>> output = MultiPartHelper.createMultiPartByteArrayBody(input);
 
         assertThat(output).hasSize(1);
-        HttpEntity<?> result = output.get("file").get(0);
+        HttpEntity<?> result = output.get(FILE).get(0);
         assertThat(result.getHeaders().get("Content-Disposition"))
             .as("Incorrect content disposition")
             .hasSize(1)
@@ -61,4 +67,55 @@ class MultiPartHelperTest {
             .as("Incorrect byte array data")
             .isEqualTo(data2);
     }
+
+
+    @Test
+    void testGetFileExtension() {
+        MultipartFile file = new MockMultipartFile(
+            FILE,
+            "test.html",
+            "text/html",
+            new byte[0]);
+
+        String ext = MultiPartHelper.getFileExtension(file);
+        assertEquals("html", ext,
+                     "Expected extension to be html");
+    }
+
+    @Test
+    void testGetFileExtensionWithUppercaseExtension() {
+        MultipartFile file = new MockMultipartFile(
+            FILE,
+            "test.HTML",
+            "text/html",
+            new byte[0]);
+
+        String ext = MultiPartHelper.getFileExtension(file);
+        assertEquals("html", ext,
+                     "Expected extension to be in lowercase");
+    }
+
+    @Test
+    void testGetFileExtensionWithNoExtension() {
+        MultipartFile fileWithNoExtension = new MockMultipartFile(
+            FILE,
+            "test",
+            "text/plain",
+            new byte[0]);
+
+        String ext = MultiPartHelper.getFileExtension(fileWithNoExtension);
+        assertEquals("", ext,
+                     "Expected extension to be empty when there is no extension in filename");
+    }
+
+    @Test
+    void testGetFileExtensionWithNoFilename() {
+        MultipartFile mockEmptyFile = Mockito.mock(MultipartFile.class);
+        Mockito.when(mockEmptyFile.getOriginalFilename()).thenReturn(null);
+
+        String ext = MultiPartHelper.getFileExtension(mockEmptyFile);
+        assertEquals("", ext,
+                     "Expected extension to be empty when filename is null");
+    }
+
 }
