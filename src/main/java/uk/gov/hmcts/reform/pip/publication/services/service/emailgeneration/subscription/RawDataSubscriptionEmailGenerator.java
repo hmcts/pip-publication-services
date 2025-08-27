@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.EmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.RawDataSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
+import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.EmailGenerator;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -44,27 +45,27 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         RawDataSubscriptionEmailData emailData = (RawDataSubscriptionEmailData) email;
-        Map<String, Object> personalizations = buildEmailPersonalisation(
+        Map<String, Object> personalisations = buildEmailPersonalisation(
             emailData, emailData.getArtefact(), personalisationLinks
         );
-        String templateId = determineTemplateId(personalizations);
-        return generateEmail(emailData, templateId, personalizations);
+        Templates template = determineTemplate(personalisations);
+        return generateEmail(emailData, template.getTemplate(), personalisations);
     }
 
-    private String determineTemplateId(Map<String, Object> personalizations) {
-        boolean hasPdf = personalizations.containsKey("pdf_link_to_file")
-            && !personalizations.get("pdf_link_to_file").toString().isEmpty();
-        boolean hasExcel = personalizations.containsKey("excel_link_to_file")
-            && !personalizations.get("excel_link_to_file").toString().isEmpty();
+    private Templates determineTemplate(Map<String, Object> personalisations) {
+        boolean hasPdf = personalisations.containsKey("pdf_link_to_file")
+            && !personalisations.get("pdf_link_to_file").toString().isEmpty();
+        boolean hasExcel = personalisations.containsKey("excel_link_to_file")
+            && !personalisations.get("excel_link_to_file").toString().isEmpty();
 
         if (hasPdf && hasExcel) {
-            return MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL.getTemplate();
+            return MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
         } else if (hasPdf) {
-            return MEDIA_SUBSCRIPTION_PDF_EMAIL.getTemplate();
+            return MEDIA_SUBSCRIPTION_PDF_EMAIL;
         } else if (hasExcel) {
-            return MEDIA_SUBSCRIPTION_EXCEL_EMAIL.getTemplate();
+            return MEDIA_SUBSCRIPTION_EXCEL_EMAIL;
         } else {
-            return MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL.getTemplate();
+            return MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL;
         }
     }
 
