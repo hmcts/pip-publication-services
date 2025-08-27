@@ -280,11 +280,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in English as a PDF.");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in Welsh as a PDF.");
+            .contains("Download the case list as a PDF.");
     }
 
     @Test
@@ -351,11 +347,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in English as a PDF.");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in Welsh as a PDF.");
+            .contains("Download the case list as a PDF.");
     }
 
     @Test
