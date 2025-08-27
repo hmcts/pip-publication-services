@@ -52,9 +52,9 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
     }
 
     private String determineTemplateId(Map<String, Object> personalizations) {
-        boolean hasPdf = personalizations.get("pdf_link_to_file") != null
+        boolean hasPdf = personalizations.containsKey("pdf_link_to_file")
             && !personalizations.get("pdf_link_to_file").toString().isEmpty();
-        boolean hasExcel = personalizations.get("excel_link_to_file") != null
+        boolean hasExcel = personalizations.containsKey("excel_link_to_file")
             && !personalizations.get("excel_link_to_file").toString().isEmpty();
 
         if (hasPdf && hasExcel) {

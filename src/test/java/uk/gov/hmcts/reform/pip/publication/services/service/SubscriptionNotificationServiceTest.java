@@ -205,6 +205,7 @@ class SubscriptionNotificationServiceTest {
         artefact.setIsFlatFile(false);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         artefact.setPayloadSize(1024F);
+        artefact.setLanguage(Language.WELSH);
 
         ArgumentCaptor<RawDataSubscriptionEmailData> argument =
             ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);

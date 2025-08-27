@@ -94,7 +94,7 @@ public class SubscriptionNotificationService {
         byte[] pdf;
 
         if (artefact.getListType().hasAdditionalPdf()
-            && artefact.getLanguage() != Language.ENGLISH) {
+            && artefact.getLanguage().equals(Language.WELSH)) {
             pdf = getFileBytes(artefact, FileType.PDF, true);
         } else {
             pdf = getFileBytes(artefact, FileType.PDF, false);
