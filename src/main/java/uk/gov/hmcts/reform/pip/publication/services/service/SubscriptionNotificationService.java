@@ -55,10 +55,10 @@ public class SubscriptionNotificationService {
     }
 
     private String rawDataSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact, String artefactSummary,
-                                                   byte[] pdf, byte[] additionalPdf, byte[] excel, String locationName,
+                                                   byte[] pdf, byte[] excel, String locationName,
                                                    String referenceId) {
         RawDataSubscriptionEmailData emailData = new RawDataSubscriptionEmailData(
-            body, artefact, artefactSummary, pdf, additionalPdf, excel, locationName, fileRetentionWeeks, referenceId
+            body, artefact, artefactSummary, pdf, excel, locationName, fileRetentionWeeks, referenceId
         );
         EmailToSend email = emailService.handleEmailGeneration(emailData, Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL);
 
@@ -91,11 +91,15 @@ public class SubscriptionNotificationService {
     public void rawDataBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
                                                     String locationName, String referenceId) {
         String artefactSummary = getArtefactSummary(artefact);
-        byte[] pdf = getFileBytes(artefact, FileType.PDF, false);
-        boolean hasAdditionalPdf = artefact.getListType().hasAdditionalPdf()
-            && artefact.getLanguage() != Language.ENGLISH;
-        byte[] additionalPdf = hasAdditionalPdf ? getFileBytes(artefact, FileType.PDF, true)
-            : new byte[0];
+        byte[] pdf;
+
+        if (artefact.getListType().hasAdditionalPdf()
+            && artefact.getLanguage() != Language.ENGLISH) {
+            pdf = getFileBytes(artefact, FileType.PDF, true);
+        } else {
+            pdf = getFileBytes(artefact, FileType.PDF, false);
+        }
+
         byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
             : new byte[0];
 
@@ -104,7 +108,7 @@ public class SubscriptionNotificationService {
             try {
                 log.info(writeLog(String.format("Sending subscription email for user %s",
                                                 EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
-                rawDataSubscriptionEmailRequest(subscriptionEmail, artefact, artefactSummary, pdf, additionalPdf,
+                rawDataSubscriptionEmailRequest(subscriptionEmail, artefact, artefactSummary,  pdf,
                                                 excel, locationName, referenceId);
             } catch (TooManyEmailsException ex) {
                 log.error(writeLog(ex.getMessage()));

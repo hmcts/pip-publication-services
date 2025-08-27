@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.sub
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
-import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.CaseNameHelper;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
@@ -41,7 +40,6 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
     private static final String YES = "Yes";
     private static final String NO = "No";
     private static final int MAX_FILE_SIZE = 2_000_000;
-    private static final String PDF_LINK_TO_FILE = "pdf_link_to_file";
 
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
@@ -54,8 +52,8 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
     }
 
     private String determineTemplateId(Map<String, Object> personalizations) {
-        boolean hasPdf = personalizations.get(PDF_LINK_TO_FILE) != null
-            && !personalizations.get(PDF_LINK_TO_FILE).toString().isEmpty();
+        boolean hasPdf = personalizations.get("pdf_link_to_file") != null
+            && !personalizations.get("pdf_link_to_file").toString().isEmpty();
         boolean hasExcel = personalizations.get("excel_link_to_file") != null
             && !personalizations.get("excel_link_to_file").toString().isEmpty();
 
@@ -84,7 +82,7 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
             personalisation.put("list_type", artefact.getListType().getFriendlyName());
             personalisation.put("start_page_link", personalisationLinks.getStartPageLink());
             personalisation.put("subscription_page_link", personalisationLinks.getSubscriptionPageLink());
-            personalisation.putAll(populateFilesPersonalisation(emailData, artefact));
+            personalisation.putAll(populateFilesPersonalisation(emailData));
             personalisation.putAll(populateSummaryPersonalisation(emailData.getArtefactSummary()));
 
             personalisation.put(
@@ -129,9 +127,9 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         personalisation.put("locations", locationName);
     }
 
-    private Map<String, Object> populateFilesPersonalisation(RawDataSubscriptionEmailData emailData, Artefact artefact)
+    private Map<String, Object> populateFilesPersonalisation(RawDataSubscriptionEmailData emailData)
         throws NotificationClientException {
-        Map<String, Object> personalisation = populatePdfPersonalisation(emailData, artefact);
+        Map<String, Object> personalisation = populatePdfPersonalisation(emailData);
 
         byte[] artefactExcelBytes = emailData.getExcel();
         boolean excelWithinSize = artefactExcelBytes.length < MAX_FILE_SIZE && artefactExcelBytes.length > 0;
@@ -149,47 +147,19 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         return personalisation;
     }
 
-    private Map<String, Object> populatePdfPersonalisation(RawDataSubscriptionEmailData emailData, Artefact artefact)
+    private Map<String, Object> populatePdfPersonalisation(RawDataSubscriptionEmailData emailData)
         throws NotificationClientException {
         byte[] artefactPdfBytes = emailData.getPdf();
         boolean pdfWithinSize = artefactPdfBytes.length < MAX_FILE_SIZE && artefactPdfBytes.length > 0;
 
-        boolean nonEnglishPdfVersion = artefact.getListType().hasAdditionalPdf()
-            && artefact.getLanguage() != Language.ENGLISH;
-
-        Map<String, Object> personalisation = populateAdditionalPdfPersonalisation(emailData, nonEnglishPdfVersion);
-
-        if (!nonEnglishPdfVersion) {
-            personalisation.put(
-                "pdf_link_text", pdfWithinSize ? "Download the case list as a PDF." : ""
-            );
-
-            personalisation.put(
-                PDF_LINK_TO_FILE, pdfWithinSize
-                    ? prepareUpload(artefactPdfBytes, false, emailData.getFileRetentionWeeks()) : ""
-            );
-        }
-
-        return personalisation;
-    }
-
-    private Map<String, Object> populateAdditionalPdfPersonalisation(RawDataSubscriptionEmailData emailData,
-                                                                     boolean nonEnglishPdfVersion)
-        throws NotificationClientException {
-        byte[] artefactWelshPdfBytes = emailData.getAdditionalPdf();
-        boolean welshPdfWithinSize = artefactWelshPdfBytes.length < MAX_FILE_SIZE;
-
         Map<String, Object> personalisation = new ConcurrentHashMap<>();
 
         personalisation.put(
-            "pdf_link_text",
-            nonEnglishPdfVersion && welshPdfWithinSize ? "Download the case list as a PDF." : ""
+            "pdf_link_text", pdfWithinSize ? "Download the case list as a PDF." : ""
         );
-
         personalisation.put(
-            PDF_LINK_TO_FILE,
-            nonEnglishPdfVersion && welshPdfWithinSize
-                ? prepareUpload(artefactWelshPdfBytes, false, emailData.getFileRetentionWeeks()) : ""
+            "pdf_link_to_file", pdfWithinSize
+                ? prepareUpload(artefactPdfBytes, false, emailData.getFileRetentionWeeks()) : ""
         );
 
         return personalisation;

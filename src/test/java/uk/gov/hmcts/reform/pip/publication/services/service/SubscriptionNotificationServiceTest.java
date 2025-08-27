@@ -209,7 +209,6 @@ class SubscriptionNotificationServiceTest {
         ArgumentCaptor<RawDataSubscriptionEmailData> argument =
             ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
 
-        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
         when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
 
         when(emailService.handleEmailGeneration(argument.capture(),
@@ -235,7 +234,6 @@ class SubscriptionNotificationServiceTest {
             ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
 
         when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
-        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
         when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
 
         when(emailService.handleEmailGeneration(argument.capture(),
@@ -247,33 +245,8 @@ class SubscriptionNotificationServiceTest {
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
-        assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getAdditionalPdf(),
-                          "Incorrect additional PDF content");
-    }
-
-    @Test
-    void testBulkSubscriptionRequestNoAdditionalPdfWhenEnglish() {
-        artefact.setIsFlatFile(false);
-        artefact.setListType(ListType.SJP_PRESS_REGISTER);
-        artefact.setLanguage(Language.ENGLISH);
-
-        ArgumentCaptor<RawDataSubscriptionEmailData> argument =
-            ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
-
-        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
-        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
-
-        when(emailService.handleEmailGeneration(argument.capture(),
-                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
-            .thenReturn(validEmailBodyForEmailClientRawData);
-
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
-
-        RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
-
-        assertArrayEquals(new byte[0], rawDataSubscriptionEmailData.getAdditionalPdf(),
-                          "Incorrect additional PDF content");
+        assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getPdf(),
+                          "Incorrect PDF content");
     }
 
     @Test
