@@ -60,7 +60,7 @@ public class SubscriptionNotificationService {
         RawDataSubscriptionEmailData emailData = new RawDataSubscriptionEmailData(
             body, artefact, artefactSummary, pdf, additionalPdf, excel, locationName, fileRetentionWeeks, referenceId
         );
-        EmailToSend email = emailService.handleEmailGeneration(emailData, Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL);
+        EmailToSend email = emailService.handleEmailGeneration(emailData, Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL);
 
         return emailService.sendEmail(email)
             .getReference()

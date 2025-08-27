@@ -40,7 +40,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -83,7 +83,7 @@ class SubscriptionNotificationServiceTest {
     @BeforeEach
     void setup() {
         validEmailBodyForEmailClientRawData = new EmailToSend(
-            EMAIL, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(), PERSONALISATION_MAP, SUCCESS_REF_ID
+            EMAIL, MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL.getTemplate(), PERSONALISATION_MAP, SUCCESS_REF_ID
         );
 
         validEmailBodyForEmailClientFlatFile = new EmailToSend(
@@ -156,7 +156,7 @@ class SubscriptionNotificationServiceTest {
         when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.EXCEL, false)).thenReturn(FILE_CONTENT);
 
         when(emailService.handleEmailGeneration(argument.capture(),
-                                                eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
 
         notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
@@ -213,7 +213,7 @@ class SubscriptionNotificationServiceTest {
         when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
 
         when(emailService.handleEmailGeneration(argument.capture(),
-                                                eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
 
         notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
@@ -239,7 +239,7 @@ class SubscriptionNotificationServiceTest {
         when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
 
         when(emailService.handleEmailGeneration(argument.capture(),
-                                                eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
 
         notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
@@ -264,7 +264,7 @@ class SubscriptionNotificationServiceTest {
         when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
 
         when(emailService.handleEmailGeneration(argument.capture(),
-                                                eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
 
         notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
@@ -289,7 +289,7 @@ class SubscriptionNotificationServiceTest {
         when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
 
         when(emailService.handleEmailGeneration(argument.capture(),
-                                                eq(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL)))
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawData);
 
         notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
