@@ -81,6 +81,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     private static final String EMAIL_NAME_ERROR = "Name in email body does not match";
     private static final String EMAIL_BODY_ERROR = "Email body does not match";
     private static final String BEARER = "Bearer ";
+    private static final String DOWNLOAD_PDF_TEXT = "Download the case list as a PDF.";
     private static final LocalDateTime CONTENT_DATE = LocalDateTime.now().toLocalDate().atStartOfDay()
         .truncatedTo(ChronoUnit.SECONDS);
     private Map<String, String> authorisationHeaders;
@@ -243,7 +244,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
@@ -280,7 +281,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
     }
 
     @Test
@@ -347,7 +348,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
     }
 
     @Test
@@ -380,7 +381,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
