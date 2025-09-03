@@ -25,7 +25,9 @@ def setupTestSecrets() {
       secret('app-pip-data-management-id', 'CLIENT_ID_FT'),
       secret('app-pip-data-management-pwd', 'CLIENT_SECRET_FT'),
       secret('app-pip-apim-admin-id', 'CLIENT_ID_B2C_FT'),
-      secret('app-pip-apim-admin-pwd', 'CLIENT_SECRET_B2C_FT')
+      secret('app-pip-apim-admin-pwd', 'CLIENT_SECRET_B2C_FT'),
+      secret('xhibit-s3-access-key', 'XHIBIT_S3_ACCESS_KEY'),
+      secret('xhibit-s3-access-key-secret', 'XHIBIT_S3_SECRET_KEY')
     ]) {
     env.NOTIFY_API_KEY = "${NOTIFY_API_KEY}"
     env.APP_URI = "${APP_URI}"
@@ -38,6 +40,8 @@ def setupTestSecrets() {
     env.CLIENT_SECRET_FT = "${CLIENT_SECRET_FT}"
     env.CLIENT_ID_B2C_FT = "${CLIENT_ID_B2C_FT}"
     env.CLIENT_SECRET_B2C_FT = "${CLIENT_SECRET_B2C_FT}"
+    env.XHIBIT_S3_ACCESS_KEY = "${XHIBIT_S3_ACCESS_KEY}"
+    env.XHIBIT_S3_SECRET_KEY = "${XHIBIT_S3_SECRET_KEY}"
   }
 }
 
