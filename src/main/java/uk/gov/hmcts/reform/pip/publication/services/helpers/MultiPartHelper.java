@@ -6,8 +6,10 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Locale;
 
 public final class MultiPartHelper {
     private MultiPartHelper() {
@@ -31,5 +33,17 @@ public final class MultiPartHelper {
             }
         });
         return builder.build();
+    }
+
+    public static String getFileExtension(MultipartFile file) {
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null) {
+            return "";
+        }
+        int lastDotIndex = originalFilename.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return ""; // No extension found
+        }
+        return originalFilename.substring(lastDotIndex + 1).toLowerCase(Locale.ROOT);
     }
 }

@@ -40,6 +40,15 @@ spring:
   application:
     name: PIP Publication Services
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${XHIBIT_S3_ACCESS_KEY}
+      secret-key: ${XHIBIT_S3_SECRET_KEY}
+    region:
+      static: eu-west-1
+    s3-bucket-name: ${XHIBIT_S3_BUCKET_NAME:staging.xhibit.justice.gov.uk}
+
 service-to-service:
   data-management: ${DATA_MANAGEMENT_URL:https://pip-data-management.staging.platform.hmcts.net}
   account-management: ${ACCOUNT_MANAGEMENT_URL:https://pip-account-management.staging.platform.hmcts.net}

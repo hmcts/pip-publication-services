@@ -171,7 +171,7 @@ dependencies {
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
-  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.3.19', {
+  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.3.20', {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 
@@ -179,6 +179,7 @@ dependencies {
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.4.1'
   implementation group: 'org.redisson', name: 'redisson', version: '3.50.0'
   implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.13.0'
+  implementation group: 'software.amazon.awssdk', name: 's3', version: '2.31.65'
 
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 

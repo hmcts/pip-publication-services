@@ -93,7 +93,7 @@ public class OAuthClient {
         if (token == null) {
             throw new AuthException("Unable to generate access token for the API");
         }
-        return token;
+        return BEARER + token;
     }
 }
 
