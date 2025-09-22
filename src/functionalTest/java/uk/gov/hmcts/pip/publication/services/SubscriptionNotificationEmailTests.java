@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -55,9 +54,6 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
     @Autowired
     private EmailNotificationClient notificationClient;
-
-    @Value("${test-system-admin-id}")
-    private String systemAdminUserId;
 
     private static final String BULK_SUBSCRIPTION_URL = "/notify/subscription";
     private static final String TESTING_SUPPORT_LOCATION_URL = "/testing-support/location/";
@@ -112,7 +108,6 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         headerMapUploadJsonFile.put("x-content-date", CONTENT_DATE.toString());
         headerMapUploadJsonFile.put("x-sensitivity", "PUBLIC");
         headerMapUploadJsonFile.put("x-language", language);
-        headerMapUploadJsonFile.put("x-requester-id", systemAdminUserId);
         headerMapUploadJsonFile.put("Content-Type", "application/json");
 
         final Response responseUploadJson = doDataManagementPostRequest(
