@@ -138,6 +138,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         headerMapUploadFlatFile.put("x-content-date", CONTENT_DATE.toString());
         headerMapUploadFlatFile.put("x-sensitivity", "PUBLIC");
         headerMapUploadFlatFile.put("x-language", LANGUAGE.toString());
+        headerMapUploadFlatFile.put("x-requester-id", systemAdminUserId);
         headerMapUploadFlatFile.put("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE);
 
         String filePath = Thread.currentThread().getContextClassLoader()
