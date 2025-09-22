@@ -32,7 +32,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.ADMIN_ACCOUNT_CREATION_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.DELETE_LOCATION_SUBSCRIPTION;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -170,10 +170,10 @@ class EmailServiceTest {
 
     @Test
     void testSendEmailWithSuccess() throws NotificationClientException {
-        EmailToSend emailToSend = new EmailToSend(EMAIL, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(),
+        EmailToSend emailToSend = new EmailToSend(EMAIL, MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL.getTemplate(),
                                                   PERSONALISATION, UUID.randomUUID().toString());
 
-        when(emailClient.sendEmail(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(), EMAIL, PERSONALISATION,
+        when(emailClient.sendEmail(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL.getTemplate(), EMAIL, PERSONALISATION,
                                    emailToSend.getReferenceId()))
             .thenReturn(sendEmailResponse);
 
@@ -185,10 +185,10 @@ class EmailServiceTest {
     @Test
     void testSendEmailWithFailure() throws NotificationClientException {
         String exceptionMessage = "This is an exception";
-        EmailToSend emailToSend = new EmailToSend(EMAIL, MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(),
+        EmailToSend emailToSend = new EmailToSend(EMAIL, MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL.getTemplate(),
                                                   PERSONALISATION, UUID.randomUUID().toString());
 
-        when(emailClient.sendEmail(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate(), EMAIL, PERSONALISATION,
+        when(emailClient.sendEmail(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL.getTemplate(), EMAIL, PERSONALISATION,
                                    emailToSend.getReferenceId()))
             .thenThrow(new NotificationClientException(exceptionMessage));
 
