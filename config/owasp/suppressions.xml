@@ -22,4 +22,10 @@
     <notes>Temporary suppression while spring boot / tomcat is reviewed</notes>
     <cve>CVE-2025-48989</cve>
   </suppress>
+  <suppress>
+    <notes>Vulnerabilities exist across spring-boot-starter-webflux 3.4.8 and spring-cloud-azure-starter-active-directory 5.22.0 </notes>
+    <cve>CVE-2025-55163</cve>
+    <cve>CVE-2025-58057</cve>
+    <cve>CVE-2025-58056</cve>
+  </suppress>
 </suppressions>
