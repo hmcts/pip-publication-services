@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
   <suppress>
-    <notes><![CDATA[file name: spring-cloud-azure-starter-active-directory-5.22.0.jar]]></notes>
+    <notes><![CDATA[file name: spring-cloud-azure-starter-active-directory-5.23.0.jar]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.azure\.spring/spring\-cloud\-azure\-starter\-active\-directory@.*$</packageUrl>
     <cve>CVE-2021-42306</cve>
   </suppress>
   <suppress>
-    <notes><![CDATA[file name: azure-identity-1.15.4.jar]]></notes>
+    <notes><![CDATA[file name: azure-identity-1.16.3.jar]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.azure/azure\-identity@.*$</packageUrl>
     <cve>CVE-2023-36415</cve>
   </suppress>
@@ -17,9 +17,5 @@
   <suppress>
     <notes>commons-lang3 library brought in by a number of dependencies</notes>
     <cve>CVE-2025-48924</cve>
-  </suppress>
-  <suppress>
-    <notes>Temporary suppression while spring boot / tomcat is reviewed</notes>
-    <cve>CVE-2025-48989</cve>
   </suppress>
 </suppressions>

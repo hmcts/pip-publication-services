@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -55,6 +56,9 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     @Autowired
     private EmailNotificationClient notificationClient;
 
+    @Value("${test-system-admin-id}")
+    private String systemAdminUserId;
+
     private static final String BULK_SUBSCRIPTION_URL = "/notify/subscription";
     private static final String TESTING_SUPPORT_LOCATION_URL = "/testing-support/location/";
     private static final String TESTING_SUPPORT_PUBLICATION_URL = "/testing-support/publication";
@@ -80,6 +84,8 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     private static final String EMAIL_SUBJECT_ERROR = "Email subject does not match";
     private static final String EMAIL_NAME_ERROR = "Name in email body does not match";
     private static final String EMAIL_BODY_ERROR = "Email body does not match";
+    private static final String BEARER = "Bearer ";
+    private static final String DOWNLOAD_PDF_TEXT = "Download the case list as a PDF.";
     private static final LocalDateTime CONTENT_DATE = LocalDateTime.now().toLocalDate().atStartOfDay()
         .truncatedTo(ChronoUnit.SECONDS);
     private UUID jsonArtefactId;
@@ -106,6 +112,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         headerMapUploadJsonFile.put("x-content-date", CONTENT_DATE.toString());
         headerMapUploadJsonFile.put("x-sensitivity", "PUBLIC");
         headerMapUploadJsonFile.put("x-language", language);
+        headerMapUploadJsonFile.put("x-requester-id", systemAdminUserId);
         headerMapUploadJsonFile.put("Content-Type", "application/json");
 
         final Response responseUploadJson = doDataManagementPostRequest(
@@ -131,6 +138,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         headerMapUploadFlatFile.put("x-content-date", CONTENT_DATE.toString());
         headerMapUploadFlatFile.put("x-sensitivity", "PUBLIC");
         headerMapUploadFlatFile.put("x-language", LANGUAGE.toString());
+        headerMapUploadFlatFile.put("x-requester-id", systemAdminUserId);
         headerMapUploadFlatFile.put("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE);
 
         String filePath = Thread.currentThread().getContextClassLoader()
@@ -240,7 +248,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
@@ -277,11 +285,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in English as a PDF.");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in Welsh as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
     }
 
     @Test
@@ -348,11 +352,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in English as a PDF.");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in Welsh as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
     }
 
     @Test
@@ -385,7 +385,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
