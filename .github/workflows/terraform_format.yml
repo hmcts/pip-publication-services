@@ -13,13 +13,13 @@ jobs:
     name: Check terraform file are formatted correctly
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: terraform fmt
-        uses: dflook/terraform-fmt@v2
+        uses: dflook/terraform-fmt@1964140828a3cd334f311122e09f9e824060382e # v2.2.2
 
       - name: commit format changes to branch
-        uses: stefanzweifel/git-auto-commit-action@v6
+        uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6.0.1
         with:
           commit_message: Automated Change
           commit_user_name: Terraform format GitHub Actions Bot
