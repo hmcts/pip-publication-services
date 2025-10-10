@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Too
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.PersonalisationLinks;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.AdminWelcomeEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaWelcomeEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
@@ -30,8 +30,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.ADMIN_ACCOUNT_CREATION_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.DELETE_LOCATION_SUBSCRIPTION;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_NEW_ACCOUNT_SETUP;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
 
 @ActiveProfiles("test")
@@ -48,6 +48,8 @@ class EmailServiceTest {
     private static final String REFERENCE_ID = UUID.randomUUID().toString();
     private static final String PASSWORD_RESET_LINK = "http://test-link1.com";
     private static final String ADMIN_DASHBOARD_LINK = "http://test-link2.com";
+    private static final String START_PAGE_LINK = "start-page-link";
+    private static final String GOVUK_GUIDANCE_PAGE_LINK = "govuk-guidance-page-link";
 
     private static final String EMAIL_MESSAGE = "Email address does not match";
     private static final String TEMPLATE_MESSAGE = "Notify template does not match";
@@ -82,14 +84,17 @@ class EmailServiceTest {
     @Test
     void testHandleEmailGenerationWithinRateLimit() {
         when(notifyConfigProperties.getLinks()).thenReturn(personalisationLinks);
-        when(personalisationLinks.getAadPwResetLinkAdmin()).thenReturn(PASSWORD_RESET_LINK);
-        when(personalisationLinks.getAdminDashboardLink()).thenReturn(ADMIN_DASHBOARD_LINK);
 
-        CreatedAdminWelcomeEmail welcomeEmail = new CreatedAdminWelcomeEmail(EMAIL, FORENAME, SURNAME);
-        AdminWelcomeEmailData emailData = new AdminWelcomeEmailData(welcomeEmail);
-        doNothing().when(rateLimitingService).validate(EMAIL, ADMIN_ACCOUNT_CREATION_EMAIL);
+        when(personalisationLinks.getAadPwResetLinkMedia()).thenReturn(PASSWORD_RESET_LINK);
+        when(personalisationLinks.getSubscriptionPageLink()).thenReturn(ADMIN_DASHBOARD_LINK);
+        when(personalisationLinks.getStartPageLink()).thenReturn(START_PAGE_LINK);
+        when(personalisationLinks.getGovGuidancePageLink()).thenReturn(GOVUK_GUIDANCE_PAGE_LINK);
 
-        EmailToSend result = emailService.handleEmailGeneration(emailData, ADMIN_ACCOUNT_CREATION_EMAIL);
+        WelcomeEmail welcomeEmail = new WelcomeEmail(EMAIL, false, FORENAME + " " + SURNAME);
+        MediaWelcomeEmailData emailData = new MediaWelcomeEmailData(welcomeEmail);
+        doNothing().when(rateLimitingService).validate(EMAIL, MEDIA_NEW_ACCOUNT_SETUP);
+
+        EmailToSend result = emailService.handleEmailGeneration(emailData, MEDIA_NEW_ACCOUNT_SETUP);
 
         assertThat(result.getEmailAddress())
             .as(EMAIL_MESSAGE)
@@ -97,16 +102,16 @@ class EmailServiceTest {
 
         assertThat(result.getTemplate())
             .as(TEMPLATE_MESSAGE)
-            .isEqualTo(ADMIN_ACCOUNT_CREATION_EMAIL.getTemplate());
+            .isEqualTo(MEDIA_NEW_ACCOUNT_SETUP.getTemplate());
     }
 
     @Test
     void testHandleEmailGenerationOverRateLimit() {
-        CreatedAdminWelcomeEmail welcomeEmail = new CreatedAdminWelcomeEmail(EMAIL, FORENAME, SURNAME);
-        AdminWelcomeEmailData emailData = new AdminWelcomeEmailData(welcomeEmail);
-        doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService).validate(EMAIL, ADMIN_ACCOUNT_CREATION_EMAIL);
+        WelcomeEmail welcomeEmail = new WelcomeEmail(EMAIL, false, FORENAME + " " + SURNAME);
+        MediaWelcomeEmailData emailData = new MediaWelcomeEmailData(welcomeEmail);
+        doThrow(TOO_MANY_EMAILS_EXCEPTION).when(rateLimitingService).validate(EMAIL, MEDIA_NEW_ACCOUNT_SETUP);
 
-        assertThatThrownBy(() -> emailService.handleEmailGeneration(emailData, ADMIN_ACCOUNT_CREATION_EMAIL))
+        assertThatThrownBy(() -> emailService.handleEmailGeneration(emailData, MEDIA_NEW_ACCOUNT_SETUP))
             .as("")
             .isInstanceOf(TooManyEmailsException.class)
             .hasMessage(ERROR_MESSAGE);
