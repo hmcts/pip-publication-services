@@ -18,8 +18,4 @@
     <notes>commons-lang3 library brought in by a number of dependencies</notes>
     <cve>CVE-2025-48924</cve>
   </suppress>
-  <suppress>
-    <notes>Temporary suppression while spring boot / tomcat is reviewed</notes>
-    <cve>CVE-2025-48989</cve>
-  </suppress>
 </suppressions>
