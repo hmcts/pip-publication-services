@@ -9,6 +9,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
 import uk.gov.hmcts.reform.pip.publication.services.service.AccountManagementService;
+import uk.gov.hmcts.reform.pip.publication.services.service.AwsS3Service;
 import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
@@ -31,6 +32,9 @@ public class IntegrationTestBase extends RedisConfigurationTestBase {
 
     @MockitoBean
     protected DataManagementService dataManagementService;
+
+    @MockitoBean
+    protected AwsS3Service awsS3Service;
 
     @Captor
     protected ArgumentCaptor<Map<String, Object>> personalisationCapture;

@@ -4,11 +4,11 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.7'
-  id 'org.springframework.boot' version '3.4.8'
+  id 'org.springframework.boot' version '3.5.6'
   id 'org.owasp.dependencycheck' version '12.1.3'
   id 'com.github.ben-manes.versions' version '0.52.0'
-  id 'org.sonarqube' version '6.2.0.5505'
-  id 'io.freefair.lombok' version '8.14'
+  id 'org.sonarqube' version '6.3.1.5724'
+  id 'io.freefair.lombok' version '8.14.2'
 }
 
 group = 'uk.gov.hmcts.reform'
@@ -91,12 +91,12 @@ tasks.register('smoke', Test) {
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '10.26.1'
+  toolVersion = '11.0.1'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
 pmd {
-  toolVersion = "7.15.0"
+  toolVersion = "7.16.0"
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
   reportsDir = file("${layout.buildDirectory.get()}/reports/pmd")
   ruleSetFiles = files("config/pmd/ruleset.xml")
@@ -160,8 +160,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
-  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '5.22.0'
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.9'
+  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '5.23.0'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.13'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: reformLogging
 
@@ -171,14 +171,15 @@ dependencies {
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
-  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.3.17', {
+  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: '2.3.24', {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 
-  implementation group: 'com.opencsv', name: 'opencsv', version: '5.11.2'
+  implementation group: 'com.opencsv', name: 'opencsv', version: '5.12.0'
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.4.1'
-  implementation group: 'org.redisson', name: 'redisson', version: '3.50.0'
+  implementation group: 'org.redisson', name: 'redisson', version: '3.51.0'
   implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.13.0'
+  implementation group: 'software.amazon.awssdk', name: 's3', version: '2.33.4'
 
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
@@ -190,8 +191,8 @@ dependencies {
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.5'
   testImplementation group: 'com.redis', name: 'testcontainers-redis', version: '2.2.4'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter'
-  testImplementation group: 'io.github.hakky54', name: 'logcaptor', version: '2.11.0'
-  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.9', classifier: 'all'
+  testImplementation group: 'io.github.hakky54', name: 'logcaptor', version: '2.12.0'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
   functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured'
 }
 

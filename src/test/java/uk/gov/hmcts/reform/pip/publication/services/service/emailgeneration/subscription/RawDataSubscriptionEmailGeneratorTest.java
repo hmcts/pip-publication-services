@@ -37,7 +37,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_EXCEL_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -65,15 +68,11 @@ class RawDataSubscriptionEmailGeneratorTest {
     private static final String LIST_TYPE_PERSONALISATION = "list_type";
     private static final String START_PAGE_LINK = "start_page_link";
     private static final String SUBSCRIPTION_PAGE_LINK = "subscription_page_link";
-    private static final String SUMMARY_PERSONALISATION =  "testing_of_array";
+    private static final String SUMMARY_PERSONALISATION =  "summary_of_cases";
     private static final String CONTENT_DATE_PERSONALISATION = "content_date";
 
     private static final String PDF_LINK_TEXT = "pdf_link_text";
     private static final String PDF_LINK_TO_FILE = "pdf_link_to_file";
-    private static final String ENGLISH_PDF_LINK_TEXT = "english_pdf_link_text";
-    private static final String ENGLISH_PDF_LINK_TO_FILE = "english_pdf_link_to_file";
-    private static final String WELSH_PDF_LINK_TEXT = "welsh_pdf_link_text";
-    private static final String WELSH_PDF_LINK_TO_FILE = "welsh_pdf_link_to_file";
     private static final String EXCEL_LINK_TEXT = "excel_link_text";
     private static final String EXCEL_LINK_TO_FILE = "excel_link_to_file";
 
@@ -83,6 +82,8 @@ class RawDataSubscriptionEmailGeneratorTest {
     private static final String EMAIL_ADDRESS_MESSAGE = "Email address does not match";
     private static final String NOTIFY_TEMPLATE_MESSAGE = "Notify template does not match";
     private static final String PERSONALISATION_MESSAGE = "Personalisation does not match";
+
+    private static final String CONTENT_DATE = "30 April 2024";
 
     private RawDataSubscriptionEmailData emailData;
     private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
@@ -111,7 +112,7 @@ class RawDataSubscriptionEmailGeneratorTest {
         artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     new byte[0], FILE_DATA, LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     FILE_DATA, LOCATION_NAME, FILE_RETENTION_WEEKS,
                                                      REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
@@ -124,7 +125,7 @@ class RawDataSubscriptionEmailGeneratorTest {
 
         softly.assertThat(result.getTemplate())
             .as(NOTIFY_TEMPLATE_MESSAGE)
-            .isEqualTo(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate());
+            .isEqualTo(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL.getTemplate());
 
         Map<String, Object> personalisation = result.getPersonalisation();
 
@@ -158,29 +159,21 @@ class RawDataSubscriptionEmailGeneratorTest {
 
         softly.assertThat(personalisation.get(CONTENT_DATE_PERSONALISATION))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo("30 April 2024");
-
-        softly.assertThat(personalisation.get(ENGLISH_PDF_LINK_TEXT))
-            .as(PERSONALISATION_MESSAGE)
-            .isEqualTo("");
-
-        softly.assertThat(personalisation.get(ENGLISH_PDF_LINK_TO_FILE))
-            .as(PERSONALISATION_MESSAGE)
-            .isEqualTo("");
-
-        softly.assertThat(personalisation.get(WELSH_PDF_LINK_TEXT))
-            .as(PERSONALISATION_MESSAGE)
-            .isEqualTo("");
-
-        softly.assertThat(personalisation.get(WELSH_PDF_LINK_TO_FILE))
-            .as(PERSONALISATION_MESSAGE)
-            .isEqualTo("");
+            .isEqualTo(CONTENT_DATE);
 
         softly.assertThat(personalisation.get(PDF_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("Download the case list as a PDF.");
+
+        softly.assertThat(personalisation.get(PDF_LINK_TO_FILE))
             .as(PERSONALISATION_MESSAGE)
             .isNotEqualTo("");
 
         softly.assertThat(personalisation.get(EXCEL_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("Download the case list as an Excel spreadsheet.");
+
+        softly.assertThat(personalisation.get(EXCEL_LINK_TO_FILE))
             .as(PERSONALISATION_MESSAGE)
             .isNotEqualTo("");
 
@@ -195,7 +188,7 @@ class RawDataSubscriptionEmailGeneratorTest {
         artefact.setLanguage(Language.WELSH);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     FILE_DATA, new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
                                                      REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
@@ -208,7 +201,7 @@ class RawDataSubscriptionEmailGeneratorTest {
 
         softly.assertThat(result.getTemplate())
             .as(NOTIFY_TEMPLATE_MESSAGE)
-            .isEqualTo(MEDIA_SUBSCRIPTION_RAW_DATA_EMAIL.getTemplate());
+            .isEqualTo(MEDIA_SUBSCRIPTION_PDF_EMAIL.getTemplate());
 
         Map<String, Object> personalisation = result.getPersonalisation();
 
@@ -242,7 +235,153 @@ class RawDataSubscriptionEmailGeneratorTest {
 
         softly.assertThat(personalisation.get(CONTENT_DATE_PERSONALISATION))
             .as(PERSONALISATION_MESSAGE)
-            .isEqualTo("30 April 2024");
+            .isEqualTo(CONTENT_DATE);
+
+        softly.assertThat(personalisation.get(PDF_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("Download the case list as a PDF.");
+
+        softly.assertThat(personalisation.get(PDF_LINK_TO_FILE))
+            .as(PERSONALISATION_MESSAGE)
+            .isNotEqualTo("");
+
+        softly.assertThat(personalisation.get(EXCEL_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
+        softly.assertThat(personalisation.get(EXCEL_LINK_TO_FILE))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
+        assertUploadFileContent(softly, (JSONObject) personalisation.get(PDF_LINK_TO_FILE));
+
+        softly.assertAll();
+    }
+
+    @Test
+    void testRawDataSubscriptionEmailWithExcelOnlySuccess() {
+        artefact.setLanguage(Language.ENGLISH);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
+        emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, new byte[0],
+                                                     FILE_DATA, LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     REFERENCE_ID);
+
+        EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(result.getEmailAddress())
+            .as(EMAIL_ADDRESS_MESSAGE)
+            .isEqualTo(EMAIL);
+
+        softly.assertThat(result.getTemplate())
+            .as(NOTIFY_TEMPLATE_MESSAGE)
+            .isEqualTo(MEDIA_SUBSCRIPTION_EXCEL_EMAIL.getTemplate());
+
+        Map<String, Object> personalisation = result.getPersonalisation();
+
+        softly.assertThat(personalisation.get(CASE_NUMBER_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
+        softly.assertThat(personalisation.get(CASE_URN_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
+        softly.assertThat(personalisation.get(LOCATION_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(LOCATION_NAME);
+
+        softly.assertThat(personalisation.get(LIST_TYPE_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("SJP Public List (Full list)");
+
+        softly.assertThat(personalisation.get(START_PAGE_LINK))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(START_PAGE_LINK_ADDRESS);
+
+        softly.assertThat(personalisation.get(SUBSCRIPTION_PAGE_LINK))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(SUBSCRIPTION_PAGE_LINK_ADDRESS);
+
+        softly.assertThat(personalisation.get(SUMMARY_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(ARTEFACT_SUMMARY);
+
+        softly.assertThat(personalisation.get(CONTENT_DATE_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(CONTENT_DATE);
+
+        softly.assertThat(personalisation.get(PDF_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
+        softly.assertThat(personalisation.get(PDF_LINK_TO_FILE))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
+        softly.assertThat(personalisation.get(EXCEL_LINK_TEXT))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("Download the case list as an Excel spreadsheet.");
+
+        assertUploadFileContent(softly, (JSONObject) personalisation.get(EXCEL_LINK_TO_FILE));
+
+        softly.assertAll();
+    }
+
+    @Test
+    void testRawDataSubscriptionEmailWithNoDownloadLinkSuccess() {
+        artefact.setLanguage(Language.ENGLISH);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
+        emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, new byte[0],
+                                                     new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     REFERENCE_ID);
+
+        EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(result.getEmailAddress())
+            .as(EMAIL_ADDRESS_MESSAGE)
+            .isEqualTo(EMAIL);
+
+        softly.assertThat(result.getTemplate())
+            .as(NOTIFY_TEMPLATE_MESSAGE)
+            .isEqualTo(MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL.getTemplate());
+
+        Map<String, Object> personalisation = result.getPersonalisation();
+
+        softly.assertThat(personalisation.get(CASE_NUMBER_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
+        softly.assertThat(personalisation.get(CASE_URN_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("");
+
+        softly.assertThat(personalisation.get(LOCATION_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(LOCATION_NAME);
+
+        softly.assertThat(personalisation.get(LIST_TYPE_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo("SJP Public List (Full list)");
+
+        softly.assertThat(personalisation.get(START_PAGE_LINK))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(START_PAGE_LINK_ADDRESS);
+
+        softly.assertThat(personalisation.get(SUBSCRIPTION_PAGE_LINK))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(SUBSCRIPTION_PAGE_LINK_ADDRESS);
+
+        softly.assertThat(personalisation.get(SUMMARY_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(ARTEFACT_SUMMARY);
+
+        softly.assertThat(personalisation.get(CONTENT_DATE_PERSONALISATION))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(CONTENT_DATE);
 
         softly.assertThat(personalisation.get(PDF_LINK_TEXT))
             .as(PERSONALISATION_MESSAGE)
@@ -260,17 +399,6 @@ class RawDataSubscriptionEmailGeneratorTest {
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("");
 
-        softly.assertThat(personalisation.get(ENGLISH_PDF_LINK_TEXT))
-            .as(PERSONALISATION_MESSAGE)
-            .isNotEqualTo("");
-
-        softly.assertThat(personalisation.get(WELSH_PDF_LINK_TEXT))
-            .as(PERSONALISATION_MESSAGE)
-            .isNotEqualTo("");
-
-        assertUploadFileContent(softly, (JSONObject) personalisation.get(ENGLISH_PDF_LINK_TO_FILE));
-        assertUploadFileContent(softly, (JSONObject) personalisation.get(WELSH_PDF_LINK_TO_FILE));
-
         softly.assertAll();
     }
 
@@ -280,7 +408,7 @@ class RawDataSubscriptionEmailGeneratorTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     FILE_DATA, new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
                                                      REFERENCE_ID);
 
         try (MockedStatic<NotificationClient> mockStatic = mockStatic(NotificationClient.class);

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -55,6 +56,9 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     @Autowired
     private EmailNotificationClient notificationClient;
 
+    @Value("${test-system-admin-id}")
+    private String systemAdminUserId;
+
     private static final String BULK_SUBSCRIPTION_URL = "/notify/subscription";
     private static final String TESTING_SUPPORT_LOCATION_URL = "/testing-support/location/";
     private static final String TESTING_SUPPORT_PUBLICATION_URL = "/testing-support/publication";
@@ -81,9 +85,9 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     private static final String EMAIL_NAME_ERROR = "Name in email body does not match";
     private static final String EMAIL_BODY_ERROR = "Email body does not match";
     private static final String BEARER = "Bearer ";
+    private static final String DOWNLOAD_PDF_TEXT = "Download the case list as a PDF.";
     private static final LocalDateTime CONTENT_DATE = LocalDateTime.now().toLocalDate().atStartOfDay()
         .truncatedTo(ChronoUnit.SECONDS);
-    private Map<String, String> authorisationHeaders;
     private UUID jsonArtefactId;
     private UUID flatFileArtefactId;
     private UUID jsonArtefactIdWelsh;
@@ -97,7 +101,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
     private Artefact uploadArtefact(String language, String listType, String jsonFile) throws IOException {
         Map<String, String> headerMapUploadJsonFile = new ConcurrentHashMap<>();
-        headerMapUploadJsonFile.put(HttpHeaders.AUTHORIZATION, BEARER + dataManagementAccessToken);
+        headerMapUploadJsonFile.put(HttpHeaders.AUTHORIZATION, dataManagementAccessToken);
         headerMapUploadJsonFile.put("x-type", ARTEFACT_TYPE.toString());
         headerMapUploadJsonFile.put("x-provenance", PROVENANCE);
         headerMapUploadJsonFile.put("x-source-artefact-id", SOURCE_ARTEFACT_ID);
@@ -108,6 +112,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         headerMapUploadJsonFile.put("x-content-date", CONTENT_DATE.toString());
         headerMapUploadJsonFile.put("x-sensitivity", "PUBLIC");
         headerMapUploadJsonFile.put("x-language", language);
+        headerMapUploadJsonFile.put("x-requester-id", systemAdminUserId);
         headerMapUploadJsonFile.put("Content-Type", "application/json");
 
         final Response responseUploadJson = doDataManagementPostRequest(
@@ -122,7 +127,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
     private Artefact uploadFlatFile() {
         Map<String, String> headerMapUploadFlatFile = new ConcurrentHashMap<>();
-        headerMapUploadFlatFile.put(HttpHeaders.AUTHORIZATION, BEARER + dataManagementAccessToken);
+        headerMapUploadFlatFile.put(HttpHeaders.AUTHORIZATION, dataManagementAccessToken);
         headerMapUploadFlatFile.put("x-type", ARTEFACT_TYPE.toString());
         headerMapUploadFlatFile.put("x-provenance", PROVENANCE);
         headerMapUploadFlatFile.put("x-source-artefact-id", SOURCE_ARTEFACT_ID);
@@ -133,6 +138,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         headerMapUploadFlatFile.put("x-content-date", CONTENT_DATE.toString());
         headerMapUploadFlatFile.put("x-sensitivity", "PUBLIC");
         headerMapUploadFlatFile.put("x-language", LANGUAGE.toString());
+        headerMapUploadFlatFile.put("x-requester-id", systemAdminUserId);
         headerMapUploadFlatFile.put("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE);
 
         String filePath = Thread.currentThread().getContextClassLoader()
@@ -181,11 +187,10 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
     @BeforeAll
     public void setup() throws IOException {
-        authorisationHeaders = Map.of(AUTHORIZATION, BEARER + bearerToken);
 
         doDataManagementPostRequest(
             TESTING_SUPPORT_LOCATION_URL + LOCATION_ID,
-            Map.of(AUTHORIZATION, BEARER + dataManagementAccessToken), LOCATION_NAME
+            Map.of(AUTHORIZATION, dataManagementAccessToken), LOCATION_NAME
         );
 
         jsonArtefactId = uploadArtefact(
@@ -205,11 +210,11 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     public void teardown() {
         doDataManagementDeleteRequest(
             TESTING_SUPPORT_PUBLICATION_URL + LOCATION_NAME,
-            Map.of(AUTHORIZATION, BEARER + dataManagementAccessToken)
+            Map.of(AUTHORIZATION, dataManagementAccessToken)
         );
         doDataManagementDeleteRequest(
             TESTING_SUPPORT_LOCATION_URL + LOCATION_NAME,
-            Map.of(AUTHORIZATION, BEARER + dataManagementAccessToken)
+            Map.of(AUTHORIZATION, dataManagementAccessToken)
         );
     }
 
@@ -243,7 +248,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
@@ -280,11 +285,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in English as a PDF.");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in Welsh as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
     }
 
     @Test
@@ -351,11 +352,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in English as a PDF.");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list in Welsh as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
     }
 
     @Test
@@ -388,7 +385,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
-            .contains("Download the case list as a PDF.");
+            .contains(DOWNLOAD_PDF_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)

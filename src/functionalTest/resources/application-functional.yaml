@@ -6,3 +6,4 @@ rate-limit:
     interval-in-minutes: 1
 test-url: ${TEST_URL:http://localhost:8081}
 data-management-test-url: ${DATA_MANAGEMENT_URL:https://pip-data-management.staging.platform.hmcts.net}
+test-system-admin-id: ${SYSTEM_ADMIN_ID:}
