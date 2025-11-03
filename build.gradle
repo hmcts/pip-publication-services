@@ -171,7 +171,7 @@ dependencies {
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
-  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: 'PUB-3036-Removing-old-crown-lists-3288bcb', {
+  implementation group: 'com.github.hmcts', name: 'pip-data-models', version: 'PUB-3036-Removing-old-crown-lists-396786c', {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
 
