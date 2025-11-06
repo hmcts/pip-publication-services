@@ -12,10 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_DUPLICATE_ACCOUNT_EMAIL;
 
-@Service
 /**
  * Generate the media duplicated account email with personalisation for GOV.UK Notify template.
  */
+@Service
 public class MediaDuplicatedAccountEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

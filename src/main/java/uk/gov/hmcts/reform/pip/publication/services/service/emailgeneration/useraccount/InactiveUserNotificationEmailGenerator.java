@@ -12,10 +12,10 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.Emai
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
 /**
  * Generate the inactive user notification email with personalisation for GOV.UK Notify template.
  */
+@Service
 public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

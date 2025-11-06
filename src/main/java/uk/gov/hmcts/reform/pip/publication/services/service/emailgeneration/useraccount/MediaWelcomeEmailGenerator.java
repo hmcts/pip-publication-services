@@ -14,10 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.EXISTING_USER_WELCOME_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_NEW_ACCOUNT_SETUP;
 
-@Service
 /**
  * Generate the media welcome email with personalisation for GOV.UK Notify template.
  */
+@Service
 public class MediaWelcomeEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

@@ -13,10 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.DELETE_LOCATION_SUBSCRIPTION;
 
-@Service
 /**
  * Generate the location subscription email with personalisation for GOV.UK Notify template.
  */
+@Service
 public class LocationSubscriptionDeletionEmailGenerator extends BatchEmailGenerator {
     @Override
     public List<EmailToSend> buildEmail(BatchEmailData email, PersonalisationLinks personalisationLinks) {

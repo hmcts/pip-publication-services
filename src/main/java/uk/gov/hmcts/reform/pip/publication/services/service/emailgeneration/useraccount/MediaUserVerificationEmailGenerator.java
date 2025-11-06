@@ -12,10 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_VERIFICATION_EMAIL;
 
-@Service
 /**
  * Generate the media user verification email with personalisation for GOV.UK Notify template.
  */
+@Service
 public class MediaUserVerificationEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

@@ -14,10 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
 
-@Service
 /**
  * Generate the media account rejection email with personalisation for GOV.UK Notify template.
  */
+@Service
 public class MediaAccountRejectionEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
