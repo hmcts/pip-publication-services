@@ -15,10 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.convertEnvironmentName;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.SYSTEM_ADMIN_UPDATE_EMAIL;
 
-@Service
 /**
  * Generate the system admin update email with personalisation for GOV.UK Notify template.
  */
+@Service
 public class SystemAdminUpdateEmailGenerator extends BatchEmailGenerator {
     @Override
     public List<EmailToSend> buildEmail(BatchEmailData email, PersonalisationLinks personalisationLinks) {
