@@ -21,12 +21,12 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
-@Service
-@Slf4j
-@SuppressWarnings("PMD.PreserveStackTrace")
 /**
  * Generate the flat file subscription email with personalisation for GOV.UK Notify template.
  */
+@Service
+@Slf4j
+@SuppressWarnings("PMD.PreserveStackTrace")
 public class FlatFileSubscriptionEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

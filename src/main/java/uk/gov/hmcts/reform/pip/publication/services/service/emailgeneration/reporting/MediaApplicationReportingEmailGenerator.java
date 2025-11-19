@@ -18,12 +18,12 @@ import static uk.gov.hmcts.reform.pip.publication.services.models.Environments.c
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_APPLICATION_REPORTING_EMAIL;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
-@Service
-@Slf4j
-@SuppressWarnings("PMD.PreserveStackTrace")
 /**
  * Generate the media application reporting email with personalisation for GOV.UK Notify template.
  */
+@Service
+@Slf4j
+@SuppressWarnings("PMD.PreserveStackTrace")
 public class MediaApplicationReportingEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

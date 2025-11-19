@@ -12,11 +12,11 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.Emai
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
 /**
  * Generate the inactive user notification email with personalisation for GOV.UK Notify template.
  * This is only used for CFT and Crime IDAM users. PI_AAD users are notified via Media User Verification Email process.
  */
+@Service
 public class InactiveUserNotificationEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
