@@ -6,14 +6,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.model.account.UserProvenances;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
-import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.AdminWelcomeEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.InactiveUserNotificationEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaAccountRejectionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaDuplicatedAccountEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaUserVerificationEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaWelcomeEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.OtpEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
@@ -50,23 +48,6 @@ public class UserNotificationService {
             : Templates.MEDIA_NEW_ACCOUNT_SETUP;
 
         EmailToSend email = emailService.handleEmailGeneration(emailData, emailTemplate);
-        return emailService.sendEmail(email)
-            .getReference()
-            .orElse(null);
-    }
-
-    /**
-     * Handles the incoming request for AAD welcome emails, checks the json payload and builds and sends the email.
-     *
-     * @param body JSONObject containing the email and forename/surname values e.g.
-     *             {email: 'example@email.com', forename: 'foo', surname: 'bar'}
-     */
-    public String adminAccountWelcomeEmailRequest(CreatedAdminWelcomeEmail body) {
-        log.info(writeLog(String.format("Admin account welcome email being processed for user %s",
-            EmailHelper.maskEmail(body.getEmail()))));
-
-        EmailToSend email = emailService.handleEmailGeneration(new AdminWelcomeEmailData(body),
-                                                               Templates.ADMIN_ACCOUNT_CREATION_EMAIL);
         return emailService.sendEmail(email)
             .getReference()
             .orElse(null);
@@ -134,10 +115,6 @@ public class UserNotificationService {
     }
 
     private Templates selectInactiveUserNotificationEmailTemplate(String userProvenance) {
-        if (UserProvenances.PI_AAD.name().equals(userProvenance)) {
-            return Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
-        }
-
         return UserProvenances.CFT_IDAM.name().equals(userProvenance)
             ? Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT
             : Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
