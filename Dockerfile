@@ -6,5 +6,7 @@ ENV APP pip-publication-services.jar
 COPY lib/applicationinsights.json /opt/app/
 COPY build/libs/$APP /opt/app/
 
+USER 65532:65532
+
 EXPOSE 8081
 CMD [ "pip-publication-services.jar" ]
