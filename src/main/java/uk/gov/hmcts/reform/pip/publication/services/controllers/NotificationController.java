@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.pip.publication.services.helpers.MultiPartHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
@@ -95,16 +94,6 @@ public class NotificationController {
     @PostMapping("/welcome-email")
     public ResponseEntity<String> sendWelcomeEmail(@RequestBody WelcomeEmail body) {
         return ResponseEntity.ok(userNotificationService.mediaAccountWelcomeEmailRequest(body));
-    }
-
-    @ApiResponse(responseCode = OK_RESPONSE, description = "Created admin welcome email "
-        + "successfully sent with referenceId {Id}")
-    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
-    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
-    @Operation(summary = "Send welcome email to new Azure Active Directory (AAD) user.")
-    @PostMapping("/created/admin")
-    public ResponseEntity<String> sendAdminAccountWelcomeEmail(@RequestBody CreatedAdminWelcomeEmail body) {
-        return ResponseEntity.ok(userNotificationService.adminAccountWelcomeEmailRequest(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Media applications report "

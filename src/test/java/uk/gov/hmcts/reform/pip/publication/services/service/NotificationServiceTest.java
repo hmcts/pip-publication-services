@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.S
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.UnidentifiedBlobEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -53,9 +52,9 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 @SuppressWarnings("PMD.ExcessiveImports")
 class NotificationServiceTest {
     private final Map<String, Object> personalisationMap = Map.ofEntries(
-        entry("email", VALID_BODY_AAD.getEmail()),
-        entry("surname", VALID_BODY_AAD.getSurname()),
-        entry("first_name", VALID_BODY_AAD.getForename()),
+        entry("email", EMAIL),
+        entry("surname", "test_surname"),
+        entry("first_name", "test_forename"),
         entry("reset_password_link", "http://www.test.com"),
         entry("sign_in_page_link", "http://www.google.com"),
         entry("media_sign_in_link", "http://www.google.com")
@@ -66,8 +65,6 @@ class NotificationServiceTest {
     private static final String EMAIL = "test@email.com";
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
         EMAIL, false, FULL_NAME);
-    private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
-        EMAIL, "test_forename", "test_surname");
 
     private static final Integer LOCATION_ID = 1;
     private static final String LOCATION_NAME = "Location Name";
