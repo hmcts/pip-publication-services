@@ -255,6 +255,7 @@ If your debugging leads you to conclude that you need to implement a pipeline fi
 
 ## Monitoring and Logging
 We utilise [Azure Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) to store our logs. Ask a teammate for the specific resource in Azure to access these.
+
 Locally, we use [Log4j](https://logging.apache.org/log4j/2.x/).
 
 In addition, this service is also monitored in production and staging environments by [Dynatrace](https://www.dynatrace.com/). The URL for viewing our specific Dynatrace instance can be had by asking a team member.
