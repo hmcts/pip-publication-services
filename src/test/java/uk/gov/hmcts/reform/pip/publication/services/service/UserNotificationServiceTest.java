@@ -42,7 +42,6 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
 class UserNotificationServiceTest {
 
     private static final String REJECTION_EMAIL_FIRST_LINE_JSON = "\"id\":\"123e4567-e89b-12d3-a456-426614174000\",";
