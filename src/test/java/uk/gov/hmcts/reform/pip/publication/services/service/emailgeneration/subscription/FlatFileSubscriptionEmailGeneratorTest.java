@@ -40,7 +40,6 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("PMD.ExcessiveImports")
 class FlatFileSubscriptionEmailGeneratorTest {
     private static final String EMAIL = "test@testing.com";
     private static final UUID ARTEFACT_ID = UUID.randomUUID();

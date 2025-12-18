@@ -20,11 +20,8 @@ public class SpringSecurityConfig {
 
     /**
      * Add configuration logic as needed.
-     * Note - the PMD exception is needed, as the called classes throw the generic
-     * exception class rather than a specific exception.
      */
     @Bean
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
         http.with(AadResourceServerHttpSecurityConfigurer.aadResourceServer(), Customizer.withDefaults());
         http.csrf(AbstractHttpConfigurer::disable);

@@ -44,7 +44,6 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("PMD.ExcessiveImports")
 class SubscriptionNotificationServiceTest {
     private static final String EMAIL = "test@email.com";
     private static final String FILE_CONTENT = "123";

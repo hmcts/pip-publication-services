@@ -18,7 +18,6 @@ import static org.springframework.security.oauth2.client.web.reactive.function.c
 
 @Slf4j
 @Service
-@SuppressWarnings({"PMD.PreserveStackTrace"})
 public class AccountManagementService {
     private static final String SERVICE = "Account Management";
 

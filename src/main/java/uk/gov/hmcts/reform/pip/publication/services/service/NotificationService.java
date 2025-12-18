@@ -28,7 +28,6 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Service
 @Slf4j
-@SuppressWarnings("PMD.PreserveStackTrace")
 public class NotificationService {
     private final EmailService emailService;
 

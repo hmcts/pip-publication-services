@@ -52,8 +52,6 @@ import static uk.gov.hmcts.reform.pip.model.publication.ListType.FAMILY_DAILY_CA
 import static uk.gov.hmcts.reform.pip.model.publication.Sensitivity.PUBLIC;
 import static uk.gov.hmcts.reform.pip.model.subscription.SearchType.CASE_ID;
 
-@SuppressWarnings({"PMD.UnitTestShouldIncludeAssert", "PMD.TooManyMethods",
-    "PMD.ExcessiveImports", "PMD.CouplingBetweenObjects"})
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -311,7 +309,6 @@ class NotifyTest extends IntegrationTestBase {
         validLocationsListJson = ow.writeValueAsString(NO_MATCH_ARTEFACT_LIST);
     }
 
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     private Workbook setupMiEndpointWithData() throws Exception {
         when(dataManagementService.getMiData()).thenReturn(publicationMiData);
         when(accountManagementService.getAccountMiData()).thenReturn(ACCOUNT_MI_DATA);
@@ -329,7 +326,6 @@ class NotifyTest extends IntegrationTestBase {
         return new XSSFWorkbook(outputFile);
     }
 
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     private Workbook setupMiEndpointNoData() throws Exception {
         when(dataManagementService.getMiData()).thenReturn(List.of());
         when(accountManagementService.getAccountMiData()).thenReturn(List.of());

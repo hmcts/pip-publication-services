@@ -1,7 +1,7 @@
 plugins {
   id 'application'
+  id 'uk.gov.hmcts.java' version '0.12.67'
   id 'checkstyle'
-  id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.7'
   id 'org.springframework.boot' version '3.5.7'
@@ -90,16 +90,7 @@ tasks.register('smoke', Test) {
 }
 
 checkstyle {
-  maxWarnings = 0
   toolVersion = '12.1.1'
-  getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
-}
-
-pmd {
-  toolVersion = "7.18.0"
-  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
-  reportsDir = file("${layout.buildDirectory.get()}/reports/pmd")
-  ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
 jacocoTestReport {
@@ -123,19 +114,10 @@ sonarqube {
   }
 }
 
-
 // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
 dependencyCheck {
-  // Specifies if the build should be failed if a CVSS score above a specified level is identified.
-  // range of 0-10 fails the build, anything greater and it doesn't fail the build
-  failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
   suppressionFile = 'config/owasp/suppressions.xml'
   skipTestGroups  = false
-
-  analyzers {
-    // Disable scanning of .NET related binaries
-    assemblyEnabled = false
-  }
 }
 
 repositories {
