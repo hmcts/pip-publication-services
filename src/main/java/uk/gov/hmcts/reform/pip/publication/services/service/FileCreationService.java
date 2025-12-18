@@ -26,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Service
-@SuppressWarnings({"PMD.PreserveStackTrace"})
 public class FileCreationService {
 
     private static final String[] HEADINGS = {"Full name", "Email", "Employer",

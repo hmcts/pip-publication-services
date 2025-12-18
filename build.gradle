@@ -2,7 +2,6 @@ plugins {
   id 'application'
   id 'uk.gov.hmcts.java' version '0.12.67'
   id 'checkstyle'
-  id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.7'
   id 'org.springframework.boot' version '3.5.7'
@@ -92,13 +91,6 @@ tasks.register('smoke', Test) {
 
 checkstyle {
   toolVersion = '12.1.1'
-}
-
-pmd {
-  toolVersion = "7.18.0"
-  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
-  reportsDir = file("${layout.buildDirectory.get()}/reports/pmd")
-  ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
 jacocoTestReport {

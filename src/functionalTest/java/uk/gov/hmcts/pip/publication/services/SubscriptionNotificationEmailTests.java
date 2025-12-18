@@ -47,7 +47,6 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static uk.gov.hmcts.pip.publication.services.utils.EmailNotificationClient.NOTIFICATION_TYPE;
 import static uk.gov.hmcts.pip.publication.services.utils.TestUtil.randomLocationId;
 
-@SuppressWarnings({"PMD.ExcessiveImports"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles(profiles = "functional")
 @SpringBootTest(classes = {OAuthClient.class, EmailNotificationClient.class})

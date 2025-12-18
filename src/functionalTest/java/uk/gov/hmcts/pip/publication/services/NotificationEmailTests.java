@@ -50,7 +50,6 @@ import static uk.gov.hmcts.reform.pip.model.system.admin.ChangeType.ADD_USER;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles(profiles = "functional")
 @SpringBootTest(classes = {OAuthClient.class, EmailNotificationClient.class, AwsS3ConfigurationFunctional.class})
-@SuppressWarnings({"PMD.ExcessiveImports", "PMD.TooManyMethods"})
 class NotificationEmailTests extends FunctionalTestBase {
     private static final String NOTIFY_URL = "/notify";
     private static final String MEDIA_WELCOME_EMAIL_URL = NOTIFY_URL + "/welcome-email";
