@@ -150,7 +150,7 @@ dependencies {
   implementation "org.apache.logging.log4j:log4j-to-slf4j:${log4JVersion}"
   implementation 'net.logstash.logback:logstash-logback-encoder:9.0'
   implementation 'uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE'
-  implementation('com.github.hmcts:pip-data-models:PUB-3036-Add-Deprecation-For-Crown-Lists-b27f12d') {
+  implementation('com.github.hmcts:pip-data-models:2.3.30') {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
   implementation 'com.opencsv:opencsv:5.12.0'
