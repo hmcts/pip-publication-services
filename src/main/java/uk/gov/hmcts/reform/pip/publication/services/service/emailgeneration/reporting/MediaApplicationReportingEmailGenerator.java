@@ -23,7 +23,6 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
  */
 @Service
 @Slf4j
-@SuppressWarnings("PMD.PreserveStackTrace")
 public class MediaApplicationReportingEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {

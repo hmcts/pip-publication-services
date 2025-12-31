@@ -49,7 +49,6 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("PMD.ExcessiveImports")
 class NotificationServiceTest {
     private final Map<String, Object> personalisationMap = Map.ofEntries(
         entry("email", EMAIL),
