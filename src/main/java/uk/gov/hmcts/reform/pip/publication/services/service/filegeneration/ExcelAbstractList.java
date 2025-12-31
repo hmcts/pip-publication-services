@@ -14,7 +14,6 @@ import java.util.Iterator;
 /**
  * Abstract class containing reusable methods for Excel spreadsheet generation.
  */
-@SuppressWarnings({"PMD.AbstractClassWithoutAbstractMethod"})
 public abstract class ExcelAbstractList {
 
     /**

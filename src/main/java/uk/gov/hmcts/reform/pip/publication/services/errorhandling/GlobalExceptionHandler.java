@@ -25,7 +25,6 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
  */
 @Slf4j
 @ControllerAdvice
-@SuppressWarnings("PMD.TooManyMethods")
 public class GlobalExceptionHandler {
 
     /**
