@@ -4,7 +4,7 @@ locals {
     for operation_policies_file in local.operation_policies_files :
     basename(operation_policies_file) => {
       operation_id = replace(basename(operation_policies_file), ".xml", "")
-      xml_content = file("${path.module}/${operation_policies_file}")
+      xml_content  = file("${path.module}/${operation_policies_file}")
     }
   }
 }
