@@ -1,5 +1,5 @@
 resource "azurerm_api_management_policy_fragment" "jwt-validation" {
-  api_management_id = data.azurerm_api_management_product.apim_product.id
+  api_management_id = data.azurerm_api_management.sds_apim.id
   name              = "${var.product}-jwt-validation"
   format            = "rawxml"
   description       = "This fragment validate input JWT token"
