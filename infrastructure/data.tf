@@ -7,8 +7,8 @@ data "azurerm_api_management" "sds_apim" {
   name                = local.apim_name
   resource_group_name = local.apim_rg
   depends_on = [
-      module.apim_api
-    ]
+    module.apim_api
+  ]
 }
 
 data "azurerm_api_management_product" "apim_product" {
