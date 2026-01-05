@@ -3,6 +3,14 @@ locals {
   key_vault_name      = "${local.prefix}-kv-${var.env}"
 }
 
+data "azurerm_api_management" "sds_apim" {
+  name                = local.apim_name
+  resource_group_name = local.apim_rg
+  depends_on = [
+      module.apim_api
+    ]
+}
+
 data "azurerm_api_management_product" "apim_product" {
   count               = local.deploy_apim
   product_id          = "${var.product}-product-${local.env}"
