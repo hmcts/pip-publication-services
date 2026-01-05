@@ -18,4 +18,8 @@
     <notes>commons-lang3 library brought in by a number of dependencies</notes>
     <cve>CVE-2025-48924</cve>
   </suppress>
+  <suppress>
+    <notes>Netty vulnerabilities pull in from Springboot. To be removed once Springboot is updated</notes>
+    <cve>CVE-2025-67735</cve>
+  </suppress>
 </suppressions>
