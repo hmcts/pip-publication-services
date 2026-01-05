@@ -2,7 +2,6 @@ package uk.gov.hmcts.pip.publication.services.utils;
 
 import java.util.Random;
 
-@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public final class TestUtil {
 
     private TestUtil() {

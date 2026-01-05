@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
-@SuppressWarnings("PMD.TooManyMethods")
 class ThirdPartyServiceTest {
     private static final String API = "http://localhost:4444";
     private static final String PAYLOAD = "test payload";

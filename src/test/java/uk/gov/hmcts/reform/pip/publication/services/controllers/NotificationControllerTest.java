@@ -58,8 +58,6 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.TooManyFields",
-    "PMD.UseEnumCollections", "PMD.CouplingBetweenObjects"})
 class NotificationControllerTest {
 
     private static final String VALID_EMAIL = "test@email.com";
