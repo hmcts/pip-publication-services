@@ -1,6 +1,6 @@
 <policies>
   <inbound>
-    <include-fragment fragment-id="jwt-validation" />
+    <include-fragment fragment-id="pip-jwt-validation" />
     <cors>
       <allowed-origins>
         <origin>*</origin>
