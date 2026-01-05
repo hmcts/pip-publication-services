@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.repo
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.FlatFileSubscriptionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.LocationSubscriptionDeletionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.RawDataSubscriptionEmailGenerator;
-import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.AdminWelcomeEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.InactiveUserNotificationEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaAccountRejectionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaDuplicatedAccountEmailGenerator;
@@ -33,10 +32,6 @@ public enum Templates {
                                 "Existing media account welcome email",
                                 EmailLimit.STANDARD,
                                 new MediaWelcomeEmailGenerator()),
-    ADMIN_ACCOUNT_CREATION_EMAIL("0af670d6-024a-4fe5-ae2d-b908f69b0fc0",
-                                 "Admin account welcome email",
-                                 EmailLimit.STANDARD,
-                                 new AdminWelcomeEmailGenerator()),
     MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL("1fa5db55-5c75-4c50-a37a-5f3883e9f672",
                                        "Media subscription email for flat file",
                                        EmailLimit.HIGH,
@@ -90,10 +85,6 @@ public enum Templates {
                               EmailLimit.HIGH,
                               null,
                               new SystemAdminUpdateEmailGenerator()),
-    INACTIVE_USER_NOTIFICATION_EMAIL_AAD("8f1e82a9-7016-4b28-8473-20c70f9f11ba",
-                                         "Inactive AAD account notification email",
-                                         EmailLimit.STANDARD,
-                                         new InactiveUserNotificationEmailGenerator()),
     INACTIVE_USER_NOTIFICATION_EMAIL_CFT("cca7ea18-4e6f-406f-b4d3-9e017cb53ee9",
                                          "Inactive CFT IDAM account notification email",
                                          EmailLimit.STANDARD,

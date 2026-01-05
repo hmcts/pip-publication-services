@@ -19,7 +19,6 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Component
 @Slf4j
-@SuppressWarnings("PMD.PreserveStackTrace")
 public class EmailService {
     private final EmailClient emailClient;
     private final RateLimitingService rateLimitingService;

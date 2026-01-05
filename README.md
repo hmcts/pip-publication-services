@@ -255,6 +255,7 @@ If your debugging leads you to conclude that you need to implement a pipeline fi
 
 ## Monitoring and Logging
 We utilise [Azure Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) to store our logs. Ask a teammate for the specific resource in Azure to access these.
+
 Locally, we use [Log4j](https://logging.apache.org/log4j/2.x/).
 
 In addition, this service is also monitored in production and staging environments by [Dynatrace](https://www.dynatrace.com/). The URL for viewing our specific Dynatrace instance can be had by asking a team member.
@@ -276,7 +277,6 @@ We use a few automated tools to ensure quality and security within the service. 
 - SonarCloud - provides automated code analysis, finding vulnerabilities, bugs and code smells. Quality gates ensure that test coverage, code style and security are maintained where possible.
 - DependencyCheckAggregate - Ensures that dependencies are kept up to date and that those with known security vulnerabilities (based on the [National Vulnerability Database(NVD)](https://nvd.nist.gov/)) are flagged to developers for mitigation or suppression.
 - JaCoCo Test Coverage - Produces code coverage metrics which allows developers to determine which lines of code are covered (or not) by unit testing. This also makes up one of SonarCloud's quality gates.
-- PMD - Static code analysis tool providing code quality guidance and identifying potential issues relating to coding standards, performance or security.
 - CheckStyle - Enforces coding standards and conventions such as formatting, naming conventions and structure.
 
 ## Test Suite

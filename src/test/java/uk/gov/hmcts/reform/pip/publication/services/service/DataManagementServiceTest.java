@@ -30,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
-@SuppressWarnings("PMD.TooManyMethods")
 class DataManagementServiceTest {
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
     private static final String RESPONSE_BODY = "responseBody";

@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
@@ -59,8 +58,6 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports", "PMD.TooManyFields", "PMD.CouplingBetweenObjects",
-    "PMD.UseEnumCollections"})
 class NotificationControllerTest {
 
     private static final String VALID_EMAIL = "test@email.com";
@@ -87,7 +84,6 @@ class NotificationControllerTest {
     private SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
     private BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
     private final List<NoMatchArtefact> noMatchArtefactList = new ArrayList<>();
-    private CreatedAdminWelcomeEmail createdAdminWelcomeEmailValidBody;
     private DuplicatedMediaEmail createMediaSetupEmail;
     private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
     private MediaVerificationEmail mediaVerificationEmail;
@@ -115,7 +111,6 @@ class NotificationControllerTest {
     @BeforeEach
     void setup() {
         validRequestBodyTrue = new WelcomeEmail(VALID_EMAIL, TRUE_BOOL, FULL_NAME);
-        createdAdminWelcomeEmailValidBody = new CreatedAdminWelcomeEmail(VALID_EMAIL, TEST, TEST);
         thirdPartySubscription.setApiDestination(TEST);
         thirdPartySubscription.setArtefactId(ID);
         thirdPartySubscriptionArtefact.setApiDestination(TEST);
@@ -157,8 +152,6 @@ class NotificationControllerTest {
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test", "500"));
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test2", "123"));
 
-        when(userNotificationService.adminAccountWelcomeEmailRequest(createdAdminWelcomeEmailValidBody))
-            .thenReturn(REFERENCE_ID);
         when(thirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(REFERENCE_ID);
         when(userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(REFERENCE_ID);
         when(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact))
@@ -202,20 +195,6 @@ class NotificationControllerTest {
     void testSendMediaReportingEmailReturnsSuccessMessage() {
         assertEquals(REFERENCE_ID, notificationController.sendMediaReportingEmail(validMediaApplicationList).getBody(),
                      MESSAGES_MATCH);
-    }
-
-    @Test
-    void testSendAdminAccountWelcomeEmail() {
-        assertEquals(REFERENCE_ID,
-                     notificationController.sendAdminAccountWelcomeEmail(createdAdminWelcomeEmailValidBody).getBody(),
-                     MESSAGES_MATCH);
-    }
-
-    @Test
-    void testSendAdminAccountWelcomeEmailReturnsOk() {
-        assertEquals(HttpStatus.OK, notificationController
-                         .sendAdminAccountWelcomeEmail(createdAdminWelcomeEmailValidBody).getStatusCode(),
-                     STATUS_CODES_MATCH);
     }
 
     @Test

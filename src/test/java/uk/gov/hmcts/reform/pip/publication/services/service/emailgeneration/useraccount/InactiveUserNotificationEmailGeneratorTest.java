@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserN
 import java.util.Map;
 
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CFT;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_USER_NOTIFICATION_EMAIL_CRIME;
 
@@ -25,18 +24,15 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INAC
 class InactiveUserNotificationEmailGeneratorTest {
     private static final String EMAIL = "test@testing.com";
     private static final String FULL_NAME = "Full name";
-    private static final String AAD_USER_PROVENANCE = "PI_AAD";
     private static final String CFT_IDAM_USER_PROVENANCE = "CFT_IDAM";
     private static final String CRIME_IDAM_USER_PROVENANCE = "CRIME_IDAM";
     private static final String LAST_SIGN_IN_DATE = "01/05/2024";
 
     private static final String FULL_NAME_PERSONALISATION = "full_name";
     private static final String LAST_SIGN_IN_DATE_PERSONALISATION = "last_signed_in_date";
-    private static final String AAD_SIGN_IN_PAGE_LINK = "sign_in_page_link";
     private static final String CFT_SIGN_IN_PAGE_LINK = "cft_sign_in_link";
     private static final String CRIME_SIGN_IN_PAGE_LINK = "crime_sign_in_link";
 
-    private static final String SIGN_IN_PAGE_LINK_ADDRESS = "http://www.test-link1.com";
     private static final String CFT_SIGN_IN_PAGE_LINK_ADDRESS = "http://www.test-link2.com";
     private static final String CRIME_SIGN_IN_PAGE_LINK_ADDRESS = "http://www.test-link3.com";
 
@@ -53,36 +49,8 @@ class InactiveUserNotificationEmailGeneratorTest {
 
     @BeforeEach
     void setup() {
-        when(personalisationLinks.getAadAdminSignInPageLink()).thenReturn(SIGN_IN_PAGE_LINK_ADDRESS);
         when(personalisationLinks.getCftSignInPageLink()).thenReturn(CFT_SIGN_IN_PAGE_LINK_ADDRESS);
         when(personalisationLinks.getCrimeSignInPageLink()).thenReturn(CRIME_SIGN_IN_PAGE_LINK_ADDRESS);
-    }
-
-    @Test
-    void testBuildInactiveAadUserNotificationEmail() {
-        InactiveUserNotificationEmail notificationEmail = new InactiveUserNotificationEmail(
-            EMAIL, FULL_NAME, AAD_USER_PROVENANCE, LAST_SIGN_IN_DATE
-        );
-        InactiveUserNotificationEmailData emailData = new InactiveUserNotificationEmailData(notificationEmail);
-
-        EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
-
-        SoftAssertions softly = new SoftAssertions();
-
-        softly.assertThat(result.getEmailAddress())
-            .as(EMAIL_ADDRESS_MESSAGE)
-            .isEqualTo(EMAIL);
-
-        softly.assertThat(result.getTemplate())
-            .as(NOTIFY_TEMPLATE_MESSAGE)
-            .isEqualTo(INACTIVE_USER_NOTIFICATION_EMAIL_AAD.getTemplate());
-
-        softly.assertThat(result.getReferenceId())
-            .as(REFERENCE_ID_MESSAGE)
-            .isNotNull();
-
-        verifyPersonalisation(softly, result.getPersonalisation());
-        softly.assertAll();
     }
 
     @Test
@@ -147,10 +115,6 @@ class InactiveUserNotificationEmailGeneratorTest {
         softly.assertThat(personalisation.get(LAST_SIGN_IN_DATE_PERSONALISATION))
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo(LAST_SIGN_IN_DATE);
-
-        softly.assertThat(personalisation.get(AAD_SIGN_IN_PAGE_LINK))
-            .as(PERSONALISATION_MESSAGE)
-            .isEqualTo(SIGN_IN_PAGE_LINK_ADDRESS);
 
         softly.assertThat(personalisation.get(CFT_SIGN_IN_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)

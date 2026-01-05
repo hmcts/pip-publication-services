@@ -9,14 +9,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
-import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.AdminWelcomeEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.InactiveUserNotificationEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaAccountRejectionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaDuplicatedAccountEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaUserVerificationEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaWelcomeEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.OtpEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.CreatedAdminWelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
@@ -44,15 +42,14 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.ExcessiveImports"})
 class UserNotificationServiceTest {
 
     private static final String REJECTION_EMAIL_FIRST_LINE_JSON = "\"id\":\"123e4567-e89b-12d3-a456-426614174000\",";
     private static final String EMAIL = "test@email.com";
     private final Map<String, Object> personalisationMap = Map.ofEntries(
-        entry("email", VALID_BODY_AAD.getEmail()),
-        entry("surname", VALID_BODY_AAD.getSurname()),
-        entry("first_name", VALID_BODY_AAD.getForename()),
+        entry("email", EMAIL),
+        entry("surname", "test_surname"),
+        entry("first_name", "test_forename"),
         entry("reset_password_link", "http://www.test.com"),
         entry("sign_in_page_link", "http://www.google.com"),
         entry("media_sign_in_link", "http://www.google.com")
@@ -68,8 +65,6 @@ class UserNotificationServiceTest {
         EMAIL, true, FULL_NAME);
     private static final WelcomeEmail VALID_BODY_NEW = new WelcomeEmail(
         EMAIL, false, FULL_NAME);
-    private static final CreatedAdminWelcomeEmail VALID_BODY_AAD = new CreatedAdminWelcomeEmail(
-        EMAIL, "test_forename", "test_surname");
 
     private static final MediaVerificationEmail MEDIA_VERIFICATION_EMAIL = new MediaVerificationEmail(
         EMAIL, FULL_NAME);
@@ -149,18 +144,6 @@ class UserNotificationServiceTest {
     }
 
     @Test
-    void testValidPayloadReturnsSuccessAzure() {
-        when(emailService.handleEmailGeneration(any(AdminWelcomeEmailData.class),
-                                                eq(Templates.ADMIN_ACCOUNT_CREATION_EMAIL)))
-            .thenReturn(validEmailBodyForEmailClient);
-        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
-
-        assertEquals(SUCCESS_REF_ID, userNotificationService.adminAccountWelcomeEmailRequest(VALID_BODY_AAD),
-                     "Azure user with valid JSON should return successful referenceId."
-        );
-    }
-
-    @Test
     void testValidPayloadReturnsSuccessDuplicateMediaAccount() {
         DuplicatedMediaEmail createMediaSetupEmail = new DuplicatedMediaEmail();
         createMediaSetupEmail.setFullName("test_forename");
@@ -187,19 +170,6 @@ class UserNotificationServiceTest {
             SUCCESS_REF_ID,
             userNotificationService.mediaUserVerificationEmailRequest(MEDIA_VERIFICATION_EMAIL),
             "Media user verification email successfully sent with referenceId: referenceId."
-        );
-    }
-
-    @Test
-    void testValidPayloadReturnsSuccessInactiveUserNotificationForAad() {
-        when(emailService.handleEmailGeneration(any(InactiveUserNotificationEmailData.class),
-                                                eq(Templates.INACTIVE_USER_NOTIFICATION_EMAIL_AAD)))
-            .thenReturn(validEmailBodyForEmailClient);
-        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
-
-        assertEquals(SUCCESS_REF_ID, userNotificationService.inactiveUserNotificationEmailRequest(
-                         INACTIVE_USER_NOTIFICATION_EMAIL_AAD),
-                     "Inactive user notification should return successful reference ID"
         );
     }
 
