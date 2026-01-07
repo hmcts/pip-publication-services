@@ -1,19 +1,6 @@
 <policies>
   <inbound>
-    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Access denied due to invalid OAuth information">
-      <openid-config url="https://login.microsoftonline.com/{TENANT_ID}/.well-known/openid-configuration" />
-      <audiences>
-        <audience>{CLIENT_ID}</audience>
-      </audiences>
-      <issuers>
-        <issuer>https://login.microsoftonline.com/{TENANT_ID}/v2.0</issuer>
-      </issuers>
-      <required-claims>
-        <claim name="roles" match="all">
-          <value>api.request.b2c</value>
-        </claim>
-      </required-claims>
-    </validate-jwt>
+    <include-fragment fragment-id="pip-jwt-validation" />
     <cors>
       <allowed-origins>
         <origin>*</origin>
