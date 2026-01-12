@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscriptionArtefact;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -75,7 +75,7 @@ class ThirdPartyManagementServiceTest {
         when(thirdPartyService.handleFlatFileThirdPartyCall(API_DESTINATION, file, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 
-        ThirdPartySubscription subscription = new ThirdPartySubscription();
+        LegacyThirdPartySubscription subscription = new LegacyThirdPartySubscription();
         subscription.setArtefactId(RAND_UUID);
         subscription.setApiDestination(API_DESTINATION);
 
@@ -104,7 +104,7 @@ class ThirdPartyManagementServiceTest {
         when(thirdPartyService.handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 
-        ThirdPartySubscription subscription = new ThirdPartySubscription();
+        LegacyThirdPartySubscription subscription = new LegacyThirdPartySubscription();
         subscription.setArtefactId(RAND_UUID);
         subscription.setApiDestination(API_DESTINATION);
 
@@ -142,7 +142,7 @@ class ThirdPartyManagementServiceTest {
         when(thirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 
-        ThirdPartySubscription subscription = new ThirdPartySubscription();
+        LegacyThirdPartySubscription subscription = new LegacyThirdPartySubscription();
         subscription.setArtefactId(RAND_UUID);
         subscription.setApiDestination(API_DESTINATION);
 
@@ -158,7 +158,7 @@ class ThirdPartyManagementServiceTest {
         when(thirdPartyService.handleDeleteThirdPartyCall(API_DESTINATION, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 
-        ThirdPartySubscriptionArtefact subscription = new ThirdPartySubscriptionArtefact();
+        LegacyThirdPartySubscriptionArtefact subscription = new LegacyThirdPartySubscriptionArtefact();
         subscription.setArtefact(ARTEFACT);
         subscription.setApiDestination(API_DESTINATION);
 

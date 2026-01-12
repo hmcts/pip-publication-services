@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.pip.model.authentication.roles.IsAdmin;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.S3UploadException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.MultiPartHelper;
@@ -139,7 +139,7 @@ public class NotificationController {
     @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_EXCEPTION_MESSAGE)
     @Operation(summary = "Send list to third party publisher")
     @PostMapping("/api")
-    public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscription body) {
+    public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody LegacyThirdPartySubscription body) {
         return ResponseEntity.ok(thirdPartyManagementService.handleThirdParty(body));
     }
 
@@ -147,7 +147,7 @@ public class NotificationController {
     @Operation(summary = "Send empty list to third party after being deleted from P&I")
     @PutMapping("/api")
     public ResponseEntity<String> notifyThirdPartyForArtefactDeletion(
-        @Valid @RequestBody ThirdPartySubscriptionArtefact body) {
+        @Valid @RequestBody LegacyThirdPartySubscriptionArtefact body) {
         return ResponseEntity.ok(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(body));
     }
 

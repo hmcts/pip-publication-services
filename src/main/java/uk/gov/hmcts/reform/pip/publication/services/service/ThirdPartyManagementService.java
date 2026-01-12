@@ -8,8 +8,8 @@ import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscriptionArtefact;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
@@ -36,7 +36,7 @@ public class ThirdPartyManagementService {
      * @param body Request body of ThirdParty subscription containing artefact id and the destination api.
      * @return String of successful POST.
      */
-    public String handleThirdParty(ThirdPartySubscription body) {
+    public String handleThirdParty(LegacyThirdPartySubscription body) {
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
         Location location = dataManagementService.getLocation(artefact.getLocationId());
         if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
@@ -56,7 +56,7 @@ public class ThirdPartyManagementService {
      * @param body Request body of ThirdParty subscription containing the deleted artefact and the destination api.
      * @return String of successful PUT.
      */
-    public String notifyThirdPartyForArtefactDeletion(ThirdPartySubscriptionArtefact body) {
+    public String notifyThirdPartyForArtefactDeletion(LegacyThirdPartySubscriptionArtefact body) {
         Artefact artefact = body.getArtefact();
         Location location = dataManagementService.getLocation(artefact.getLocationId());
 
