@@ -9,7 +9,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.S3UploadException;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 @Service
@@ -25,7 +24,7 @@ public class AwsS3Service {
         this.s3Client = s3Client;
     }
 
-    public void uploadFile(String key, InputStream fileStream) throws IOException {
+    public void uploadFile(String key, InputStream fileStream) {
         try {
             PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucketName)
