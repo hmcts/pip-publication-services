@@ -129,7 +129,7 @@ repositories {
 }
 
 ext {
-  log4JVersion = '2.25.2'
+  log4JVersion = '2.25.3'
   reformLogging = '6.1.9'
 }
 
