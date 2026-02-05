@@ -20,6 +20,6 @@
   </suppress>
   <suppress>
     <notes>log4j - already on latest version</notes>
-    <cve>CVE-2025-48924</cve>
+    <cve>CVE-2025-68161</cve>
   </suppress>
 </suppressions>
