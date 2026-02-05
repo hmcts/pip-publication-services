@@ -19,7 +19,7 @@
     <cve>CVE-2025-48924</cve>
   </suppress>
   <suppress>
-    <notes>Netty vulnerabilities pull in from Springboot. To be removed once Springboot is updated</notes>
-    <cve>CVE-2025-67735</cve>
+    <notes>log4j - already on latest version</notes>
+    <cve>CVE-2025-48924</cve>
   </suppress>
 </suppressions>
