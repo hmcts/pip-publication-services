@@ -40,6 +40,10 @@ spring:
   application:
     name: PIP Publication Services
 
+azure:
+  managed-identity:
+    client-id: ${MANAGED_IDENTITY_CLIENT_ID:}
+
 cloud:
   aws:
     credentials:
@@ -73,6 +77,7 @@ error-handling:
 
 third-party:
   certificate: ${THIRD_PARTY_CERTIFICATE:abcd}
+  key-vault-name: ${THIRD_PARTY_KEY_VAULT:}
 
 envName: ${ENV_NAME:local}
 

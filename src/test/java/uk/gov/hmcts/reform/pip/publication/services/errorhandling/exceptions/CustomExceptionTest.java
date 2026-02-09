@@ -58,4 +58,10 @@ class CustomExceptionTest {
         TooManyEmailsException exception = new TooManyEmailsException(TEST_MESSAGE);
         assertEquals(TEST_MESSAGE, exception.getMessage(), EXPECTED_MESSAGE);
     }
+
+    @Test
+    void testCreationOfAzureSecretReadException() {
+        AzureSecretReadException exception = new AzureSecretReadException(TEST_MESSAGE);
+        assertEquals(TEST_MESSAGE, exception.getMessage(), EXPECTED_MESSAGE);
+    }
 }

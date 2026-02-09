@@ -15,9 +15,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
 import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
@@ -33,7 +35,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.AwsS3Service;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
-import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
+import uk.gov.hmcts.reform.pip.publication.services.service.LegacyThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
 import java.io.IOException;
@@ -85,11 +87,12 @@ class NotificationControllerTest {
     private BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
     private final List<NoMatchArtefact> noMatchArtefactList = new ArrayList<>();
     private DuplicatedMediaEmail createMediaSetupEmail;
-    private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
+    private LegacyThirdPartySubscription thirdPartySubscription = new LegacyThirdPartySubscription();
     private MediaVerificationEmail mediaVerificationEmail;
     private MediaRejectionEmail mediaRejectionEmail;
     private InactiveUserNotificationEmail inactiveUserNotificationEmail;
-    private ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
+    private LegacyThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact =
+        new LegacyThirdPartySubscriptionArtefact();
     private SystemAdminAction systemAdminAction;
     private LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion();
 
@@ -100,7 +103,7 @@ class NotificationControllerTest {
     private UserNotificationService userNotificationService;
 
     @Mock
-    private ThirdPartyManagementService thirdPartyManagementService;
+    private LegacyThirdPartyManagementService legacyThirdPartyManagementService;
 
     @InjectMocks
     private NotificationController notificationController;
@@ -152,9 +155,9 @@ class NotificationControllerTest {
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test", "500"));
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test2", "123"));
 
-        when(thirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(REFERENCE_ID);
+        when(legacyThirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(REFERENCE_ID);
         when(userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(REFERENCE_ID);
-        when(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact))
+        when(legacyThirdPartyManagementService.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact))
             .thenReturn(REFERENCE_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(REFERENCE_ID);

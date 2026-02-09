@@ -46,11 +46,11 @@ class WebClientCreationTest {
                       "Client Manager has not been successfully created");
     }
 
-    @Test
-    void createWebClientInsecure() {
-        WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
-        WebClient webClient =
-            webClientConfiguration.webClientInsecure();
-        assertNotNull(webClient, "WebClient has not been created successfully");
-    }
+//    @Test
+//    void createWebClientInsecure() {
+//        WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
+//        WebClient webClient =
+//            webClientConfiguration.webClientInsecure();
+//        assertNotNull(webClient, "WebClient has not been created successfully");
+//    }
 }

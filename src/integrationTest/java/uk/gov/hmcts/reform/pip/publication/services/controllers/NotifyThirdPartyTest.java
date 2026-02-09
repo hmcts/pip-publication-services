@@ -24,8 +24,8 @@ import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
 import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
@@ -75,8 +75,8 @@ class NotifyThirdPartyTest extends IntegrationTestBase {
     private final Artefact artefact = new Artefact();
     private final Artefact artefactFlatFile = new Artefact();
     private final Location location = new Location();
-    private final ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
-    private final ThirdPartySubscription thirdPartySubscriptionFlatFile = new ThirdPartySubscription();
+    private final LegacyThirdPartySubscription thirdPartySubscription = new LegacyThirdPartySubscription();
+    private final LegacyThirdPartySubscription thirdPartySubscriptionFlatFile = new LegacyThirdPartySubscription();
 
     private String thirdPartySubscriptionInput;
     private MockWebServer externalApiMockServer;
@@ -204,7 +204,8 @@ class NotifyThirdPartyTest extends IntegrationTestBase {
         externalApiMockServer.enqueue(new MockResponse()
                                           .setResponseCode(200));
 
-        ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
+        LegacyThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact =
+            new LegacyThirdPartySubscriptionArtefact();
         thirdPartySubscriptionArtefact.setApiDestination(API_DESTINATION);
         thirdPartySubscriptionArtefact.setArtefact(artefact);
 

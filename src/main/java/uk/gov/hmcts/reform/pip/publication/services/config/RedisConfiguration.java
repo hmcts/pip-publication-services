@@ -13,15 +13,18 @@ import org.springframework.context.annotation.Primary;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;
+import javax.cache.configuration.FactoryBuilder;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.AccessedExpiryPolicy;
 import javax.cache.expiry.Duration;
+import javax.cache.expiry.EternalExpiryPolicy;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Configuration
 public class RedisConfiguration {
     private static final String CACHE = "publication-services-emails-cache";
+    private static final String TOKEN_CACHE = "third-party_token-cache";
     private static final String LOCAL = "local";
     private static final String TLS_REDIS_PROTOCOL_PREFIX = "rediss://";
     private static final String LOCAL_REDIS_PROTOCOL_PREFIX = "redis://";
@@ -59,9 +62,26 @@ public class RedisConfiguration {
     }
 
     @Bean
+    public MutableConfiguration<String, String> tokenJcacheConfiguration() {
+        MutableConfiguration<String, String> config = new MutableConfiguration<>();
+        config.setExpiryPolicyFactory(FactoryBuilder.factoryOf(new EternalExpiryPolicy()));
+        return config;
+    }
+
+    @Bean
     public CacheManager cacheManager(Config redissonConfig, MutableConfiguration<String, String> jcacheConfiguration) {
         CacheManager cacheManager = Caching.getCachingProvider().getCacheManager();
         cacheManager.createCache(CACHE, RedissonConfiguration.fromConfig(redissonConfig, jcacheConfiguration));
+        return cacheManager;
+    }
+
+    @Bean
+    public CacheManager tokenCacheManager(Config redissonConfig,
+                                          MutableConfiguration<String, String> tokenJcacheConfiguration) {
+        CacheManager cacheManager = Caching.getCachingProvider().getCacheManager();
+        cacheManager.createCache(TOKEN_CACHE, RedissonConfiguration.fromConfig(
+            redissonConfig, tokenJcacheConfiguration
+        ));
         return cacheManager;
     }
 
