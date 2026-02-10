@@ -74,7 +74,9 @@ public class ThirdPartyOauthService {
                     String accessToken = res.get(ACCESS_TOKEN).textValue();
                     if (res.get(EXPIRES_IN) != null) {
                         long expiresIn = res.get(EXPIRES_IN).asLong();
-                        long expiryMillis = System.currentTimeMillis() + (expiresIn - TOKEN_EXPIRY_BUFFER_SECONDS) * 1000L;
+                        long expiryMillis = expiresIn > TOKEN_EXPIRY_BUFFER_SECONDS
+                            ? System.currentTimeMillis() + (expiresIn - TOKEN_EXPIRY_BUFFER_SECONDS) * 1000L
+                            : 0;
                         tokenCache.put(thirdPartyOauthConfiguration.getUserId().toString(),
                                        new ThirdPartyTokenInfo(accessToken, expiryMillis));
                     }
