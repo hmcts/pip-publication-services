@@ -18,7 +18,7 @@ resource "azurerm_api_management_api_operation_policy" "apim_api_operation_polic
   xml_content         = each.value.xml_content
 
   depends_on = [
-    module.apim_api
+    module.apim_api,
     azurerm_api_management_policy_fragment.jwt-validation
   ]
 }
