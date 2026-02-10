@@ -43,8 +43,7 @@ public class ThirdPartyOauthService {
 
     public String getApiAccessToken(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration) {
         Cache<String, ThirdPartyTokenInfo> tokenCache = cacheManager.getCache(TOKEN_CACHE);
-        String cacheKey = thirdPartyOauthConfiguration.getUserId().toString();
-        ThirdPartyTokenInfo cachedToken = tokenCache.get(cacheKey);
+        ThirdPartyTokenInfo cachedToken = tokenCache.get(thirdPartyOauthConfiguration.getUserId().toString());
 
         if (cachedToken != null && !cachedToken.isExpired()) {
             return cachedToken.getAccessToken();
