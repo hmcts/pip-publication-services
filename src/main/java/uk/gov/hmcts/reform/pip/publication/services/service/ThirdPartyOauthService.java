@@ -35,8 +35,8 @@ public class ThirdPartyOauthService {
     private final CacheManager cacheManager;
 
     @Autowired
-    public ThirdPartyOauthService(WebClient webClientInsecure, SecretClient secretClient, CacheManager tokenCacheManager) {
-        this.webClient = webClientInsecure;
+    public ThirdPartyOauthService(WebClient webClient, SecretClient secretClient, CacheManager tokenCacheManager) {
+        this.webClient = webClient;
         this.secretClient = secretClient;
         this.cacheManager = tokenCacheManager;
     }

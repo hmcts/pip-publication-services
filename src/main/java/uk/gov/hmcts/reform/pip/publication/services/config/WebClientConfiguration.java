@@ -111,18 +111,10 @@ public class WebClientConfiguration {
     }
 
     @Bean
-//    @Profile("dev")
-    public WebClient webClientInsecure() throws SSLException {
-//        return WebClient.builder()
-//            .exchangeStrategies(STRATEGIES)
-//            .build();
-
-        SslContext sslContext = SslContextBuilder
-            .forClient()
-            .trustManager(InsecureTrustManagerFactory.INSTANCE)
+    @Profile("dev")
+    public WebClient webClientInsecure() {
+        return WebClient.builder()
+            .exchangeStrategies(STRATEGIES)
             .build();
-
-        HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(sslContext));
-        return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
     }
 }
