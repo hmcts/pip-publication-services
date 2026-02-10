@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pip.model.authentication.roles.IsAdmin;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartySubscriptionService;
+import uk.gov.hmcts.reform.pip.publication.services.service.thirdparty.ThirdPartySubscriptionService;
 
 @RestController
 @Tag(name = "Publication Services third-party API")

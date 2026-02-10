@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.service;
+package uk.gov.hmcts.reform.pip.publication.services.service.thirdparty;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyAction;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyOauthConfiguration;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.ThirdPartyPublicationMetadata;
+import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
 
 @Service
 public class ThirdPartySubscriptionService {

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.service;
+package uk.gov.hmcts.reform.pip.publication.services.service.thirdparty;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyAction;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyOauthConfiguration;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.models.ThirdPartyPublicationMetadata;
+import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,7 +39,7 @@ class ThirdPartySubscriptionServiceTest {
     private static final LocalDateTime DISPLAY_TO = LocalDateTime.now().plusDays(1);
     private static final String SOURCE_ARTEFACT_ID = "TestFile.pdf";
     private static final String PAYLOAD = "{}";
-    private static final byte[] FILE = new byte[]{1, 2, 3};
+    private static final byte[] FILE = {1, 2, 3};
     private static final String FILE_NAME = PUBLICATION_ID + ".pdf";
 
     private static final String SUCCESS_NEW_PUBLICATION_MESSAGE =
@@ -51,7 +52,6 @@ class ThirdPartySubscriptionServiceTest {
 
     private static final Artefact ARTEFACT_JSON = new Artefact();
     private static final Artefact ARTEFACT_FLAT_FILE = new Artefact();
-    private static final Artefact ARTEFACT_NO_SOURCE_ARTEFACT_ID = new Artefact();
     private static final Location LOCATION = new Location();
     private static final ThirdPartyPublicationMetadata EXPECTED_METADATA = new ThirdPartyPublicationMetadata();
 

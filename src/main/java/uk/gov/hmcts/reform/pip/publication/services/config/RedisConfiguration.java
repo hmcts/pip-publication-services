@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import uk.gov.hmcts.reform.pip.publication.services.models.ThirdPartyTokenInfo;
 
+import javax.cache.Cache;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.configuration.FactoryBuilder;
@@ -83,6 +85,11 @@ public class RedisConfiguration {
             redissonConfig, tokenJcacheConfiguration
         ));
         return cacheManager;
+    }
+
+    @Bean
+    public Cache<String, ThirdPartyTokenInfo> tokenCache(CacheManager tokenCacheManager) {
+        return tokenCacheManager.getCache(TOKEN_CACHE);
     }
 
     @Bean

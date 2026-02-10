@@ -87,6 +87,13 @@ public class WebClientConfiguration {
     }
 
     @Bean
+    public WebClient webClientThirdParty() {
+        return WebClient.builder()
+            .exchangeStrategies(STRATEGIES)
+            .build();
+    }
+
+    @Bean
     @Profile("!dev & !integration & !integration-rate-limit & !functional")
     public WebClient.Builder webClientBuilder() throws SSLException {
         SslContext sslContext = SslContextBuilder

@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartySubscriptionService;
+import uk.gov.hmcts.reform.pip.publication.services.service.thirdparty.ThirdPartySubscriptionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;

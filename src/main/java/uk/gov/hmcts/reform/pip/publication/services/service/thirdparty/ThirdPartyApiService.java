@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.service;
+package uk.gov.hmcts.reform.pip.publication.services.service.thirdparty;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 @Service
 @Slf4j
 public class ThirdPartyApiService {
-    private final WebClient.Builder webClient;
+    private final WebClient webClient;
     private final ThirdPartyOauthService thirdPartyOauthService;
 
     @Value("${error-handling.num-of-retries}")
@@ -38,8 +38,8 @@ public class ThirdPartyApiService {
     private int backoff;
 
     @Autowired
-    public ThirdPartyApiService(WebClient.Builder webClient, ThirdPartyOauthService thirdPartyOauthService) {
-        this.webClient = webClient;
+    public ThirdPartyApiService(WebClient webClientThirdParty, ThirdPartyOauthService thirdPartyOauthService) {
+        this.webClient = webClientThirdParty;
         this.thirdPartyOauthService = thirdPartyOauthService;
     }
 
@@ -54,8 +54,7 @@ public class ThirdPartyApiService {
         MultiValueMap<String, HttpEntity<?>> multiPartBody = createMultiPartBody(metadata, payload, file, filename);
 
         try {
-            webClient.build()
-                .post()
+            webClient.post()
                 .uri(thirdPartyOauthConfiguration.getDestinationUrl())
                 .headers(headers)
                 .body(BodyInserters.fromMultipartData(multiPartBody))
@@ -80,8 +79,7 @@ public class ThirdPartyApiService {
         MultiValueMap<String, HttpEntity<?>> multiPartBody = createMultiPartBody(metadata, payload, file, filename);
 
         try {
-            webClient.build()
-                .put()
+            webClient.put()
                 .uri(thirdPartyOauthConfiguration.getDestinationUrl() + "/" + metadata.getPublicationId())
                 .headers(headers)
                 .body(BodyInserters.fromMultipartData(multiPartBody))
@@ -100,8 +98,7 @@ public class ThirdPartyApiService {
         String token = thirdPartyOauthService.getApiAccessToken(thirdPartyOauthConfiguration);
 
         try {
-            webClient.build()
-                .delete()
+            webClient.delete()
                 .uri(thirdPartyOauthConfiguration.getDestinationUrl() + "/" + publicationId)
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .retrieve()
