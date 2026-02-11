@@ -28,7 +28,7 @@
       <set-body>@{
         return new JObject(
         new JProperty("response code", 200),
-        new JProperty("description", "The request was received successfully.")
+        new JProperty("description", "Deleted publication request was received successfully.")
         ).ToString();
         }
       </set-body>
