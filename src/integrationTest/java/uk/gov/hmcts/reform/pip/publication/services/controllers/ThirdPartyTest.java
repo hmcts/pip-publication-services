@@ -83,6 +83,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
         ARTEFACT.setArtefactId(PUBLICATION_ID);
         ARTEFACT.setListType(ListType.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST);
         ARTEFACT.setContentDate(CONTENT_DATE);
+        ARTEFACT.setLocationId(String.valueOf(LOCATION_ID));
         ARTEFACT.setSensitivity(Sensitivity.PUBLIC);
         ARTEFACT.setLanguage(Language.ENGLISH);
         ARTEFACT.setDisplayFrom(DISPLAY_FROM);
@@ -115,7 +116,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
     }
 
     @Test
-    void testNotifyApiSubscribersJson() throws Exception {
+    void testSendNewPublicationToThirdParty() throws Exception {
         when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(ARTEFACT);
         when(dataManagementService.getLocation(String.valueOf(LOCATION_ID))).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(PUBLICATION_ID)).thenReturn(PAYLOAD);
