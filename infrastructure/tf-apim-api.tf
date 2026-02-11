@@ -23,7 +23,7 @@ module "apim_api" {
   api_mgmt_rg           = local.apim_rg
   display_name          = local.apim_api_name
   name                  = local.apim_api_name
-  path                  = local.apim_path
+  path                  = "${var.product}/${var.component}"
   product_id            = data.azurerm_api_management_product.apim_product[0].product_id
   protocols             = ["http", "https"]
   revision              = "1"
@@ -54,7 +54,7 @@ module "apim_api_testing_support" {
   api_mgmt_rg           = local.apim_rg
   display_name          = local.apim_api_name_testing_support
   name                  = local.apim_api_name_testing_support
-  path                  = local.apim_path
+  path                  = "${var.product}/${var.component}-testing-support"
   product_id            = data.azurerm_api_management_product.apim_product[0].product_id
   protocols             = ["http", "https"]
   revision              = "1"

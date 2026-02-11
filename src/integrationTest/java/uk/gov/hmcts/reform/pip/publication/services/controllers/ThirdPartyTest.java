@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+import okhttp3.tls.HandshakeCertificates;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,11 +28,14 @@ import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyOauthConfiguration;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartySubscription;
 import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -98,6 +104,17 @@ public class ThirdPartyTest extends IntegrationTestBase {
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyOauthConfigurationList(List.of(THIRD_PARTY_OAUTH_CONFIGURATION));
         THIRD_PARTY_SUBSCRIPTION.setPublicationId(PUBLICATION_ID);
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.NEW_PUBLICATION);
+    }
+
+    @BeforeEach
+    void setup() throws IOException {
+        externalApiMockServer = new MockWebServer();
+        externalApiMockServer.start(4444);
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        externalApiMockServer.close();
     }
 
     @Test
