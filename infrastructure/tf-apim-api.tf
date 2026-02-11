@@ -1,5 +1,4 @@
 locals {
-  apim_path      = "${var.product}/${var.component}"
   apim_api_name  = "${var.product}-${var.component}-api"
   api_policy_raw = file("./resources/api-policy/api-policy.xml")
   api_policy = replace(replace(replace(local.api_policy_raw,
