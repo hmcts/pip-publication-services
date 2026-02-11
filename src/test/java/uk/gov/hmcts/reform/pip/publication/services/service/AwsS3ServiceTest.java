@@ -71,16 +71,16 @@ class AwsS3ServiceTest {
     }
 
     @Test
-    void testUploadFileThrowsIoExceptionWhenStreamFails() throws IOException {
+    void testUploadFileThrowsS3UploadExceptionWhenS3ClientFails() {
         InputStream inputStream = mock(InputStream.class);
 
-        try (inputStream) {
-            when(inputStream.available()).thenThrow(new IOException("Stream error"));
-            assertThrows(
-                IOException.class,
-                () -> awsS3Service.uploadFile(TEST_FILE, inputStream),
-                "Expected IOException when inputStream.available() throws IOException"
-            );
-        }
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+            .thenThrow(S3Exception.builder().message("Upload failed").build());
+
+        assertThrows(
+            S3UploadException.class,
+            () -> awsS3Service.uploadFile(TEST_FILE, inputStream),
+            "Expected S3UploadException when S3 client fails"
+        );
     }
 }
