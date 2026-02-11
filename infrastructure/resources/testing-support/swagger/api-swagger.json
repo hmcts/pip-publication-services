@@ -31,7 +31,7 @@
           "Publication Services Testing Support API"
         ],
         "summary": "Third-party new publication test endpoint",
-        "operationId": "test_2",
+        "operationId": "thirdParty",
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -81,7 +81,7 @@
           "Publication Services Testing Support API"
         ],
         "summary": "Third-party updated publication test endpoint",
-        "operationId": "test",
+        "operationId": "thirdParty",
         "parameters": [
           {
             "name": "publicationId",
@@ -140,7 +140,7 @@
           "Publication Services Testing Support API"
         ],
         "summary": "Third-party deleted publication test endpoint",
-        "operationId": "test_1",
+        "operationId": "thirdParty",
         "parameters": [
           {
             "name": "publicationId",
