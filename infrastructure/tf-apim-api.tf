@@ -55,7 +55,7 @@ module "apim_api_testing_support" {
   display_name          = local.apim_api_name_testing_support
   name                  = local.apim_api_name_testing_support
   path                  = local.apim_path
-  product_id            = data.azurerm_api_management_product.apim_product[0].product_id
+  product_id            = data.azurerm_api_management_product.apim_product_testing_support[0].product_id
   protocols             = ["http", "https"]
   revision              = "1"
   service_url           = "https://${local.base_url}"
