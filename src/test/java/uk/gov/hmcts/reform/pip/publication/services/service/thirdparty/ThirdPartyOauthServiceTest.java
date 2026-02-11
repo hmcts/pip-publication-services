@@ -25,7 +25,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
-@ExtendWith(MockitoExtension.class)
 class ThirdPartyOauthServiceTest {
     private static final UUID USER_ID = UUID.randomUUID();
     private static final String TOKEN_URL = "testUrl";
@@ -64,7 +63,7 @@ class ThirdPartyOauthServiceTest {
     }
 
     @Test
-    void testSendNewPublicationToThirdPartyWithNoCachedToken() {
+    void testGetApiAccessTokenWithNoCachedToken() {
         when(thirdPartyTokenCachingService.getCachedToken(any())).thenReturn(null);
         try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyOauthService.class)) {
             mockEndpoint.enqueue(new MockResponse().setResponseCode(200));
@@ -80,7 +79,7 @@ class ThirdPartyOauthServiceTest {
     }
 
     @Test
-    void testSendNewPublicationToThirdPartyUsingCachedToken() {
+    void testGetApiAccessTokenUsingCachedToken() {
         when(thirdPartyTokenCachingService.getCachedToken(any())).thenReturn(ACCESS_TOKEN);
         try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyOauthService.class)) {
 
@@ -95,7 +94,7 @@ class ThirdPartyOauthServiceTest {
     }
 
     @Test
-    void testSendNewPublicationToThirdPartyError() {
+    void testGetApiAccessTokenError() {
         when(thirdPartyTokenCachingService.getCachedToken(any())).thenReturn(null);
         try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyOauthService.class)) {
             mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
