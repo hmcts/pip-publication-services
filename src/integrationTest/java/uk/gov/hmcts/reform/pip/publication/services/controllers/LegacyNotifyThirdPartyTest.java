@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin"})
 @ActiveProfiles("integration")
-class NotifyThirdPartyTest extends IntegrationTestBase {
+class LegacyNotifyThirdPartyTest extends IntegrationTestBase {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final String API_SUBSCRIPTION_URL = "/notify/api";
