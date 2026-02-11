@@ -150,7 +150,7 @@ dependencies {
   implementation "org.apache.logging.log4j:log4j-to-slf4j:${log4JVersion}"
   implementation 'net.logstash.logback:logstash-logback-encoder:9.0'
   implementation 'uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE'
-  implementation('com.github.hmcts:pip-data-models:2.3.30') {
+  implementation('com.github.hmcts:pip-data-models:PUB-3117-aec2c97') {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
   implementation 'com.opencsv:opencsv:5.12.0'
@@ -159,6 +159,7 @@ dependencies {
   implementation 'com.giffing.bucket4j.spring.boot.starter:bucket4j-spring-boot-starter:0.13.0'
   implementation 'software.amazon.awssdk:s3:2.37.4'
   implementation 'org.apache.commons:commons-lang3:3.19.0'
+  implementation 'com.azure:azure-security-keyvault-secrets:4.10.5'
 
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
   testImplementation 'org.springframework.security:spring-security-test'

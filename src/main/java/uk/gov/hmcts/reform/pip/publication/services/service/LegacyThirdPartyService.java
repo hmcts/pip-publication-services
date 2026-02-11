@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.pip.model.publication.FileType.PDF;
 
 @Service
 @Slf4j
-public class ThirdPartyService {
+public class LegacyThirdPartyService {
 
     @Value("${error-handling.num-of-retries}")
     private int numOfRetries;
@@ -43,7 +43,7 @@ public class ThirdPartyService {
     private final WebClient.Builder webClient;
 
     @Autowired
-    public ThirdPartyService(WebClient.Builder webClient) {
+    public LegacyThirdPartyService(WebClient.Builder webClient) {
         this.webClient = webClient;
     }
 

@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.pip.model.authentication.roles.IsAdmin;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.S3UploadException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.MultiPartHelper;
@@ -31,8 +31,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectio
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.AwsS3Service;
+import uk.gov.hmcts.reform.pip.publication.services.service.LegacyThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
-import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
 import java.io.IOException;
@@ -49,7 +49,7 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    private final ThirdPartyManagementService thirdPartyManagementService;
+    private final LegacyThirdPartyManagementService legacyThirdPartyManagementService;
 
     private final UserNotificationService userNotificationService;
     private final AwsS3Service awsS3Service;
@@ -67,11 +67,11 @@ public class NotificationController {
 
     @Autowired
     public NotificationController(NotificationService notificationService,
-                                  ThirdPartyManagementService thirdPartyManagementService,
+                                  LegacyThirdPartyManagementService legacyThirdPartyManagementService,
                                   UserNotificationService userNotificationService,
                                   AwsS3Service awsS3Service) {
         this.notificationService = notificationService;
-        this.thirdPartyManagementService = thirdPartyManagementService;
+        this.legacyThirdPartyManagementService = legacyThirdPartyManagementService;
         this.userNotificationService = userNotificationService;
         this.awsS3Service = awsS3Service;
     }
@@ -139,16 +139,16 @@ public class NotificationController {
     @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_EXCEPTION_MESSAGE)
     @Operation(summary = "Send list to third party publisher")
     @PostMapping("/api")
-    public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody ThirdPartySubscription body) {
-        return ResponseEntity.ok(thirdPartyManagementService.handleThirdParty(body));
+    public ResponseEntity<String> sendThirdPartySubscription(@Valid @RequestBody LegacyThirdPartySubscription body) {
+        return ResponseEntity.ok(legacyThirdPartyManagementService.handleThirdParty(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Successfully sent empty list to {thirdParty} at: {api}")
     @Operation(summary = "Send empty list to third party after being deleted from P&I")
     @PutMapping("/api")
     public ResponseEntity<String> notifyThirdPartyForArtefactDeletion(
-        @Valid @RequestBody ThirdPartySubscriptionArtefact body) {
-        return ResponseEntity.ok(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(body));
+        @Valid @RequestBody LegacyThirdPartySubscriptionArtefact body) {
+        return ResponseEntity.ok(legacyThirdPartyManagementService.notifyThirdPartyForArtefactDeletion(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Media user verification email successfully "

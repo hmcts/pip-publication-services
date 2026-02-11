@@ -9,6 +9,17 @@ locals {
       "{CLIENT_ID}", length(data.azurerm_key_vault_secret.data_client_id) > 0 ? data.azurerm_key_vault_secret.data_client_id[0].value : "")
     }
   }
+
+  operation_policies_files_testing_support = fileset(path.module, "./resources/testing-support/operation-policies/*.xml")
+  operation_policies_testing_support = local.deploy_apim_testing_support == 0 ? {} : {
+    for operation_policies_file in local.operation_policies_files_testing_support :
+    basename(operation_policies_file) => {
+      operation_id = replace(basename(operation_policies_file), ".xml", "")
+      xml_content = replace(replace(file("${path.module}/${operation_policies_file}"),
+        "{TENANT_ID}", data.azurerm_client_config.current.tenant_id),
+      "{CLIENT_ID}", length(data.azurerm_key_vault_secret.data_client_id) > 0 ? data.azurerm_key_vault_secret.data_client_id[0].value : "")
+    }
+  }
 }
 
 resource "azurerm_api_management_api_operation_policy" "apim_api_operation_policy" {
@@ -21,5 +32,18 @@ resource "azurerm_api_management_api_operation_policy" "apim_api_operation_polic
 
   depends_on = [
     module.apim_api
+  ]
+}
+
+resource "azurerm_api_management_api_operation_policy" "apim_api_operation_policy_testing_support" {
+  for_each            = { for operation in local.operation_policies_testing_support : operation.operation_id => operation }
+  operation_id        = each.value.operation_id
+  api_name            = local.apim_api_name_testing_support
+  api_management_name = local.apim_name
+  resource_group_name = local.apim_rg
+  xml_content         = each.value.xml_content
+
+  depends_on = [
+    module.apim_api_testing_support
   ]
 }

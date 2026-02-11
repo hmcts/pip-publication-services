@@ -1,0 +1,334 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CaTH Publication Services Testing Support",
+    "description": "Use this service to test third-party integration",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "description": "README",
+    "url": "https://github.com/hmcts/pip-publication-services"
+  },
+  "servers": [
+    {
+      "url": "https://pip-publication-services.staging.platform.hmcts.net",
+      "description": "Generated server url"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/testing-support/third-party": {
+      "post": {
+        "tags": [
+          "Publication Services Testing Support API"
+        ],
+        "summary": "Third-party new publication test endpoint",
+        "operationId": "test_2",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "metadata": {
+                    "$ref": "#/components/schemas/ThirdPartyPublicationMetadata"
+                  },
+                  "payload": {
+                    "type": "string"
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "metadata"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/testing-support/third-party/{publicationId}": {
+      "put": {
+        "tags": [
+          "Publication Services Testing Support API"
+        ],
+        "summary": "Third-party updated publication test endpoint",
+        "operationId": "test",
+        "parameters": [
+          {
+            "name": "publicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "metadata": {
+                    "$ref": "#/components/schemas/ThirdPartyPublicationMetadata"
+                  },
+                  "payload": {
+                    "type": "string"
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "metadata"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Publication Services Testing Support API"
+        ],
+        "summary": "Third-party deleted publication test endpoint",
+        "operationId": "test_1",
+        "parameters": [
+          {
+            "name": "publicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ThirdPartyPublicationMetadata": {
+        "type": "object",
+        "properties": {
+          "publicationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "listType": {
+            "type": "string",
+            "enum": [
+              "SJP_PUBLIC_LIST",
+              "SJP_DELTA_PUBLIC_LIST",
+              "SJP_PRESS_LIST",
+              "SJP_DELTA_PRESS_LIST",
+              "SJP_PRESS_REGISTER",
+              "CROWN_DAILY_LIST",
+              "CROWN_FIRM_LIST",
+              "CROWN_WARNED_LIST",
+              "MAGISTRATES_PUBLIC_LIST",
+              "MAGISTRATES_STANDARD_LIST",
+              "CIVIL_DAILY_CAUSE_LIST",
+              "FAMILY_DAILY_CAUSE_LIST",
+              "CIVIL_AND_FAMILY_DAILY_CAUSE_LIST",
+              "COP_DAILY_CAUSE_LIST",
+              "ET_FORTNIGHTLY_PRESS_LIST",
+              "ET_DAILY_LIST",
+              "SSCS_DAILY_LIST",
+              "SSCS_DAILY_LIST_ADDITIONAL_HEARINGS",
+              "IAC_DAILY_LIST",
+              "IAC_DAILY_LIST_ADDITIONAL_CASES",
+              "CARE_STANDARDS_LIST",
+              "PRIMARY_HEALTH_LIST",
+              "CIC_DAILY_HEARING_LIST",
+              "CST_WEEKLY_HEARING_LIST",
+              "PHT_WEEKLY_HEARING_LIST",
+              "GRC_WEEKLY_HEARING_LIST",
+              "WPAFCC_WEEKLY_HEARING_LIST",
+              "UT_IAC_JR_LONDON_DAILY_HEARING_LIST",
+              "UT_IAC_JR_LEEDS_DAILY_HEARING_LIST",
+              "UT_IAC_JR_MANCHESTER_DAILY_HEARING_LIST",
+              "UT_IAC_JR_BIRMINGHAM_DAILY_HEARING_LIST",
+              "UT_IAC_JR_CARDIFF_DAILY_HEARING_LIST",
+              "UT_IAC_STATUTORY_APPEALS_DAILY_HEARING_LIST",
+              "SIAC_WEEKLY_HEARING_LIST",
+              "POAC_WEEKLY_HEARING_LIST",
+              "PAAC_WEEKLY_HEARING_LIST",
+              "FTT_TAX_WEEKLY_HEARING_LIST",
+              "FTT_LR_WEEKLY_HEARING_LIST",
+              "UT_T_AND_CC_DAILY_HEARING_LIST",
+              "UT_LC_DAILY_HEARING_LIST",
+              "UT_AAC_DAILY_HEARING_LIST",
+              "RPT_LONDON_WEEKLY_HEARING_LIST",
+              "RPT_EASTERN_WEEKLY_HEARING_LIST",
+              "RPT_MIDLANDS_WEEKLY_HEARING_LIST",
+              "RPT_NORTHERN_WEEKLY_HEARING_LIST",
+              "RPT_SOUTHERN_WEEKLY_HEARING_LIST",
+              "AST_DAILY_HEARING_LIST",
+              "SSCS_MIDLANDS_DAILY_HEARING_LIST",
+              "SSCS_SOUTH_EAST_DAILY_HEARING_LIST",
+              "SSCS_WALES_AND_SOUTH_WEST_DAILY_HEARING_LIST",
+              "SSCS_SCOTLAND_DAILY_HEARING_LIST",
+              "SSCS_NORTH_EAST_DAILY_HEARING_LIST",
+              "SSCS_NORTH_WEST_DAILY_HEARING_LIST",
+              "SSCS_LONDON_DAILY_HEARING_LIST",
+              "MENTAL_HEALTH_TRIBUNAL_HEARING_LIST",
+              "LONDON_ADMINISTRATIVE_COURT_DAILY_CAUSE_LIST",
+              "COUNTY_COURT_LONDON_CIVIL_DAILY_CAUSE_LIST",
+              "CIVIL_COURTS_RCJ_DAILY_CAUSE_LIST",
+              "COURT_OF_APPEAL_CRIMINAL_DAILY_CAUSE_LIST",
+              "FAMILY_DIVISION_HIGH_COURT_DAILY_CAUSE_LIST",
+              "KINGS_BENCH_DIVISION_DAILY_CAUSE_LIST",
+              "KINGS_BENCH_MASTERS_DAILY_CAUSE_LIST",
+              "SENIOR_COURTS_COSTS_OFFICE_DAILY_CAUSE_LIST",
+              "MAYOR_AND_CITY_CIVIL_DAILY_CAUSE_LIST",
+              "INTERIM_APPLICATIONS_CHD_DAILY_CAUSE_LIST",
+              "INTELLECTUAL_PROPERTY_AND_ENTERPRISE_COURT_DAILY_CAUSE_LIST",
+              "INTELLECTUAL_PROPERTY_LIST_CHD_DAILY_CAUSE_LIST",
+              "LONDON_CIRCUIT_COMMERCIAL_COURT_KB_DAILY_CAUSE_LIST",
+              "PATENTS_COURT_CHD_DAILY_CAUSE_LIST",
+              "PENSIONS_LIST_CHD_DAILY_CAUSE_LIST",
+              "PROPERTY_TRUSTS_PROBATE_LIST_CHD_DAILY_CAUSE_LIST",
+              "REVENUE_LIST_CHD_DAILY_CAUSE_LIST",
+              "TECHNOLOGY_AND_CONSTRUCTION_COURT_KB_DAILY_CAUSE_LIST",
+              "ADMIRALTY_COURT_KB_DAILY_CAUSE_LIST",
+              "BUSINESS_LIST_CHD_DAILY_CAUSE_LIST",
+              "CHANCERY_APPEALS_CHD_DAILY_CAUSE_LIST",
+              "COMMERCIAL_COURT_KB_DAILY_CAUSE_LIST",
+              "COMPANIES_WINDING_UP_CHD_DAILY_CAUSE_LIST",
+              "COMPETITION_LIST_CHD_DAILY_CAUSE_LIST",
+              "FINANCIAL_LIST_CHD_KB_DAILY_CAUSE_LIST",
+              "INSOLVENCY_AND_COMPANIES_COURT_CHD_DAILY_CAUSE_LIST",
+              "COURT_OF_APPEAL_CIVIL_DAILY_CAUSE_LIST",
+              "BIRMINGHAM_ADMINISTRATIVE_COURT_DAILY_CAUSE_LIST",
+              "BRISTOL_AND_CARDIFF_ADMINISTRATIVE_COURT_DAILY_CAUSE_LIST",
+              "MANCHESTER_ADMINISTRATIVE_COURT_DAILY_CAUSE_LIST",
+              "LEEDS_ADMINISTRATIVE_COURT_DAILY_CAUSE_LIST",
+              "PCOL_DAILY_CAUSE_LIST",
+              "SEND_DAILY_HEARING_LIST",
+              "CIC_WEEKLY_HEARING_LIST",
+              "MAGISTRATES_ADULT_COURT_LIST_DAILY",
+              "MAGISTRATES_ADULT_COURT_LIST_FUTURE",
+              "MAGISTRATES_PUBLIC_ADULT_COURT_LIST_DAILY",
+              "MAGISTRATES_PUBLIC_ADULT_COURT_LIST_FUTURE",
+              "CROWN_DAILY_PDDA_LIST",
+              "CROWN_FIRM_PDDA_LIST",
+              "CROWN_WARNED_PDDA_LIST",
+              "HIGH_COURT_CIVIL_DAILY_CAUSE_LIST",
+              "HIGH_COURT_FAMILY_DAILY_CAUSE_LIST",
+              "BUSINESS_AND_PROPERTY_DAILY_CAUSE_LIST",
+              "CIRCUIT_COMMERCIAL_COURT_DAILY_CAUSE_LIST",
+              "TECHNOLOGY_AND_CONSTRUCTION_COURT_DAILY_CAUSE_LIST"
+            ]
+          },
+          "locationName": {
+            "type": "string"
+          },
+          "contentDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sensitivity": {
+            "type": "string",
+            "enum": [
+              "PUBLIC",
+              "CLASSIFIED",
+              "INTERNAL",
+              "PRIVATE"
+            ]
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "ENGLISH",
+              "WELSH",
+              "BI_LINGUAL"
+            ]
+          },
+          "displayFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "displayTo": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
