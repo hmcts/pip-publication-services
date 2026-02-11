@@ -11,7 +11,7 @@ data "azurerm_api_management_product" "apim_product" {
 }
 
 data "azurerm_api_management_product" "apim_product_testing_support" {
-  count               = local.eploy_apim_testing_support
+  count               = local.deploy_apim_testing_support
   product_id          = "${var.product}-product-testing-support-${local.env}"
   resource_group_name = local.apim_rg
   api_management_name = local.apim_name
