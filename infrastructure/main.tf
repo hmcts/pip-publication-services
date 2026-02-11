@@ -10,4 +10,5 @@ locals {
   apim_rg   = "ss-${local.env}-network-rg"
 
   deploy_apim = local.env == "stg" || local.env == "demo" || local.env == "test" || local.env == "sbox" || local.env == "prod" ? 1 : 0
+  deploy_apim_testing_support = local.env == "test" ? 1 : 0
 }
