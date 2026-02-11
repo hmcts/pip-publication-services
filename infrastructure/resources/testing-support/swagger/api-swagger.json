@@ -25,7 +25,7 @@
     }
   ],
   "paths": {
-    "/testing-support/third-party": {
+    "/third-party": {
       "post": {
         "tags": [
           "Publication Services Testing Support API"
@@ -75,7 +75,7 @@
         ]
       }
     },
-    "/testing-support/third-party/{publicationId}": {
+    "/third-party/{publicationId}": {
       "put": {
         "tags": [
           "Publication Services Testing Support API"
