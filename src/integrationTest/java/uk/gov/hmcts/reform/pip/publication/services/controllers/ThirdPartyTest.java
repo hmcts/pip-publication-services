@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyAction;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyOauthConfiguration;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.publication.services.service.thirdparty.ThirdPartyTokenCachingService;
 import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
 import java.io.IOException;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -76,6 +79,9 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
     private MockWebServer externalApiMockServer;
 
+    @MockitoBean
+    private ThirdPartyTokenCachingService thirdPartyTokenCachingService;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -102,13 +108,14 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyOauthConfigurationList(List.of(THIRD_PARTY_OAUTH_CONFIGURATION));
         THIRD_PARTY_SUBSCRIPTION.setPublicationId(PUBLICATION_ID);
-
     }
 
     @BeforeEach
     void setup() throws IOException {
         externalApiMockServer = new MockWebServer();
         externalApiMockServer.start(4444);
+
+        when(thirdPartyTokenCachingService.getCachedToken(any())).thenReturn("testAccessToken");
     }
 
     @AfterEach
@@ -155,7 +162,6 @@ public class ThirdPartyTest extends IntegrationTestBase {
         when(dataManagementService.getArtefactJsonBlob(PUBLICATION_ID)).thenReturn(PAYLOAD);
 
         externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
-        externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
 
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.UPDATE_PUBLICATION);
         mockMvc.perform(post(THIRD_PARTY_URL)
@@ -185,7 +191,6 @@ public class ThirdPartyTest extends IntegrationTestBase {
     void testSendDeletedPublicationNotificationToThirdParty() throws Exception {
         when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(null);
 
-        externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
         externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
 
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.DELETE_PUBLICATION);
