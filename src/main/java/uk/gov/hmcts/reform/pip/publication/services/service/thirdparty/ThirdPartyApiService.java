@@ -53,19 +53,14 @@ public class ThirdPartyApiService {
         };
         //MultiValueMap<String, HttpEntity<?>> multiPartBody = createMultiPartBody(metadata, payload, file, filename);
 
-        try {
-            webClient.post()
-                .uri(thirdPartyOauthConfiguration.getDestinationUrl())
-                .headers(headers)
-                .bodyValue(payload)
-                .retrieve()
-                .bodyToMono(Void.class)
-                .retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
-                .block();
-        } catch (WebClientResponseException | ThirdPartyServiceException ex) {
-            log.error(writeLog("Failed to send new publication to third party user with ID "
-                                   + thirdPartyOauthConfiguration.getUserId() + ex.getMessage()));
-        }
+        webClient.post()
+            .uri(thirdPartyOauthConfiguration.getDestinationUrl())
+            .headers(headers)
+            .bodyValue(payload)
+            .retrieve()
+            .bodyToMono(Void.class)
+            //.retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
+            .block();
     }
 
     public void sendUpdatedPublicationToThirdParty(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration,
