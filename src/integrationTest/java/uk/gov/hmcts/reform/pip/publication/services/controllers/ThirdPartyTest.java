@@ -113,9 +113,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
     @BeforeEach
     void setup() throws IOException {
-        HandshakeCertificates handshakeCertificates = localhost();
         externalApiMockServer = new MockWebServer();
-        externalApiMockServer.useHttps(handshakeCertificates.sslSocketFactory(), false);
         externalApiMockServer.start(1111);
 
         when(thirdPartyTokenCachingService.getCachedToken(any())).thenReturn("testAccessToken");
