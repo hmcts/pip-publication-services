@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import okhttp3.tls.HandshakeCertificates;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -35,7 +34,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -113,9 +111,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
     @BeforeEach
     void setup() throws IOException {
-        HandshakeCertificates handshakeCertificates = localhost();
         externalApiMockServer = new MockWebServer();
-        externalApiMockServer.useHttps(handshakeCertificates.sslSocketFactory(), false);
         externalApiMockServer.start(4444);
 
         when(thirdPartyTokenCachingService.getCachedToken(any())).thenReturn("testAccessToken");
