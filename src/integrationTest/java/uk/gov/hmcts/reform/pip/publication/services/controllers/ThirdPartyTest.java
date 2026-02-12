@@ -130,7 +130,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString(
-                "Successfully sent publication deleted notification to third party subscribers"
+                "Successfully sent new publication to third party subscribers"
             )));
 
         RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
@@ -163,7 +163,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(
-                        "Successfully sent publication deleted notification to third party subscribers"
+                        "Successfully sent updated publication to third party subscribers"
                 )));
 
         RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
