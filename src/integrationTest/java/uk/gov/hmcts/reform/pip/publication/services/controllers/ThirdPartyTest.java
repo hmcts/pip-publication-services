@@ -212,4 +212,13 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
         softly.assertAll();
     }
+
+    @Test
+    @WithMockUser(username = "unauthorized_username", authorities = {"APPROLE_unknown.role"})
+    void testUnauthorizedSendThirdPartySubscription() throws Exception {
+        mockMvc.perform(post(THIRD_PARTY_URL)
+                        .content(OBJECT_MAPPER.writeValueAsString(THIRD_PARTY_SUBSCRIPTION))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
 }
