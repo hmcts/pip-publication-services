@@ -155,6 +155,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
         when(dataManagementService.getArtefactJsonBlob(PUBLICATION_ID)).thenReturn(PAYLOAD);
 
         externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
 
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.UPDATE_PUBLICATION);
         mockMvc.perform(post(THIRD_PARTY_URL)
@@ -184,6 +185,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
     void testSendDeletedPublicationNotificationToThirdParty() throws Exception {
         when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(null);
 
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
         externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
 
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.DELETE_PUBLICATION);
