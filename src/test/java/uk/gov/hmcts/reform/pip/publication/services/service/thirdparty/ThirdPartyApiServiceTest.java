@@ -75,6 +75,40 @@ class ThirdPartyApiServiceTest {
     }
 
     @Test
+    void testSendNewPublicationToThirdPartySuccessAfterRetry() {
+        try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyApiService.class)) {
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(200));
+
+            thirdPartyApiService.sendNewPublicationToThirdParty(OAUTH_CONFIGURATION, METADATA, PAYLOAD, FILE, FILENAME);
+
+            assertThat(logCaptor.getErrorLogs())
+                .as(ERROR_LOG_EMPTY_MESSAGE)
+                .isEmpty();
+        }
+    }
+
+    @Test
+    void testSendNewPublicationToThirdPartyError() {
+        try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyApiService.class)) {
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+            thirdPartyApiService.sendNewPublicationToThirdParty(OAUTH_CONFIGURATION, METADATA, PAYLOAD, FILE, FILENAME);
+
+            assertThat(logCaptor.getErrorLogs())
+                .as(ERROR_LOG_NOT_EMPTY_MESSAGE)
+                .hasSize(1);
+
+            assertThat(logCaptor.getErrorLogs().get(0))
+                .as(ERROR_LOG_MESSAGE)
+                .contains("Failed to send new publication to third party user with ID " + USER_ID);
+        }
+    }
+
+    @Test
     void testSendUpdatedPublicationToThirdPartySuccess() {
         try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyApiService.class)) {
             mockEndpoint.enqueue(new MockResponse().setResponseCode(200));

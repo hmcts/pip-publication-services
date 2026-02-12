@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import okhttp3.tls.HandshakeCertificates;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
@@ -27,7 +25,6 @@ import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyAction;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyOauthConfiguration;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.publication.services.service.thirdparty.ThirdPartyTokenCachingService;
 import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
 import java.io.IOException;
@@ -35,9 +32,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static okhttp3.tls.internal.TlsUtil.localhost;
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -61,7 +56,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
     private static final LocalDateTime DISPLAY_TO = LocalDateTime.now().plusDays(1);
 
     private static final String DESTINATION_URL = "https://localhost:1111";
-    private static final String TOKEN_URL = "https://localhost:1111";
+    private static final String TOKEN_URL = "https://localhost:2222";
     private static final String CLIENT_ID_KEY = "testClientId";
     private static final String CLIENT_SECRET_KEY = "testClientSecret";
     private static final String SCOPE_KEY = "testScope";
@@ -78,10 +73,8 @@ public class ThirdPartyTest extends IntegrationTestBase {
         new ThirdPartyOauthConfiguration();
     private static final ThirdPartySubscription THIRD_PARTY_SUBSCRIPTION = new ThirdPartySubscription();
 
-    private MockWebServer externalApiMockServer;
-
-    @MockitoBean
-    private ThirdPartyTokenCachingService thirdPartyTokenCachingService;
+    private MockWebServer destinationApiMockServer;
+    private MockWebServer tokenApiMockServer;
 
     @Autowired
     private MockMvc mockMvc;
@@ -113,15 +106,17 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
     @BeforeEach
     void setup() throws IOException {
-        externalApiMockServer = new MockWebServer();
-        externalApiMockServer.start(1111);
+        destinationApiMockServer = new MockWebServer();
+        destinationApiMockServer.start(1111);
 
-        when(thirdPartyTokenCachingService.getCachedToken(any())).thenReturn("testAccessToken");
+        tokenApiMockServer = new MockWebServer();
+        tokenApiMockServer.start(2222);
     }
 
     @AfterEach
     void tearDown() throws IOException {
-        externalApiMockServer.close();
+        destinationApiMockServer.close();
+        tokenApiMockServer.close();
     }
 
     @Test
@@ -130,7 +125,8 @@ public class ThirdPartyTest extends IntegrationTestBase {
         when(dataManagementService.getLocation(String.valueOf(LOCATION_ID))).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(PUBLICATION_ID)).thenReturn(PAYLOAD);
 
-        externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+        tokenApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+        destinationApiMockServer.enqueue(new MockResponse().setResponseCode(200));
 
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.NEW_PUBLICATION);
         mockMvc.perform(post(THIRD_PARTY_URL)
@@ -141,7 +137,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
                 "Successfully sent new publication to third party subscribers"
             )));
 
-        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+        RecordedRequest recordedRequest = destinationApiMockServer.takeRequest();
 
         SoftAssertions softly = new SoftAssertions();
 
@@ -162,7 +158,8 @@ public class ThirdPartyTest extends IntegrationTestBase {
         when(dataManagementService.getLocation(String.valueOf(LOCATION_ID))).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(PUBLICATION_ID)).thenReturn(PAYLOAD);
 
-        externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+        tokenApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+        destinationApiMockServer.enqueue(new MockResponse().setResponseCode(200));
 
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.UPDATE_PUBLICATION);
         mockMvc.perform(post(THIRD_PARTY_URL)
@@ -173,7 +170,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
                         "Successfully sent updated publication to third party subscribers"
                 )));
 
-        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+        RecordedRequest recordedRequest = destinationApiMockServer.takeRequest();
 
         SoftAssertions softly = new SoftAssertions();
 
@@ -192,7 +189,8 @@ public class ThirdPartyTest extends IntegrationTestBase {
     void testSendDeletedPublicationNotificationToThirdParty() throws Exception {
         when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(null);
 
-        externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+        tokenApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+        destinationApiMockServer.enqueue(new MockResponse().setResponseCode(200));
 
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.DELETE_PUBLICATION);
         mockMvc.perform(post(THIRD_PARTY_URL)
@@ -203,7 +201,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
                         "Successfully sent publication deleted notification to third party subscribers"
                 )));
 
-        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+        RecordedRequest recordedRequest = destinationApiMockServer.takeRequest();
 
         SoftAssertions softly = new SoftAssertions();
 

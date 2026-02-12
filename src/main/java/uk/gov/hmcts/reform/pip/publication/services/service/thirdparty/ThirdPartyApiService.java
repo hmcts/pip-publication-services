@@ -46,21 +46,26 @@ public class ThirdPartyApiService {
     public void sendNewPublicationToThirdParty(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration,
                                                ThirdPartyPublicationMetadata metadata, String payload,
                                                byte[] file, String filename) {
-        //String token = thirdPartyOauthService.getApiAccessToken(thirdPartyOauthConfiguration);
+        String token = thirdPartyOauthService.getApiAccessToken(thirdPartyOauthConfiguration);
         Consumer<HttpHeaders> headers = httpHeaders -> {
-            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            //httpHeaders.setBearerAuth(token);
+            httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+            httpHeaders.setBearerAuth(token);
         };
-        //MultiValueMap<String, HttpEntity<?>> multiPartBody = createMultiPartBody(metadata, payload, file, filename);
+        MultiValueMap<String, HttpEntity<?>> multiPartBody = createMultiPartBody(metadata, payload, file, filename);
 
-        webClient.post()
-            .uri(thirdPartyOauthConfiguration.getDestinationUrl())
-            .headers(headers)
-            .bodyValue(payload)
-            .retrieve()
-            .bodyToMono(Void.class)
-            //.retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
-            .block();
+        try {
+            webClient.post()
+                .uri(thirdPartyOauthConfiguration.getDestinationUrl())
+                .headers(headers)
+                .body(BodyInserters.fromMultipartData(multiPartBody))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
+                .block();
+        } catch (WebClientResponseException | ThirdPartyServiceException ex) {
+            log.error(writeLog("Failed to send new publication to third party user with ID "
+                                   + thirdPartyOauthConfiguration.getUserId() + ex.getMessage()));
+        }
     }
 
     public void sendUpdatedPublicationToThirdParty(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration,
