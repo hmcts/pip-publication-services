@@ -15,13 +15,12 @@ import uk.gov.hmcts.reform.pip.publication.services.models.ThirdPartyTokenInfo;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
-import javax.cache.configuration.FactoryBuilder;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.AccessedExpiryPolicy;
 import javax.cache.expiry.Duration;
-import javax.cache.expiry.EternalExpiryPolicy;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static javax.cache.expiry.Duration.ONE_DAY;
 
 @Configuration
 public class RedisConfiguration {
@@ -66,7 +65,8 @@ public class RedisConfiguration {
     @Bean
     public MutableConfiguration<String, String> tokenJcacheConfiguration() {
         MutableConfiguration<String, String> config = new MutableConfiguration<>();
-        config.setExpiryPolicyFactory(FactoryBuilder.factoryOf(new EternalExpiryPolicy()));
+
+        config.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(ONE_DAY));
         return config;
     }
 

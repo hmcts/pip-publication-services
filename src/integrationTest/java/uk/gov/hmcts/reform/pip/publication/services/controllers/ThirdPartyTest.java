@@ -34,6 +34,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -101,7 +102,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyOauthConfigurationList(List.of(THIRD_PARTY_OAUTH_CONFIGURATION));
         THIRD_PARTY_SUBSCRIPTION.setPublicationId(PUBLICATION_ID);
-        THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.NEW_PUBLICATION);
+
     }
 
     @BeforeEach
@@ -123,6 +124,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
         externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
 
+        THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.NEW_PUBLICATION);
         mockMvc.perform(post(THIRD_PARTY_URL)
                             .content(OBJECT_MAPPER.writeValueAsString(THIRD_PARTY_SUBSCRIPTION))
                             .contentType(MediaType.APPLICATION_JSON))
@@ -142,6 +144,64 @@ public class ThirdPartyTest extends IntegrationTestBase {
         softly.assertThat(recordedRequest.getHeader(CONTENT_TYPE))
             .as(HEADER_MATCH_MESSAGE)
             .isEqualTo(MediaType.MULTIPART_FORM_DATA.toString());
+
+        softly.assertAll();
+    }
+
+    @Test
+    void testSendUpdatedPublicationToThirdParty() throws Exception {
+        when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(ARTEFACT);
+        when(dataManagementService.getLocation(String.valueOf(LOCATION_ID))).thenReturn(LOCATION);
+        when(dataManagementService.getArtefactJsonBlob(PUBLICATION_ID)).thenReturn(PAYLOAD);
+
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+
+        THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.UPDATE_PUBLICATION);
+        mockMvc.perform(post(THIRD_PARTY_URL)
+                        .content(OBJECT_MAPPER.writeValueAsString(THIRD_PARTY_SUBSCRIPTION))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(
+                        "Successfully sent publication deleted notification to third party subscribers"
+                )));
+
+        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(recordedRequest.getMethod())
+                .as(METHOD_MATCH_MESSAGE)
+                .isEqualTo("PUT");
+
+        softly.assertThat(recordedRequest.getHeader(CONTENT_TYPE))
+                .as(HEADER_MATCH_MESSAGE)
+                .isEqualTo(MediaType.MULTIPART_FORM_DATA.toString());
+
+        softly.assertAll();
+    }
+
+    @Test
+    void testSendDeletedPublicationNotificationToThirdParty() throws Exception {
+        when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(null);
+
+        externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+
+        THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.DELETE_PUBLICATION);
+        mockMvc.perform(delete(THIRD_PARTY_URL)
+                        .content(OBJECT_MAPPER.writeValueAsString(THIRD_PARTY_SUBSCRIPTION))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(
+                        "Successfully sent publication deleted notification to third party subscribers"
+                )));
+
+        RecordedRequest recordedRequest = externalApiMockServer.takeRequest();
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(recordedRequest.getMethod())
+                .as(METHOD_MATCH_MESSAGE)
+                .isEqualTo("DELETE");
 
         softly.assertAll();
     }

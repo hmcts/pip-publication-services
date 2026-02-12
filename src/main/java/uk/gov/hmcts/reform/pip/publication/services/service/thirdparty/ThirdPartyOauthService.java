@@ -44,7 +44,7 @@ public class ThirdPartyOauthService {
     }
 
     public String requestApiAccessToken(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration) {
-        String testKey = keyVaultService.getSecretValue("b2c-client-id");
+        //  String testKey = keyVaultService.getSecretValue("b2c-client-id");
 
         //  String clientId = keyVaultService.getSecretValue(thirdPartyOauthConfiguration.getClientIdKey());
         //  String clientSecret = keyVaultService.getSecretValue(thirdPartyOauthConfiguration.getClientSecretKey());

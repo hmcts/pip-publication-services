@@ -8,7 +8,6 @@ import javax.cache.Cache;
 
 @Service
 public class ThirdPartyTokenCachingService {
-    private static final String TOKEN_CACHE = "third-party_token-cache";
     private static final int TOKEN_EXPIRY_BUFFER_SECONDS = 60;
 
     private final Cache<String, ThirdPartyTokenInfo> tokenCache;
