@@ -194,7 +194,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
         externalApiMockServer.enqueue(new MockResponse().setResponseCode(200));
 
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.DELETE_PUBLICATION);
-        mockMvc.perform(delete(THIRD_PARTY_URL)
+        mockMvc.perform(post(THIRD_PARTY_URL)
                         .content(OBJECT_MAPPER.writeValueAsString(THIRD_PARTY_SUBSCRIPTION))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
