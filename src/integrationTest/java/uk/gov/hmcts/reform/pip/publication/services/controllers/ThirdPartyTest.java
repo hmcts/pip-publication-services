@@ -55,8 +55,8 @@ public class ThirdPartyTest extends IntegrationTestBase {
     private static final LocalDateTime DISPLAY_FROM = LocalDateTime.now();
     private static final LocalDateTime DISPLAY_TO = LocalDateTime.now().plusDays(1);
 
-    private static final String DESTINATION_URL = "http://localhost:1111";
-    private static final String TOKEN_URL = "http://localhost:2222";
+    private static final String DESTINATION_URL = "http://localhost:1111/";
+    private static final String TOKEN_URL = "http://localhost:2222/";
     private static final String CLIENT_ID_KEY = "testClientId";
     private static final String CLIENT_SECRET_KEY = "testClientSecret";
     private static final String SCOPE_KEY = "testScope";
@@ -64,6 +64,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
     private static final String CONTENT_TYPE = "Content-Type";
 
     private static final String METHOD_MATCH_MESSAGE = "Request method does not match";
+    private static final String URL_MATCH_MESSAGE = "Request URL does not match";
     private static final String HEADER_MATCH_MESSAGE = "Request header does not match";
     private static final String BODY_MATCH_MESSAGE = "Request body does not match";
 
@@ -139,17 +140,38 @@ public class ThirdPartyTest extends IntegrationTestBase {
                 "Successfully sent new publication to third party subscribers"
             )));
 
-        RecordedRequest recordedRequest = destinationApiMockServer.takeRequest();
-
         SoftAssertions softly = new SoftAssertions();
+        RecordedRequest tokenApiRecordedRequest = tokenApiMockServer.takeRequest();
+
+        softly.assertThat(tokenApiRecordedRequest.getMethod())
+            .as(METHOD_MATCH_MESSAGE)
+            .isEqualTo("POST");
+
+        softly.assertThat(tokenApiRecordedRequest.getRequestUrl().toString())
+            .as(URL_MATCH_MESSAGE)
+            .isEqualTo(TOKEN_URL);
+
+        RecordedRequest recordedRequest = destinationApiMockServer.takeRequest();
 
         softly.assertThat(recordedRequest.getMethod())
             .as(METHOD_MATCH_MESSAGE)
             .isEqualTo("POST");
 
+        softly.assertThat(recordedRequest.getRequestUrl().toString())
+            .as(URL_MATCH_MESSAGE)
+            .isEqualTo(DESTINATION_URL);
+
         softly.assertThat(recordedRequest.getHeader(CONTENT_TYPE))
             .as(HEADER_MATCH_MESSAGE)
             .contains(MediaType.MULTIPART_FORM_DATA.toString());
+
+        String requestBody = recordedRequest.getBody().readUtf8();
+        softly.assertThat(requestBody)
+            .as(BODY_MATCH_MESSAGE)
+            .contains(PUBLICATION_ID.toString())
+            .contains(ListType.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST.toString())
+            .contains(LOCATION_NAME)
+            .contains(PAYLOAD);
 
         softly.assertAll();
     }
@@ -172,17 +194,38 @@ public class ThirdPartyTest extends IntegrationTestBase {
                         "Successfully sent updated publication to third party subscribers"
                 )));
 
-        RecordedRequest recordedRequest = destinationApiMockServer.takeRequest();
-
         SoftAssertions softly = new SoftAssertions();
+        RecordedRequest tokenApiRecordedRequest = tokenApiMockServer.takeRequest();
+
+        softly.assertThat(tokenApiRecordedRequest.getMethod())
+            .as(METHOD_MATCH_MESSAGE)
+            .isEqualTo("POST");
+
+        softly.assertThat(tokenApiRecordedRequest.getRequestUrl().toString())
+            .as(URL_MATCH_MESSAGE)
+            .isEqualTo(TOKEN_URL);
+
+        RecordedRequest recordedRequest = destinationApiMockServer.takeRequest();
 
         softly.assertThat(recordedRequest.getMethod())
                 .as(METHOD_MATCH_MESSAGE)
                 .isEqualTo("PUT");
 
+        softly.assertThat(recordedRequest.getRequestUrl().toString())
+            .as(URL_MATCH_MESSAGE)
+            .isEqualTo(DESTINATION_URL + PUBLICATION_ID);
+
         softly.assertThat(recordedRequest.getHeader(CONTENT_TYPE))
                 .as(HEADER_MATCH_MESSAGE)
                 .contains(MediaType.MULTIPART_FORM_DATA.toString());
+
+        String requestBody = recordedRequest.getBody().readUtf8();
+        softly.assertThat(requestBody)
+                .as(BODY_MATCH_MESSAGE)
+                .contains(PUBLICATION_ID.toString())
+                .contains(ListType.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST.toString())
+                .contains(LOCATION_NAME)
+                .contains(PAYLOAD);
 
         softly.assertAll();
     }
@@ -203,13 +246,26 @@ public class ThirdPartyTest extends IntegrationTestBase {
                         "Successfully sent publication deleted notification to third party subscribers"
                 )));
 
-        RecordedRequest recordedRequest = destinationApiMockServer.takeRequest();
-
         SoftAssertions softly = new SoftAssertions();
+        RecordedRequest tokenApiRecordedRequest = tokenApiMockServer.takeRequest();
+
+        softly.assertThat(tokenApiRecordedRequest.getMethod())
+            .as(METHOD_MATCH_MESSAGE)
+            .isEqualTo("POST");
+
+        softly.assertThat(tokenApiRecordedRequest.getRequestUrl().toString())
+            .as(URL_MATCH_MESSAGE)
+            .isEqualTo(TOKEN_URL);
+
+        RecordedRequest recordedRequest = destinationApiMockServer.takeRequest();
 
         softly.assertThat(recordedRequest.getMethod())
                 .as(METHOD_MATCH_MESSAGE)
                 .isEqualTo("DELETE");
+
+        softly.assertThat(recordedRequest.getRequestUrl().toString())
+            .as(URL_MATCH_MESSAGE)
+            .isEqualTo(DESTINATION_URL + PUBLICATION_ID);
 
         softly.assertAll();
     }
