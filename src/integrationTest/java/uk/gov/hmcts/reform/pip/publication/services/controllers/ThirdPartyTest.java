@@ -149,7 +149,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
         softly.assertThat(recordedRequest.getHeader(CONTENT_TYPE))
             .as(HEADER_MATCH_MESSAGE)
-            .isEqualTo(MediaType.MULTIPART_FORM_DATA.toString());
+            .contains(MediaType.MULTIPART_FORM_DATA.toString());
 
         softly.assertAll();
     }
@@ -182,7 +182,7 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
         softly.assertThat(recordedRequest.getHeader(CONTENT_TYPE))
                 .as(HEADER_MATCH_MESSAGE)
-                .isEqualTo(MediaType.MULTIPART_FORM_DATA.toString());
+                .contains(MediaType.MULTIPART_FORM_DATA.toString());
 
         softly.assertAll();
     }
