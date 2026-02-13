@@ -55,8 +55,8 @@ public class ThirdPartyTest extends IntegrationTestBase {
     private static final LocalDateTime DISPLAY_FROM = LocalDateTime.now();
     private static final LocalDateTime DISPLAY_TO = LocalDateTime.now().plusDays(1);
 
-    private static final String DESTINATION_URL = "https://localhost:1111";
-    private static final String TOKEN_URL = "https://localhost:2222";
+    private static final String DESTINATION_URL = "http://localhost:1111";
+    private static final String TOKEN_URL = "http://localhost:2222";
     private static final String CLIENT_ID_KEY = "testClientId";
     private static final String CLIENT_SECRET_KEY = "testClientSecret";
     private static final String SCOPE_KEY = "testScope";
