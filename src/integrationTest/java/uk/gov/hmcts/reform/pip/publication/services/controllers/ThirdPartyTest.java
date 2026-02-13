@@ -81,6 +81,8 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
     @BeforeAll
     static void setUp() {
+        OBJECT_MAPPER.findAndRegisterModules();
+
         ARTEFACT.setArtefactId(PUBLICATION_ID);
         ARTEFACT.setListType(ListType.CIVIL_AND_FAMILY_DAILY_CAUSE_LIST);
         ARTEFACT.setContentDate(CONTENT_DATE);
