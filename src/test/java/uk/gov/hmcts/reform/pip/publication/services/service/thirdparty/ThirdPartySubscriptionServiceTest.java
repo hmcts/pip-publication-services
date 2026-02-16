@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.thirdparty;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
@@ -126,14 +126,10 @@ class ThirdPartySubscriptionServiceTest {
         LOCATION.setName(LOCATION_NAME);
     }
 
-    @BeforeEach
-    void setUpEach() {
-        when(dataManagementService.getLocation(any())).thenReturn(LOCATION);
-    }
-
     @Test
     void testSendThirdPartySubscriptionForNewJsonPublication() {
         when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(ARTEFACT_JSON);
+        when(dataManagementService.getLocation(any())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(PUBLICATION_ID)).thenReturn(PAYLOAD);
 
         assertThat(thirdPartySubscriptionService.sendThirdPartySubscription(THIRD_PARTY_SUBSCRIPTION_NEW_PUBLICATION))
@@ -151,6 +147,7 @@ class ThirdPartySubscriptionServiceTest {
         ARTEFACT_FLAT_FILE.setSourceArtefactId(SOURCE_ARTEFACT_ID);
 
         when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(ARTEFACT_FLAT_FILE);
+        when(dataManagementService.getLocation(any())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactFlatFile(PUBLICATION_ID)).thenReturn(FILE);
 
         assertThat(thirdPartySubscriptionService.sendThirdPartySubscription(THIRD_PARTY_SUBSCRIPTION_NEW_PUBLICATION))
@@ -166,6 +163,7 @@ class ThirdPartySubscriptionServiceTest {
     @Test
     void testSendThirdPartySubscriptionForUpdatedJsonPublication() {
         when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(ARTEFACT_JSON);
+        when(dataManagementService.getLocation(any())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(PUBLICATION_ID)).thenReturn(PAYLOAD);
 
         assertThat(thirdPartySubscriptionService
@@ -184,6 +182,7 @@ class ThirdPartySubscriptionServiceTest {
         ARTEFACT_FLAT_FILE.setSourceArtefactId(SOURCE_ARTEFACT_ID);
 
         when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(ARTEFACT_FLAT_FILE);
+        when(dataManagementService.getLocation(any())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactFlatFile(PUBLICATION_ID)).thenReturn(FILE);
 
         assertThat(thirdPartySubscriptionService
@@ -199,15 +198,12 @@ class ThirdPartySubscriptionServiceTest {
 
     @Test
     void testSendThirdPartySubscriptionForDeletedJsonPublication() {
-        when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(ARTEFACT_JSON);
-        when(dataManagementService.getArtefactJsonBlob(PUBLICATION_ID)).thenReturn(PAYLOAD);
-
         assertThat(thirdPartySubscriptionService
                        .sendThirdPartySubscription(THIRD_PARTY_SUBSCRIPTION_DELETE_PUBLICATION))
             .as(RESPONSE_NOT_MATCH_MESSAGE)
             .isEqualTo(SUCCESS_DELETED_PUBLICATION_MESSAGE);
 
-        verify(dataManagementService, never()).getArtefactFlatFile(PUBLICATION_ID);
+        verifyNoInteractions(dataManagementService);
         verify(thirdPartyApiService).notifyThirdPartyOfPublicationDeletion(OAUTH_CONFIGURATION, PUBLICATION_ID);
     }
 
@@ -215,15 +211,12 @@ class ThirdPartySubscriptionServiceTest {
     void testSendThirdPartySubscriptionForDeletedFlatFilePublication() {
         ARTEFACT_FLAT_FILE.setSourceArtefactId(SOURCE_ARTEFACT_ID);
 
-        when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(ARTEFACT_FLAT_FILE);
-        when(dataManagementService.getArtefactFlatFile(PUBLICATION_ID)).thenReturn(FILE);
-
         assertThat(thirdPartySubscriptionService
                        .sendThirdPartySubscription(THIRD_PARTY_SUBSCRIPTION_DELETE_PUBLICATION))
             .as(RESPONSE_NOT_MATCH_MESSAGE)
             .isEqualTo(SUCCESS_DELETED_PUBLICATION_MESSAGE);
 
-        verify(dataManagementService, never()).getArtefactJsonBlob(PUBLICATION_ID);
+        verifyNoInteractions(dataManagementService);
         verify(thirdPartyApiService).notifyThirdPartyOfPublicationDeletion(OAUTH_CONFIGURATION, PUBLICATION_ID);
     }
 
@@ -232,6 +225,7 @@ class ThirdPartySubscriptionServiceTest {
         ARTEFACT_FLAT_FILE.setSourceArtefactId(null);
 
         when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(ARTEFACT_FLAT_FILE);
+        when(dataManagementService.getLocation(any())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactFlatFile(PUBLICATION_ID)).thenReturn(FILE);
 
         assertThat(thirdPartySubscriptionService.sendThirdPartySubscription(THIRD_PARTY_SUBSCRIPTION_NEW_PUBLICATION))

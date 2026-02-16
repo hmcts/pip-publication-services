@@ -23,25 +23,27 @@ public class ThirdPartySubscriptionService {
     }
 
     public String sendThirdPartySubscription(ThirdPartySubscription thirdPartySubscription) {
+        if (ThirdPartyAction.DELETE_PUBLICATION.equals(thirdPartySubscription.getThirdPartyAction())) {
+            return handleSubscriptionNotification(thirdPartySubscription, null, null, null, null);
+        }
+
         Artefact artefact = dataManagementService.getArtefact(thirdPartySubscription.getPublicationId());
-        ThirdPartyPublicationMetadata thirdPartyPublicationMetadata = null;
+        Location location = dataManagementService.getLocation(artefact.getLocationId());
+        ThirdPartyPublicationMetadata thirdPartyPublicationMetadata = new ThirdPartyPublicationMetadata()
+            .convert(artefact, location.getName());
         String payload = null;
         byte[] file = null;
         String filename = null;
 
-        if (artefact != null) {
-            Location location = dataManagementService.getLocation(artefact.getLocationId());
-            thirdPartyPublicationMetadata = new ThirdPartyPublicationMetadata().convert(artefact, location.getName());
-            if (artefact.getIsFlatFile()) {
-                file = dataManagementService.getArtefactFlatFile(thirdPartySubscription.getPublicationId());
-                String sourceArtefactId = artefact.getSourceArtefactId();
-                String fileExtension = sourceArtefactId != null
-                    ? sourceArtefactId.substring(sourceArtefactId.lastIndexOf("."))
-                    : "";
-                filename = thirdPartySubscription.getPublicationId() + fileExtension;
-            } else {
-                payload = dataManagementService.getArtefactJsonBlob(thirdPartySubscription.getPublicationId());
-            }
+        if (artefact.getIsFlatFile()) {
+            file = dataManagementService.getArtefactFlatFile(thirdPartySubscription.getPublicationId());
+            String sourceArtefactId = artefact.getSourceArtefactId();
+            String fileExtension = sourceArtefactId != null
+                ? sourceArtefactId.substring(sourceArtefactId.lastIndexOf("."))
+                : "";
+            filename = thirdPartySubscription.getPublicationId() + fileExtension;
+        } else {
+            payload = dataManagementService.getArtefactJsonBlob(thirdPartySubscription.getPublicationId());
         }
 
         return handleSubscriptionNotification(thirdPartySubscription, thirdPartyPublicationMetadata, payload,
