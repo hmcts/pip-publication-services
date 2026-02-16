@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.pip.model.publication.Sensitivity;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyAction;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyOauthConfiguration;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.publication.services.service.KeyVaultService;
 import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
 
 import java.io.IOException;
@@ -77,6 +79,9 @@ public class ThirdPartyTest extends IntegrationTestBase {
     private MockWebServer destinationApiMockServer;
     private MockWebServer tokenApiMockServer;
 
+    @MockitoBean
+    KeyVaultService keyVaultService;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -114,6 +119,10 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
         tokenApiMockServer = new MockWebServer();
         tokenApiMockServer.start(2222);
+
+        when(keyVaultService.getSecretValue(CLIENT_ID_KEY)).thenReturn("testClientId");
+        when(keyVaultService.getSecretValue(CLIENT_SECRET_KEY)).thenReturn("testClientSecret");
+        when(keyVaultService.getSecretValue(SCOPE_KEY)).thenReturn("testScope");
     }
 
     @AfterEach

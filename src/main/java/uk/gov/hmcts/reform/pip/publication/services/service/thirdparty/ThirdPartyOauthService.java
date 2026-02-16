@@ -44,19 +44,17 @@ public class ThirdPartyOauthService {
     }
 
     public String requestApiAccessToken(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration) {
-        //  String testKey = keyVaultService.getSecretValue("b2c-client-id");
-
-        //  String clientId = keyVaultService.getSecretValue(thirdPartyOauthConfiguration.getClientIdKey());
-        //  String clientSecret = keyVaultService.getSecretValue(thirdPartyOauthConfiguration.getClientSecretKey());
-        //  String scope = thirdPartyOauthConfiguration.getScopeKey());
+        String clientId = keyVaultService.getSecretValue(thirdPartyOauthConfiguration.getClientIdKey());
+        String clientSecret = keyVaultService.getSecretValue(thirdPartyOauthConfiguration.getClientSecretKey());
+        String scope = keyVaultService.getSecretValue(thirdPartyOauthConfiguration.getScopeKey());
 
         try {
             WebClient.RequestHeadersSpec<?> req = webClient.post()
                 .uri(thirdPartyOauthConfiguration.getTokenUrl())
                 .body(BodyInserters.fromFormData(GRANT_TYPE, CLIENT_CREDENTIALS)
-                          .with(CLIENT_ID, thirdPartyOauthConfiguration.getClientIdKey())
-                          .with(CLIENT_SECRET, thirdPartyOauthConfiguration.getClientSecretKey())
-                          .with(SCOPE, thirdPartyOauthConfiguration.getScopeKey()));
+                          .with(CLIENT_ID, clientId)
+                          .with(CLIENT_SECRET, clientSecret)
+                          .with(SCOPE, scope));
 
             return req.retrieve()
                 .bodyToMono(JsonNode.class)

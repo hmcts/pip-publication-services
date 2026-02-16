@@ -38,3 +38,5 @@ java:
           alias: XHIBIT_S3_ACCESS_KEY
         - name: xhibit-s3-access-key-secret
           alias: XHIBIT_S3_SECRET_KEY
+  environment:
+    THIRD_PARTY_KEY_VAULT: pip-ss-tp-kv-stg
