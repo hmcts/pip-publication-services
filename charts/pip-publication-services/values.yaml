@@ -40,6 +40,6 @@ java:
           alias: MANAGED_IDENTITY_CLIENT_ID
   environment:
     ENV_NAME: "{{ .Values.global.environment }}"
-    THIRD_PARTY_KEY_VAULT: pip-tp-kv-{{ .Values.global.environment }}
+    THIRD_PARTY_KEY_VAULT: pip-ss-tp-kv-{{ .Values.global.environment }}
   autoscaling:
     enabled: false #To be enabled as part of PUB-1692
