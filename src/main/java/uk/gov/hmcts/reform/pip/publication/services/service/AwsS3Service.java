@@ -9,7 +9,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.S3UploadException;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 @Service
@@ -25,14 +24,15 @@ public class AwsS3Service {
         this.s3Client = s3Client;
     }
 
-    public void uploadFile(String key, InputStream fileStream) throws IOException {
+    public void uploadFile(String key, InputStream fileStream) {
         try {
             PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
                 .build();
 
-            s3Client.putObject(request, RequestBody.fromInputStream(fileStream, fileStream.available()));
+            s3Client.putObject(request, RequestBody.fromContentProvider(() -> fileStream,
+                                                                        "application/octet-stream"));
         } catch (S3Exception e) {
             throw new S3UploadException("Failed to upload file to S3: " + e.getMessage(), e);
         }
