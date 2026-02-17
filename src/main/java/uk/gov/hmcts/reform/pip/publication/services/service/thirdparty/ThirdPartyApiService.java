@@ -111,6 +111,23 @@ public class ThirdPartyApiService {
         }
     }
 
+    public void thirdPartyHealthCheck(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration) {
+        String token = thirdPartyOauthService.getApiAccessToken(thirdPartyOauthConfiguration);
+
+        try {
+            webClient.get()
+                .uri(thirdPartyOauthConfiguration.getDestinationUrl())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
+                .block();
+        } catch (WebClientResponseException | ThirdPartyServiceException ex) {
+            log.error(writeLog("Failed to perform health check for third party user with ID "
+                                   + thirdPartyOauthConfiguration.getUserId()));
+        }
+    }
+
     private MultiValueMap<String, HttpEntity<?>> createMultiPartBody(ThirdPartyPublicationMetadata metadata,
                                                                      String payload, byte[] file, String filename) {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();

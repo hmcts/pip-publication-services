@@ -204,4 +204,37 @@ class ThirdPartyApiServiceTest {
                 .contains("Failed to send publication deleted notification to third party user with ID " + USER_ID);
         }
     }
+
+    @Test
+    void testThirdPartyHealthCheckSuccess() {
+        try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyApiService.class)) {
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(200));
+
+            thirdPartyApiService.thirdPartyHealthCheck(OAUTH_CONFIGURATION);
+
+            assertThat(logCaptor.getErrorLogs())
+                .as(ERROR_LOG_EMPTY_MESSAGE)
+                .isEmpty();
+        }
+    }
+
+    @Test
+    void testThirdPartyHealthCheckError() {
+        try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyApiService.class)) {
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
+
+            thirdPartyApiService.thirdPartyHealthCheck(OAUTH_CONFIGURATION);
+
+            assertThat(logCaptor.getErrorLogs())
+                .as(ERROR_LOG_NOT_EMPTY_MESSAGE)
+                .hasSize(1);
+
+            assertThat(logCaptor.getErrorLogs().get(0))
+                .as(ERROR_LOG_MESSAGE)
+                .contains("Failed to perform health check for third party user with ID " + USER_ID);
+        }
+    }
 }
