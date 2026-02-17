@@ -81,10 +81,8 @@ public class ThirdPartySubscriptionService {
                 return "Successfully sent publication deleted notification to third party subscribers";
             }
             case ThirdPartyAction.HEALTH_CHECK -> {
-                for (ThirdPartyOauthConfiguration oauthConfig
-                    : thirdPartySubscription.getThirdPartyOauthConfigurationList()) {
-                    thirdPartyApiService.thirdPartyHealthCheck(oauthConfig);
-                }
+                thirdPartyApiService.thirdPartyHealthCheck(thirdPartySubscription.getThirdPartyOauthConfigurationList()
+                                                               .get(0));
                 return "Successfully performed health check for third party subscriber";
             }
             default -> throw new IllegalArgumentException("Unsupported third party action: "
