@@ -85,7 +85,7 @@ public class ThirdPartySubscriptionService {
                     : thirdPartySubscription.getThirdPartyOauthConfigurationList()) {
                     thirdPartyApiService.thirdPartyHealthCheck(oauthConfig);
                 }
-                return "Successfully performed health check for third party subscribers";
+                return "Successfully performed health check for third party subscriber";
             }
             default -> throw new IllegalArgumentException("Unsupported third party action: "
                                                               + thirdPartySubscription.getThirdPartyAction());

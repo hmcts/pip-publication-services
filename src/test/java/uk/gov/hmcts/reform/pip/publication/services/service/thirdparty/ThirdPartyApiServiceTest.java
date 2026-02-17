@@ -11,12 +11,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyOauthConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyHealthCheckException;
 import uk.gov.hmcts.reform.pip.publication.services.models.ThirdPartyPublicationMetadata;
 
 import java.io.IOException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 @ActiveProfiles("test")
@@ -220,21 +222,13 @@ class ThirdPartyApiServiceTest {
 
     @Test
     void testThirdPartyHealthCheckError() {
-        try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyApiService.class)) {
-            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
-            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
-            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
-            mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
+        mockEndpoint.enqueue(new MockResponse().setResponseCode(500));
+        mockEndpoint.enqueue(new MockResponse().setResponseCode(500));
+        mockEndpoint.enqueue(new MockResponse().setResponseCode(500));
+        mockEndpoint.enqueue(new MockResponse().setResponseCode(500));
 
-            thirdPartyApiService.thirdPartyHealthCheck(OAUTH_CONFIGURATION);
-
-            assertThat(logCaptor.getErrorLogs())
-                .as(ERROR_LOG_NOT_EMPTY_MESSAGE)
-                .hasSize(1);
-
-            assertThat(logCaptor.getErrorLogs().get(0))
-                .as(ERROR_LOG_MESSAGE)
-                .contains("Failed to perform health check for third party user with ID " + USER_ID);
-        }
+        assertThatThrownBy(() -> thirdPartyApiService.thirdPartyHealthCheck(OAUTH_CONFIGURATION))
+            .isInstanceOf(ThirdPartyHealthCheckException.class)
+            .hasMessageContaining("Failed to send request to destination.");
     }
 }

@@ -241,8 +241,6 @@ public class ThirdPartyTest extends IntegrationTestBase {
 
     @Test
     void testSendDeletedPublicationNotificationToThirdParty() throws Exception {
-        when(dataManagementService.getArtefact(PUBLICATION_ID)).thenReturn(null);
-
         tokenApiMockServer.enqueue(new MockResponse().setResponseCode(200));
         destinationApiMockServer.enqueue(new MockResponse().setResponseCode(200));
 
@@ -277,6 +275,76 @@ public class ThirdPartyTest extends IntegrationTestBase {
             .isEqualTo(DESTINATION_URL + PUBLICATION_ID);
 
         softly.assertAll();
+    }
+
+    @Test
+    void testThirdPartyHealthCheckSuccess() throws Exception {
+        tokenApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+        destinationApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+
+        THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.HEALTH_CHECK);
+        mockMvc.perform(post(THIRD_PARTY_URL)
+                            .content(OBJECT_MAPPER.writeValueAsString(THIRD_PARTY_SUBSCRIPTION))
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(
+                "Successfully performed health check for third party subscriber"
+            )));
+
+        SoftAssertions softly = new SoftAssertions();
+        RecordedRequest tokenApiRecordedRequest = tokenApiMockServer.takeRequest();
+
+        softly.assertThat(tokenApiRecordedRequest.getMethod())
+            .as(METHOD_MATCH_MESSAGE)
+            .isEqualTo("POST");
+
+        softly.assertThat(tokenApiRecordedRequest.getRequestUrl().toString())
+            .as(URL_MATCH_MESSAGE)
+            .isEqualTo(TOKEN_URL);
+
+        RecordedRequest recordedRequest = destinationApiMockServer.takeRequest();
+
+        softly.assertThat(recordedRequest.getMethod())
+            .as(METHOD_MATCH_MESSAGE)
+            .isEqualTo("GET");
+
+        softly.assertThat(recordedRequest.getRequestUrl().toString())
+            .as(URL_MATCH_MESSAGE)
+            .isEqualTo(DESTINATION_URL);
+
+        softly.assertAll();
+    }
+
+    @Test
+    void testThirdPartyHealthCheckWithTokenGenerationError() throws Exception {
+        tokenApiMockServer.enqueue(new MockResponse().setResponseCode(500));
+
+        THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.HEALTH_CHECK);
+        mockMvc.perform(post(THIRD_PARTY_URL)
+                            .content(OBJECT_MAPPER.writeValueAsString(THIRD_PARTY_SUBSCRIPTION))
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().string(containsString(
+                "Failed to generate access token."
+            )));
+    }
+
+    @Test
+    void testThirdPartyHealthCheckWithRequestError() throws Exception {
+        tokenApiMockServer.enqueue(new MockResponse().setResponseCode(200));
+        destinationApiMockServer.enqueue(new MockResponse().setResponseCode(500));
+        destinationApiMockServer.enqueue(new MockResponse().setResponseCode(500));
+        destinationApiMockServer.enqueue(new MockResponse().setResponseCode(500));
+        destinationApiMockServer.enqueue(new MockResponse().setResponseCode(500));
+
+        THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.HEALTH_CHECK);
+        mockMvc.perform(post(THIRD_PARTY_URL)
+                            .content(OBJECT_MAPPER.writeValueAsString(THIRD_PARTY_SUBSCRIPTION))
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().string(containsString(
+                "Failed to send request to destination."
+            )));
     }
 
     @Test
