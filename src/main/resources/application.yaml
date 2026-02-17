@@ -82,8 +82,6 @@ third-party:
 envName: ${ENV_NAME:local}
 
 springdoc:
-  api-docs:
-    path: /api-docs
   swagger-ui:
     path: /swagger-ui/
 
