@@ -49,7 +49,7 @@ class ThirdPartySubscriptionServiceTest {
     private static final String SUCCESS_DELETED_PUBLICATION_MESSAGE =
         "Successfully sent publication deleted notification to third party subscribers";
     private static final String SUCCESS_HEALTH_CHECK_MESSAGE =
-        "Successfully performed health check for third party subscribers";
+        "Successfully performed health check for third party subscriber";
     private static final String RESPONSE_NOT_MATCH_MESSAGE = "Returned message does not match";
 
     private static final Artefact ARTEFACT_JSON = new Artefact();
