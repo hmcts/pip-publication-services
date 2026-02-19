@@ -333,9 +333,6 @@ public class ThirdPartyTest extends IntegrationTestBase {
     void testThirdPartyHealthCheckWithRequestError() throws Exception {
         tokenApiMockServer.enqueue(new MockResponse().setResponseCode(200));
         destinationApiMockServer.enqueue(new MockResponse().setResponseCode(500));
-        destinationApiMockServer.enqueue(new MockResponse().setResponseCode(500));
-        destinationApiMockServer.enqueue(new MockResponse().setResponseCode(500));
-        destinationApiMockServer.enqueue(new MockResponse().setResponseCode(500));
 
         THIRD_PARTY_SUBSCRIPTION.setThirdPartyAction(ThirdPartyAction.HEALTH_CHECK);
         mockMvc.perform(post(THIRD_PARTY_URL)

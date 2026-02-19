@@ -223,9 +223,6 @@ class ThirdPartyApiServiceTest {
     @Test
     void testThirdPartyHealthCheckError() {
         mockEndpoint.enqueue(new MockResponse().setResponseCode(500));
-        mockEndpoint.enqueue(new MockResponse().setResponseCode(500));
-        mockEndpoint.enqueue(new MockResponse().setResponseCode(500));
-        mockEndpoint.enqueue(new MockResponse().setResponseCode(500));
 
         assertThatThrownBy(() -> thirdPartyApiService.thirdPartyHealthCheck(OAUTH_CONFIGURATION))
             .isInstanceOf(ThirdPartyHealthCheckException.class)

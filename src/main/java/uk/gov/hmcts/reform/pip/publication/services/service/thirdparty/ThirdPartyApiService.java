@@ -121,7 +121,6 @@ public class ThirdPartyApiService {
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(Void.class)
-                .retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
                 .block();
         } catch (WebClientResponseException | ThirdPartyServiceException ex) {
             log.error(writeLog("Failed to perform health check for third party user with ID "
