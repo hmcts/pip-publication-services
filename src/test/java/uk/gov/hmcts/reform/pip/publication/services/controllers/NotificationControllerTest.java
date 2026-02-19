@@ -15,9 +15,9 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
 import uk.gov.hmcts.reform.pip.model.system.admin.ActionResult;
 import uk.gov.hmcts.reform.pip.model.system.admin.ChangeType;
 import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
@@ -85,11 +85,12 @@ class NotificationControllerTest {
     private BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
     private final List<NoMatchArtefact> noMatchArtefactList = new ArrayList<>();
     private DuplicatedMediaEmail createMediaSetupEmail;
-    private ThirdPartySubscription thirdPartySubscription = new ThirdPartySubscription();
+    private LegacyThirdPartySubscription thirdPartySubscription = new LegacyThirdPartySubscription();
     private MediaVerificationEmail mediaVerificationEmail;
     private MediaRejectionEmail mediaRejectionEmail;
     private InactiveUserNotificationEmail inactiveUserNotificationEmail;
-    private ThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact = new ThirdPartySubscriptionArtefact();
+    private LegacyThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact =
+        new LegacyThirdPartySubscriptionArtefact();
     private SystemAdminAction systemAdminAction;
     private LocationSubscriptionDeletion locationSubscriptionDeletion = new LocationSubscriptionDeletion();
 
