@@ -14,10 +14,7 @@
         <origin>*</origin>
       </allowed-origins>
       <allowed-methods>
-        <method>GET</method>
         <method>POST</method>
-        <method>PUT</method>
-        <method>DELETE</method>
       </allowed-methods>
     </cors>
     <return-response>
