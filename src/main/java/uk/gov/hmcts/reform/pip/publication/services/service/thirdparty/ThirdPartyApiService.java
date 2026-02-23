@@ -63,8 +63,12 @@ public class ThirdPartyApiService {
                 .bodyToMono(Void.class)
                 .retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
                 .block();
+            log.info(writeLog(String.format(
+                    "New publication with ID %s successfully sent to third-party user with ID %s",
+                    metadata.getPublicationId(), thirdPartyOauthConfiguration.getUserId()
+            )));
         } catch (WebClientResponseException | ThirdPartyServiceException ex) {
-            log.error(writeLog("Failed to send new publication to third party user with ID "
+            log.error(writeLog("Failed to send new publication to third-party user with ID "
                                    + thirdPartyOauthConfiguration.getUserId() + ex.getMessage()));
         }
     }
@@ -88,8 +92,12 @@ public class ThirdPartyApiService {
                 .bodyToMono(Void.class)
                 .retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
                 .block();
+            log.info(writeLog(String.format(
+                    "Updated publication with ID %s successfully sent to third-party user with ID %s",
+                    metadata.getPublicationId(), thirdPartyOauthConfiguration.getUserId()
+            )));
         } catch (WebClientResponseException | ThirdPartyServiceException ex) {
-            log.error(writeLog("Failed to send updated publication to third party user with ID "
+            log.error(writeLog("Failed to send updated publication to third-party user with ID "
                                    + thirdPartyOauthConfiguration.getUserId()));
         }
     }
@@ -106,8 +114,12 @@ public class ThirdPartyApiService {
                 .bodyToMono(Void.class)
                 .retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
                 .block();
+            log.info(writeLog(String.format(
+                    "Notification for deleted publication with ID %s successfully sent to third-party user with ID %s",
+                    publicationId, thirdPartyOauthConfiguration.getUserId()
+            )));
         } catch (WebClientResponseException | ThirdPartyServiceException ex) {
-            log.error(writeLog("Failed to send publication deleted notification to third party user with ID "
+            log.error(writeLog("Failed to send publication deleted notification to third-party user with ID "
                                    + thirdPartyOauthConfiguration.getUserId()));
         }
     }
