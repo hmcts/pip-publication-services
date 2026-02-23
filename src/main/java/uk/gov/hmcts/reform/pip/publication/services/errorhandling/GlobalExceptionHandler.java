@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.AzureSecretReadException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.BadPayloadException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
@@ -121,6 +122,14 @@ public class GlobalExceptionHandler {
         log.error(writeLog(ex.getMessage()));
 
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+            .body(generateExceptionResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(AzureSecretReadException.class)
+    public ResponseEntity<ExceptionResponse> handle(AzureSecretReadException ex) {
+        log.error(writeLog(ex.getMessage()));
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(generateExceptionResponse(ex.getMessage()));
     }
 

@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
-class ThirdPartyServiceTest {
+class LegacyThirdPartyServiceTest {
     private static final String API = "http://localhost:4444";
     private static final String PAYLOAD = "test payload";
     private static final byte[] BYTE_ARRAY_PAYLOAD = {1, 2, 3};
@@ -45,7 +45,7 @@ class ThirdPartyServiceTest {
 
     private  MockWebServer mockPublicationServicesEndpoint = new MockWebServer();
 
-    private ThirdPartyService thirdPartyService;
+    private LegacyThirdPartyService legacyThirdPartyService;
 
     @BeforeEach
     void setup() throws IOException {
@@ -66,10 +66,10 @@ class ThirdPartyServiceTest {
         mockPublicationServicesEndpoint.start(4444);
         WebClient.Builder mockedWebClient = WebClient.builder()
             .baseUrl(mockPublicationServicesEndpoint.url(API).toString());
-        thirdPartyService = new ThirdPartyService(mockedWebClient);
+        legacyThirdPartyService = new LegacyThirdPartyService(mockedWebClient);
 
-        ReflectionTestUtils.setField(thirdPartyService, "numOfRetries", 3);
-        ReflectionTestUtils.setField(thirdPartyService, "backoff", 2);
+        ReflectionTestUtils.setField(legacyThirdPartyService, "numOfRetries", 3);
+        ReflectionTestUtils.setField(legacyThirdPartyService, "backoff", 2);
     }
 
     @AfterEach
@@ -85,7 +85,7 @@ class ThirdPartyServiceTest {
                                                         ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
-        String response = thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, artefact, location);
+        String response = legacyThirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, artefact, location);
         assertEquals(String.format(SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
@@ -95,7 +95,8 @@ class ThirdPartyServiceTest {
                                                     .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
-        String response = thirdPartyService.handleFlatFileThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
+        String response = legacyThirdPartyService.handleFlatFileThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact,
+                                                                               location);
         assertEquals(String.format(SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
@@ -105,7 +106,7 @@ class ThirdPartyServiceTest {
                                                     .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
-        String response = thirdPartyService.handleDeleteThirdPartyCall(API, artefact, location);
+        String response = legacyThirdPartyService.handleDeleteThirdPartyCall(API, artefact, location);
         assertEquals(String.format(DELETE_SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
@@ -115,7 +116,7 @@ class ThirdPartyServiceTest {
                                                     .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
-        String response = thirdPartyService.handlePdfThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
+        String response = legacyThirdPartyService.handlePdfThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
         assertEquals(String.format(PDF_SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
@@ -127,7 +128,8 @@ class ThirdPartyServiceTest {
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
-            thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, null, null), EXCEPTION_MESSAGE);
+            legacyThirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, null, null),
+                                                     EXCEPTION_MESSAGE);
         assertTrue(ex.getMessage().contains(String.format(FAILED_REQUEST_NOTIFICATION, API)), RETURN_MATCH);
     }
 
@@ -139,7 +141,7 @@ class ThirdPartyServiceTest {
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
-                                                         thirdPartyService.handleFlatFileThirdPartyCall(
+                                                         legacyThirdPartyService.handleFlatFileThirdPartyCall(
                                                              API, BYTE_ARRAY_PAYLOAD, artefact, null),
                                                      EXCEPTION_MESSAGE);
         assertTrue(ex.getMessage().contains(String.format(FAILED_REQUEST_NOTIFICATION, API)), RETURN_MATCH);
@@ -153,7 +155,8 @@ class ThirdPartyServiceTest {
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
-                                                         thirdPartyService.handleDeleteThirdPartyCall(API, null, null),
+                                                         legacyThirdPartyService.handleDeleteThirdPartyCall(API, null,
+                                                                                                            null),
                                                      EXCEPTION_MESSAGE);
         assertTrue(ex.getMessage().contains(String.format(FAILED_REQUEST_NOTIFICATION, API)), RETURN_MATCH);
     }
@@ -166,7 +169,7 @@ class ThirdPartyServiceTest {
         mockPublicationServicesEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
         ThirdPartyServiceException ex = assertThrows(ThirdPartyServiceException.class, () ->
-                                                         thirdPartyService.handlePdfThirdPartyCall(
+                                                         legacyThirdPartyService.handlePdfThirdPartyCall(
                                                              API, BYTE_ARRAY_PAYLOAD, artefact, null),
                                                      EXCEPTION_MESSAGE);
         assertTrue(ex.getMessage().contains(String.format(FAILED_REQUEST_NOTIFICATION, API)), RETURN_MATCH);
@@ -180,7 +183,7 @@ class ThirdPartyServiceTest {
                                                     .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD));
 
-        String response = thirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, artefact, location);
+        String response = legacyThirdPartyService.handleJsonThirdPartyCall(API, PAYLOAD, artefact, location);
         assertEquals(String.format(SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
@@ -192,7 +195,8 @@ class ThirdPartyServiceTest {
                                                     .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD));
 
-        String response = thirdPartyService.handleFlatFileThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
+        String response = legacyThirdPartyService.handleFlatFileThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact,
+                                                                               location);
         assertEquals(String.format(SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
@@ -204,7 +208,7 @@ class ThirdPartyServiceTest {
                                                     .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD));
 
-        String response = thirdPartyService.handleDeleteThirdPartyCall(API, artefact, location);
+        String response = legacyThirdPartyService.handleDeleteThirdPartyCall(API, artefact, location);
         assertEquals(String.format(DELETE_SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 
@@ -215,7 +219,7 @@ class ThirdPartyServiceTest {
                                                     .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON)
                                                     .setBody(PAYLOAD)
                                                     .setResponseCode(200));
-        String response = thirdPartyService.handlePdfThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
+        String response = legacyThirdPartyService.handlePdfThirdPartyCall(API, BYTE_ARRAY_PAYLOAD, artefact, location);
         assertEquals(String.format(PDF_SUCCESS_NOTIFICATION, API), response, RETURN_MATCH);
     }
 }

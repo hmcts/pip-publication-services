@@ -36,3 +36,5 @@ java:
           alias: XHIBIT_S3_ACCESS_KEY
         - name: xhibit-s3-access-key-secret
           alias: XHIBIT_S3_SECRET_KEY
+        - name: cath-mi-client-id
+          alias: MANAGED_IDENTITY_CLIENT_ID
