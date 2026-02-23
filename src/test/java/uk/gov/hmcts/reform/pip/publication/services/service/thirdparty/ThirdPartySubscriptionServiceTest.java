@@ -48,6 +48,8 @@ class ThirdPartySubscriptionServiceTest {
         "Successfully sent updated publication to third party subscribers";
     private static final String SUCCESS_DELETED_PUBLICATION_MESSAGE =
         "Successfully sent publication deleted notification to third party subscribers";
+    private static final String SUCCESS_HEALTH_CHECK_MESSAGE =
+        "Successfully performed health check for third party subscriber";
     private static final String RESPONSE_NOT_MATCH_MESSAGE = "Returned message does not match";
 
     private static final Artefact ARTEFACT_JSON = new Artefact();
@@ -60,6 +62,7 @@ class ThirdPartySubscriptionServiceTest {
         new ThirdPartySubscription();
     private static final ThirdPartySubscription THIRD_PARTY_SUBSCRIPTION_DELETE_PUBLICATION =
         new ThirdPartySubscription();
+    private static final ThirdPartySubscription THIRD_PARTY_HEATH_CHECK = new ThirdPartySubscription();
     private static final ThirdPartyOauthConfiguration OAUTH_CONFIGURATION = new ThirdPartyOauthConfiguration();
 
     @Mock
@@ -93,6 +96,9 @@ class ThirdPartySubscriptionServiceTest {
         THIRD_PARTY_SUBSCRIPTION_DELETE_PUBLICATION.setPublicationId(PUBLICATION_ID);
         THIRD_PARTY_SUBSCRIPTION_DELETE_PUBLICATION.setThirdPartyAction(ThirdPartyAction.DELETE_PUBLICATION);
         THIRD_PARTY_SUBSCRIPTION_DELETE_PUBLICATION.setThirdPartyOauthConfigurationList(List.of(OAUTH_CONFIGURATION));
+
+        THIRD_PARTY_HEATH_CHECK.setThirdPartyAction(ThirdPartyAction.HEALTH_CHECK);
+        THIRD_PARTY_HEATH_CHECK.setThirdPartyOauthConfigurationList(List.of(OAUTH_CONFIGURATION));
 
         ARTEFACT_JSON.setArtefactId(PUBLICATION_ID);
         ARTEFACT_JSON.setIsFlatFile(false);
@@ -236,5 +242,15 @@ class ThirdPartySubscriptionServiceTest {
         verify(thirdPartyApiService).sendNewPublicationToThirdParty(
             OAUTH_CONFIGURATION, EXPECTED_METADATA, null, FILE, PUBLICATION_ID.toString()
         );
+    }
+
+    @Test
+    void testThirdPartyHealthCheck() {
+        assertThat(thirdPartySubscriptionService.sendThirdPartySubscription(THIRD_PARTY_HEATH_CHECK))
+            .as(RESPONSE_NOT_MATCH_MESSAGE)
+            .isEqualTo(SUCCESS_HEALTH_CHECK_MESSAGE);
+
+        verifyNoInteractions(dataManagementService);
+        verify(thirdPartyApiService).thirdPartyHealthCheck(OAUTH_CONFIGURATION);
     }
 }

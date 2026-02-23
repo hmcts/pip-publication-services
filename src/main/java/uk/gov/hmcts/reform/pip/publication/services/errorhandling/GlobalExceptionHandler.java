@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Exc
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyHealthCheckException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.TooManyEmailsException;
 
@@ -98,6 +99,14 @@ public class GlobalExceptionHandler {
         log.error(writeLog(ex.getMessage()));
 
         return ResponseEntity.status(HttpStatus.valueOf(ex.getStatusCode()))
+            .body(generateExceptionResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ThirdPartyHealthCheckException.class)
+    public ResponseEntity<ExceptionResponse> handle(ThirdPartyHealthCheckException ex) {
+        log.error(writeLog(ex.getMessage()));
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(generateExceptionResponse(ex.getMessage()));
     }
 

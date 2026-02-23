@@ -26,6 +26,30 @@
   ],
   "paths": {
     "/third-party": {
+      "get": {
+        "tags": [
+          "Publication Services Testing Support API"
+        ],
+        "summary": "Third-party healthCheck endpoint",
+        "operationId": "thirdPartyHealthCheck",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
       "post": {
         "tags": [
           "Publication Services Testing Support API"
