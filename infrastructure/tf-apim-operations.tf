@@ -4,9 +4,7 @@ locals {
     for operation_policies_file in local.operation_policies_files :
     basename(operation_policies_file) => {
       operation_id = replace(basename(operation_policies_file), ".xml", "")
-      xml_content = replace(replace(file("${path.module}/${operation_policies_file}"),
-        "{TENANT_ID}", data.azurerm_client_config.current.tenant_id),
-      "{CLIENT_ID}", length(data.azurerm_key_vault_secret.data_client_id) > 0 ? data.azurerm_key_vault_secret.data_client_id[0].value : "")
+      xml_content  = file("${path.module}/${operation_policies_file}")
     }
   }
 }
@@ -20,6 +18,7 @@ resource "azurerm_api_management_api_operation_policy" "apim_api_operation_polic
   xml_content         = each.value.xml_content
 
   depends_on = [
-    module.apim_api
+    module.apim_api,
+    azurerm_api_management_policy_fragment.jwt-validation
   ]
 }
