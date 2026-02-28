@@ -143,7 +143,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
   implementation 'org.springframework.boot:spring-boot-starter-webflux'
   implementation 'com.azure.spring:spring-cloud-azure-starter-active-directory:6.1.0'
-  implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9"
+  implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.16"
   implementation "com.github.hmcts.java-logging:logging:7.0.0"
   implementation "com.github.hmcts.java-logging:logging-appinsights:${reformLogging}"
   implementation "org.apache.logging.log4j:log4j-api:${log4JVersion}"
