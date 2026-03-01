@@ -169,7 +169,7 @@ dependencies {
   testImplementation 'org.apache.pdfbox:pdfbox:3.0.6'
   testImplementation 'com.redis:testcontainers-redis:2.2.4'
   testImplementation 'org.testcontainers:junit-jupiter'
-  testImplementation 'io.github.hakky54:logcaptor:2.12.1'
+  testImplementation 'io.github.hakky54:logcaptor:2.12.5'
   testImplementation 'com.github.hmcts:fortify-client:1.4.10:all'
   functionalTestImplementation 'io.rest-assured:rest-assured'
 }
