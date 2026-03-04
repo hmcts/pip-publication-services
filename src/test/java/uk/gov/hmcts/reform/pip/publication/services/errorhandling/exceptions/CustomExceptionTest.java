@@ -48,6 +48,12 @@ class CustomExceptionTest {
     }
 
     @Test
+    void testCreationOfThirdPartyHealthCheckException() {
+        ThirdPartyHealthCheckException exception = new ThirdPartyHealthCheckException(TEST_MESSAGE);
+        assertEquals(TEST_MESSAGE, exception.getMessage(), EXPECTED_MESSAGE);
+    }
+
+    @Test
     void testCreationOfCsvCreationException() {
         CsvCreationException csvCreationException = new CsvCreationException(TEST_MESSAGE);
         assertEquals(TEST_MESSAGE, csvCreationException.getMessage(), EXPECTED_MESSAGE);

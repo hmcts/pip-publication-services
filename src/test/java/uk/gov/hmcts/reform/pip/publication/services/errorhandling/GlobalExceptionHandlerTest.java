@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Exc
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyHealthCheckException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.TooManyEmailsException;
 
@@ -137,6 +138,18 @@ class GlobalExceptionHandlerTest {
         assertEquals("Third party request to: testApi failed after 3 retries due to: 404 This is a test message",
                      responseEntity.getBody().getMessage(), MESSAGES_MATCH
         );
+    }
+
+    @Test
+    void testThirdPartyHealthCheckException() {
+        ThirdPartyHealthCheckException exception = new ThirdPartyHealthCheckException(TEST_MESSAGE);
+
+        ResponseEntity<ExceptionResponse> responseEntity = globalExceptionHandler.handle(exception);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode(), STATUS_CODE);
+        assertNotNull(responseEntity.getBody(), BODY_RESPONSE);
+        assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
+                     PASSED_IN_MESSAGE);
     }
 
     @Test

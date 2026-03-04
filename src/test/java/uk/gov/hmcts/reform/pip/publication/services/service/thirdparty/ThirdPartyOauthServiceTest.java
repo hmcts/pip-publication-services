@@ -10,12 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyOauthConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyHealthCheckException;
 import uk.gov.hmcts.reform.pip.publication.services.service.KeyVaultService;
 
 import java.io.IOException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -67,7 +69,7 @@ class ThirdPartyOauthServiceTest {
         try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyOauthService.class)) {
             mockEndpoint.enqueue(new MockResponse().setResponseCode(200));
 
-            thirdPartyOauthService.getApiAccessToken(OAUTH_CONFIGURATION);
+            thirdPartyOauthService.getApiAccessToken(OAUTH_CONFIGURATION, false);
 
             assertThat(logCaptor.getErrorLogs())
                 .as(ERROR_LOG_EMPTY_MESSAGE)
@@ -82,7 +84,7 @@ class ThirdPartyOauthServiceTest {
         when(thirdPartyTokenCachingService.getCachedToken(any())).thenReturn(ACCESS_TOKEN);
         try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyOauthService.class)) {
 
-            thirdPartyOauthService.getApiAccessToken(OAUTH_CONFIGURATION);
+            thirdPartyOauthService.getApiAccessToken(OAUTH_CONFIGURATION, false);
 
             assertThat(logCaptor.getErrorLogs())
                 .as(ERROR_LOG_EMPTY_MESSAGE)
@@ -98,7 +100,7 @@ class ThirdPartyOauthServiceTest {
         try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyOauthService.class)) {
             mockEndpoint.enqueue(new MockResponse().setResponseCode(404));
 
-            thirdPartyOauthService.getApiAccessToken(OAUTH_CONFIGURATION);
+            thirdPartyOauthService.getApiAccessToken(OAUTH_CONFIGURATION, false);
 
             assertThat(logCaptor.getErrorLogs())
                 .as(ERROR_LOG_NOT_EMPTY_MESSAGE)
@@ -108,5 +110,15 @@ class ThirdPartyOauthServiceTest {
                 .as(ERROR_LOG_MESSAGE)
                 .contains("Failed to generate access token for third party user with ID " + USER_ID);
         }
+    }
+
+    @Test
+    void testGetApiAccessTokenForHealthCheck() {
+        when(thirdPartyTokenCachingService.getCachedToken(any())).thenReturn(null);
+        mockEndpoint.enqueue(new MockResponse().setResponseCode(500));
+
+        assertThatThrownBy(() -> thirdPartyOauthService.getApiAccessToken(OAUTH_CONFIGURATION, true))
+            .isInstanceOf(ThirdPartyHealthCheckException.class)
+            .hasMessageContaining("Failed to generate access token.");
     }
 }

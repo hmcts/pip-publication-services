@@ -11,12 +11,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyOauthConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyHealthCheckException;
 import uk.gov.hmcts.reform.pip.publication.services.models.ThirdPartyPublicationMetadata;
 
 import java.io.IOException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 @ActiveProfiles("test")
@@ -28,6 +30,8 @@ class ThirdPartyApiServiceTest {
     private static final byte[] FILE = {1, 2, 3};
     private static final String FILENAME = "testFile.txt";
 
+    private static final String INFO_LOG_NOT_EMPTY_MESSAGE = "Info log should not be empty";
+    private static final String INFO_LOG_MESSAGE = "Info log message does not match";
     private static final String ERROR_LOG_EMPTY_MESSAGE = "Error log should be empty";
     private static final String ERROR_LOG_NOT_EMPTY_MESSAGE = "Error log should not be empty";
     private static final String ERROR_LOG_MESSAGE = "Error log message does not match";
@@ -43,6 +47,7 @@ class ThirdPartyApiServiceTest {
     static void setUp() {
         OAUTH_CONFIGURATION.setUserId(USER_ID);
         OAUTH_CONFIGURATION.setDestinationUrl(DESTINATION_URL);
+        METADATA.setPublicationId(PUBLICATION_ID);
     }
 
     @BeforeEach
@@ -71,6 +76,15 @@ class ThirdPartyApiServiceTest {
             assertThat(logCaptor.getErrorLogs())
                 .as(ERROR_LOG_EMPTY_MESSAGE)
                 .isEmpty();
+
+            assertThat(logCaptor.getInfoLogs())
+                    .as(INFO_LOG_NOT_EMPTY_MESSAGE)
+                    .hasSize(1);
+
+            assertThat(logCaptor.getInfoLogs().get(0))
+                    .as(INFO_LOG_MESSAGE)
+                    .contains("New publication with ID " + PUBLICATION_ID
+                            + " successfully sent to third-party user with ID " + USER_ID);
         }
     }
 
@@ -104,7 +118,7 @@ class ThirdPartyApiServiceTest {
 
             assertThat(logCaptor.getErrorLogs().get(0))
                 .as(ERROR_LOG_MESSAGE)
-                .contains("Failed to send new publication to third party user with ID " + USER_ID);
+                .contains("Failed to send new publication to third-party user with ID " + USER_ID);
         }
     }
 
@@ -119,6 +133,15 @@ class ThirdPartyApiServiceTest {
             assertThat(logCaptor.getErrorLogs())
                 .as(ERROR_LOG_EMPTY_MESSAGE)
                 .isEmpty();
+
+            assertThat(logCaptor.getInfoLogs())
+                    .as(INFO_LOG_NOT_EMPTY_MESSAGE)
+                    .hasSize(1);
+
+            assertThat(logCaptor.getInfoLogs().get(0))
+                    .as(INFO_LOG_MESSAGE)
+                    .contains("Updated publication with ID " + PUBLICATION_ID
+                            + " successfully sent to third-party user with ID " + USER_ID);
         }
     }
 
@@ -154,7 +177,7 @@ class ThirdPartyApiServiceTest {
 
             assertThat(logCaptor.getErrorLogs().get(0))
                 .as(ERROR_LOG_MESSAGE)
-                .contains("Failed to send updated publication to third party user with ID " + USER_ID);
+                .contains("Failed to send updated publication to third-party user with ID " + USER_ID);
         }
     }
 
@@ -168,6 +191,15 @@ class ThirdPartyApiServiceTest {
             assertThat(logCaptor.getErrorLogs())
                 .as(ERROR_LOG_EMPTY_MESSAGE)
                 .isEmpty();
+
+            assertThat(logCaptor.getInfoLogs())
+                    .as(INFO_LOG_NOT_EMPTY_MESSAGE)
+                    .hasSize(1);
+
+            assertThat(logCaptor.getInfoLogs().get(0))
+                    .as(INFO_LOG_MESSAGE)
+                    .contains("Notification for deleted publication with ID " + PUBLICATION_ID
+                            + " successfully sent to third-party user with ID " + USER_ID);
         }
     }
 
@@ -201,7 +233,29 @@ class ThirdPartyApiServiceTest {
 
             assertThat(logCaptor.getErrorLogs().get(0))
                 .as(ERROR_LOG_MESSAGE)
-                .contains("Failed to send publication deleted notification to third party user with ID " + USER_ID);
+                .contains("Failed to send publication deleted notification to third-party user with ID " + USER_ID);
         }
+    }
+
+    @Test
+    void testThirdPartyHealthCheckSuccess() {
+        try (LogCaptor logCaptor = LogCaptor.forClass(ThirdPartyApiService.class)) {
+            mockEndpoint.enqueue(new MockResponse().setResponseCode(200));
+
+            thirdPartyApiService.thirdPartyHealthCheck(OAUTH_CONFIGURATION);
+
+            assertThat(logCaptor.getErrorLogs())
+                .as(ERROR_LOG_EMPTY_MESSAGE)
+                .isEmpty();
+        }
+    }
+
+    @Test
+    void testThirdPartyHealthCheckError() {
+        mockEndpoint.enqueue(new MockResponse().setResponseCode(500));
+
+        assertThatThrownBy(() -> thirdPartyApiService.thirdPartyHealthCheck(OAUTH_CONFIGURATION))
+            .isInstanceOf(ThirdPartyHealthCheckException.class)
+            .hasMessageContaining("Failed to send request to destination.");
     }
 }

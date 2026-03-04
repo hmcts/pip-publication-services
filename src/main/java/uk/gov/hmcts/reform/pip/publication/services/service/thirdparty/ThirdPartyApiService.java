@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.util.retry.Retry;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyOauthConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyHealthCheckException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.helpers.MultiPartHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.ThirdPartyPublicationMetadata;
@@ -46,7 +47,7 @@ public class ThirdPartyApiService {
     public void sendNewPublicationToThirdParty(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration,
                                                ThirdPartyPublicationMetadata metadata, String payload,
                                                byte[] file, String filename) {
-        String token = thirdPartyOauthService.getApiAccessToken(thirdPartyOauthConfiguration);
+        String token = thirdPartyOauthService.getApiAccessToken(thirdPartyOauthConfiguration, false);
         Consumer<HttpHeaders> headers = httpHeaders -> {
             httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
             httpHeaders.setBearerAuth(token);
@@ -62,8 +63,12 @@ public class ThirdPartyApiService {
                 .bodyToMono(Void.class)
                 .retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
                 .block();
+            log.info(writeLog(String.format(
+                    "New publication with ID %s successfully sent to third-party user with ID %s",
+                    metadata.getPublicationId(), thirdPartyOauthConfiguration.getUserId()
+            )));
         } catch (WebClientResponseException | ThirdPartyServiceException ex) {
-            log.error(writeLog("Failed to send new publication to third party user with ID "
+            log.error(writeLog("Failed to send new publication to third-party user with ID "
                                    + thirdPartyOauthConfiguration.getUserId() + ex.getMessage()));
         }
     }
@@ -71,7 +76,7 @@ public class ThirdPartyApiService {
     public void sendUpdatedPublicationToThirdParty(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration,
                                                    ThirdPartyPublicationMetadata metadata, String payload,
                                                    byte[] file, String filename) {
-        String token = thirdPartyOauthService.getApiAccessToken(thirdPartyOauthConfiguration);
+        String token = thirdPartyOauthService.getApiAccessToken(thirdPartyOauthConfiguration, false);
         Consumer<HttpHeaders> headers = httpHeaders -> {
             httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
             httpHeaders.setBearerAuth(token);
@@ -87,15 +92,19 @@ public class ThirdPartyApiService {
                 .bodyToMono(Void.class)
                 .retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
                 .block();
+            log.info(writeLog(String.format(
+                    "Updated publication with ID %s successfully sent to third-party user with ID %s",
+                    metadata.getPublicationId(), thirdPartyOauthConfiguration.getUserId()
+            )));
         } catch (WebClientResponseException | ThirdPartyServiceException ex) {
-            log.error(writeLog("Failed to send updated publication to third party user with ID "
+            log.error(writeLog("Failed to send updated publication to third-party user with ID "
                                    + thirdPartyOauthConfiguration.getUserId()));
         }
     }
 
     public void notifyThirdPartyOfPublicationDeletion(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration,
                                                       UUID publicationId) {
-        String token = thirdPartyOauthService.getApiAccessToken(thirdPartyOauthConfiguration);
+        String token = thirdPartyOauthService.getApiAccessToken(thirdPartyOauthConfiguration, false);
 
         try {
             webClient.delete()
@@ -105,9 +114,31 @@ public class ThirdPartyApiService {
                 .bodyToMono(Void.class)
                 .retryWhen(handleRetry(thirdPartyOauthConfiguration.getDestinationUrl()))
                 .block();
+            log.info(writeLog(String.format(
+                    "Notification for deleted publication with ID %s successfully sent to third-party user with ID %s",
+                    publicationId, thirdPartyOauthConfiguration.getUserId()
+            )));
         } catch (WebClientResponseException | ThirdPartyServiceException ex) {
-            log.error(writeLog("Failed to send publication deleted notification to third party user with ID "
+            log.error(writeLog("Failed to send publication deleted notification to third-party user with ID "
                                    + thirdPartyOauthConfiguration.getUserId()));
+        }
+    }
+
+    public void thirdPartyHealthCheck(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration) {
+        String token = thirdPartyOauthService.getApiAccessToken(thirdPartyOauthConfiguration, true);
+
+        try {
+            webClient.get()
+                .uri(thirdPartyOauthConfiguration.getDestinationUrl())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+        } catch (WebClientResponseException | ThirdPartyServiceException ex) {
+            log.error(writeLog("Failed to perform health check for third party user with ID "
+                                   + thirdPartyOauthConfiguration.getUserId()));
+            throw new ThirdPartyHealthCheckException("Failed to send request to destination. "
+                                                         + ex.getMessage());
         }
     }
 

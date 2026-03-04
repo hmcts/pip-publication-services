@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.thirdparty.ThirdPartyOauthConfiguration;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyHealthCheckException;
 import uk.gov.hmcts.reform.pip.publication.services.service.KeyVaultService;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
@@ -34,16 +35,17 @@ public class ThirdPartyOauthService {
         this.thirdPartyTokenCachingService = thirdPartyTokenCachingService;
     }
 
-    public String getApiAccessToken(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration) {
+    public String getApiAccessToken(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration, boolean isHealthCheck) {
         String accessToken = thirdPartyTokenCachingService.getCachedToken(thirdPartyOauthConfiguration.getUserId()
                                                                               .toString());
         if (accessToken == null) {
-            return requestApiAccessToken(thirdPartyOauthConfiguration);
+            return requestApiAccessToken(thirdPartyOauthConfiguration, isHealthCheck);
         }
         return accessToken;
     }
 
-    public String requestApiAccessToken(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration) {
+    public String requestApiAccessToken(ThirdPartyOauthConfiguration thirdPartyOauthConfiguration,
+                                        boolean isHealthCheck) {
         String clientId = keyVaultService.getSecretValue(thirdPartyOauthConfiguration.getClientIdKey());
         String clientSecret = keyVaultService.getSecretValue(thirdPartyOauthConfiguration.getClientSecretKey());
         String scope = keyVaultService.getSecretValue(thirdPartyOauthConfiguration.getScopeKey());
@@ -68,6 +70,9 @@ public class ThirdPartyOauthService {
         } catch (Exception ex) {
             log.error(writeLog("Failed to generate access token for third party user with ID "
                                    + thirdPartyOauthConfiguration.getUserId() + ex.getMessage()));
+            if (isHealthCheck) {
+                throw new ThirdPartyHealthCheckException("Failed to generate access token. " + ex.getMessage());
+            }
             return null;
         }
     }

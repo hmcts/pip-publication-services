@@ -23,27 +23,28 @@ public class ThirdPartySubscriptionService {
     }
 
     public String sendThirdPartySubscription(ThirdPartySubscription thirdPartySubscription) {
-        if (ThirdPartyAction.DELETE_PUBLICATION.equals(thirdPartySubscription.getThirdPartyAction())) {
-            return handleSubscriptionNotification(thirdPartySubscription, null, null, null, null);
-        }
-
-        Artefact artefact = dataManagementService.getArtefact(thirdPartySubscription.getPublicationId());
-        Location location = dataManagementService.getLocation(artefact.getLocationId());
-        ThirdPartyPublicationMetadata thirdPartyPublicationMetadata = new ThirdPartyPublicationMetadata()
-            .convert(artefact, location.getName());
+        ThirdPartyPublicationMetadata thirdPartyPublicationMetadata = null;
         String payload = null;
         byte[] file = null;
         String filename = null;
 
-        if (artefact.getIsFlatFile()) {
-            file = dataManagementService.getArtefactFlatFile(thirdPartySubscription.getPublicationId());
-            String sourceArtefactId = artefact.getSourceArtefactId();
-            String fileExtension = sourceArtefactId != null
-                ? sourceArtefactId.substring(sourceArtefactId.lastIndexOf("."))
-                : "";
-            filename = thirdPartySubscription.getPublicationId() + fileExtension;
-        } else {
-            payload = dataManagementService.getArtefactJsonBlob(thirdPartySubscription.getPublicationId());
+        if (ThirdPartyAction.NEW_PUBLICATION.equals(thirdPartySubscription.getThirdPartyAction())
+            || ThirdPartyAction.UPDATE_PUBLICATION.equals(thirdPartySubscription.getThirdPartyAction())) {
+            Artefact artefact = dataManagementService.getArtefact(thirdPartySubscription.getPublicationId());
+            Location location = dataManagementService.getLocation(artefact.getLocationId());
+            thirdPartyPublicationMetadata = new ThirdPartyPublicationMetadata()
+                .convert(artefact, location.getName());
+
+            if (artefact.getIsFlatFile()) {
+                file = dataManagementService.getArtefactFlatFile(thirdPartySubscription.getPublicationId());
+                String sourceArtefactId = artefact.getSourceArtefactId();
+                String fileExtension = sourceArtefactId != null
+                    ? sourceArtefactId.substring(sourceArtefactId.lastIndexOf("."))
+                    : "";
+                filename = thirdPartySubscription.getPublicationId() + fileExtension;
+            } else {
+                payload = dataManagementService.getArtefactJsonBlob(thirdPartySubscription.getPublicationId());
+            }
         }
 
         return handleSubscriptionNotification(thirdPartySubscription, thirdPartyPublicationMetadata, payload,
@@ -78,6 +79,11 @@ public class ThirdPartySubscriptionService {
                     );
                 }
                 return "Successfully sent publication deleted notification to third party subscribers";
+            }
+            case ThirdPartyAction.HEALTH_CHECK -> {
+                thirdPartyApiService.thirdPartyHealthCheck(thirdPartySubscription.getThirdPartyOauthConfigurationList()
+                                                               .get(0));
+                return "Successfully performed health check for third party subscriber";
             }
             default -> throw new IllegalArgumentException("Unsupported third party action: "
                                                               + thirdPartySubscription.getThirdPartyAction());
