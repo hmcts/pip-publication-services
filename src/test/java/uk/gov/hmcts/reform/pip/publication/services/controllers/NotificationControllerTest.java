@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionE
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.AwsS3Service;
 import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
-import uk.gov.hmcts.reform.pip.publication.services.service.ThirdPartyManagementService;
+import uk.gov.hmcts.reform.pip.publication.services.service.LegacyThirdPartyManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
 import java.io.IOException;
@@ -101,7 +101,7 @@ class NotificationControllerTest {
     private UserNotificationService userNotificationService;
 
     @Mock
-    private ThirdPartyManagementService thirdPartyManagementService;
+    private LegacyThirdPartyManagementService legacyThirdPartyManagementService;
 
     @InjectMocks
     private NotificationController notificationController;
@@ -153,9 +153,9 @@ class NotificationControllerTest {
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test", "500"));
         noMatchArtefactList.add(new NoMatchArtefact(UUID.randomUUID(), "Test2", "123"));
 
-        when(thirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(REFERENCE_ID);
+        when(legacyThirdPartyManagementService.handleThirdParty(thirdPartySubscription)).thenReturn(REFERENCE_ID);
         when(userNotificationService.mediaDuplicateUserEmailRequest(createMediaSetupEmail)).thenReturn(REFERENCE_ID);
-        when(thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact))
+        when(legacyThirdPartyManagementService.notifyThirdPartyForArtefactDeletion(thirdPartySubscriptionArtefact))
             .thenReturn(REFERENCE_ID);
         when(notificationService.handleMediaApplicationReportingRequest(validMediaApplicationList))
             .thenReturn(REFERENCE_ID);

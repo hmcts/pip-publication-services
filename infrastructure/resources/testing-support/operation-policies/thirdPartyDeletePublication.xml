@@ -1,0 +1,44 @@
+<policies>
+  <inbound>
+    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+      <openid-config url="https://login.microsoftonline.com/{TENANT_ID}/v2.0/.well-known/openid-configuration" />
+      <audiences>
+        <audience>{CLIENT_ID}</audience>
+      </audiences>
+      <issuers>
+        <issuer>https://login.microsoftonline.com/{TENANT_ID}/v2.0</issuer>
+      </issuers>
+    </validate-jwt>
+    <cors>
+      <allowed-origins>
+        <origin>*</origin>
+      </allowed-origins>
+      <allowed-methods>
+        <method>DELETE</method>
+      </allowed-methods>
+    </cors>
+    <return-response>
+      <set-status code="200" />
+      <set-header name="Content-Type">
+        <value>application/json</value>
+      </set-header>
+      <set-body>@{
+        return new JObject(
+        new JProperty("response code", 200),
+        new JProperty("description", "Deleted publication request was received successfully.")
+        ).ToString();
+        }
+      </set-body>
+    </return-response>
+    <base />
+  </inbound>
+  <backend>
+    <base />
+  </backend>
+  <outbound>
+    <base />
+  </outbound>
+  <on-error>
+    <base />
+  </on-error>
+</policies>
