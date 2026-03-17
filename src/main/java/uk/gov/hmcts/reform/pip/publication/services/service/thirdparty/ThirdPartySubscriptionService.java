@@ -38,7 +38,7 @@ public class ThirdPartySubscriptionService {
             if (artefact.getIsFlatFile()) {
                 file = dataManagementService.getArtefactFlatFile(thirdPartySubscription.getPublicationId());
                 String sourceArtefactId = artefact.getSourceArtefactId();
-                String fileExtension = sourceArtefactId != null
+                String fileExtension = sourceArtefactId != null && sourceArtefactId.contains(".")
                     ? sourceArtefactId.substring(sourceArtefactId.lastIndexOf("."))
                     : "";
                 filename = thirdPartySubscription.getPublicationId() + fileExtension;
