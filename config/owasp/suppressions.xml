@@ -22,4 +22,12 @@
     <notes>log4j - already on latest version</notes>
     <cve>CVE-2025-68161</cve>
   </suppress>
+  <suppress>
+    <notes>Vulnerability in Jackson</notes>
+    <cve>CVE-2026-29062</cve>
+  </suppress>
+  <suppress>
+    <notes>Vulnerability in Tomcat</notes>
+    <cve>CVE-2026-24734</cve>
+  </suppress>
 </suppressions>
