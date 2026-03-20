@@ -14,4 +14,8 @@
     <notes>This vulnerability exists across azure identity and microsoft authentication libraries </notes>
     <cve>CVE-2024-35255</cve>
   </suppress>
+  <suppress>
+    <notes>Vulnerability in jackson databind</notes>
+    <cve>CVE-2026-29062</cve>
+  </suppress>
 </suppressions>
