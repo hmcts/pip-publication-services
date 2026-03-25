@@ -36,10 +36,9 @@ java:
           alias: XHIBIT_S3_ACCESS_KEY
         - name: xhibit-s3-access-key-secret
           alias: XHIBIT_S3_SECRET_KEY
-        - name: cath-mi-client-id
-          alias: MANAGED_IDENTITY_CLIENT_ID
   environment:
     ENV_NAME: "{{ .Values.global.environment }}"
     THIRD_PARTY_KEY_VAULT: pip-ss-tp-kv-{{ .Values.global.environment }}
+    MANAGED_IDENTITY_CLIENT_ID: 8d0ead51-3b31-44df-a78e-ada4eea9fe87
   autoscaling:
     enabled: false #To be enabled as part of PUB-1692

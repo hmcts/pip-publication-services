@@ -42,3 +42,4 @@ java:
           alias: MANAGED_IDENTITY_CLIENT_ID
   environment:
     THIRD_PARTY_KEY_VAULT: pip-ss-tp-kv-stg
+    MANAGED_IDENTITY_CLIENT_ID: 8d0ead51-3b31-44df-a78e-ada4eea9fe87
