@@ -39,6 +39,5 @@ java:
   environment:
     ENV_NAME: "{{ .Values.global.environment }}"
     THIRD_PARTY_KEY_VAULT: pip-ss-tp-kv-{{ .Values.global.environment }}
-    MANAGED_IDENTITY_CLIENT_ID: 8d0ead51-3b31-44df-a78e-ada4eea9fe87
   autoscaling:
     enabled: false #To be enabled as part of PUB-1692
