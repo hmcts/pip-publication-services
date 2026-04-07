@@ -38,5 +38,6 @@ java:
           alias: XHIBIT_S3_SECRET_KEY
   environment:
     ENV_NAME: "{{ .Values.global.environment }}"
+    THIRD_PARTY_KEY_VAULT: pip-ss-tp-kv-{{ .Values.global.environment }}
   autoscaling:
     enabled: false #To be enabled as part of PUB-1692

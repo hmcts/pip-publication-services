@@ -24,15 +24,17 @@ public final class MultiPartHelper {
         List<Triple<String, byte[], String>> parts
     ) {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
-
-        parts.forEach(p -> {
-            MultipartBodyBuilder.PartBuilder part = builder.part(p.getLeft(), new ByteArrayResource(p.getMiddle()));
-            String filename = p.getRight();
-            if (StringUtils.isNotEmpty(filename)) {
-                part.filename(filename);
-            }
-        });
+        parts.forEach(p -> createMultiPartByteArrayPart(p.getLeft(), p.getMiddle(), p.getRight(), builder));
         return builder.build();
+    }
+
+    public static void createMultiPartByteArrayPart(
+        String partName, byte[] data, String filename, MultipartBodyBuilder builder
+    ) {
+        MultipartBodyBuilder.PartBuilder part = builder.part(partName, new ByteArrayResource(data));
+        if (StringUtils.isNotEmpty(filename)) {
+            part.filename(filename);
+        }
     }
 
     public static String getFileExtension(MultipartFile file) {
