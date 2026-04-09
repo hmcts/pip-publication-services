@@ -23,11 +23,16 @@
     <cve>CVE-2025-68161</cve>
   </suppress>
   <suppress>
-    <notes>Vulnerability in Jackson</notes>
+    <notes>Vulnerability in jackson-databind</notes>
     <cve>CVE-2026-29062</cve>
   </suppress>
   <suppress>
     <notes>Vulnerability in Tomcat</notes>
     <cve>CVE-2026-24734</cve>
+  </suppress>
+  <suppress>
+    <notes>Vulnerability in Netty</notes>
+    <cve>CVE-2026-33871</cve>
+    <cve>CVE-2026-33870</cve>
   </suppress>
 </suppressions>
