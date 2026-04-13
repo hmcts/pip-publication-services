@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscriptionArtefact;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-class ThirdPartyManagementServiceTest {
+class LegacyThirdPartyManagementServiceTest {
     private static final String API_DESTINATION = "testUrl";
     private static final String MESSAGES_MATCH = "Messages should match";
     private static final String SUCCESS_API_SENT = "Successfully sent list to testUrl";
@@ -47,13 +47,13 @@ class ThirdPartyManagementServiceTest {
     private static final Location LOCATION = new Location();
 
     @InjectMocks
-    private ThirdPartyManagementService thirdPartyManagementService;
+    private LegacyThirdPartyManagementService legacyThirdPartyManagementService;
 
     @Mock
     private DataManagementService dataManagementService;
 
     @Mock
-    private ThirdPartyService thirdPartyService;
+    private LegacyThirdPartyService legacyThirdPartyService;
 
     @BeforeAll
     static void setup() {
@@ -72,14 +72,14 @@ class ThirdPartyManagementServiceTest {
         when(dataManagementService.getArtefact(RAND_UUID)).thenReturn(ARTEFACT);
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactFlatFile(RAND_UUID)).thenReturn(file);
-        when(thirdPartyService.handleFlatFileThirdPartyCall(API_DESTINATION, file, ARTEFACT, LOCATION))
+        when(legacyThirdPartyService.handleFlatFileThirdPartyCall(API_DESTINATION, file, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 
-        ThirdPartySubscription subscription = new ThirdPartySubscription();
+        LegacyThirdPartySubscription subscription = new LegacyThirdPartySubscription();
         subscription.setArtefactId(RAND_UUID);
         subscription.setApiDestination(API_DESTINATION);
 
-        assertEquals(SUCCESS_API_SENT, thirdPartyManagementService.handleThirdParty(subscription),
+        assertEquals(SUCCESS_API_SENT, legacyThirdPartyManagementService.handleThirdParty(subscription),
                      "Api subscription with flat file should return successful referenceId.");
     }
 
@@ -99,20 +99,20 @@ class ThirdPartyManagementServiceTest {
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
         when(dataManagementService.getArtefactFile(eq(RAND_UUID), any(), anyBoolean())).thenReturn(base64EncodedPdf);
-        when(thirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, ARTEFACT, LOCATION))
+        when(legacyThirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
-        when(thirdPartyService.handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION))
+        when(legacyThirdPartyService.handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 
-        ThirdPartySubscription subscription = new ThirdPartySubscription();
+        LegacyThirdPartySubscription subscription = new LegacyThirdPartySubscription();
         subscription.setArtefactId(RAND_UUID);
         subscription.setApiDestination(API_DESTINATION);
 
-        assertEquals(SUCCESS_API_SENT, thirdPartyManagementService.handleThirdParty(subscription),
+        assertEquals(SUCCESS_API_SENT, legacyThirdPartyManagementService.handleThirdParty(subscription),
                      "Api subscription with json file should return successful referenceId.");
 
         verify(dataManagementService).getArtefactFile(RAND_UUID, FileType.PDF, expectedAdditionalPdf);
-        verify(thirdPartyService).handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION);
+        verify(legacyThirdPartyService).handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION);
     }
 
     private static Stream<Arguments> parameters() {
@@ -139,30 +139,33 @@ class ThirdPartyManagementServiceTest {
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(LOCATION);
         when(dataManagementService.getArtefactJsonBlob(RAND_UUID)).thenReturn(jsonPayload);
         when(dataManagementService.getArtefactFile(RAND_UUID, FileType.PDF, false)).thenReturn(base64EncodedPdf);
-        when(thirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, ARTEFACT, LOCATION))
+        when(legacyThirdPartyService.handleJsonThirdPartyCall(API_DESTINATION, jsonPayload, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 
-        ThirdPartySubscription subscription = new ThirdPartySubscription();
+        LegacyThirdPartySubscription subscription = new LegacyThirdPartySubscription();
         subscription.setArtefactId(RAND_UUID);
         subscription.setApiDestination(API_DESTINATION);
 
-        assertEquals(SUCCESS_API_SENT, thirdPartyManagementService.handleThirdParty(subscription),
+        assertEquals(SUCCESS_API_SENT, legacyThirdPartyManagementService.handleThirdParty(subscription),
                      "Api subscription with json file should return successful referenceId.");
-        verify(thirdPartyService, never()).handlePdfThirdPartyCall(API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION);
+        verify(legacyThirdPartyService, never()).handlePdfThirdPartyCall(
+            API_DESTINATION, pdfInBytes, ARTEFACT, LOCATION
+        );
     }
 
 
     @Test
     void testHandleThirdPartyEmpty() {
         when(dataManagementService.getLocation(LOCATION_ID.toString())).thenReturn(LOCATION);
-        when(thirdPartyService.handleDeleteThirdPartyCall(API_DESTINATION, ARTEFACT, LOCATION))
+        when(legacyThirdPartyService.handleDeleteThirdPartyCall(API_DESTINATION, ARTEFACT, LOCATION))
             .thenReturn(SUCCESS_REF_ID);
 
-        ThirdPartySubscriptionArtefact subscription = new ThirdPartySubscriptionArtefact();
+        LegacyThirdPartySubscriptionArtefact subscription = new LegacyThirdPartySubscriptionArtefact();
         subscription.setArtefact(ARTEFACT);
         subscription.setApiDestination(API_DESTINATION);
 
-        assertEquals(EMPTY_API_SENT, thirdPartyManagementService.notifyThirdPartyForArtefactDeletion(subscription),
+        assertEquals(EMPTY_API_SENT,
+                     legacyThirdPartyManagementService.notifyThirdPartyForArtefactDeletion(subscription),
                      MESSAGES_MATCH);
     }
 }

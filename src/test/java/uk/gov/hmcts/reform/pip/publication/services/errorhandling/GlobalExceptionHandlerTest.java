@@ -9,12 +9,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.AzureSecretReadException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.BadPayloadException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.CsvCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.PublicationNotFoundException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
+import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyHealthCheckException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ThirdPartyServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.TooManyEmailsException;
 
@@ -139,6 +141,18 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void testThirdPartyHealthCheckException() {
+        ThirdPartyHealthCheckException exception = new ThirdPartyHealthCheckException(TEST_MESSAGE);
+
+        ResponseEntity<ExceptionResponse> responseEntity = globalExceptionHandler.handle(exception);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode(), STATUS_CODE);
+        assertNotNull(responseEntity.getBody(), BODY_RESPONSE);
+        assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(),
+                     PASSED_IN_MESSAGE);
+    }
+
+    @Test
     void testHandleCsvCreationException() {
         CsvCreationException csvCreationException = new CsvCreationException(TEST_MESSAGE);
 
@@ -171,6 +185,16 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<ExceptionResponse> responseEntity = globalExceptionHandler.handle(exception);
 
         assertEquals(HttpStatus.TOO_MANY_REQUESTS, responseEntity.getStatusCode(), STATUS_CODE);
+        assertNotNull(responseEntity.getBody(), BODY_RESPONSE);
+        assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(), PASSED_IN_MESSAGE);
+    }
+
+    @Test
+    void testHandleAzureSecretReadException() {
+        AzureSecretReadException exception = new AzureSecretReadException(TEST_MESSAGE);
+        ResponseEntity<ExceptionResponse> responseEntity = globalExceptionHandler.handle(exception);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode(), STATUS_CODE);
         assertNotNull(responseEntity.getBody(), BODY_RESPONSE);
         assertEquals(TEST_MESSAGE, responseEntity.getBody().getMessage(), PASSED_IN_MESSAGE);
     }

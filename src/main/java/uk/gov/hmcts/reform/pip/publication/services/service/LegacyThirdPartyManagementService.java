@@ -8,25 +8,25 @@ import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscription;
-import uk.gov.hmcts.reform.pip.model.subscription.ThirdPartySubscriptionArtefact;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscription;
+import uk.gov.hmcts.reform.pip.model.subscription.LegacyThirdPartySubscriptionArtefact;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Service
 @Slf4j
-public class ThirdPartyManagementService {
+public class LegacyThirdPartyManagementService {
     private static final String SUCCESS_MESSAGE = "Successfully sent list to %s";
     private static final String EMPTY_SUCCESS_MESSAGE = "Successfully sent empty list to %s";
 
     private final DataManagementService dataManagementService;
-    private final ThirdPartyService thirdPartyService;
+    private final LegacyThirdPartyService legacyThirdPartyService;
 
     @Autowired
-    public ThirdPartyManagementService(DataManagementService dataManagementService,
-                                       ThirdPartyService thirdPartyService) {
+    public LegacyThirdPartyManagementService(DataManagementService dataManagementService,
+                                             LegacyThirdPartyService legacyThirdPartyService) {
         this.dataManagementService = dataManagementService;
-        this.thirdPartyService = thirdPartyService;
+        this.legacyThirdPartyService = legacyThirdPartyService;
     }
 
     /**
@@ -36,11 +36,11 @@ public class ThirdPartyManagementService {
      * @param body Request body of ThirdParty subscription containing artefact id and the destination api.
      * @return String of successful POST.
      */
-    public String handleThirdParty(ThirdPartySubscription body) {
+    public String handleThirdParty(LegacyThirdPartySubscription body) {
         Artefact artefact = dataManagementService.getArtefact(body.getArtefactId());
         Location location = dataManagementService.getLocation(artefact.getLocationId());
         if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
-            log.info(writeLog(thirdPartyService.handleFlatFileThirdPartyCall(
+            log.info(writeLog(legacyThirdPartyService.handleFlatFileThirdPartyCall(
                 body.getApiDestination(), dataManagementService.getArtefactFlatFile(artefact.getArtefactId()),
                 artefact, location)));
         } else {
@@ -56,19 +56,19 @@ public class ThirdPartyManagementService {
      * @param body Request body of ThirdParty subscription containing the deleted artefact and the destination api.
      * @return String of successful PUT.
      */
-    public String notifyThirdPartyForArtefactDeletion(ThirdPartySubscriptionArtefact body) {
+    public String notifyThirdPartyForArtefactDeletion(LegacyThirdPartySubscriptionArtefact body) {
         Artefact artefact = body.getArtefact();
         Location location = dataManagementService.getLocation(artefact.getLocationId());
 
-        log.info(writeLog(thirdPartyService.handleDeleteThirdPartyCall(body.getApiDestination(),
-                                                                       artefact,
-                                                                       location)));
+        log.info(writeLog(legacyThirdPartyService.handleDeleteThirdPartyCall(body.getApiDestination(),
+                                                                             artefact,
+                                                                             location)));
         return String.format(EMPTY_SUCCESS_MESSAGE, body.getApiDestination());
     }
 
     private void handleThirdPartyForJson(String api, Artefact artefact, Location location) {
         String jsonBlob = dataManagementService.getArtefactJsonBlob(artefact.getArtefactId());
-        log.info(writeLog(thirdPartyService.handleJsonThirdPartyCall(api, jsonBlob, artefact, location)));
+        log.info(writeLog(legacyThirdPartyService.handleJsonThirdPartyCall(api, jsonBlob, artefact, location)));
 
         // Retrieve the Welsh copy of PDF to send to third party if the publication language is in Welsh
         boolean additionalPdf = artefact.getListType().hasAdditionalPdf()
@@ -81,7 +81,7 @@ public class ThirdPartyManagementService {
         } else {
             // The PDF returned from data-management is returned as Base 64.
             // This is then decoded here before sending to third parties.
-            log.info(writeLog(thirdPartyService.handlePdfThirdPartyCall(
+            log.info(writeLog(legacyThirdPartyService.handlePdfThirdPartyCall(
                 api, Base64.decodeBase64(pdf), artefact, location)));
         }
     }
