@@ -25,6 +25,15 @@
   <suppress>
     <notes>Vulnerability in Tomcat</notes>
     <cve>CVE-2026-24734</cve>
+    <cve>CVE-2026-29145</cve>
+    <cve>CVE-2026-24880</cve>
+    <cve>CVE-2026-29129</cve>
+    <cve>CVE-2026-29146</cve>
+    <cve>CVE-2026-34483</cve>
+    <cve>CVE-2026-34487</cve>
+    <cve>CVE-2026-34500</cve>
+    <cve>CVE-2026-25854</cve>
+    <cve>CVE-2026-32990</cve>
   </suppress>
   <suppress>
     <notes>Vulnerability in Netty</notes>
