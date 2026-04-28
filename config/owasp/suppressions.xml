@@ -40,4 +40,24 @@
     <cve>CVE-2026-33871</cve>
     <cve>CVE-2026-33870</cve>
   </suppress>
+  <suppress>
+    <notes>log4j-api-2.25.3.jar</notes>
+    <cve>CVE-2026-34478</cve>
+    <cve>CVE-2026-34480</cve>
+    <cve>CVE-2026-34481</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      spring-security-config-6.5.9.jar,
+      spring-security-core-6.5.9.jar,
+      spring-security-crypto-6.5.9.jar,
+      spring-security-oauth2-client-6.5.9.jar,
+      spring-security-oauth2-core-6.5.9.jar,
+      spring-security-oauth2-jose-6.5.9.jar,
+      spring-security-oauth2-resource-server-6.5.9.jar,
+      spring-security-web-6.5.9.jar
+    </notes>
+    <cve>CVE-2026-22748</cve>
+    <cve>CVE-2026-22746</cve>
+  </suppress>
 </suppressions>
