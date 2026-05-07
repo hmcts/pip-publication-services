@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_EXCEL_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_CSV_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
@@ -56,9 +57,13 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
             && !personalisations.get("pdf_link_to_file").toString().isEmpty();
         boolean hasExcel = personalisations.containsKey("excel_link_to_file")
             && !personalisations.get("excel_link_to_file").toString().isEmpty();
+        boolean hasCsv = personalisations.containsKey("csv_link_to_file")
+            && !personalisations.get("csv_link_to_file").toString().isEmpty();
 
         if (hasPdf && hasExcel) {
             return MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
+        } else if (hasPdf && hasCsv) {
+            return MEDIA_SUBSCRIPTION_PDF_CSV_EMAIL;
         } else if (hasPdf) {
             return MEDIA_SUBSCRIPTION_PDF_EMAIL;
         } else if (hasExcel) {
@@ -142,6 +147,19 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         personalisation.put(
             "excel_link_to_file",
             excelWithinSize ? prepareUpload(artefactExcelBytes, false, emailData.getFileRetentionWeeks()) : ""
+        );
+
+        byte[] artefactCsvBytes = emailData.getCsv();
+        boolean csvWithinSize = artefactCsvBytes.length < MAX_FILE_SIZE && artefactCsvBytes.length > 0;
+
+        personalisation.put(
+            "csv_link_text",
+            csvWithinSize ? "Download the case list as an CSV." : ""
+        );
+
+        personalisation.put(
+            "csv_link_to_file",
+            csvWithinSize ? prepareUpload(artefactCsvBytes, false, emailData.getFileRetentionWeeks()) : ""
         );
 
         return personalisation;
