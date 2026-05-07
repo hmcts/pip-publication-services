@@ -66,4 +66,9 @@
     <cve>CVE-2026-34480</cve>
     <cve>CVE-2026-34481</cve>
   </suppress>
+  <suppress>
+    <notes>log4j suppression</notes>
+    <cve>CVE-2026-34479</cve>
+    <cve>CVE-2026-34477</cve>
+  </suppress>
 </suppressions>
