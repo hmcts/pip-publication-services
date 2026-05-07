@@ -111,7 +111,7 @@ class RawDataSubscriptionEmailGeneratorTest {
         artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     FILE_DATA, LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     FILE_DATA, FILE_DATA, LOCATION_NAME, FILE_RETENTION_WEEKS,
                                                      REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
@@ -187,7 +187,7 @@ class RawDataSubscriptionEmailGeneratorTest {
         artefact.setLanguage(Language.WELSH);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     new byte[0], new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
                                                      REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
@@ -262,7 +262,7 @@ class RawDataSubscriptionEmailGeneratorTest {
         artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, new byte[0],
-                                                     FILE_DATA, LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     FILE_DATA, new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
                                                      REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
@@ -333,7 +333,7 @@ class RawDataSubscriptionEmailGeneratorTest {
         artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, new byte[0],
-                                                     new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     new byte[0], new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
                                                      REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
@@ -407,7 +407,7 @@ class RawDataSubscriptionEmailGeneratorTest {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     new byte[0], new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
                                                      REFERENCE_ID);
 
         try (MockedStatic<NotificationClient> mockStatic = mockStatic(NotificationClient.class);
