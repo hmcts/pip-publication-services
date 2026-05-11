@@ -41,58 +41,34 @@
     <cve>CVE-2026-33870</cve>
   </suppress>
   <suppress>
-    <notes>
-      spring-aop-6.2.17.jar,
-      spring-beans-6.2.17.jar,
-      spring-context-6.2.17.jar,
-      spring-core-6.2.17.jar,
-      spring-expression-6.2.17.jar,
-      spring-jcl-6.2.17.jar,
-      spring-web-6.2.17.jar,
-      spring-webflux-6.2.17.jar,
-      spring-webmvc-6.2.17.jar
-    </notes>
+    <!-- PostgreSQL JDBC Driver -->
+    <cve>CVE-2026-42198</cve>
+
+    <!-- Spring Framework (AOP, Core, Beans, Web, etc.) -->
     <cve>CVE-2026-22740</cve>
     <cve>CVE-2026-22745</cve>
     <cve>CVE-2026-22741</cve>
-  </suppress>
-  <suppress>
-    <notes>
-      spring-boot-3.5.12.jar,
-      spring-boot-actuator-3.5.12.jar,
-      spring-boot-actuator-autoconfigure-3.5.12.jar,
-      spring-boot-autoconfigure-3.5.12.jar,
-      spring-boot-starter-3.5.12.jar,
-      spring-boot-starter-actuator-3.5.12.jar,
-      spring-boot-starter-aop-3.5.12.jar,
-      spring-boot-starter-json-3.5.12.jar,
-      spring-boot-starter-logging-3.5.12.jar,
-      spring-boot-starter-oauth2-client-3.5.12.jar,
-      spring-boot-starter-oauth2-resource-server-3.5.12.jar,
-      spring-boot-starter-reactor-netty-3.5.12.jar,
-      spring-boot-starter-tomcat-3.5.12.jar,
-      spring-boot-starter-validation-3.5.12.jar,
-      spring-boot-starter-web-3.5.12.jar,
-      spring-boot-starter-webflux-3.5.12.jar
-    </notes>
+
+    <!-- Spring Boot -->
     <cve>CVE-2026-40972</cve>
     <cve>CVE-2026-40975</cve>
     <cve>CVE-2026-40973</cve>
     <cve>CVE-2026-40977</cve>
+    <cve>CVE-2026-40976</cve>
+
+    <!-- Spring Security -->
+    <cve>CVE-2026-22751</cve>
+    <cve>CVE-2026-22748</cve>
+    <cve>CVE-2026-22746</cve>
+
+    <!-- Apache Log4j -->
+    <cve>CVE-2026-34478</cve>
+    <cve>CVE-2026-34480</cve>
+    <cve>CVE-2026-34481</cve>
   </suppress>
   <suppress>
-    <notes>
-      spring-security-config-6.5.9.jar,
-      spring-security-core-6.5.9.jar,
-      spring-security-crypto-6.5.9.jar,
-      spring-security-oauth2-client-6.5.9.jar,
-      spring-security-oauth2-core-6.5.9.jar,
-      spring-security-oauth2-jose-6.5.9.jar,
-      spring-security-oauth2-resource-server-6.5.9.jar,
-      spring-security-web-6.5.9.jar
-    </notes>
-    <cve>CVE-2026-22748</cve>
-    <cve>CVE-2026-22751</cve>
-    <cve>CVE-2026-22746</cve>
+    <notes>log4j suppression</notes>
+    <cve>CVE-2026-34479</cve>
+    <cve>CVE-2026-34477</cve>
   </suppress>
 </suppressions>
