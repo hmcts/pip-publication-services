@@ -34,6 +34,9 @@
     <cve>CVE-2026-34500</cve>
     <cve>CVE-2026-25854</cve>
     <cve>CVE-2026-32990</cve>
+    <cve>CVE-2026-41284</cve>
+    <cve>CVE-2026-42498</cve>
+    <cve>CVE-2026-43514</cve>
   </suppress>
   <suppress>
     <notes>Vulnerability in Netty</notes>
@@ -71,5 +74,9 @@
     <notes>log4j suppression</notes>
     <cve>CVE-2026-34479</cve>
     <cve>CVE-2026-34477</cve>
+  </suppress>
+  <suppress>
+    <notes>angus-activation suppression</notes>
+    <cve>CVE-2025-7962</cve>
   </suppress>
 </suppressions>
