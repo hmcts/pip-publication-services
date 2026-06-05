@@ -21,8 +21,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_CSV_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_EXCEL_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_CSV_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
@@ -56,15 +58,25 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
             && !personalisations.get("pdf_link_to_file").toString().isEmpty();
         boolean hasExcel = personalisations.containsKey("excel_link_to_file")
             && !personalisations.get("excel_link_to_file").toString().isEmpty();
+        boolean hasCsv = personalisations.containsKey("csv_link_to_file")
+            && !personalisations.get("csv_link_to_file").toString().isEmpty();
 
-        if (hasPdf && hasExcel) {
-            return MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
-        } else if (hasPdf) {
-            return MEDIA_SUBSCRIPTION_PDF_EMAIL;
-        } else if (hasExcel) {
-            return MEDIA_SUBSCRIPTION_EXCEL_EMAIL;
+        if (hasPdf) {
+            if (hasExcel) {
+                return MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
+            } else if (hasCsv) {
+                return MEDIA_SUBSCRIPTION_PDF_CSV_EMAIL;
+            } else {
+                return MEDIA_SUBSCRIPTION_PDF_EMAIL;
+            }
         } else {
-            return MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL;
+            if (hasExcel) {
+                return MEDIA_SUBSCRIPTION_EXCEL_EMAIL;
+            } else if (hasCsv) {
+                return MEDIA_SUBSCRIPTION_CSV_EMAIL;
+            } else {
+                return MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL;
+            }
         }
     }
 
@@ -130,20 +142,8 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
     private Map<String, Object> populateFilesPersonalisation(RawDataSubscriptionEmailData emailData)
         throws NotificationClientException {
         Map<String, Object> personalisation = populatePdfPersonalisation(emailData);
-
-        byte[] artefactExcelBytes = emailData.getExcel();
-        boolean excelWithinSize = artefactExcelBytes.length < MAX_FILE_SIZE && artefactExcelBytes.length > 0;
-
-        personalisation.put(
-            "excel_link_text",
-            excelWithinSize ? "Download the case list as an Excel spreadsheet." : ""
-        );
-
-        personalisation.put(
-            "excel_link_to_file",
-            excelWithinSize ? prepareUpload(artefactExcelBytes, false, emailData.getFileRetentionWeeks()) : ""
-        );
-
+        personalisation.putAll(populateExcelPersonalisation(emailData));
+        personalisation.putAll(populateCsvPersonalisation(emailData));
         return personalisation;
     }
 
@@ -160,6 +160,44 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         personalisation.put(
             "pdf_link_to_file", pdfWithinSize
                 ? prepareUpload(artefactPdfBytes, false, emailData.getFileRetentionWeeks()) : ""
+        );
+
+        return personalisation;
+    }
+
+    private Map<String, Object> populateExcelPersonalisation(RawDataSubscriptionEmailData emailData)
+        throws NotificationClientException {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        byte[] excelBytes = emailData.getExcel();
+        boolean excelWithinSize = excelBytes.length < MAX_FILE_SIZE && excelBytes.length > 0;
+
+        personalisation.put(
+            "excel_link_text",
+            excelWithinSize ? "Download the case list as an Excel spreadsheet." : ""
+        );
+
+        personalisation.put(
+            "excel_link_to_file",
+            excelWithinSize ? prepareUpload(excelBytes, false, emailData.getFileRetentionWeeks()) : ""
+        );
+
+        return personalisation;
+    }
+
+    private Map<String, Object> populateCsvPersonalisation(RawDataSubscriptionEmailData emailData)
+        throws NotificationClientException {
+        Map<String, Object> personalisation = new ConcurrentHashMap<>();
+        byte[] csvBytes = emailData.getCsv();
+        boolean csvWithinSize = csvBytes.length < MAX_FILE_SIZE && csvBytes.length > 0;
+
+        personalisation.put(
+            "csv_link_text",
+            csvWithinSize ? "Download the case list as a CSV." : ""
+        );
+
+        personalisation.put(
+            "csv_link_to_file",
+            csvWithinSize ? prepareUpload(csvBytes, false, emailData.getFileRetentionWeeks()) : ""
         );
 
         return personalisation;
