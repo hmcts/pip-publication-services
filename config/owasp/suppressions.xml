@@ -34,11 +34,15 @@
     <cve>CVE-2026-34500</cve>
     <cve>CVE-2026-25854</cve>
     <cve>CVE-2026-32990</cve>
+    <cve>CVE-2026-41284</cve>
+    <cve>CVE-2026-42498</cve>
+    <cve>CVE-2026-43514</cve>
   </suppress>
   <suppress>
     <notes>Vulnerability in Netty</notes>
     <cve>CVE-2026-33871</cve>
     <cve>CVE-2026-33870</cve>
+    <cve>CVE-2026-41417</cve>
   </suppress>
   <suppress>
     <!-- PostgreSQL JDBC Driver -->
@@ -70,5 +74,34 @@
     <notes>log4j suppression</notes>
     <cve>CVE-2026-34479</cve>
     <cve>CVE-2026-34477</cve>
+  </suppress>
+  <suppress>
+    <notes>angus-activation suppression</notes>
+    <cve>CVE-2025-7962</cve>
+  </suppress>
+  <suppress>
+    <notes>azure application insights and azure sdk suppression</notes>
+    <cve>CVE-2026-33117</cve>
+  </suppress>
+  <suppress>
+    <notes>netty suppression</notes>
+    <cve>CVE-2026-42581</cve>
+    <cve>CVE-2026-42579</cve>
+    <cve>CVE-2026-42584</cve>
+    <cve>CVE-2026-42582</cve>
+    <cve>CVE-2026-42583</cve>
+    <cve>CVE-2026-42585</cve>
+    <cve>CVE-2026-42587</cve>
+    <cve>CVE-2026-44248</cve>
+    <cve>CVE-2026-42586</cve>
+    <cve>CVE-2026-42580</cve>
+    <cve>CVE-2026-42578</cve>
+  </suppress>
+  <suppress>
+    <notes>tomcat suppression</notes>
+    <cve>CVE-2026-41293</cve>
+    <cve>CVE-2026-43512</cve>
+    <cve>CVE-2026-43515</cve>
+    <cve>CVE-2026-43513</cve>
   </suppress>
 </suppressions>
