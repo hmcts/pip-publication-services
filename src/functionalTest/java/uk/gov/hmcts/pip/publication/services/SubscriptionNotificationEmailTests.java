@@ -76,7 +76,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
     private static final String TEST_CASE_NUMBER = "987654321";
     private static final String TEST_CASE_URN = "Test Case URN";
-    private static final String TEST_CASE_NAME = "Test Case name";
+    private static final String TEST_CASE_NAME = "TestCaseName";
     private static final String LOCATION_ID = randomLocationId();
     private static final String LOCATION_NAME = "TestLocation" + LOCATION_ID;
     private static final String EMAIL_SUBJECT_TEXT = " – your email subscriptions";
@@ -85,7 +85,6 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     private static final String EMAIL_SUBJECT_ERROR = "Email subject does not match";
     private static final String EMAIL_NAME_ERROR = "Name in email body does not match";
     private static final String EMAIL_BODY_ERROR = "Email body does not match";
-    private static final String BEARER = "Bearer ";
     private static final String DOWNLOAD_PDF_TEXT = "Download the case list as a PDF.";
     private static final LocalDateTime CONTENT_DATE = LocalDateTime.now().toLocalDate().atStartOfDay()
         .truncatedTo(ChronoUnit.SECONDS);
@@ -523,8 +522,8 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
-            .hasValue("With case number, ID or URN" + TEST_CASE_NUMBER
-                          + " (TestCaseName) " + LOCATION_NAME + EMAIL_SUBJECT_TEXT);
+            .hasValue("With case number, unique reference number or case name " + TEST_CASE_NUMBER
+                          + " (" + TEST_CASE_NAME + ") " + LOCATION_NAME + EMAIL_SUBJECT_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_NAME_ERROR)
@@ -540,7 +539,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
         subscriptionEmail.setEmail(TEST_EMAIL);
-        subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.CASE_NAME, List.of(TEST_CASE_URN)));
+        subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.CASE_NAME, List.of(TEST_CASE_NAME)));
 
         BulkSubscriptionEmail requestBody = new BulkSubscriptionEmail();
         requestBody.setArtefactId(jsonArtefactId);
@@ -556,8 +555,8 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
-            .hasValue("With case name " + TEST_CASE_NAME + " "
-                          + LOCATION_NAME + EMAIL_SUBJECT_TEXT);
+            .hasValue("With case number, unique reference number or case name " + TEST_CASE_NUMBER
+                          + " (" + TEST_CASE_NAME + ") " + LOCATION_NAME + EMAIL_SUBJECT_TEXT);
 
         assertThat(notification.getBody())
             .as(EMAIL_NAME_ERROR)
