@@ -19,6 +19,7 @@ import java.util.Optional;
  */
 @Component
 public final class CaseInfoHelper {
+    private static final String CASE_FORMAT = "%s (%s)";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -48,7 +49,7 @@ public final class CaseInfoHelper {
                     .findFirst();
 
                 if (caseName.isPresent()) {
-                    contentWithCaseNames.add(String.format("%s (%s)", caseNumber, caseName.get()));
+                    contentWithCaseNames.add(String.format(CASE_FORMAT, caseNumber, caseName.get()));
                 } else {
                     contentWithCaseNames.add(caseNumber);
                 }
@@ -75,11 +76,11 @@ public final class CaseInfoHelper {
                     .filter(caseInfo -> StringUtils.isNotEmpty(caseInfo.getCaseNumber()))
                     .filter(caseInfo -> caseInfo.getCaseNumber().equals(caseNumber))
                     .map(ArtefactCaseInfo::getCaseName)
-                    .filter(name -> StringUtils.isNotEmpty(name))
+                    .filter(StringUtils::isNotEmpty)
                     .findFirst();
 
                 if (caseName.isPresent()) {
-                    contentWithCaseNumberAndName.add(String.format("%s (%s)", caseNumber, caseName.get()));
+                    contentWithCaseNumberAndName.add(String.format(CASE_FORMAT, caseNumber, caseName.get()));
                 } else {
                     contentWithCaseNumberAndName.add(caseNumber);
                 }
@@ -106,11 +107,11 @@ public final class CaseInfoHelper {
                     .filter(caseInfo -> StringUtils.isNotEmpty(caseInfo.getCaseName()))
                     .filter(caseInfo -> caseInfo.getCaseName().equals(caseName))
                     .map(ArtefactCaseInfo::getCaseNumber)
-                    .filter(number -> StringUtils.isNotEmpty(number))
+                    .filter(StringUtils::isNotEmpty)
                     .findFirst();
 
                 if (caseNumber.isPresent()) {
-                    contentWithCaseNumberAndName.add(String.format("%s (%s)", caseNumber.get(), caseName));
+                    contentWithCaseNumberAndName.add(String.format(CASE_FORMAT, caseNumber.get(), caseName));
                 } else {
                     contentWithCaseNumberAndName.add(caseName);
                 }

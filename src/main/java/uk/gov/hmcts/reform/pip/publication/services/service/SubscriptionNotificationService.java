@@ -68,6 +68,7 @@ public class SubscriptionNotificationService {
             .orElse(null);
     }
 
+    // NOSONAR - TODO SonarQube complains about duplicate code, ignore this as the old version is going to be removed in the future
     private String rawDataSubscriptionEmailRequestV2(SubscriptionEmail body, Artefact artefact, String artefactSummary,
                                                    byte[] pdf, byte[] excel, byte[] csv, String locationName,
                                                    String referenceId) {
