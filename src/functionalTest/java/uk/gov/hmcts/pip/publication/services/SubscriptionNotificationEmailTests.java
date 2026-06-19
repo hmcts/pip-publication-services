@@ -502,8 +502,6 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     }
 
     @Test
-    @Disabled("TODO: To be enabled once data-management PR is merged. Currently fails due to case info not generated "
-        + "in data-management")
     void shouldSendJsonUploadSubscriptionV2ByCaseNumber() throws NotificationClientException {
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
@@ -538,8 +536,6 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     }
 
     @Test
-    @Disabled("TODO: To be enabled once data-management PR is merged. Currently fails due to case info not generated "
-        + "in data-management")
     void shouldSendJsonUploadSubscriptionV2ByCaseName() throws NotificationClientException {
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
