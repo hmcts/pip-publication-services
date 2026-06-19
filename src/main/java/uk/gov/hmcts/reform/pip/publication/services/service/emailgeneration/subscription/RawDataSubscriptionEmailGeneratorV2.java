@@ -35,7 +35,6 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
  */
 @Service
 @Slf4j
-// NOSONAR - TODO SonarQube complains about duplicate code, ignore this as the old version is going to be removed.
 public class RawDataSubscriptionEmailGeneratorV2 extends EmailGenerator {
     private static final String CASE = "case";
     private static final String DISPLAY_CASE = "display_case";

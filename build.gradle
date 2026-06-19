@@ -111,6 +111,8 @@ sonarqube {
     property "sonar.projectName", "PIP Publication Services"
     property "sonar.projectKey", "pip-publication-services"
     property "sonar.exclusions", sonarExclusions.join(', ')
+    // TODO: Ignore code duplication check until the deprecated code is removed after case number/case name migration is completed.
+    property "sonar.cpd.exclusions", "**/RawDataSubscriptionEmailGeneratorV2.java,**/SubscriptionNotificationService.java"
   }
 }
 
