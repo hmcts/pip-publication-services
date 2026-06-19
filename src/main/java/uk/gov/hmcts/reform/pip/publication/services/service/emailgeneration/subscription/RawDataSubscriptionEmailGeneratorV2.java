@@ -35,7 +35,7 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
  */
 @Service
 @Slf4j
-// NOSONAR - TODO SonarQube complains about duplicate code, ignore this as the old version is going to be removed in the future
+// NOSONAR - TODO SonarQube complains about duplicate code, ignore this as the old version is going to be removed.
 public class RawDataSubscriptionEmailGeneratorV2 extends EmailGenerator {
     private static final String CASE = "case";
     private static final String DISPLAY_CASE = "display_case";
@@ -60,11 +60,7 @@ public class RawDataSubscriptionEmailGeneratorV2 extends EmailGenerator {
             && !personalisations.get("excel_link_to_file").toString().isEmpty();
 
         if (hasPdf) {
-            if (hasExcel) {
-                return MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2;
-            } else {
-                return MEDIA_SUBSCRIPTION_PDF_EMAIL_V2;
-            }
+            return hasExcel ? MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2 : MEDIA_SUBSCRIPTION_PDF_EMAIL_V2;
         } else if (hasExcel) {
             return MEDIA_SUBSCRIPTION_EXCEL_EMAIL_V2;
         } else {

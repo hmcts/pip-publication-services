@@ -34,6 +34,7 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
  */
 @Service
 @Slf4j
+@Deprecated
 public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
     private static final String CASE_NUMBERS = "case_num";
     private static final String DISPLAY_CASE_NUMBERS = "display_case_num";
