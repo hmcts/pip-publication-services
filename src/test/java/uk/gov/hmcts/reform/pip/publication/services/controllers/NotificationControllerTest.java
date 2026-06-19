@@ -32,8 +32,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.AwsS3Service;
-import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.LegacyThirdPartyManagementService;
+import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
 import java.io.IOException;
@@ -169,6 +169,7 @@ class NotificationControllerTest {
         when(notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion))
             .thenReturn(REFERENCE_ID);
         when(notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail)).thenReturn(REFERENCE_ID);
+        when(notificationService.bulkSendSubscriptionEmailV2(bulkSubscriptionEmail)).thenReturn(REFERENCE_ID);
     }
 
     @Test
@@ -185,7 +186,16 @@ class NotificationControllerTest {
     }
 
     @Test
+    @Deprecated
     void testBulkSendSubscriptionReturnsAcceptedResponse() {
+        ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmail(bulkSubscriptionEmail);
+
+        assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode(), STATUS_CODES_MATCH);
+        assertEquals(REFERENCE_ID, responseEntity.getBody(), "Response body should contain accepted message");
+    }
+
+    @Test
+    void testBulkSendSubscriptionV2ReturnsAcceptedResponse() {
         ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmail(bulkSubscriptionEmail);
 
         assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode(), STATUS_CODES_MATCH);

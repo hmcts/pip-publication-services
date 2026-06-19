@@ -54,6 +54,7 @@ public class SubscriptionNotificationService {
             .orElse(null);
     }
 
+    @Deprecated
     private String rawDataSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact, String artefactSummary,
                                                    byte[] pdf, byte[] excel, byte[] csv, String locationName,
                                                    String referenceId) {
@@ -61,6 +62,20 @@ public class SubscriptionNotificationService {
             body, artefact, artefactSummary, pdf, excel, csv, locationName, fileRetentionWeeks, referenceId
         );
         EmailToSend email = emailService.handleEmailGeneration(emailData, Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL);
+
+        return emailService.sendEmail(email)
+            .getReference()
+            .orElse(null);
+    }
+
+    private String rawDataSubscriptionEmailRequestV2(SubscriptionEmail body, Artefact artefact, String artefactSummary,
+                                                   byte[] pdf, byte[] excel, byte[] csv, String locationName,
+                                                   String referenceId) {
+        RawDataSubscriptionEmailData emailData = new RawDataSubscriptionEmailData(
+            body, artefact, artefactSummary, pdf, excel, csv, locationName, fileRetentionWeeks, referenceId
+        );
+        EmailToSend email = emailService.handleEmailGeneration(emailData,
+                                                               Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2);
 
         return emailService.sendEmail(email)
             .getReference()
@@ -88,6 +103,7 @@ public class SubscriptionNotificationService {
     }
 
     @Async
+    @Deprecated
     public void rawDataBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
                                                     String locationName, String referenceId) {
         String artefactSummary = getArtefactSummary(artefact);
@@ -113,6 +129,41 @@ public class SubscriptionNotificationService {
                                                 EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
                 rawDataSubscriptionEmailRequest(subscriptionEmail, artefact, artefactSummary,  pdf,
                                                 excel, csv, locationName, referenceId);
+            } catch (TooManyEmailsException ex) {
+                log.error(writeLog(ex.getMessage()));
+            } catch (NotifyException ignored) {
+                // This is a bulk email, so we don't want to stop the process if one email fails
+                // This exception is already logged at a higher level, so no need to log again here
+            }
+        });
+    }
+
+    @Async
+    public void rawDataBulkSubscriptionEmailRequestV2(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
+                                                      String locationName, String referenceId) {
+        String artefactSummary = getArtefactSummary(artefact);
+        byte[] pdf;
+
+        if (artefact.getListType().hasAdditionalPdf()
+            && artefact.getLanguage().equals(Language.WELSH)) {
+            pdf = getFileBytes(artefact, FileType.PDF, true);
+        } else {
+            pdf = getFileBytes(artefact, FileType.PDF, false);
+        }
+
+        byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
+            : new byte[0];
+
+        byte[] csv = artefact.getListType().hasCsv() ? getFileBytes(artefact, FileType.CSV, false)
+            : new byte[0];
+
+        bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
+
+            try {
+                log.info(writeLog(String.format("Sending subscription email for user %s",
+                                                EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
+                rawDataSubscriptionEmailRequestV2(subscriptionEmail, artefact, artefactSummary,  pdf,
+                                                  excel, csv, locationName, referenceId);
             } catch (TooManyEmailsException ex) {
                 log.error(writeLog(ex.getMessage()));
             } catch (NotifyException ignored) {

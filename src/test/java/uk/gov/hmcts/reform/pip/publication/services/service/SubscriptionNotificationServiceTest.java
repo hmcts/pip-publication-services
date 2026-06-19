@@ -42,6 +42,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_CSV_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -148,6 +149,7 @@ class SubscriptionNotificationServiceTest {
     }
 
     @Test
+    @Deprecated
     void testBulkRawDataSubscriptionEmailRequestWhenPdfAndExcel() {
         artefact.setIsFlatFile(false);
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
@@ -177,6 +179,46 @@ class SubscriptionNotificationServiceTest {
                      "Incorrect location name");
         assertEquals(ARTEFACT_SUMMARY, rawDataSubscriptionEmailData.getArtefactSummary(),
                           "Incorrect summary content");
+        assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getPdf(),
+                          "Incorrect PDF content");
+        assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getExcel(),
+                          "Incorrect excel content");
+        assertArrayEquals(new byte[0], rawDataSubscriptionEmailData.getCsv(),
+                          "CSV content should be empty");
+
+        assertEquals(SUCCESS_REF_ID, rawDataSubscriptionEmailData.getReferenceId(), REFERENCE_ID_MESSAGE);
+    }
+
+    @Test
+    void testBulkRawDataSubscriptionEmailRequestWhenPdfAndExcelV2() {
+        artefact.setIsFlatFile(false);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
+        artefact.setLanguage(Language.WELSH);
+
+        ArgumentCaptor<RawDataSubscriptionEmailData> argument =
+            ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.EXCEL, false)).thenReturn(FILE_CONTENT);
+
+        when(emailService.handleEmailGeneration(argument.capture(),
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
+            .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
+
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail, artefact, LOCATION_NAME,
+                                                                SUCCESS_REF_ID);
+
+        RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
+
+        assertEquals(artefact, rawDataSubscriptionEmailData.getArtefact(),
+                     "Incorrect artefact set");
+        assertEquals(EMAIL, rawDataSubscriptionEmailData.getEmail(),
+                     "Incorrect email address set");
+        assertEquals(LOCATION_NAME, rawDataSubscriptionEmailData.getLocationName(),
+                     "Incorrect location name");
+        assertEquals(ARTEFACT_SUMMARY, rawDataSubscriptionEmailData.getArtefactSummary(),
+                     "Incorrect summary content");
         assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getPdf(),
                           "Incorrect PDF content");
         assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getExcel(),
@@ -247,6 +289,7 @@ class SubscriptionNotificationServiceTest {
     }
 
     @Test
+    @Deprecated
     void testBulkSubscriptionRequestEmptySummaryWhenTooBig() {
         artefact.setIsFlatFile(false);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
@@ -272,6 +315,32 @@ class SubscriptionNotificationServiceTest {
     }
 
     @Test
+    void testBulkSubscriptionRequestEmptySummaryWhenTooBigV2() {
+        artefact.setIsFlatFile(false);
+        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setPayloadSize(1024F);
+        artefact.setLanguage(Language.WELSH);
+
+        ArgumentCaptor<RawDataSubscriptionEmailData> argument =
+            ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
+
+        when(emailService.handleEmailGeneration(argument.capture(),
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
+            .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
+
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail, artefact, LOCATION_NAME,
+                                                                SUCCESS_REF_ID);
+
+        RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
+
+        assertEquals("", rawDataSubscriptionEmailData.getArtefactSummary(),
+                     "Incorrect summary content");
+    }
+
+    @Test
+    @Deprecated
     void testBulkSubscriptionRequestWhenAdditionalPdf() {
         artefact.setIsFlatFile(false);
         artefact.setListType(ListType.SJP_PRESS_REGISTER);
@@ -297,6 +366,32 @@ class SubscriptionNotificationServiceTest {
     }
 
     @Test
+    void testBulkSubscriptionRequestWhenAdditionalPdfV2() {
+        artefact.setIsFlatFile(false);
+        artefact.setListType(ListType.SJP_PRESS_REGISTER);
+        artefact.setLanguage(Language.WELSH);
+
+        ArgumentCaptor<RawDataSubscriptionEmailData> argument =
+            ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
+
+        when(emailService.handleEmailGeneration(argument.capture(),
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
+            .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
+
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail, artefact, LOCATION_NAME,
+                                                                SUCCESS_REF_ID);
+
+        RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
+
+        assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getPdf(),
+                          "Incorrect PDF content");
+    }
+
+    @Test
+    @Deprecated
     void testBulkSubscriptionRequestPdfOnly() {
         artefact.setIsFlatFile(false);
         artefact.setListType(ListType.SJP_PRESS_REGISTER);
@@ -322,6 +417,31 @@ class SubscriptionNotificationServiceTest {
 
         assertArrayEquals(new byte[0], rawDataSubscriptionEmailData.getCsv(),
                           "CSV content should be empty");
+    }
+
+    @Test
+    void testBulkSubscriptionRequestPdfOnlyV2() {
+        artefact.setIsFlatFile(false);
+        artefact.setListType(ListType.SJP_PRESS_REGISTER);
+        artefact.setLanguage(Language.ENGLISH);
+
+        ArgumentCaptor<RawDataSubscriptionEmailData> argument =
+            ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
+
+        when(emailService.handleEmailGeneration(argument.capture(),
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
+            .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
+
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail, artefact, LOCATION_NAME,
+                                                                SUCCESS_REF_ID);
+
+        RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
+
+        assertArrayEquals(new byte[0], rawDataSubscriptionEmailData.getExcel(),
+                          "Incorrect excel content");
     }
 
     @Test

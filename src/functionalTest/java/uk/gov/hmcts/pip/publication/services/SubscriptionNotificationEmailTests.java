@@ -59,6 +59,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     private String systemAdminUserId;
 
     private static final String BULK_SUBSCRIPTION_URL = "/notify/subscription";
+    private static final String BULK_SUBSCRIPTION_V2_URL = "/notify/subscription/V2";
     private static final String TESTING_SUPPORT_LOCATION_URL = "/testing-support/location/";
     private static final String TESTING_SUPPORT_PUBLICATION_URL = "/testing-support/publication";
     private static final String PUBLICATION_URL = "/publication";
@@ -75,6 +76,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
 
     private static final String TEST_CASE_NUMBER = "987654321";
     private static final String TEST_CASE_URN = "Test Case URN";
+    private static final String TEST_CASE_NAME = "Test Case name";
     private static final String LOCATION_ID = randomLocationId();
     private static final String LOCATION_NAME = "TestLocation" + LOCATION_ID;
     private static final String EMAIL_SUBJECT_TEXT = " – your email subscriptions";
@@ -218,6 +220,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     }
 
     @Test
+    @Deprecated
     void shouldSendJsonUploadSubscriptionByLocationEmail() throws NotificationClientException {
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
@@ -255,6 +258,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     }
 
     @Test
+    @Deprecated
     void shouldSendJsonUploadSubscriptionByLocationEmailWelsh() throws NotificationClientException {
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
@@ -288,6 +292,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     }
 
     @Test
+    @Deprecated
     void shouldSendFlatFileUploadSubscriptionByLocationEmail() throws NotificationClientException {
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
@@ -321,6 +326,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     }
 
     @Test
+    @Deprecated
     void shouldSendJsonUploadSubscriptionByCaseNumber() throws NotificationClientException {
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
@@ -355,6 +361,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     }
 
     @Test
+    @Deprecated
     void shouldSendJsonUploadSubscriptionByCaseUrn() throws NotificationClientException {
 
         SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
@@ -376,6 +383,180 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         assertThat(notification.getSubject())
             .as(EMAIL_SUBJECT_ERROR)
             .hasValue("With unique reference number " + TEST_CASE_URN + " "
+                          + LOCATION_NAME + EMAIL_SUBJECT_TEXT);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_NAME_ERROR)
+            .contains(EMAIL_BODY);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains(DOWNLOAD_PDF_TEXT);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains("Download the case list as an Excel spreadsheet.");
+    }
+
+    @Test
+    void shouldSendJsonUploadSubscriptionV2ByLocationEmail() throws NotificationClientException {
+
+        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail(TEST_EMAIL);
+        subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID)));
+
+
+        BulkSubscriptionEmail requestBody = new BulkSubscriptionEmail();
+        requestBody.setArtefactId(jsonArtefactId);
+        requestBody.setSubscriptionEmails(List.of(subscriptionEmail));
+
+        final Response response = doPostRequest(
+            BULK_SUBSCRIPTION_V2_URL,
+            Map.of(AUTHORIZATION, bearerToken),
+            requestBody
+        );
+
+        Notification notification = extractNotification(response);
+
+        assertThat(notification.getSubject())
+            .as(EMAIL_SUBJECT_ERROR)
+            .hasValue(LOCATION_NAME + EMAIL_SUBJECT_TEXT);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_NAME_ERROR)
+            .contains(EMAIL_BODY);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains(DOWNLOAD_PDF_TEXT);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains("Download the case list as an Excel spreadsheet.");
+    }
+
+    @Test
+    void shouldSendJsonUploadSubscriptionV2ByLocationEmailWelsh() throws NotificationClientException {
+
+        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail(TEST_EMAIL);
+        subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID)));
+
+
+        BulkSubscriptionEmail requestBody = new BulkSubscriptionEmail();
+        requestBody.setArtefactId(jsonArtefactIdWelsh);
+        requestBody.setSubscriptionEmails(List.of(subscriptionEmail));
+
+        final Response response = doPostRequest(
+            BULK_SUBSCRIPTION_V2_URL,
+            Map.of(AUTHORIZATION, bearerToken),
+            requestBody
+        );
+
+        Notification notification = extractNotification(response);
+
+        assertThat(notification.getSubject())
+            .as(EMAIL_SUBJECT_ERROR)
+            .hasValue(LOCATION_NAME + EMAIL_SUBJECT_TEXT);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_NAME_ERROR)
+            .contains(EMAIL_BODY);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains(DOWNLOAD_PDF_TEXT);
+    }
+
+    @Test
+    void shouldSendFlatFileUploadSubscriptionV2ByLocationEmail() throws NotificationClientException {
+
+        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail(TEST_EMAIL);
+        subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID)));
+
+
+        BulkSubscriptionEmail requestBody = new BulkSubscriptionEmail();
+        requestBody.setArtefactId(flatFileArtefactId);
+        requestBody.setSubscriptionEmails(List.of(subscriptionEmail));
+
+        final Response response = doPostRequest(
+            BULK_SUBSCRIPTION_V2_URL,
+            Map.of(AUTHORIZATION, bearerToken),
+            requestBody
+        );
+
+        Notification notification = extractNotification(response);
+
+        assertThat(notification.getSubject())
+            .as(EMAIL_SUBJECT_ERROR)
+            .hasValue(LOCATION_NAME + EMAIL_SUBJECT_TEXT);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_NAME_ERROR)
+            .contains(EMAIL_BODY);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains("Download the document.");
+    }
+
+    @Test
+    void shouldSendJsonUploadSubscriptionV2ByCaseNumber() throws NotificationClientException {
+
+        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail(TEST_EMAIL);
+        subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.CASE_NUMBER, List.of(TEST_CASE_NUMBER)));
+
+
+        BulkSubscriptionEmail requestBody = new BulkSubscriptionEmail();
+        requestBody.setArtefactId(jsonArtefactIdWelsh);
+        requestBody.setSubscriptionEmails(List.of(subscriptionEmail));
+
+        final Response response = doPostRequest(
+            BULK_SUBSCRIPTION_V2_URL,
+            Map.of(AUTHORIZATION, bearerToken),
+            requestBody
+        );
+
+        Notification notification = extractNotification(response);
+
+        assertThat(notification.getSubject())
+            .as(EMAIL_SUBJECT_ERROR)
+            .hasValue("With case number, ID or URN" + TEST_CASE_NUMBER
+                          + " (TestCaseName) " + LOCATION_NAME + EMAIL_SUBJECT_TEXT);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_NAME_ERROR)
+            .contains(EMAIL_BODY);
+
+        assertThat(notification.getBody())
+            .as(EMAIL_BODY_ERROR)
+            .contains(DOWNLOAD_PDF_TEXT);
+    }
+
+    @Test
+    void shouldSendJsonUploadSubscriptionV2ByCaseName() throws NotificationClientException {
+
+        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail(TEST_EMAIL);
+        subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.CASE_NAME, List.of(TEST_CASE_URN)));
+
+        BulkSubscriptionEmail requestBody = new BulkSubscriptionEmail();
+        requestBody.setArtefactId(jsonArtefactId);
+        requestBody.setSubscriptionEmails(List.of(subscriptionEmail));
+
+        final Response response = doPostRequest(
+            BULK_SUBSCRIPTION_V2_URL,
+            Map.of(AUTHORIZATION, bearerToken),
+            requestBody
+        );
+
+        Notification notification = extractNotification(response);
+
+        assertThat(notification.getSubject())
+            .as(EMAIL_SUBJECT_ERROR)
+            .hasValue("With case name " + TEST_CASE_NAME + " "
                           + LOCATION_NAME + EMAIL_SUBJECT_TEXT);
 
         assertThat(notification.getBody())

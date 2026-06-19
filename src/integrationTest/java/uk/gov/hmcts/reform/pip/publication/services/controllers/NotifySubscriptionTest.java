@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class NotifySubscriptionTest extends IntegrationTestBase {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String BULK_SUBSCRIPTION_URL = "/notify/subscription";
+    private static final String BULK_SUBSCRIPTION_V2_URL = "/notify/subscription/V2";
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
     private static final String EMAIL = "test@justice.gov.uk";
     private static final byte[] FILE = "Test byte".getBytes();
@@ -80,6 +81,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
     }
 
     @Test
+    @Deprecated
     void testMissingEmailForSubscriptionReturnsBadRequest() throws Exception {
         String missingEmailJsonBody =
             "{\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}, \"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
@@ -91,6 +93,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
     }
 
     @Test
+    @Deprecated
     void testValidPayloadForSubsEmailThrowsBadGateway() throws Exception {
         when(dataManagementService.getArtefact(ARTEFACT_ID)).thenThrow(ServiceToServiceException.class);
 
@@ -101,6 +104,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
     }
 
     @Test
+    @Deprecated
     void testInvalidEmailForSubscriptionReturnsBadRequest() throws Exception {
         String invalidEmailJsonBody =
             "{\"email\":\"abcd\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
@@ -113,6 +117,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
     }
 
     @Test
+    @Deprecated
     void testMissingArtefactIdForSubscriptionReturnsBadRequest() throws Exception {
         String missingArtefactIdJsonBody =
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}}";
@@ -124,6 +129,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
     }
 
     @Test
+    @Deprecated
     void testInvalidSubscriptionCriteriaForSubscriptionReturnsBadRequest() throws Exception {
         String invalidSubscriptionJsonBody =
             "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[]},"
@@ -136,6 +142,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
     }
 
     @Test
+    @Deprecated
     void testSendBulkFlatFileEmail() throws Exception {
         when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
@@ -149,6 +156,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
     }
 
     @Test
+    @Deprecated
     void testSendBulkJsonEmail() throws Exception {
         when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
@@ -163,6 +171,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
     }
 
     @Test
+    @Deprecated
     void testSendBulkEmailBadRequest() throws Exception {
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
                             .content(BULK_SUBSCRIPTION_EMAIL_BODY_BAD_REQUEST)
@@ -172,8 +181,109 @@ class NotifySubscriptionTest extends IntegrationTestBase {
 
     @Test
     @WithMockUser(username = "unauthorized_username", authorities = {"APPROLE_unknown.role"})
+    @Deprecated
     void testUnauthorizedSendSubscriptionEmail() throws Exception {
         mockMvc.perform(post(BULK_SUBSCRIPTION_URL)
+                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testMissingEmailForSubscriptionV2ReturnsBadRequest() throws Exception {
+        String missingEmailJsonBody =
+            "{\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}, \"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
+
+        mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
+                            .content(missingEmailJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testValidPayloadForSubsEmailV2ThrowsBadGateway() throws Exception {
+        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenThrow(ServiceToServiceException.class);
+
+        mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
+                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadGateway());
+    }
+
+    @Test
+    void testInvalidEmailForSubscriptionV2ReturnsBadRequest() throws Exception {
+        String invalidEmailJsonBody =
+            "{\"email\":\"abcd\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]},"
+                + "\"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
+
+        mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
+                            .content(invalidEmailJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testMissingArtefactIdForSubscriptionV2ReturnsBadRequest() throws Exception {
+        String missingArtefactIdJsonBody =
+            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[\"0\"]}}";
+
+        mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
+                            .content(missingArtefactIdJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testInvalidSubscriptionCriteriaForSubscriptionV2ReturnsBadRequest() throws Exception {
+        String invalidSubscriptionJsonBody =
+            "{\"email\":\"test_account_admin@justice.gov.uk\",\"subscriptions\": {\"LOCATION_ID\":[]},"
+                + "\"artefactId\": \"3d498688-bbad-4a53-b253-a16ddf8737a9\"}";
+
+        mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
+                            .content(invalidSubscriptionJsonBody)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testSendBulkFlatFileEmailV2() throws Exception {
+        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(FILE);
+
+        mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
+                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isAccepted())
+            .andExpect(content().string(IsNull.notNullValue()));
+    }
+
+    @Test
+    void testSendBulkJsonEmailV2() throws Exception {
+        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
+        when(dataManagementService.getArtefactJsonBlob(ARTEFACT_ID)).thenReturn(PAYLOAD);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(PDF);
+
+        mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
+                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isAccepted())
+            .andExpect(content().string(IsNull.notNullValue()));
+    }
+
+    @Test
+    void testSendBulkEmailV2BadRequest() throws Exception {
+        mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
+                            .content(BULK_SUBSCRIPTION_EMAIL_BODY_BAD_REQUEST)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "unauthorized_username", authorities = {"APPROLE_unknown.role"})
+    void testUnauthorizedSendSubscriptionEmailV2() throws Exception {
+        mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
                             .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
