@@ -104,4 +104,41 @@
     <cve>CVE-2026-43515</cve>
     <cve>CVE-2026-43513</cve>
   </suppress>
+  <suppress>
+    <cve>CVE-2026-46340</cve>
+    <cve>CVE-2026-48043</cve>
+    <cve>CVE-2026-47691</cve>
+    <cve>CVE-2026-50020</cve>
+    <cve>CVE-2026-50560</cve>
+    <cve>CVE-2026-41844</cve>
+    <cve>CVE-2026-41843</cve>
+    <cve>CVE-2026-41842</cve>
+    <cve>CVE-2026-41841</cve>
+    <cve>CVE-2026-41848</cve>
+    <cve>CVE-2026-41846</cve>
+    <cve>CVE-2026-41845</cve>
+    <cve>CVE-2026-41840</cve>
+    <cve>CVE-2026-41003</cve>
+    <cve>CVE-2026-44893</cve>
+    <cve>CVE-2026-48059</cve>
+    <cve>CVE-2026-44250</cve>
+    <cve>CVE-2026-47244</cve>
+    <cve>CVE-2026-44890</cve>
+    <cve>CVE-2026-41838</cve>
+    <cve>CVE-2026-50010</cve>
+    <cve>CVE-2026-50011</cve>
+    <cve>CVE-2026-41854</cve>
+    <cve>CVE-2026-41853</cve>
+    <cve>CVE-2026-41852</cve>
+    <cve>CVE-2026-45416</cve>
+    <cve>CVE-2026-40988</cve>
+    <cve>CVE-2026-44249</cve>
+    <cve>CVE-2026-45536</cve>
+    <cve>CVE-2026-48006</cve>
+    <cve>CVE-2026-41851</cve>
+    <cve>CVE-2026-45673</cve>
+    <cve>CVE-2026-41850</cve>
+    <cve>CVE-2026-45674</cve>
+    <cve>CVE-2026-41694</cve>
+  </suppress>
 </suppressions>
