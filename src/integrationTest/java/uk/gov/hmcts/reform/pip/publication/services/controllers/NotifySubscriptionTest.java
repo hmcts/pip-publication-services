@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
@@ -59,6 +60,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
 
     private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
     private final BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
+    private final BulkSubscriptionEmailV2 bulkSubscriptionEmailV2 = new BulkSubscriptionEmailV2();
     private final Artefact artefact = new Artefact();
     private final Location location = new Location();
 
@@ -72,6 +74,10 @@ class NotifySubscriptionTest extends IntegrationTestBase {
 
         bulkSubscriptionEmail.setArtefactId(ARTEFACT_ID);
         bulkSubscriptionEmail.setSubscriptionEmails(List.of(subscriptionEmail));
+
+        artefact.setArtefactId(ARTEFACT_ID);
+        bulkSubscriptionEmailV2.setArtefact(artefact);
+        bulkSubscriptionEmailV2.setSubscriptionEmails(List.of(subscriptionEmail));
 
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setLocationId(LOCATION_ID);
@@ -247,12 +253,11 @@ class NotifySubscriptionTest extends IntegrationTestBase {
 
     @Test
     void testSendBulkFlatFileEmailV2() throws Exception {
-        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(FILE);
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
-                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
+                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmailV2))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isAccepted())
             .andExpect(content().string(IsNull.notNullValue()));
@@ -260,13 +265,12 @@ class NotifySubscriptionTest extends IntegrationTestBase {
 
     @Test
     void testSendBulkJsonEmailV2() throws Exception {
-        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
         when(dataManagementService.getLocation(LOCATION_ID)).thenReturn(location);
         when(dataManagementService.getArtefactJsonBlob(ARTEFACT_ID)).thenReturn(PAYLOAD);
         when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(PDF);
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
-                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
+                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmailV2))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isAccepted())
             .andExpect(content().string(IsNull.notNullValue()));
@@ -284,7 +288,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
     @WithMockUser(username = "unauthorized_username", authorities = {"APPROLE_unknown.role"})
     void testUnauthorizedSendSubscriptionEmailV2() throws Exception {
         mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
-                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
+                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmailV2))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
     }
