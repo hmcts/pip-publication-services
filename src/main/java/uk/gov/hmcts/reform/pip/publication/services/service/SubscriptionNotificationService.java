@@ -14,11 +14,11 @@ import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.FlatFileSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.RawDataSubscriptionEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.util.Base64;
+import java.util.List;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
@@ -83,11 +83,11 @@ public class SubscriptionNotificationService {
     }
 
     @Async
-    public void flatFileBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
+    public void flatFileBulkSubscriptionEmailRequest(List<SubscriptionEmail> subscriptionEmails, Artefact artefact,
                                                      String locationName, String referenceId) {
 
         byte[] flatFileData = dataManagementService.getArtefactFlatFile(artefact.getArtefactId());
-        bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
+        subscriptionEmails.forEach(subscriptionEmail -> {
             try {
                 log.info(writeLog(String.format("Sending subscription email for user %s",
                                             EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
@@ -104,7 +104,7 @@ public class SubscriptionNotificationService {
 
     @Async
     @Deprecated
-    public void rawDataBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
+    public void rawDataBulkSubscriptionEmailRequest(List<SubscriptionEmail> subscriptionEmails, Artefact artefact,
                                                     String locationName, String referenceId) {
         String artefactSummary = getArtefactSummary(artefact);
         byte[] pdf;
@@ -122,7 +122,7 @@ public class SubscriptionNotificationService {
         byte[] csv = artefact.getListType().hasCsv() ? getFileBytes(artefact, FileType.CSV, false)
             : new byte[0];
 
-        bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
+        subscriptionEmails.forEach(subscriptionEmail -> {
 
             try {
                 log.info(writeLog(String.format("Sending subscription email for user %s",
@@ -139,7 +139,7 @@ public class SubscriptionNotificationService {
     }
 
     @Async
-    public void rawDataBulkSubscriptionEmailRequestV2(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
+    public void rawDataBulkSubscriptionEmailRequestV2(List<SubscriptionEmail> subscriptionEmails, Artefact artefact,
                                                       String locationName, String referenceId) {
         String artefactSummary = getArtefactSummary(artefact);
         byte[] pdf;
@@ -157,7 +157,7 @@ public class SubscriptionNotificationService {
         byte[] csv = artefact.getListType().hasCsv() ? getFileBytes(artefact, FileType.CSV, false)
             : new byte[0];
 
-        bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
+        subscriptionEmails.forEach(subscriptionEmail -> {
 
             try {
                 log.info(writeLog(String.format("Sending subscription email for user %s",

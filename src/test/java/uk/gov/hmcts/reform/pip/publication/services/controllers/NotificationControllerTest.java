@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
@@ -83,6 +84,7 @@ class NotificationControllerTest {
     private List<MediaApplication> validMediaApplicationList;
     private SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
     private BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
+    private BulkSubscriptionEmailV2 bulkSubscriptionEmailV2 = new BulkSubscriptionEmailV2();
     private final List<NoMatchArtefact> noMatchArtefactList = new ArrayList<>();
     private DuplicatedMediaEmail createMediaSetupEmail;
     private LegacyThirdPartySubscription thirdPartySubscription = new LegacyThirdPartySubscription();
@@ -128,13 +130,17 @@ class NotificationControllerTest {
         subscriptionEmail.setEmail("a@b.com");
         subscriptionEmail.setSubscriptions(new HashMap<>());
 
-        bulkSubscriptionEmail.setArtefactId(UUID.randomUUID());
+        Artefact artefact = new Artefact();
+        artefact.setArtefactId(UUID.randomUUID());
+        bulkSubscriptionEmail.setArtefactId(artefact.getArtefactId());
+        bulkSubscriptionEmailV2.setArtefact(artefact);
 
         SubscriptionEmail subscriptionEmailForBulk = new SubscriptionEmail();
         subscriptionEmailForBulk.setEmail("a@b.com");
         subscriptionEmailForBulk.setSubscriptions(new HashMap<>());
 
         bulkSubscriptionEmail.setSubscriptionEmails(List.of(subscriptionEmailForBulk));
+        bulkSubscriptionEmailV2.setSubscriptionEmails(List.of(subscriptionEmailForBulk));
 
         createMediaSetupEmail = new DuplicatedMediaEmail();
         createMediaSetupEmail.setEmail("a@b.com");
@@ -169,7 +175,7 @@ class NotificationControllerTest {
         when(notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion))
             .thenReturn(REFERENCE_ID);
         when(notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail)).thenReturn(REFERENCE_ID);
-        when(notificationService.bulkSendSubscriptionEmailV2(bulkSubscriptionEmail)).thenReturn(REFERENCE_ID);
+        when(notificationService.bulkSendSubscriptionEmailV2(bulkSubscriptionEmailV2)).thenReturn(REFERENCE_ID);
     }
 
     @Test
