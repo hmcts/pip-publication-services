@@ -67,7 +67,7 @@ public final class CaseInfoHelper {
      * @param caseNumbers The case numbers that have been searched by.
      * @return The list of case numbers, and case names if available.
      */
-    public static List<String> generateCaseNumberPersonalisationV2(Artefact artefact, List<String> caseNumbers) {
+    public static List<String> generateCasePersonalisationFromCaseNumbers(Artefact artefact, List<String> caseNumbers) {
         if (CollectionUtils.isNotEmpty(artefact.getCaseInfoList())) {
             List<String> contentWithCaseNumberAndName = new ArrayList<>();
 
@@ -96,9 +96,9 @@ public final class CaseInfoHelper {
      * Extracts the associated case number to a case name.
      * @param artefact The artefact to extract the case numbers from.
      * @param caseNames The case names that have been searched by.
-     * @return The list of case numbers, and case names if available.
+     * @return The list of case names, and case numbers if available.
      */
-    public static List<String> generateCaseNamePersonalisationV2(Artefact artefact, List<String> caseNames) {
+    public static List<String> generateCasePersonalisationFromCaseNames(Artefact artefact, List<String> caseNames) {
         if (CollectionUtils.isNotEmpty(artefact.getCaseInfoList())) {
             List<String> contentWithCaseNumberAndName = new ArrayList<>();
 
