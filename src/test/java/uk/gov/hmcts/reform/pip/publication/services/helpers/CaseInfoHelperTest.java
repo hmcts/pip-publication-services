@@ -101,7 +101,7 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNumberPersonalisationV2WithCaseName() {
+    void testGenerateCasePersonalisationFromCaseNumberWithCaseName() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, CASE_NAME_VALUE)));
 
@@ -114,7 +114,7 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNumberPersonalisationV2WithNoCaseName() {
+    void testGenerateCasePersonalisationFromCaseNumberWithNoCaseName() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, "")));
 
@@ -127,7 +127,7 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNumberPersonalisationV2WithNoCaseInfo() {
+    void testGenerateCasePersonalisationFromCaseNumberWithNoCaseInfo() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, "")));
 
@@ -140,7 +140,7 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNumberPersonalisationV2WithNoCaseSubscriptionType() {
+    void testGenerateCasePersonalisationFromCaseNumberWithNoCaseSubscriptionType() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, CASE_NAME_VALUE)));
 
@@ -152,7 +152,7 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNamePersonalisationV2WithCaseNumber() {
+    void testGenerateCasePersonalisationFromCaseNameWithCaseNumber() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, CASE_NAME_VALUE)));
 
@@ -165,7 +165,7 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNamePersonalisationV2WithNoCaseNumber() {
+    void testGenerateCasePersonalisationFromCaseNameWithNoCaseNumber() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, "")));
 
@@ -178,7 +178,7 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNamePersonalisationV2WithNoCaseInfo() {
+    void testGenerateCasePersonalisationFromCaseNameWithNoCaseInfo() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, "")));
 
@@ -191,7 +191,7 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNamePersonalisationV2WithNoCaseNameSubscriptionType() {
+    void testGenerateCasePersonalisationFromCaseNameWithNoCaseNameSubscriptionType() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, CASE_NAME_VALUE)));
 
