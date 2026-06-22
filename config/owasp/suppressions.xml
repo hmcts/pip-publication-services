@@ -139,6 +139,4 @@
     <cve>CVE-2026-43515</cve>
     <cve>CVE-2026-43513</cve>
   </suppress>
-  <suppress>
-  </suppress>
 </suppressions>
