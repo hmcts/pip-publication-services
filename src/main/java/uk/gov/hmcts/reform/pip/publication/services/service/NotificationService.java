@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.S
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.UnidentifiedBlobEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.io.IOException;
@@ -143,11 +144,11 @@ public class NotificationService {
 
         if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
             subscriptionNotificationService.flatFileBulkSubscriptionEmailRequest(
-                bulkSubscriptionEmail, artefact, locationName, referenceId
+                bulkSubscriptionEmail.getSubscriptionEmails(), artefact, locationName, referenceId
             );
         } else {
             subscriptionNotificationService.rawDataBulkSubscriptionEmailRequest(
-                bulkSubscriptionEmail, artefact, locationName, referenceId
+                bulkSubscriptionEmail.getSubscriptionEmails(), artefact, locationName, referenceId
             );
         }
         return referenceId;
@@ -159,18 +160,18 @@ public class NotificationService {
      * @param bulkSubscriptionEmail The list of subscriptions that need to be fulfilled.
      * @return The ID that references the subscription notification email.
      */
-    public String bulkSendSubscriptionEmailV2(BulkSubscriptionEmail bulkSubscriptionEmail) {
-        Artefact artefact = dataManagementService.getArtefact(bulkSubscriptionEmail.getArtefactId());
+    public String bulkSendSubscriptionEmailV2(BulkSubscriptionEmailV2 bulkSubscriptionEmail) {
+        Artefact artefact = bulkSubscriptionEmail.getArtefact();
         String locationName = dataManagementService.getLocation(artefact.getLocationId()).getName();
         String referenceId = UUID.randomUUID().toString();
 
         if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
             subscriptionNotificationService.flatFileBulkSubscriptionEmailRequest(
-                bulkSubscriptionEmail, artefact, locationName, referenceId
+                bulkSubscriptionEmail.getSubscriptionEmails(), artefact, locationName, referenceId
             );
         } else {
             subscriptionNotificationService.rawDataBulkSubscriptionEmailRequestV2(
-                bulkSubscriptionEmail, artefact, locationName, referenceId
+                bulkSubscriptionEmail.getSubscriptionEmails(), artefact, locationName, referenceId
             );
         }
         return referenceId;

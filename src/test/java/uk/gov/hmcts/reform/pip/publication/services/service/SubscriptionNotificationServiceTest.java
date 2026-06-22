@@ -128,8 +128,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientFlatFile);
 
-        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                 SUCCESS_REF_ID);
+        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                 artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         FlatFileSubscriptionEmailData flatFileSubscriptionEmailData = argument.getValue();
 
@@ -166,8 +166,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -206,8 +206,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                  artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -245,8 +245,8 @@ class SubscriptionNotificationServiceTest {
         when(emailService.handleEmailGeneration(argument.capture(), eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndCsv);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -281,8 +281,9 @@ class SubscriptionNotificationServiceTest {
         bulkSubscriptionEmailWithMultiple.setArtefactId(ARTEFACT_ID);
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 
-        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmailWithMultiple, artefact,
-                                                                 LOCATION_NAME, SUCCESS_REF_ID);
+        notificationService.flatFileBulkSubscriptionEmailRequest(
+            bulkSubscriptionEmailWithMultiple.getSubscriptionEmails(), artefact, LOCATION_NAME, SUCCESS_REF_ID
+        );
 
         verify(emailService, times(2))
             .handleEmailGeneration(any(FlatFileSubscriptionEmailData.class), eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL));
@@ -305,8 +306,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -330,8 +331,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                  artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -356,8 +357,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -381,8 +382,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                  artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -407,8 +408,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -435,8 +436,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                  artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -456,8 +457,9 @@ class SubscriptionNotificationServiceTest {
         bulkSubscriptionEmailWithMultiple.setArtefactId(ARTEFACT_ID);
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 
-        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmailWithMultiple, artefact,
-                                                                 LOCATION_NAME, SUCCESS_REF_ID);
+        notificationService.flatFileBulkSubscriptionEmailRequest(
+            bulkSubscriptionEmailWithMultiple.getSubscriptionEmails(), artefact, LOCATION_NAME, SUCCESS_REF_ID
+        );
 
         verify(emailService, times(2))
             .handleEmailGeneration(any(FlatFileSubscriptionEmailData.class), eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL));
@@ -476,8 +478,8 @@ class SubscriptionNotificationServiceTest {
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 
         try (LogCaptor logCaptor = LogCaptor.forClass(SubscriptionNotificationService.class)) {
-            notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmailWithMultiple, artefact,
-                                                                     LOCATION_NAME, SUCCESS_REF_ID);
+            notificationService.flatFileBulkSubscriptionEmailRequest(
+                bulkSubscriptionEmailWithMultiple.getSubscriptionEmails(), artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
             verify(emailService, times(2)).handleEmailGeneration(
                     any(FlatFileSubscriptionEmailData.class),

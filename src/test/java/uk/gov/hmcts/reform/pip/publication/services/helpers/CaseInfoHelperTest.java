@@ -101,11 +101,12 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNumberPersonalisationV2WithCaseName() {
+    void testGenerateCasePersonalisationFromCaseNumberWithCaseName() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, CASE_NAME_VALUE)));
 
-        List<String> results = CaseInfoHelper.generateCaseNumberPersonalisationV2(artefact, List.of(CASE_NUMBER_VALUE));
+        List<String> results = CaseInfoHelper.generateCasePersonalisationFromCaseNumbers(artefact,
+                                                                                         List.of(CASE_NUMBER_VALUE));
 
         assertThat(results.get(0))
             .as(CASE_MATCH_MESSAGE)
@@ -113,11 +114,12 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNumberPersonalisationV2WithNoCaseName() {
+    void testGenerateCasePersonalisationFromCaseNumberWithNoCaseName() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, "")));
 
-        List<String> results = CaseInfoHelper.generateCaseNumberPersonalisationV2(artefact, List.of(CASE_NUMBER_VALUE));
+        List<String> results = CaseInfoHelper.generateCasePersonalisationFromCaseNumbers(artefact,
+                                                                                         List.of(CASE_NUMBER_VALUE));
 
         assertThat(results.get(0))
             .as(CASE_MATCH_MESSAGE)
@@ -125,11 +127,12 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNumberPersonalisationV2WithNoCaseInfo() {
+    void testGenerateCasePersonalisationFromCaseNumberWithNoCaseInfo() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, "")));
 
-        List<String> results = CaseInfoHelper.generateCaseNumberPersonalisationV2(artefact, List.of(CASE_NUMBER_VALUE));
+        List<String> results = CaseInfoHelper.generateCasePersonalisationFromCaseNumbers(artefact,
+                                                                                         List.of(CASE_NUMBER_VALUE));
 
         assertThat(results.get(0))
             .as(CASE_MATCH_MESSAGE)
@@ -137,11 +140,11 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNumberPersonalisationV2WithNoCaseNumberSubscriptionType() {
+    void testGenerateCasePersonalisationFromCaseNumberWithNoCaseSubscriptionType() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, CASE_NAME_VALUE)));
 
-        List<String> results = CaseInfoHelper.generateCaseNumberPersonalisationV2(artefact, List.of());
+        List<String> results = CaseInfoHelper.generateCasePersonalisationFromCaseNumbers(artefact, List.of());
 
         assertThat(results)
             .as(CASE_MATCH_MESSAGE)
@@ -149,11 +152,12 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNamePersonalisationV2WithCaseNumber() {
+    void testGenerateCasePersonalisationFromCaseNameWithCaseNumber() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, CASE_NAME_VALUE)));
 
-        List<String> results = CaseInfoHelper.generateCaseNamePersonalisationV2(artefact, List.of(CASE_NAME_VALUE));
+        List<String> results = CaseInfoHelper.generateCasePersonalisationFromCaseNames(artefact,
+                                                                                       List.of(CASE_NAME_VALUE));
 
         assertThat(results.get(0))
             .as(CASE_MATCH_MESSAGE)
@@ -161,11 +165,12 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNamePersonalisationV2WithNoCaseNumber() {
+    void testGenerateCasePersonalisationFromCaseNameWithNoCaseNumber() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, "")));
 
-        List<String> results = CaseInfoHelper.generateCaseNamePersonalisationV2(artefact, List.of(CASE_NAME_VALUE));
+        List<String> results = CaseInfoHelper.generateCasePersonalisationFromCaseNames(artefact,
+                                                                                       List.of(CASE_NAME_VALUE));
 
         assertThat(results.get(0))
             .as(CASE_MATCH_MESSAGE)
@@ -173,11 +178,12 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNamePersonalisationV2WithNoCaseInfo() {
+    void testGenerateCasePersonalisationFromCaseNameWithNoCaseInfo() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, "")));
 
-        List<String> results = CaseInfoHelper.generateCaseNamePersonalisationV2(artefact, List.of(CASE_NAME_VALUE));
+        List<String> results = CaseInfoHelper.generateCasePersonalisationFromCaseNames(artefact,
+                                                                                       List.of(CASE_NAME_VALUE));
 
         assertThat(results.get(0))
             .as(CASE_MATCH_MESSAGE)
@@ -185,11 +191,11 @@ class CaseInfoHelperTest {
     }
 
     @Test
-    void testGenerateCaseNamePersonalisationV2WithNoCaseNameSubscriptionType() {
+    void testGenerateCasePersonalisationFromCaseNameWithNoCaseNameSubscriptionType() {
         Artefact artefact = new Artefact();
         artefact.setCaseInfoList(List.of(new ArtefactCaseInfo(CASE_NUMBER_VALUE, CASE_NAME_VALUE)));
 
-        List<String> results = CaseInfoHelper.generateCaseNamePersonalisationV2(artefact, List.of());
+        List<String> results = CaseInfoHelper.generateCasePersonalisationFromCaseNames(artefact, List.of());
 
         assertThat(results)
             .as(CASE_MATCH_MESSAGE)

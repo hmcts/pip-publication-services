@@ -111,12 +111,12 @@ public class RawDataSubscriptionEmailGeneratorV2 extends EmailGenerator {
 
             if (CollectionUtils.isNotEmpty(caseNumberSubscriptionContent)) {
                 cases.addAll(
-                    CaseInfoHelper.generateCaseNumberPersonalisationV2(artefact, caseNumberSubscriptionContent)
+                    CaseInfoHelper.generateCasePersonalisationFromCaseNumbers(artefact, caseNumberSubscriptionContent)
                 );
             }
             if (CollectionUtils.isNotEmpty(caseNameSubscriptionContent)) {
                 cases.addAll(
-                    CaseInfoHelper.generateCaseNamePersonalisationV2(artefact, caseNameSubscriptionContent)
+                    CaseInfoHelper.generateCasePersonalisationFromCaseNames(artefact, caseNameSubscriptionContent)
                 );
             }
             List<String> deduplicatedCases = cases.stream()

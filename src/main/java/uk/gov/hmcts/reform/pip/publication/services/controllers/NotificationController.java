@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.pip.publication.services.helpers.MultiPartHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
@@ -121,7 +122,7 @@ public class NotificationController {
     @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     @Operation(summary = "Bulk send email subscriptions to a list of users and associated config")
     @PostMapping("/subscription/V2")
-    public ResponseEntity<String> sendSubscriptionEmailV2(@Valid @RequestBody BulkSubscriptionEmail body) {
+    public ResponseEntity<String> sendSubscriptionEmailV2(@Valid @RequestBody BulkSubscriptionEmailV2 body) {
         return ResponseEntity.accepted().body(notificationService.bulkSendSubscriptionEmailV2(body));
     }
 
