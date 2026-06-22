@@ -63,8 +63,7 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
             return MEDIA_SUBSCRIPTION_PDF_EMAIL;
         } else if (hasExcel) {
             return MEDIA_SUBSCRIPTION_EXCEL_EMAIL;
-        }
-        else {
+        } else {
             return MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL;
         }
     }
