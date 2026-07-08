@@ -30,17 +30,11 @@ import javax.net.ssl.SSLException;
 @Configuration
 @Profile("!test")
 public class WebClientConfiguration {
-    // Currently we allow a maximum 2MB of PDF/Excel file to be transferred from data-management (same as GOV.UK
-    // Notify file size constraint). The file content is sent as a Base64 encoded string which add roughly 33% space
-    // overhead. Hence we increase the service-to-service size constraint to 3MB.
+    // Currently we allow a maximum 10MB of Excel file to be transferred from data-management (same as GOV.UK
+    // Notify file size constraint).
     public static final ExchangeStrategies STRATEGIES =  ExchangeStrategies.builder()
         .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-            .maxInMemorySize(3 * 1024 * 1024))
-        .build();
-
-    public static final ExchangeStrategies DATA_MANAGEMENT_MI_STRATEGIES =  ExchangeStrategies.builder()
-        .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-            .maxInMemorySize(5 * 1024 * 1024))
+            .maxInMemorySize(10 * 1024 * 1024))
         .build();
 
     @Value("${third-party.certificate}")
@@ -82,7 +76,7 @@ public class WebClientConfiguration {
         ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2Client =
             new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
         oauth2Client.setDefaultClientRegistrationId("dataManagementApi");
-        return WebClient.builder().exchangeStrategies(DATA_MANAGEMENT_MI_STRATEGIES)
+        return WebClient.builder().exchangeStrategies(STRATEGIES)
             .apply(oauth2Client.oauth2Configuration()).build();
     }
 
