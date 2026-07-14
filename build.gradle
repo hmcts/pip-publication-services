@@ -4,7 +4,7 @@ plugins {
   id 'checkstyle'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.7'
-  id 'org.springframework.boot' version '3.5.14'
+  id 'org.springframework.boot' version '4.1.0'
   id 'org.owasp.dependencycheck' version '12.2.1'
   id 'com.github.ben-manes.versions' version '0.54.0'
   id 'org.sonarqube' version '7.3.0.8198'
@@ -43,9 +43,6 @@ configurations {
   smokeTestImplementation.extendsFrom functionalTestImplementation
   smokeTestRuntimeOnly.extendsFrom runtimeOnly
 
-  all {
-    exclude group: 'commons-logging', 'module': 'commons-logging'
-  }
 }
 
 tasks.withType(JavaCompile) {
@@ -134,16 +131,16 @@ ext {
 }
 
 dependencies {
-  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'org.springframework.boot:spring-boot-starter-webmvc'
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
-  implementation 'org.springframework.boot:spring-boot-starter-aop'
+  implementation 'org.springframework.boot:spring-boot-starter-aspectj'
   implementation 'org.springframework.boot:spring-boot-starter-json'
   implementation 'org.springframework.boot:spring-boot-starter-validation'
-  implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-  implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+  implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
+  implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
   implementation 'org.springframework.boot:spring-boot-starter-webflux'
-  implementation 'com.azure.spring:spring-cloud-azure-starter-active-directory:6.1.0'
-  implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.16"
+  implementation 'com.azure.spring:spring-cloud-azure-starter-active-directory:7.3.0'
+  implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3"
   implementation "com.github.hmcts.java-logging:logging:8.0.0"
   implementation "com.github.hmcts.java-logging:logging-appinsights:${reformLogging}"
   implementation "org.apache.logging.log4j:log4j-api:${log4JVersion}"
@@ -156,23 +153,23 @@ dependencies {
   implementation 'com.opencsv:opencsv:5.12.0'
   implementation 'org.apache.poi:poi-ooxml:5.5.1'
   implementation 'org.redisson:redisson:4.3.1'
-  implementation 'com.giffing.bucket4j.spring.boot.starter:bucket4j-spring-boot-starter:0.13.0'
+  implementation 'com.giffing.bucket4j.spring.boot.starter:bucket4j-spring-boot-starter:0.14.0'
   implementation 'software.amazon.awssdk:s3:2.44.2'
   implementation 'org.apache.commons:commons-lang3:3.20.0'
   implementation 'com.azure:azure-security-keyvault-secrets:4.10.6'
 
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
   testImplementation 'org.springframework.security:spring-security-test'
-  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test-classic'
   testImplementation 'com.squareup.okhttp3:mockwebserver:5.3.2'
   testImplementation 'com.squareup.okhttp3:okhttp:5.3.2'
   testImplementation 'com.squareup.okhttp3:okhttp-tls:5.3.2'
   testImplementation 'org.apache.pdfbox:pdfbox:3.0.7'
   testImplementation 'com.redis:testcontainers-redis:2.2.4'
-  testImplementation 'org.testcontainers:junit-jupiter'
+  testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
   testImplementation 'io.github.hakky54:logcaptor:2.12.6'
   testImplementation 'com.github.hmcts:fortify-client:1.4.10:all'
-  functionalTestImplementation 'io.rest-assured:rest-assured'
+  functionalTestImplementation 'io.rest-assured:rest-assured:6.0.0'
 }
 
 tasks.register('fortifyScan', JavaExec) {
