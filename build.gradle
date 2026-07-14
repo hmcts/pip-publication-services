@@ -144,6 +144,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-webflux'
   implementation 'com.azure.spring:spring-cloud-azure-starter-active-directory:7.3.0'
   implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3"
+  implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
   implementation "com.github.hmcts.java-logging:logging:8.0.0"
   implementation "com.github.hmcts.java-logging:logging-appinsights:${reformLogging}"
   implementation "org.apache.logging.log4j:log4j-api:${log4JVersion}"
