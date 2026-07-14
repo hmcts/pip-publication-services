@@ -21,6 +21,7 @@
   <suppress>
     <notes>Vulnerability in jackson-databind</notes>
     <cve>CVE-2026-29062</cve>
+    <cve>CVE-2026-54515</cve>
   </suppress>
   <suppress>
     <notes>Vulnerability in Tomcat</notes>
@@ -109,5 +110,10 @@
     <cve>CVE-2026-43512</cve>
     <cve>CVE-2026-43515</cve>
     <cve>CVE-2026-43513</cve>
+  </suppress>
+  <suppress>
+    <notes>Apache HTTP</notes>
+    <cve>CVE-2026-54399</cve>
+    <cve>CVE-2026-54428</cve>
   </suppress>
 </suppressions>

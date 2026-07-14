@@ -85,7 +85,7 @@ class NotifyTest extends IntegrationTestBase {
         {
             "email": "test@email.com",
             "fullName": "fullName"
-        };
+        }
         """;
 
     private static final String DUPLICATE_MEDIA_EMAIL_INVALID_JSON_BODY = """
