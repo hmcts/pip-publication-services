@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -110,7 +111,7 @@ public class NotificationController {
         + "{recipientEmail} with reference id: {reference id}")
     @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     @Operation(summary = "Bulk send email subscriptions to a list of users and associated config")
-    @PostMapping("/subscription")
+    @PostMapping(value="/subscription", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody BulkSubscriptionEmail body) {
         return ResponseEntity.accepted().body(notificationService.bulkSendSubscriptionEmail(body));
     }
