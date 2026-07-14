@@ -156,8 +156,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
     private Notification extractNotification(Response response) throws NotificationClientException {
         assertThat(response.getStatusCode()).isEqualTo(ACCEPTED.value());
 
-        // String referenceId = response.getBody().asString();
-        String referenceId = response.getBody().asString().replace("\"", "");
+        String referenceId = response.getBody().asString();
         assertThat(referenceId)
             .isNotEmpty();
 
