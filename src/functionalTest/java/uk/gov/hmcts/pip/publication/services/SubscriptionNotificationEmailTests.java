@@ -160,33 +160,15 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         assertThat(referenceId)
             .isNotEmpty();
 
-        // 1. Log the incoming referenceId to verify it looks correct
-        System.out.println("DEBUG - Started polling for Reference ID: " + referenceId);
-
         Awaitility.with()
             .pollInterval(1, SECONDS)
             .await()
             .until(() -> {
-                try {
-                    NotificationList notificationList = notificationClient.getNotifications(
-                        null, NOTIFICATION_TYPE, referenceId, null
-                    );
-
-                    if (notificationList == null) {
-                        System.out.println("DEBUG - notificationList is NULL");
-                        return false;
-                    }
-
-                    int size = notificationList.getNotifications()
-                        != null ? notificationList.getNotifications().size() : 0;
-                    System.out.println("DEBUG - Found " + size + " notifications for reference: " + referenceId);
-
-                    return size == 1;
-                } catch (Exception e) {
-                    System.err.println("DEBUG - ERROR caught during polling loop:");
-                    e.printStackTrace();
-                    return false;
-                }
+                NotificationList notificationList = notificationClient.getNotifications(
+                    null, NOTIFICATION_TYPE, referenceId, null
+                );
+                return notificationList != null
+                    && notificationList.getNotifications().size() == 1;
             });
 
         NotificationList notificationList = notificationClient.getNotifications(
