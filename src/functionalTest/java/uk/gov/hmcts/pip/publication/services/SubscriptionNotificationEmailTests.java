@@ -177,12 +177,12 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
                         return false;
                     }
 
-                    int size = notificationList.getNotifications() != null ? notificationList.getNotifications().size() : 0;
+                    int size = notificationList.getNotifications()
+                        != null ? notificationList.getNotifications().size() : 0;
                     System.out.println("DEBUG - Found " + size + " notifications for reference: " + referenceId);
 
                     return size == 1;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     System.err.println("DEBUG - ERROR caught during polling loop:");
                     e.printStackTrace();
                     return false;
