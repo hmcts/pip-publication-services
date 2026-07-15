@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
@@ -66,7 +67,7 @@ public class SubscriptionNotificationService {
             .orElse(null);
     }
 
-    //@Async
+    @Async
     public void flatFileBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
                                                      String locationName, String referenceId) {
 
@@ -86,7 +87,7 @@ public class SubscriptionNotificationService {
         });
     }
 
-    //@Async
+    @Async
     public void rawDataBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
                                                     String locationName, String referenceId) {
         String artefactSummary = getArtefactSummary(artefact);
