@@ -46,6 +46,8 @@
     <cve>CVE-2026-55955</cve>
     <cve>CVE-2026-55956</cve>
     <cve>CVE-2026-50229</cve>
+    <cve>CVE-2026-59083</cve>
+    <cve>CVE-2026-59084</cve>
   </suppress>
   <suppress>
     <notes>Vulnerability in Netty</notes>
@@ -86,6 +88,7 @@
     <notes>log4j suppression</notes>
     <cve>CVE-2026-34479</cve>
     <cve>CVE-2026-34477</cve>
+    <cve>CVE-2026-49844</cve>
   </suppress>
   <suppress>
     <notes>angus-activation suppression</notes>
@@ -151,6 +154,7 @@
     <cve>CVE-2026-41852</cve>
     <cve>CVE-2026-41853</cve>
     <cve>CVE-2026-41855</cve>
+    <cve>CVE-2026-41839</cve>
   </suppress>
   <suppress>
     <notes>spring security suppression</notes>
