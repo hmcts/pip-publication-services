@@ -76,6 +76,7 @@
     <cve>CVE-2026-34478</cve>
     <cve>CVE-2026-34480</cve>
     <cve>CVE-2026-34481</cve>
+    <cve>CVE-2026-49844</cve>
   </suppress>
   <suppress>
     <notes>log4j suppression</notes>
@@ -110,6 +111,8 @@
     <cve>CVE-2026-43512</cve>
     <cve>CVE-2026-43515</cve>
     <cve>CVE-2026-43513</cve>
+    <cve>CVE-2026-59084</cve>
+    <cve>CVE-2026-59083</cve>
   </suppress>
   <suppress>
     <notes>Apache HTTP</notes>
