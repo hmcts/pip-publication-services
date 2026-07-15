@@ -106,6 +106,7 @@ public class DataManagementService {
                 .uri(String.format("%s/publication/%s/%s?maxFileSize=%s", url, artefactId, fileType, MAX_FILE_SIZE))
                 .header(SYSTEM_HEADER, TRUE)
                 .header(ADDITIONAL_PDF_HEADER, String.valueOf(additionalPdf))
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
