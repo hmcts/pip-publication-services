@@ -24,11 +24,10 @@ public class RawDataSubscriptionEmailData extends EmailData {
     private String artefactSummary;
     private byte[] pdf;
     private byte[] excel;
-    private byte[] csv;
     private RetentionPeriodDuration fileRetentionWeeks;
 
     public RawDataSubscriptionEmailData(SubscriptionEmail subscriptionEmail, Artefact artefact, String artefactSummary,
-                                        byte[] pdf, byte[] excel, byte[] csv, String locationName,
+                                        byte[] pdf, byte[] excel, String locationName,
                                         int fileRetentionWeeks, String referenceId) {
         super(subscriptionEmail.getEmail(), referenceId);
         this.subscriptions = subscriptionEmail.getSubscriptions();
@@ -37,7 +36,6 @@ public class RawDataSubscriptionEmailData extends EmailData {
         this.artefactSummary = artefactSummary;
         this.pdf = pdf == null ? new byte[0] : Arrays.copyOf(pdf, pdf.length);
         this.excel = excel == null ? new byte[0] : Arrays.copyOf(excel, excel.length);
-        this.csv = csv == null ? new byte[0] : Arrays.copyOf(csv, csv.length);
         this.fileRetentionWeeks = new RetentionPeriodDuration(fileRetentionWeeks, ChronoUnit.WEEKS);
     }
 }
