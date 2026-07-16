@@ -15,10 +15,6 @@
     <cve>CVE-2024-35255</cve>
   </suppress>
   <suppress>
-    <notes>Vulnerability in jackson databind</notes>
-    <cve>CVE-2026-29062</cve>
-  </suppress>
-  <suppress>
     <notes>Vulnerability in jackson-databind</notes>
     <cve>CVE-2026-29062</cve>
     <cve>CVE-2026-54512</cve>
@@ -44,6 +40,14 @@
     <cve>CVE-2026-41284</cve>
     <cve>CVE-2026-42498</cve>
     <cve>CVE-2026-43514</cve>
+    <cve>CVE-2026-53434</cve>
+    <cve>CVE-2026-55276</cve>
+    <cve>CVE-2026-53404</cve>
+    <cve>CVE-2026-55955</cve>
+    <cve>CVE-2026-55956</cve>
+    <cve>CVE-2026-50229</cve>
+    <cve>CVE-2026-59083</cve>
+    <cve>CVE-2026-59084</cve>
   </suppress>
   <suppress>
     <notes>Vulnerability in Netty</notes>
@@ -59,21 +63,7 @@
     <cve>CVE-2026-22740</cve>
     <cve>CVE-2026-22745</cve>
     <cve>CVE-2026-22741</cve>
-    <cve>CVE-2026-41855</cve>
-    <cve>CVE-2026-41838</cve>
-    <cve>CVE-2026-41842</cve>
-    <cve>CVE-2026-41848</cve>
-    <cve>CVE-2026-41850</cve>
-    <cve>CVE-2026-41851</cve>
-    <cve>CVE-2026-41854</cve>
-    <cve>CVE-2026-41844</cve>
-    <cve>CVE-2026-41845</cve>
-    <cve>CVE-2026-41846</cve>
-    <cve>CVE-2026-41840</cve>
-    <cve>CVE-2026-41841</cve>
-    <cve>CVE-2026-41843</cve>
-    <cve>CVE-2026-41852</cve>
-    <cve>CVE-2026-41853</cve>
+    <cve>CVE-2026-55957</cve>
 
     <!-- Spring Boot -->
     <cve>CVE-2026-40972</cve>
@@ -81,41 +71,24 @@
     <cve>CVE-2026-40973</cve>
     <cve>CVE-2026-40977</cve>
     <cve>CVE-2026-40976</cve>
-    <cve>CVE-2026-41855</cve>
-    <cve>CVE-2026-41838</cve>
-    <cve>CVE-2026-41842</cve>
-    <cve>CVE-2026-41848</cve>
-    <cve>CVE-2026-41850</cve>
-    <cve>CVE-2026-41851</cve>
-    <cve>CVE-2026-41854</cve>
-    <cve>CVE-2026-41844</cve>
-    <cve>CVE-2026-41845</cve>
-    <cve>CVE-2026-41846</cve>
-    <cve>CVE-2026-41840</cve>
-    <cve>CVE-2026-41841</cve>
-    <cve>CVE-2026-41843</cve>
-    <cve>CVE-2026-41852</cve>
-    <cve>CVE-2026-41853</cve>
 
     <!-- Spring Security -->
     <cve>CVE-2026-22751</cve>
     <cve>CVE-2026-22748</cve>
     <cve>CVE-2026-22746</cve>
-    <cve>CVE-2026-47838</cve>
-    <cve>CVE-2026-40988</cve>
-    <cve>CVE-2026-41706</cve>
-    <cve>CVE-2026-41003</cve>
-    <cve>CVE-2026-41694</cve>
 
     <!-- Apache Log4j -->
     <cve>CVE-2026-34478</cve>
     <cve>CVE-2026-34480</cve>
     <cve>CVE-2026-34481</cve>
+    <cve>CVE-2026-54399</cve>
+    <cve>CVE-2026-54428</cve>
   </suppress>
   <suppress>
     <notes>log4j suppression</notes>
     <cve>CVE-2026-34479</cve>
     <cve>CVE-2026-34477</cve>
+    <cve>CVE-2026-49844</cve>
   </suppress>
   <suppress>
     <notes>angus-activation suppression</notes>
@@ -163,16 +136,32 @@
     <cve>CVE-2026-43512</cve>
     <cve>CVE-2026-43515</cve>
     <cve>CVE-2026-43513</cve>
-    <cve>CVE-2026-53434</cve>
-    <cve>CVE-2026-55276</cve>
-    <cve>CVE-2026-53404</cve>
-    <cve>CVE-2026-55955</cve>
-    <cve>CVE-2026-55956</cve>
-    <cve>CVE-2026-50229</cve>
   </suppress>
   <suppress>
-    <notes>httpcore suppression</notes>
-    <cve>CVE-2026-54399</cve>
-    <cve>CVE-2026-54428</cve>
+    <notes>spring framework suppression</notes>
+    <cve>CVE-2026-41838</cve>
+    <cve>CVE-2026-41842</cve>
+    <cve>CVE-2026-41848</cve>
+    <cve>CVE-2026-41850</cve>
+    <cve>CVE-2026-41851</cve>
+    <cve>CVE-2026-41854</cve>
+    <cve>CVE-2026-41844</cve>
+    <cve>CVE-2026-41845</cve>
+    <cve>CVE-2026-41846</cve>
+    <cve>CVE-2026-41840</cve>
+    <cve>CVE-2026-41841</cve>
+    <cve>CVE-2026-41843</cve>
+    <cve>CVE-2026-41852</cve>
+    <cve>CVE-2026-41853</cve>
+    <cve>CVE-2026-41855</cve>
+    <cve>CVE-2026-41839</cve>
+  </suppress>
+  <suppress>
+    <notes>spring security suppression</notes>
+    <cve>CVE-2026-40988</cve>
+    <cve>CVE-2026-41003</cve>
+    <cve>CVE-2026-41694</cve>
+    <cve>CVE-2026-47838</cve>
+    <cve>CVE-2026-41706</cve>
   </suppress>
 </suppressions>
