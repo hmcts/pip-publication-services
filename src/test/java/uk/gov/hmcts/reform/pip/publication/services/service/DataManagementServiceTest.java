@@ -58,11 +58,7 @@ class DataManagementServiceTest {
             .baseUrl(mockDataManagementEndpoint.url("/").toString())
             .build();
 
-        WebClient miMockedWebClient = WebClient.builder()
-            .exchangeStrategies(WebClientConfiguration.DATA_MANAGEMENT_MI_STRATEGIES)
-            .baseUrl(mockDataManagementEndpoint.url("/").toString())
-            .build();
-        dataManagementService = new DataManagementService(mockedWebClient, miMockedWebClient);
+        dataManagementService = new DataManagementService(mockedWebClient);
     }
 
     @AfterEach
@@ -293,9 +289,9 @@ class DataManagementServiceTest {
 
 
     @Test
-    void testGetMiDataThrowsExceptionWhenOver5Mb() throws JsonProcessingException {
+    void testGetMiDataThrowsExceptionWhenOver10Mb() throws JsonProcessingException {
         PublicationMiData data1 = new PublicationMiData();
-        List<PublicationMiData> expectedData = Collections.nCopies(25_000, data1);
+        List<PublicationMiData> expectedData = Collections.nCopies(50_000, data1);
 
         mockDataManagementEndpoint.enqueue(new MockResponse()
                                                .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
@@ -303,7 +299,7 @@ class DataManagementServiceTest {
                                                .setResponseCode(200));
 
         assertThrows(ServiceToServiceException.class, dataManagementService::getMiData,
-                     "Exception not thrown when over 5MB");
+                     "Exception not thrown when over 10MB");
     }
 
     @Test
@@ -318,14 +314,14 @@ class DataManagementServiceTest {
     }
 
     @Test
-    void testGetArtefactJsonThrowsExceptionWhenOver3Mb() {
-        byte[] byteArray = RandomUtils.secure().randomBytes(4_000_000);
+    void testGetArtefactJsonThrowsExceptionWhenOver10Mb() {
+        byte[] byteArray = RandomUtils.secure().randomBytes(11_000_000);
 
         mockDataManagementEndpoint.enqueue(new MockResponse()
                                                .setBody(new String(byteArray))
                                                .setResponseCode(200));
 
         assertThrows(ServiceToServiceException.class, () -> dataManagementService.getArtefactJsonBlob(ARTEFACT_ID),
-                     "Exception not thrown when over 3MB");
+                     "Exception not thrown when over 10MB");
     }
 }
