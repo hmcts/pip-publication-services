@@ -117,8 +117,7 @@ class RawDataSubscriptionEmailGeneratorV2Test {
         artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     FILE_DATA, new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
-                                                     REFERENCE_ID);
+                                                     FILE_DATA, LOCATION_NAME, FILE_RETENTION_WEEKS, REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
 
@@ -185,7 +184,7 @@ class RawDataSubscriptionEmailGeneratorV2Test {
         artefact.setLanguage(Language.WELSH);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     new byte[0], new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
+                                                     new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
                                                      REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
@@ -252,8 +251,7 @@ class RawDataSubscriptionEmailGeneratorV2Test {
         artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, new byte[0],
-                                                     FILE_DATA, new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
-                                                     REFERENCE_ID);
+                                                     FILE_DATA, LOCATION_NAME, FILE_RETENTION_WEEKS, REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
 
@@ -319,8 +317,7 @@ class RawDataSubscriptionEmailGeneratorV2Test {
         artefact.setLanguage(Language.ENGLISH);
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, new byte[0],
-                                                     new byte[0], new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
-                                                     REFERENCE_ID);
+                                                     new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS, REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
 
@@ -404,8 +401,7 @@ class RawDataSubscriptionEmailGeneratorV2Test {
         subscriptionEmail.setSubscriptions(subscriptions);
 
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, new byte[0],
-                                                     new byte[0], new byte[0], "", FILE_RETENTION_WEEKS,
-                                                     REFERENCE_ID);
+                                                     new byte[0], "", FILE_RETENTION_WEEKS, REFERENCE_ID);
 
         EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
 
@@ -438,8 +434,7 @@ class RawDataSubscriptionEmailGeneratorV2Test {
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
 
         emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
-                                                     new byte[0], new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS,
-                                                     REFERENCE_ID);
+                                                     new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS, REFERENCE_ID);
 
         try (MockedStatic<NotificationClient> mockStatic = mockStatic(NotificationClient.class);
              LogCaptor logCaptor = LogCaptor.forClass(RawDataSubscriptionEmailGeneratorV2.class)) {

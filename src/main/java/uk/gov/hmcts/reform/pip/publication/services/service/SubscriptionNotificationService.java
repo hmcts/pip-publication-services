@@ -69,10 +69,10 @@ public class SubscriptionNotificationService {
     }
 
     private String rawDataSubscriptionEmailRequestV2(SubscriptionEmail body, Artefact artefact, String artefactSummary,
-                                                   byte[] pdf, byte[] excel, byte[] csv, String locationName,
+                                                   byte[] pdf, byte[] excel, String locationName,
                                                    String referenceId) {
         RawDataSubscriptionEmailData emailData = new RawDataSubscriptionEmailData(
-            body, artefact, artefactSummary, pdf, excel, csv, locationName, fileRetentionWeeks, referenceId
+            body, artefact, artefactSummary, pdf, excel, locationName, fileRetentionWeeks, referenceId
         );
         EmailToSend email = emailService.handleEmailGeneration(emailData,
                                                                Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2);
@@ -151,16 +151,13 @@ public class SubscriptionNotificationService {
         byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
             : new byte[0];
 
-        byte[] csv = artefact.getListType().hasCsv() ? getFileBytes(artefact, FileType.CSV, false)
-            : new byte[0];
-
         subscriptionEmails.forEach(subscriptionEmail -> {
 
             try {
                 log.info(writeLog(String.format("Sending subscription email for user %s",
                                                 EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
                 rawDataSubscriptionEmailRequestV2(subscriptionEmail, artefact, artefactSummary,  pdf,
-                                                  excel, csv, locationName, referenceId);
+                                                  excel, locationName, referenceId);
             } catch (TooManyEmailsException ex) {
                 log.error(writeLog(ex.getMessage()));
             } catch (NotifyException ignored) {
