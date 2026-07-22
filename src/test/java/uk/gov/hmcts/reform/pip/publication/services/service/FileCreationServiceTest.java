@@ -1,17 +1,10 @@
 package uk.gov.hmcts.reform.pip.publication.services.service;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
-import uk.gov.hmcts.reform.pip.model.report.AllSubscriptionMiData;
-import uk.gov.hmcts.reform.pip.model.report.LocationSubscriptionMiData;
-import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
-import uk.gov.hmcts.reform.pip.model.subscription.Channel;
-import uk.gov.hmcts.reform.pip.model.subscription.SearchType;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 
 import java.nio.charset.StandardCharsets;
@@ -21,13 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.pip.model.account.Roles.INTERNAL_ADMIN_CTSC;
-import static uk.gov.hmcts.reform.pip.model.account.UserProvenances.PI_AAD;
-import static uk.gov.hmcts.reform.pip.model.publication.ArtefactType.LIST;
-import static uk.gov.hmcts.reform.pip.model.publication.Language.BI_LINGUAL;
-import static uk.gov.hmcts.reform.pip.model.publication.ListType.FAMILY_DAILY_CAUSE_LIST;
-import static uk.gov.hmcts.reform.pip.model.publication.Sensitivity.PUBLIC;
-import static uk.gov.hmcts.reform.pip.model.subscription.SearchType.CASE_ID;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -51,72 +37,6 @@ class FileCreationServiceTest {
     private static final String EXPECTED_CONTENT = "\"Test user\",\"test@email.com\",\"Test employer\",\""
         + REQUEST_DATE.format(DATE_TIME_FORMATTER) + "\",\"REJECTED\",\""
         + STATUS_DATE.format(DATE_TIME_FORMATTER) + "\"";
-
-    private static final UUID USER_ID = UUID.randomUUID();
-    private static final UUID ID = UUID.randomUUID();
-    private static final LocalDateTime CREATED_DATE = LocalDateTime.of(2022, 1, 19, 13, 45, 50);
-    private static final LocalDateTime LAST_SIGNED_IN = LocalDateTime.of(2023,1, 25, 14, 22, 43);
-    private static final Channel EMAIL = Channel.EMAIL;
-    private static final SearchType SEARCH_TYPE = CASE_ID;
-    private static final String SEARCH_VALUE = "193254";
-    private static final String LOCATION_NAME = "Location";
-    public static final UUID ARTEFACT_ID = UUID.randomUUID();
-    public static final LocalDateTime DISPLAY_FROM = LocalDateTime.of(2022, 1, 19, 13, 45, 50);
-    public static final LocalDateTime DISPLAY_TO = LocalDateTime.of(2025,1, 19, 13, 45, 50);
-    public static final String MANUAL_UPLOAD_PROVENANCE = "MANUAL_UPLOAD";
-    public static final String SOURCE_ARTEFACT_ID = "1234";
-    public static final Integer SUPERSEDED_COUNT = 0;
-    public static final LocalDateTime CONTENT_DATE = LocalDateTime.of(2024,1, 19, 13, 45);
-
-    private static final AccountMiData ACCOUNT_MI_RECORD = new AccountMiData(
-        USER_ID, ID.toString(), PI_AAD, INTERNAL_ADMIN_CTSC, CREATED_DATE, LAST_SIGNED_IN
-    );
-    private static final AllSubscriptionMiData ALL_SUBS_MI_RECORD = new AllSubscriptionMiData(
-        USER_ID, EMAIL, SEARCH_TYPE, ID, LOCATION_NAME, CREATED_DATE
-    );
-    private static final LocationSubscriptionMiData LOCAL_SUBS_MI_RECORD = new LocationSubscriptionMiData(
-        USER_ID, SEARCH_VALUE, EMAIL, ID, LOCATION_NAME, CREATED_DATE
-    );
-    private static final PublicationMiData PUBLICATION_MI_RECORD = new PublicationMiData(
-        ARTEFACT_ID, DISPLAY_FROM, DISPLAY_TO, BI_LINGUAL, MANUAL_UPLOAD_PROVENANCE, PUBLIC, SOURCE_ARTEFACT_ID,
-        SUPERSEDED_COUNT, LIST, CONTENT_DATE, "3", FAMILY_DAILY_CAUSE_LIST);
-
-    private static final PublicationMiData PUBLICATION_MI_RECORD_WITHOUT_LOCATION_NAME = new PublicationMiData(
-        ARTEFACT_ID, DISPLAY_FROM, DISPLAY_TO, BI_LINGUAL, MANUAL_UPLOAD_PROVENANCE, PUBLIC, SOURCE_ARTEFACT_ID,
-        SUPERSEDED_COUNT, LIST, CONTENT_DATE, "NoMatch4", FAMILY_DAILY_CAUSE_LIST);
-
-    private static final List<AccountMiData> ACCOUNT_MI_DATA = List.of(ACCOUNT_MI_RECORD, ACCOUNT_MI_RECORD);
-    private static final List<AllSubscriptionMiData> ALL_SUBS_MI_DATA = List.of(ALL_SUBS_MI_RECORD, ALL_SUBS_MI_RECORD);
-    private static final List<LocationSubscriptionMiData> LOCAL_SUBS_MI_DATA = List.of(LOCAL_SUBS_MI_RECORD,
-                                                                                    LOCAL_SUBS_MI_RECORD);
-    private static final String PUBLICATION_MI_DATA_KEY = "Publications";
-    private static final String ACCOUNT_MI_DATA_KEY = "User accounts";
-    private static final String ALL_SUBSCRIPTION_MI_DATA_KEY = "All subscriptions";
-    private static final String LOCATION_SUBSCRIPTION_MI_DATA_KEY = "Location subscriptions";
-    private static final String MI_DATA_MATCH_MESSAGE = "MI data does not match";
-
-    private static final String[] EXPECTED_PUBLICATION_HEADERS = {"artefact_id", "display_from",
-        "display_to", "language", "provenance", "sensitivity", "source_artefact_id", "superseded_count", "type",
-        "content_date", "court_id", "court_name", "list_type"};
-
-    private static final String[] EXPECTED_ACCOUNT_HEADERS = {"user_id", "provenance_user_id",
-        "user_provenance", "roles", "created_date", "last_signed_in_date"};
-
-    private static final String[] EXPECTED_ALL_SUBSCRIPTION_HEADERS =  {"id", "channel",
-        "search_type", "user_id", "court_name", "created_date"};
-
-    private static final String[] EXPECTED_LOCATION_SUBSCRIPTION_HEADERS = {"id", "search_value",
-        "channel", "user_id", "court_name", "created_date"};
-
-    private static List<PublicationMiData> publicationMiData;
-
-    @BeforeAll
-    public static void setup() {
-        PUBLICATION_MI_RECORD.setLocationName(LOCATION_NAME);
-
-        publicationMiData = List.of(PUBLICATION_MI_RECORD, PUBLICATION_MI_RECORD_WITHOUT_LOCATION_NAME);
-    }
-
 
     @Test
     void testCreateMediaApplicationReportingCsvSuccess() {

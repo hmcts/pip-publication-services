@@ -67,19 +67,6 @@ public class WebClientConfiguration {
             .apply(oauth2Client.oauth2Configuration()).build();
     }
 
-    /**
-     * A specific web client for MI requests to Data Management, due to requiring a larger response size.
-     */
-    @Bean
-    @Profile("!dev")
-    public WebClient miWebClient(OAuth2AuthorizedClientManager authorizedClientManager) {
-        ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2Client =
-            new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
-        oauth2Client.setDefaultClientRegistrationId("dataManagementApi");
-        return WebClient.builder().exchangeStrategies(STRATEGIES)
-            .apply(oauth2Client.oauth2Configuration()).build();
-    }
-
     @Bean
     public WebClient webClientThirdParty() {
         return WebClient.builder()
