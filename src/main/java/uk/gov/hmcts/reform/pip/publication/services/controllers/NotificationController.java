@@ -181,15 +181,6 @@ public class NotificationController {
         return ResponseEntity.ok(userNotificationService.inactiveUserNotificationEmailRequest(body));
     }
 
-    @ApiResponse(responseCode = OK_RESPONSE, description = "MI data reporting email successfully sent with "
-        + "referenceId: {Id}")
-    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
-    @Operation(summary = "Send email with MI report")
-    @PostMapping("/mi/report")
-    public ResponseEntity<String> sendMiReportingEmail() {
-        return ResponseEntity.ok(notificationService.handleMiDataForReporting());
-    }
-
     @ApiResponse(responseCode = OK_RESPONSE, description = "System Admin user email notification")
     @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     @Operation(summary = "Send notification email to system admin about update")

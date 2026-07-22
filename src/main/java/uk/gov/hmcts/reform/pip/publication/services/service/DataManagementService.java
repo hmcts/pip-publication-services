@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.pip.publication.services.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,10 +10,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
-import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -113,18 +110,6 @@ public class DataManagementService {
                 || PAYLOAD_TOO_LARGE.equals(ex.getStatusCode())) {
                 return "";
             }
-            throw new ServiceToServiceException(SERVICE, ex.getMessage());
-        }
-    }
-
-    public List<PublicationMiData> getMiData() {
-        try {
-            return webClient.get()
-                .uri(String.format("%s/publication/mi-data", url))
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<PublicationMiData>>() {})
-                .block();
-        } catch (WebClientResponseException ex) {
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
         }
     }

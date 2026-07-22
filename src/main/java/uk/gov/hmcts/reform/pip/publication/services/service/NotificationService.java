@@ -8,23 +8,18 @@ import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
-import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.MediaApplicationReportingEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.MiDataReportingEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.SystemAdminUpdateEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.UnidentifiedBlobEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-
-import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Service
 @Slf4j
@@ -84,29 +79,6 @@ public class NotificationService {
         EmailToSend email = emailService.handleEmailGeneration(
             new UnidentifiedBlobEmailData(piTeamEmail, noMatchArtefactList, envName),
             Templates.BAD_BLOB_EMAIL
-        );
-        return emailService.sendEmail(email)
-            .getReference()
-            .orElse(null);
-    }
-
-    /**
-     * Handles the incoming request for sending out email with MI data report.
-     *
-     * @return The ID that references the MI data reporting email.
-     */
-    public String handleMiDataForReporting() {
-        byte[] excel;
-        try {
-            excel = fileCreationService.generateMiReport();
-        } catch (IOException e) {
-            log.warn(writeLog("Error generating excel file attachment"));
-            throw new ExcelCreationException(e.getMessage());
-        }
-
-        EmailToSend email = emailService.handleEmailGeneration(
-            new MiDataReportingEmailData(piTeamEmail, excel, fileRetentionWeeks, envName),
-            Templates.MI_DATA_REPORTING_EMAIL
         );
         return emailService.sendEmail(email)
             .getReference()

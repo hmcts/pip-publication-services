@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.pip.model.report.AccountMiData;
@@ -14,19 +13,14 @@ import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
 import uk.gov.hmcts.reform.pip.model.subscription.Channel;
 import uk.gov.hmcts.reform.pip.model.subscription.SearchType;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
-import uk.gov.hmcts.reform.pip.publication.services.service.filegeneration.ExcelGenerationService;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.model.account.Roles.INTERNAL_ADMIN_CTSC;
 import static uk.gov.hmcts.reform.pip.model.account.UserProvenances.PI_AAD;
 import static uk.gov.hmcts.reform.pip.model.publication.ArtefactType.LIST;
@@ -39,21 +33,11 @@ import static uk.gov.hmcts.reform.pip.model.subscription.SearchType.CASE_ID;
 @ExtendWith(MockitoExtension.class)
 class FileCreationServiceTest {
 
-    @Mock
-    private DataManagementService dataManagementService;
-
-    @Mock
-    private AccountManagementService accountManagementService;
-
-    @Mock
-    private ExcelGenerationService excelGenerationService;
-
     @InjectMocks
     private FileCreationService fileCreationService;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-    private static final byte[] TEST_BYTE = "Test byte".getBytes();
     private static final LocalDateTime REQUEST_DATE = LocalDateTime.now();
     private static final LocalDateTime STATUS_DATE = LocalDateTime.now();
 
@@ -72,7 +56,6 @@ class FileCreationServiceTest {
     private static final UUID ID = UUID.randomUUID();
     private static final LocalDateTime CREATED_DATE = LocalDateTime.of(2022, 1, 19, 13, 45, 50);
     private static final LocalDateTime LAST_SIGNED_IN = LocalDateTime.of(2023,1, 25, 14, 22, 43);
-    private static final String CREATED_DATE_STRING = "2022-01-19 13:45:50";
     private static final Channel EMAIL = Channel.EMAIL;
     private static final SearchType SEARCH_TYPE = CASE_ID;
     private static final String SEARCH_VALUE = "193254";
@@ -149,140 +132,5 @@ class FileCreationServiceTest {
         assertThat(csvResult[1])
             .as("CSV content does not match")
             .isEqualTo(EXPECTED_CONTENT);
-    }
-
-    @Test
-    void testGenerateMiReportSuccess() throws IOException {
-        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
-        when(accountManagementService.getAccountMiData()).thenReturn(ACCOUNT_MI_DATA);
-        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(ALL_SUBS_MI_DATA);
-        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
-        when(excelGenerationService.generateMultiSheetWorkBook(any())).thenReturn(TEST_BYTE);
-
-        assertThat(fileCreationService.generateMiReport()).isEqualTo(TEST_BYTE);
-    }
-
-    @Test
-    void testExtractMiData() {
-        when(dataManagementService.getMiData()).thenReturn(publicationMiData);
-        when(accountManagementService.getAccountMiData()).thenReturn(ACCOUNT_MI_DATA);
-        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(ALL_SUBS_MI_DATA);
-        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(LOCAL_SUBS_MI_DATA);
-
-        Map<String, List<String[]>> results = fileCreationService.extractMiData();
-
-        assertThat(results)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .containsKey(PUBLICATION_MI_DATA_KEY);
-
-        assertThat(results)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .containsKey(ACCOUNT_MI_DATA_KEY);
-
-        assertThat(results)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .containsKey(ALL_SUBSCRIPTION_MI_DATA_KEY);
-
-        assertThat(results)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .containsKey(LOCATION_SUBSCRIPTION_MI_DATA_KEY);
-
-        List<String[]> publicationMiData = results.get(PUBLICATION_MI_DATA_KEY);
-        assertThat(publicationMiData)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .hasSize(3)
-            .contains(
-                EXPECTED_PUBLICATION_HEADERS,
-                new String[]{ARTEFACT_ID.toString(), CREATED_DATE_STRING, "2025-01-19 13:45:50",
-                    BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
-                    SUPERSEDED_COUNT.toString(), LIST.toString(), "2024-01-19 13:45:00", "3", LOCATION_NAME,
-                    FAMILY_DAILY_CAUSE_LIST.toString() },
-                new String[]{ARTEFACT_ID.toString(), CREATED_DATE_STRING, "2025-01-19 13:45:50",
-                    BI_LINGUAL.toString(), MANUAL_UPLOAD_PROVENANCE, PUBLIC.toString(), SOURCE_ARTEFACT_ID,
-                    SUPERSEDED_COUNT.toString(), LIST.toString(), "2024-01-19 13:45:00", "NoMatch4", "",
-                    FAMILY_DAILY_CAUSE_LIST.toString() }
-            );
-
-        List<String[]> accountMiData = results.get(ACCOUNT_MI_DATA_KEY);
-        assertThat(accountMiData)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .hasSize(3)
-            .contains(
-                EXPECTED_ACCOUNT_HEADERS,
-                new String[]{USER_ID.toString(), ID.toString(), PI_AAD.toString(), INTERNAL_ADMIN_CTSC.toString(),
-                    CREATED_DATE_STRING, "2023-01-25 14:22:43"}
-            );
-
-        List<String[]> allSubscriptionMiData = results.get(ALL_SUBSCRIPTION_MI_DATA_KEY);
-        assertThat(allSubscriptionMiData)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .hasSize(3)
-            .contains(
-                EXPECTED_ALL_SUBSCRIPTION_HEADERS,
-                new String[]{USER_ID.toString(), EMAIL.toString(), SEARCH_TYPE.toString(), ID.toString(),
-                    LOCATION_NAME, CREATED_DATE_STRING}
-            );
-
-        List<String[]> locationSubscriptionMiData = results.get(LOCATION_SUBSCRIPTION_MI_DATA_KEY);
-        assertThat(locationSubscriptionMiData)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .hasSize(3)
-            .contains(
-                EXPECTED_LOCATION_SUBSCRIPTION_HEADERS,
-                new String[]{USER_ID.toString(), SEARCH_VALUE, EMAIL.toString(), ID.toString(),
-                    LOCATION_NAME, CREATED_DATE_STRING}
-            );
-    }
-
-    @Test
-    void testExtractMiDataWhenNoData() {
-        when(dataManagementService.getMiData()).thenReturn(List.of());
-        when(accountManagementService.getAccountMiData()).thenReturn(List.of());
-        when(accountManagementService.getAllSubscriptionMiData()).thenReturn(List.of());
-        when(accountManagementService.getLocationSubscriptionMiData()).thenReturn(List.of());
-
-        Map<String, List<String[]>> results = fileCreationService.extractMiData();
-
-        assertThat(results)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .containsKey(PUBLICATION_MI_DATA_KEY);
-
-        assertThat(results)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .containsKey(ACCOUNT_MI_DATA_KEY);
-
-        assertThat(results)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .containsKey(ALL_SUBSCRIPTION_MI_DATA_KEY);
-
-        assertThat(results)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .containsKey(LOCATION_SUBSCRIPTION_MI_DATA_KEY);
-
-        List<String[]> publicationMiData = results.get(PUBLICATION_MI_DATA_KEY);
-        assertThat(publicationMiData)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .hasSize(1)
-            .contains(EXPECTED_PUBLICATION_HEADERS);
-
-        List<String[]> accountMiData = results.get(ACCOUNT_MI_DATA_KEY);
-        assertThat(accountMiData)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .hasSize(1)
-            .contains(EXPECTED_ACCOUNT_HEADERS);
-
-        List<String[]> allSubscriptionMiData = results.get(ALL_SUBSCRIPTION_MI_DATA_KEY);
-        assertThat(allSubscriptionMiData)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .hasSize(1)
-            .contains(EXPECTED_ALL_SUBSCRIPTION_HEADERS);
-
-
-        List<String[]> locationSubscriptionMiData = results.get(LOCATION_SUBSCRIPTION_MI_DATA_KEY);
-        assertThat(locationSubscriptionMiData)
-            .as(MI_DATA_MATCH_MESSAGE)
-            .hasSize(1)
-            .contains(EXPECTED_LOCATION_SUBSCRIPTION_HEADERS);
-
     }
 }

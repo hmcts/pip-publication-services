@@ -32,8 +32,8 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerifica
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.AwsS3Service;
-import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.LegacyThirdPartyManagementService;
+import uk.gov.hmcts.reform.pip.publication.services.service.NotificationService;
 import uk.gov.hmcts.reform.pip.publication.services.service.UserNotificationService;
 
 import java.io.IOException;
@@ -271,22 +271,6 @@ class NotificationControllerTest {
     @Test
     void testSendInactiveUserNotificationEmailReturnsOk() {
         assertThat(notificationController.sendNotificationToInactiveUsers(inactiveUserNotificationEmail))
-            .as("Response does not match")
-            .extracting(
-                ResponseEntity::getStatusCode,
-                ResponseEntity::getBody
-            )
-            .containsExactly(
-                HttpStatus.OK,
-                REFERENCE_ID
-            );
-    }
-
-    @Test
-    void testSendMiReportingEmailReturnsOk() {
-        when(notificationService.handleMiDataForReporting()).thenReturn(REFERENCE_ID);
-
-        assertThat(notificationController.sendMiReportingEmail())
             .as("Response does not match")
             .extracting(
                 ResponseEntity::getStatusCode,

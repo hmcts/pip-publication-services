@@ -33,7 +33,6 @@ class ReportingNotificationEmailTests extends FunctionalTestBase {
     private static final String NOTIFY_URL = "/notify";
     private static final String MEDIA_APPLICATION_REPORTING_EMAIL_URL = NOTIFY_URL + "/media/report";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = NOTIFY_URL + "/unidentified-blob";
-    private static final String MI_DATA_REPORTING_EMAIL_URL = NOTIFY_URL + "/mi/report";
 
     private static final String TEST_EMAIL_PREFIX = String.format(
         "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999));
@@ -133,39 +132,6 @@ class ReportingNotificationEmailTests extends FunctionalTestBase {
         assertThat(notification.getBody())
             .as(EMAIL_BODY_ERROR)
             .contains(ID.toString());
-    }
-
-    @Test
-    void shouldSendMiDataReportingEmail() throws NotificationClientException {
-        final Response response = doPostRequestWithoutBody(
-            MI_DATA_REPORTING_EMAIL_URL,
-            Map.of(AUTHORIZATION, bearerToken)
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-
-        String referenceId = response.getBody().asString();
-        assertThat(referenceId)
-            .isNotEmpty();
-
-        Notification notification = readNotification(referenceId);
-
-        assertThat(notification.getEmailAddress())
-            .as(EMAIL_ADDRESS_ERROR)
-            .hasValue(PI_TEAM_EMAIL);
-
-        assertThat(notification.getSubject().get())
-            .as(EMAIL_SUBJECT_ERROR)
-            .contains("MI Reporting");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("Here is today’s MI report containing information for all user accounts, all subscriptions, "
-                          + "location subscriptions and all publications.");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_LINK_ERROR)
-            .contains(NOTIFY_LINK);
     }
 
     private Notification readNotification(String referenceId) throws NotificationClientException {

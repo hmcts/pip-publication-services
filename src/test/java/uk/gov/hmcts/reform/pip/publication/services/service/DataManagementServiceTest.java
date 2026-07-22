@@ -15,17 +15,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
-import uk.gov.hmcts.reform.pip.model.report.PublicationMiData;
 import uk.gov.hmcts.reform.pip.publication.services.config.WebClientConfiguration;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -255,62 +251,6 @@ class DataManagementServiceTest {
             dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false), "Exception");
 
         assertTrue(exception.getMessage().contains("500"), "Exception didn't contain correct message");
-    }
-
-    @Test
-    void testGetMiDataReturnsOk() throws JsonProcessingException {
-        PublicationMiData data1 = new PublicationMiData();
-        List<PublicationMiData> expectedData = List.of(data1);
-
-        mockDataManagementEndpoint.enqueue(new MockResponse()
-                                               .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
-                                               .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
-                                               .setResponseCode(200));
-
-        List<PublicationMiData> response = dataManagementService.getMiData();
-
-        assertIterableEquals(expectedData, response, "Data does not match");
-    }
-
-    @Test
-    void testGetMiDataReturnsOkWhenOver3MbAndBelow5Mb() throws JsonProcessingException {
-        PublicationMiData data1 = new PublicationMiData();
-        List<PublicationMiData> expectedData = Collections.nCopies(20_000, data1);
-
-        mockDataManagementEndpoint.enqueue(new MockResponse()
-                                               .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
-                                               .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
-                                               .setResponseCode(200));
-
-        List<PublicationMiData> response = dataManagementService.getMiData();
-
-        assertIterableEquals(expectedData, response, "Data does not match");
-    }
-
-
-    @Test
-    void testGetMiDataThrowsExceptionWhenOver10Mb() throws JsonProcessingException {
-        PublicationMiData data1 = new PublicationMiData();
-        List<PublicationMiData> expectedData = Collections.nCopies(50_000, data1);
-
-        mockDataManagementEndpoint.enqueue(new MockResponse()
-                                               .addHeader(CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON)
-                                               .setBody(OBJECT_MAPPER.writeValueAsString(expectedData))
-                                               .setResponseCode(200));
-
-        assertThrows(ServiceToServiceException.class, dataManagementService::getMiData,
-                     "Exception not thrown when over 10MB");
-    }
-
-    @Test
-    void testGetMiDataThrowsException() {
-        mockDataManagementEndpoint.enqueue(new MockResponse().setResponseCode(404));
-
-        ServiceToServiceException notifyException = assertThrows(ServiceToServiceException.class,
-                                                                     dataManagementService::getMiData,
-                                                                 NO_EXPECTED_EXCEPTION);
-
-        assertTrue(notifyException.getMessage().contains(NOT_FOUND), NO_STATUS_CODE_IN_EXCEPTION);
     }
 
     @Test

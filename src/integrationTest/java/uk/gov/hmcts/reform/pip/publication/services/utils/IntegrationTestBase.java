@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.pip.publication.services.client.EmailClient;
-import uk.gov.hmcts.reform.pip.publication.services.service.AccountManagementService;
 import uk.gov.hmcts.reform.pip.publication.services.service.AwsS3Service;
 import uk.gov.hmcts.reform.pip.publication.services.service.DataManagementService;
 import uk.gov.service.notify.NotificationClientException;
@@ -26,9 +25,6 @@ import static org.mockito.Mockito.when;
 public class IntegrationTestBase extends RedisConfigurationTestBase {
 
     private static String emailResponseValue;
-
-    @MockitoBean
-    protected AccountManagementService accountManagementService;
 
     @MockitoBean
     protected DataManagementService dataManagementService;

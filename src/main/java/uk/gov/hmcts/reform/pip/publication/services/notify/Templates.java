@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailLimit;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.BatchEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.EmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.reporting.MediaApplicationReportingEmailGenerator;
-import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.reporting.MiDataReportingEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.reporting.SystemAdminUpdateEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.reporting.UnidentifiedBlobEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.FlatFileSubscriptionEmailGenerator;
@@ -76,10 +75,6 @@ public enum Templates {
                                "Media account rejection email",
                                EmailLimit.STANDARD,
                                new MediaAccountRejectionEmailGenerator()),
-    MI_DATA_REPORTING_EMAIL("f13eef24-0ae0-4970-9f56-f107308b78c5",
-                            "MI data reporting email",
-                            EmailLimit.STANDARD,
-                            new MiDataReportingEmailGenerator()),
     SYSTEM_ADMIN_UPDATE_EMAIL("b3c0a60f-34ee-4bfa-857d-7ccbd678cf0c",
                               "System admin notification email",
                               EmailLimit.HIGH,
