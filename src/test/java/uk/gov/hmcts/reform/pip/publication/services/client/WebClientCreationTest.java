@@ -29,14 +29,6 @@ class WebClientCreationTest {
     }
 
     @Test
-    void createMiWebClient() {
-        WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
-        WebClient webClient = webClientConfiguration.miWebClient(authorizedClientManager);
-
-        assertNotNull(webClient, "MI WebClient has not been created successfully");
-    }
-
-    @Test
     void createAuthorizedClientManager() {
         WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
         OAuth2AuthorizedClientManager clientManager =

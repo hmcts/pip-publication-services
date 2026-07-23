@@ -33,7 +33,6 @@ class ReportingNotificationEmailTests extends FunctionalTestBase {
     private static final String NOTIFY_URL = "/notify";
     private static final String MEDIA_APPLICATION_REPORTING_EMAIL_URL = NOTIFY_URL + "/media/report";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = NOTIFY_URL + "/unidentified-blob";
-    private static final String MI_DATA_REPORTING_EMAIL_URL = NOTIFY_URL + "/mi/report";
 
     private static final String TEST_EMAIL_PREFIX = String.format(
         "pip-ps-test-email-%s", ThreadLocalRandom.current().nextInt(1000, 9999));
@@ -134,7 +133,6 @@ class ReportingNotificationEmailTests extends FunctionalTestBase {
             .as(EMAIL_BODY_ERROR)
             .contains(ID.toString());
     }
-    
 
     private Notification readNotification(String referenceId) throws NotificationClientException {
         Awaitility.with()

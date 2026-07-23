@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.MediaApplicationReportingEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.MiDataReportingEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.SystemAdminUpdateEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.UnidentifiedBlobEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
@@ -165,18 +164,6 @@ class NotificationServiceTest {
 
         assertEquals(SUCCESS_REF_ID, notificationService.unidentifiedBlobEmailRequest(NO_MATCH_ARTEFACT_LIST),
                      "Unidentified blob with valid payload should return successful referenceId.");
-    }
-
-    @Test
-    void testHandleMiDataReportingReturnsSuccess() {
-        when(emailService.handleEmailGeneration(any(MiDataReportingEmailData.class),
-                                                eq(Templates.MI_DATA_REPORTING_EMAIL)))
-            .thenReturn(validEmailBodyForEmailClient);
-        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
-        when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
-
-        assertEquals(SUCCESS_REF_ID, notificationService.handleMiDataForReporting(),
-                     "Handling MI data reporting notification should return successful reference ID");
     }
 
     @Test
