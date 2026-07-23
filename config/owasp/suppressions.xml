@@ -1,3 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+  <suppress>
+    <notes><![CDATA[file name: spring-cloud-azure-starter-active-directory-6.0.0.jar]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.azure\.spring/spring\-cloud\-azure\-starter\-active\-directory@.*$</packageUrl>
+    <cve>CVE-2021-42306</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[file name: azure-identity-1.17.0.jar]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.azure/azure\-identity@.*$</packageUrl>
+    <cve>CVE-2023-36415</cve>
+  </suppress>
+  <suppress>
+    <notes>This vulnerability exists across azure identity and microsoft authentication libraries </notes>
+    <cve>CVE-2024-35255</cve>
+  </suppress>
+  <suppress>
+    <notes>Vulnerability in Tomcat</notes>
+    <cve>CVE-2026-54515</cve>
+  </suppress>
+  <suppress>
+    <!-- Apache Log4j -->
+    <cve>CVE-2026-54399</cve>
+    <cve>CVE-2026-54428</cve>
+    <cve>CVE-2026-49844</cve>
+  </suppress>
+  <suppress>
+    <notes>angus-activation suppression</notes>
+    <cve>CVE-2025-7962</cve>
+  </suppress>
+  <suppress>
+    <notes>azure application insights and azure sdk suppression</notes>
+    <cve>CVE-2026-33117</cve>
+  </suppress>
+  <suppress>
+    <notes>netty suppression</notes>
+    <cve>CVE-2026-44891</cve>
+    <cve>CVE-2026-55831</cve>
+    <cve>CVE-2026-55833</cve>
+  </suppress>
+  <suppress>
+    <notes>tomcat suppression</notes>
+    <cve>CVE-2026-50229</cve>
+    <cve>CVE-2026-53404</cve>
+    <cve>CVE-2026-53434</cve>
+    <cve>CVE-2026-55276</cve>
+    <cve>CVE-2026-55955</cve>
+    <cve>CVE-2026-55956</cve>
+    <cve>CVE-2026-59083</cve>
+    <cve>CVE-2026-59084</cve>
+  </suppress>
 </suppressions>
