@@ -37,6 +37,13 @@
     <cve>CVE-2026-41284</cve>
     <cve>CVE-2026-42498</cve>
     <cve>CVE-2026-43514</cve>
+    <cve>CVE-2026-54512</cve>
+    <cve>CVE-2026-54513</cve>
+    <cve>CVE-2026-54514</cve>
+    <cve>CVE-2026-54515</cve>
+    <cve>CVE-2026-54516</cve>
+    <cve>CVE-2026-54517</cve>
+    <cve>CVE-2026-54518</cve>
   </suppress>
   <suppress>
     <notes>Vulnerability in Netty</notes>
@@ -87,11 +94,14 @@
     <cve>CVE-2026-34478</cve>
     <cve>CVE-2026-34480</cve>
     <cve>CVE-2026-34481</cve>
+    <cve>CVE-2026-54399</cve>
+    <cve>CVE-2026-54428</cve>
   </suppress>
   <suppress>
     <notes>log4j suppression</notes>
     <cve>CVE-2026-34479</cve>
     <cve>CVE-2026-34477</cve>
+    <cve>CVE-2026-49844</cve>
   </suppress>
   <suppress>
     <notes>angus-activation suppression</notes>
@@ -131,6 +141,9 @@
     <cve>CVE-2026-48006</cve>
     <cve>CVE-2026-45673</cve>
     <cve>CVE-2026-45674</cve>
+    <cve>CVE-2026-44891</cve>
+    <cve>CVE-2026-55831</cve>
+    <cve>CVE-2026-55833</cve>
   </suppress>
   <suppress>
     <notes>tomcat suppression</notes>
@@ -138,5 +151,13 @@
     <cve>CVE-2026-43512</cve>
     <cve>CVE-2026-43515</cve>
     <cve>CVE-2026-43513</cve>
+    <cve>CVE-2026-50229</cve>
+    <cve>CVE-2026-53404</cve>
+    <cve>CVE-2026-53434</cve>
+    <cve>CVE-2026-55276</cve>
+    <cve>CVE-2026-55955</cve>
+    <cve>CVE-2026-55956</cve>
+    <cve>CVE-2026-59083</cve>
+    <cve>CVE-2026-59084</cve>
   </suppress>
 </suppressions>
