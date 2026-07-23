@@ -111,6 +111,8 @@ sonarqube {
     property "sonar.projectName", "PIP Publication Services"
     property "sonar.projectKey", "pip-publication-services"
     property "sonar.exclusions", sonarExclusions.join(', ')
+    // TODO: Ignore code duplication check until the deprecated code is removed after case number/case name migration is completed.
+    property "sonar.cpd.exclusions", "**/RawDataSubscriptionEmailGeneratorV2.java,**/SubscriptionNotificationService.java"
   }
 }
 
@@ -150,7 +152,7 @@ dependencies {
   implementation "org.apache.logging.log4j:log4j-to-slf4j:${log4JVersion}"
   implementation 'net.logstash.logback:logstash-logback-encoder:9.0'
   implementation 'uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE'
-  implementation('com.github.hmcts:pip-data-models:2.3.45') {
+  implementation('com.github.hmcts:pip-data-models:PUB-3255-369c365') {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
   }
   implementation 'com.opencsv:opencsv:5.12.0'

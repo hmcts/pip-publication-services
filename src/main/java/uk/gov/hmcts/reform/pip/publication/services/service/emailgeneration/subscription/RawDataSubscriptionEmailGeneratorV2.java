@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.NotifyException;
@@ -16,15 +17,17 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.Emai
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_EXCEL_EMAIL;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EMAIL;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_EXCEL_EMAIL_V2;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL_V2;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EMAIL_V2;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 /**
@@ -32,12 +35,9 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
  */
 @Service
 @Slf4j
-@Deprecated
-public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
-    private static final String CASE_NUMBERS = "case_num";
-    private static final String DISPLAY_CASE_NUMBERS = "display_case_num";
-    private static final String CASE_URN = "case_urn";
-    private static final String DISPLAY_CASE_URN = "display_case_urn";
+public class RawDataSubscriptionEmailGeneratorV2 extends EmailGenerator {
+    private static final String CASE = "case";
+    private static final String DISPLAY_CASE = "display_case";
     private static final String YES = "Yes";
     private static final String NO = "No";
     private static final int MAX_FILE_SIZE = 2_000_000;
@@ -58,14 +58,12 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         boolean hasExcel = personalisations.containsKey("excel_link_to_file")
             && !personalisations.get("excel_link_to_file").toString().isEmpty();
 
-        if (hasPdf && hasExcel) {
-            return MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
-        } else if (hasPdf) {
-            return MEDIA_SUBSCRIPTION_PDF_EMAIL;
+        if (hasPdf) {
+            return hasExcel ? MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2 : MEDIA_SUBSCRIPTION_PDF_EMAIL_V2;
         } else if (hasExcel) {
-            return MEDIA_SUBSCRIPTION_EXCEL_EMAIL;
+            return MEDIA_SUBSCRIPTION_EXCEL_EMAIL_V2;
         } else {
-            return MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL;
+            return MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL_V2;
         }
     }
 
@@ -75,9 +73,7 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
             Map<String, Object> personalisation = new ConcurrentHashMap<>();
             Map<SubscriptionTypes, List<String>> subscriptions = emailData.getSubscriptions();
 
-            populateCaseNumberPersonalisation(artefact, personalisation,
-                                              subscriptions.get(SubscriptionTypes.CASE_NUMBER));
-            populateCaseUrnPersonalisation(personalisation, subscriptions.get(SubscriptionTypes.CASE_URN));
+            populateCasePersonalisation(artefact, personalisation, subscriptions);
             populateLocationPersonalisation(personalisation, emailData.getLocationName());
 
             personalisation.put("list_type", artefact.getListType().getFriendlyName());
@@ -100,26 +96,34 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
         }
     }
 
-    private void populateCaseNumberPersonalisation(Artefact artefact, Map<String, Object> personalisation,
-                                                   List<String> content) {
+    private void populateCasePersonalisation(Artefact artefact, Map<String, Object> personalisation,
+                                             Map<SubscriptionTypes, List<String>> subscriptions) {
+        List<String> caseNumberSubscriptionContent = subscriptions.get(SubscriptionTypes.CASE_NUMBER);
+        List<String> caseNameSubscriptionContent = subscriptions.get(SubscriptionTypes.CASE_NAME);
 
-        if (content == null || content.isEmpty()) {
-            personalisation.put(DISPLAY_CASE_NUMBERS, NO);
-            personalisation.put(CASE_NUMBERS, "");
+        if (CollectionUtils.isEmpty(caseNumberSubscriptionContent)
+            && CollectionUtils.isEmpty(caseNameSubscriptionContent)) {
+            personalisation.put(DISPLAY_CASE, NO);
+            personalisation.put(CASE, "");
         } else {
-            personalisation.put(DISPLAY_CASE_NUMBERS, YES);
-            personalisation.put(CASE_NUMBERS, CaseInfoHelper.generateCaseNumberPersonalisation(artefact, content));
-        }
-    }
+            personalisation.put(DISPLAY_CASE, YES);
+            List<String> cases = new ArrayList<>();
 
-    private void populateCaseUrnPersonalisation(Map<String, Object> personalisation, List<String> content) {
+            if (CollectionUtils.isNotEmpty(caseNumberSubscriptionContent)) {
+                cases.addAll(
+                    CaseInfoHelper.generateCasePersonalisationFromCaseNumbers(artefact, caseNumberSubscriptionContent)
+                );
+            }
+            if (CollectionUtils.isNotEmpty(caseNameSubscriptionContent)) {
+                cases.addAll(
+                    CaseInfoHelper.generateCasePersonalisationFromCaseNames(artefact, caseNameSubscriptionContent)
+                );
+            }
+            List<String> deduplicatedCases = cases.stream()
+                .distinct()
+                .collect(Collectors.toList());
 
-        if (content == null || content.isEmpty()) {
-            personalisation.put(DISPLAY_CASE_URN, NO);
-            personalisation.put(CASE_URN, "");
-        } else {
-            personalisation.put(DISPLAY_CASE_URN, YES);
-            personalisation.put(CASE_URN, content);
+            personalisation.put(CASE, deduplicatedCases);
         }
     }
 

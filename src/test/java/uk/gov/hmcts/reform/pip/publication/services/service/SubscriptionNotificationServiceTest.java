@@ -41,6 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -60,7 +61,6 @@ class SubscriptionNotificationServiceTest {
     private final Artefact artefact = new Artefact();
 
     EmailToSend validEmailBodyForEmailClientRawDataWithPdfAndExcel;
-    EmailToSend validEmailBodyForEmailClientRawDataWithPdfAndCsv;
     EmailToSend validEmailBodyForEmailClientFlatFile;
 
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
@@ -122,8 +122,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientFlatFile);
 
-        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                 SUCCESS_REF_ID);
+        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                 artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         FlatFileSubscriptionEmailData flatFileSubscriptionEmailData = argument.getValue();
 
@@ -143,6 +143,7 @@ class SubscriptionNotificationServiceTest {
     }
 
     @Test
+    @Deprecated
     void testBulkRawDataSubscriptionEmailRequestWhenPdfAndExcel() {
         artefact.setIsFlatFile(false);
         artefact.setListType(ListType.SJP_PUBLIC_LIST);
@@ -159,8 +160,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -172,6 +173,44 @@ class SubscriptionNotificationServiceTest {
                      "Incorrect location name");
         assertEquals(ARTEFACT_SUMMARY, rawDataSubscriptionEmailData.getArtefactSummary(),
                           "Incorrect summary content");
+        assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getPdf(),
+                          "Incorrect PDF content");
+        assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getExcel(),
+                          "Incorrect excel content");
+
+        assertEquals(SUCCESS_REF_ID, rawDataSubscriptionEmailData.getReferenceId(), REFERENCE_ID_MESSAGE);
+    }
+
+    @Test
+    void testBulkRawDataSubscriptionEmailRequestWhenPdfAndExcelV2() {
+        artefact.setIsFlatFile(false);
+        artefact.setListType(ListType.SJP_PUBLIC_LIST);
+        artefact.setLanguage(Language.WELSH);
+
+        ArgumentCaptor<RawDataSubscriptionEmailData> argument =
+            ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.EXCEL, false)).thenReturn(FILE_CONTENT);
+
+        when(emailService.handleEmailGeneration(argument.capture(),
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
+            .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
+
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                  artefact, LOCATION_NAME, SUCCESS_REF_ID);
+
+        RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
+
+        assertEquals(artefact, rawDataSubscriptionEmailData.getArtefact(),
+                     "Incorrect artefact set");
+        assertEquals(EMAIL, rawDataSubscriptionEmailData.getEmail(),
+                     "Incorrect email address set");
+        assertEquals(LOCATION_NAME, rawDataSubscriptionEmailData.getLocationName(),
+                     "Incorrect location name");
+        assertEquals(ARTEFACT_SUMMARY, rawDataSubscriptionEmailData.getArtefactSummary(),
+                     "Incorrect summary content");
         assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getPdf(),
                           "Incorrect PDF content");
         assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getExcel(),
@@ -193,14 +232,16 @@ class SubscriptionNotificationServiceTest {
         bulkSubscriptionEmailWithMultiple.setArtefactId(ARTEFACT_ID);
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 
-        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmailWithMultiple, artefact,
-                                                                 LOCATION_NAME, SUCCESS_REF_ID);
+        notificationService.flatFileBulkSubscriptionEmailRequest(
+            bulkSubscriptionEmailWithMultiple.getSubscriptionEmails(), artefact, LOCATION_NAME, SUCCESS_REF_ID
+        );
 
         verify(emailService, times(2))
             .handleEmailGeneration(any(FlatFileSubscriptionEmailData.class), eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL));
     }
 
     @Test
+    @Deprecated
     void testBulkSubscriptionRequestEmptySummaryWhenTooBig() {
         artefact.setIsFlatFile(false);
         artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
@@ -216,8 +257,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -226,6 +267,32 @@ class SubscriptionNotificationServiceTest {
     }
 
     @Test
+    void testBulkSubscriptionRequestEmptySummaryWhenTooBigV2() {
+        artefact.setIsFlatFile(false);
+        artefact.setListType(ListType.CIVIL_DAILY_CAUSE_LIST);
+        artefact.setPayloadSize(1024F);
+        artefact.setLanguage(Language.WELSH);
+
+        ArgumentCaptor<RawDataSubscriptionEmailData> argument =
+            ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
+
+        when(emailService.handleEmailGeneration(argument.capture(),
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
+            .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
+
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                  artefact, LOCATION_NAME, SUCCESS_REF_ID);
+
+        RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
+
+        assertEquals("", rawDataSubscriptionEmailData.getArtefactSummary(),
+                     "Incorrect summary content");
+    }
+
+    @Test
+    @Deprecated
     void testBulkSubscriptionRequestWhenAdditionalPdf() {
         artefact.setIsFlatFile(false);
         artefact.setListType(ListType.SJP_PRESS_REGISTER);
@@ -241,8 +308,8 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -251,6 +318,32 @@ class SubscriptionNotificationServiceTest {
     }
 
     @Test
+    void testBulkSubscriptionRequestWhenAdditionalPdfV2() {
+        artefact.setIsFlatFile(false);
+        artefact.setListType(ListType.SJP_PRESS_REGISTER);
+        artefact.setLanguage(Language.WELSH);
+
+        ArgumentCaptor<RawDataSubscriptionEmailData> argument =
+            ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
+
+        when(emailService.handleEmailGeneration(argument.capture(),
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
+            .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
+
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                  artefact, LOCATION_NAME, SUCCESS_REF_ID);
+
+        RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
+
+        assertArrayEquals(Base64.getDecoder().decode(FILE_CONTENT), rawDataSubscriptionEmailData.getPdf(),
+                          "Incorrect PDF content");
+    }
+
+    @Test
+    @Deprecated
     void testBulkSubscriptionRequestPdfOnly() {
         artefact.setIsFlatFile(false);
         artefact.setListType(ListType.SJP_PRESS_REGISTER);
@@ -266,8 +359,33 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
 
-        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail, artefact, LOCATION_NAME,
-                                                                SUCCESS_REF_ID);
+        notificationService.rawDataBulkSubscriptionEmailRequest(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                artefact, LOCATION_NAME, SUCCESS_REF_ID);
+
+        RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
+
+        assertArrayEquals(new byte[0], rawDataSubscriptionEmailData.getExcel(),
+                          "Incorrect excel content");
+    }
+
+    @Test
+    void testBulkSubscriptionRequestPdfOnlyV2() {
+        artefact.setIsFlatFile(false);
+        artefact.setListType(ListType.SJP_PRESS_REGISTER);
+        artefact.setLanguage(Language.ENGLISH);
+
+        ArgumentCaptor<RawDataSubscriptionEmailData> argument =
+            ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
+
+        when(dataManagementService.getArtefactSummary(ARTEFACT_ID)).thenReturn(ARTEFACT_SUMMARY);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
+
+        when(emailService.handleEmailGeneration(argument.capture(),
+                                                eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
+            .thenReturn(validEmailBodyForEmailClientRawDataWithPdfAndExcel);
+
+        notificationService.rawDataBulkSubscriptionEmailRequestV2(bulkSubscriptionEmail.getSubscriptionEmails(),
+                                                                  artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
         RawDataSubscriptionEmailData rawDataSubscriptionEmailData = argument.getValue();
 
@@ -287,8 +405,9 @@ class SubscriptionNotificationServiceTest {
         bulkSubscriptionEmailWithMultiple.setArtefactId(ARTEFACT_ID);
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 
-        notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmailWithMultiple, artefact,
-                                                                 LOCATION_NAME, SUCCESS_REF_ID);
+        notificationService.flatFileBulkSubscriptionEmailRequest(
+            bulkSubscriptionEmailWithMultiple.getSubscriptionEmails(), artefact, LOCATION_NAME, SUCCESS_REF_ID
+        );
 
         verify(emailService, times(2))
             .handleEmailGeneration(any(FlatFileSubscriptionEmailData.class), eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL));
@@ -307,8 +426,8 @@ class SubscriptionNotificationServiceTest {
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 
         try (LogCaptor logCaptor = LogCaptor.forClass(SubscriptionNotificationService.class)) {
-            notificationService.flatFileBulkSubscriptionEmailRequest(bulkSubscriptionEmailWithMultiple, artefact,
-                                                                     LOCATION_NAME, SUCCESS_REF_ID);
+            notificationService.flatFileBulkSubscriptionEmailRequest(
+                bulkSubscriptionEmailWithMultiple.getSubscriptionEmails(), artefact, LOCATION_NAME, SUCCESS_REF_ID);
 
             verify(emailService, times(2)).handleEmailGeneration(
                     any(FlatFileSubscriptionEmailData.class),
