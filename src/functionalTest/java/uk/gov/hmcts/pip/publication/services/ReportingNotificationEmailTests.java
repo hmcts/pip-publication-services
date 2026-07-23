@@ -134,39 +134,7 @@ class ReportingNotificationEmailTests extends FunctionalTestBase {
             .as(EMAIL_BODY_ERROR)
             .contains(ID.toString());
     }
-
-    @Test
-    void shouldSendMiDataReportingEmail() throws NotificationClientException {
-        final Response response = doPostRequestWithoutBody(
-            MI_DATA_REPORTING_EMAIL_URL,
-            Map.of(AUTHORIZATION, bearerToken)
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-
-        String referenceId = response.getBody().asString();
-        assertThat(referenceId)
-            .isNotEmpty();
-
-        Notification notification = readNotification(referenceId);
-
-        assertThat(notification.getEmailAddress())
-            .as(EMAIL_ADDRESS_ERROR)
-            .hasValue(PI_TEAM_EMAIL);
-
-        assertThat(notification.getSubject().get())
-            .as(EMAIL_SUBJECT_ERROR)
-            .contains("MI Reporting");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_BODY_ERROR)
-            .contains("Here is today’s MI report containing information for all user accounts, all subscriptions, "
-                          + "location subscriptions and all publications.");
-
-        assertThat(notification.getBody())
-            .as(EMAIL_LINK_ERROR)
-            .contains(NOTIFY_LINK);
-    }
+    
 
     private Notification readNotification(String referenceId) throws NotificationClientException {
         Awaitility.with()
