@@ -14,11 +14,11 @@ import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.FlatFileSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.RawDataSubscriptionEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
 import java.util.Base64;
+import java.util.List;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
@@ -54,6 +54,7 @@ public class SubscriptionNotificationService {
             .orElse(null);
     }
 
+    @Deprecated
     private String rawDataSubscriptionEmailRequest(SubscriptionEmail body, Artefact artefact, String artefactSummary,
                                                    byte[] pdf, byte[] excel, String locationName,
                                                    String referenceId) {
@@ -67,12 +68,26 @@ public class SubscriptionNotificationService {
             .orElse(null);
     }
 
+    private String rawDataSubscriptionEmailRequestV2(SubscriptionEmail body, Artefact artefact, String artefactSummary,
+                                                   byte[] pdf, byte[] excel, String locationName,
+                                                   String referenceId) {
+        RawDataSubscriptionEmailData emailData = new RawDataSubscriptionEmailData(
+            body, artefact, artefactSummary, pdf, excel, locationName, fileRetentionWeeks, referenceId
+        );
+        EmailToSend email = emailService.handleEmailGeneration(emailData,
+                                                               Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2);
+
+        return emailService.sendEmail(email)
+            .getReference()
+            .orElse(null);
+    }
+
     @Async
-    public void flatFileBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
+    public void flatFileBulkSubscriptionEmailRequest(List<SubscriptionEmail> subscriptionEmails, Artefact artefact,
                                                      String locationName, String referenceId) {
 
         byte[] flatFileData = dataManagementService.getArtefactFlatFile(artefact.getArtefactId());
-        bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
+        subscriptionEmails.forEach(subscriptionEmail -> {
             try {
                 log.info(writeLog(String.format("Sending subscription email for user %s",
                                             EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
@@ -88,7 +103,8 @@ public class SubscriptionNotificationService {
     }
 
     @Async
-    public void rawDataBulkSubscriptionEmailRequest(BulkSubscriptionEmail bulkSubscriptionEmail, Artefact artefact,
+    @Deprecated
+    public void rawDataBulkSubscriptionEmailRequest(List<SubscriptionEmail> subscriptionEmails, Artefact artefact,
                                                     String locationName, String referenceId) {
         String artefactSummary = getArtefactSummary(artefact);
         byte[] pdf;
@@ -103,13 +119,45 @@ public class SubscriptionNotificationService {
         byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
             : new byte[0];
 
-        bulkSubscriptionEmail.getSubscriptionEmails().forEach(subscriptionEmail -> {
+        subscriptionEmails.forEach(subscriptionEmail -> {
 
             try {
                 log.info(writeLog(String.format("Sending subscription email for user %s",
                                                 EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
                 rawDataSubscriptionEmailRequest(subscriptionEmail, artefact, artefactSummary,  pdf,
                                                 excel, locationName, referenceId);
+            } catch (TooManyEmailsException ex) {
+                log.error(writeLog(ex.getMessage()));
+            } catch (NotifyException ignored) {
+                // This is a bulk email, so we don't want to stop the process if one email fails
+                // This exception is already logged at a higher level, so no need to log again here
+            }
+        });
+    }
+
+    @Async
+    public void rawDataBulkSubscriptionEmailRequestV2(List<SubscriptionEmail> subscriptionEmails, Artefact artefact,
+                                                      String locationName, String referenceId) {
+        String artefactSummary = getArtefactSummary(artefact);
+        byte[] pdf;
+
+        if (artefact.getListType().hasAdditionalPdf()
+            && artefact.getLanguage().equals(Language.WELSH)) {
+            pdf = getFileBytes(artefact, FileType.PDF, true);
+        } else {
+            pdf = getFileBytes(artefact, FileType.PDF, false);
+        }
+
+        byte[] excel = artefact.getListType().hasExcel() ? getFileBytes(artefact, FileType.EXCEL, false)
+            : new byte[0];
+
+        subscriptionEmails.forEach(subscriptionEmail -> {
+
+            try {
+                log.info(writeLog(String.format("Sending subscription email for user %s",
+                                                EmailHelper.maskEmail(subscriptionEmail.getEmail()))));
+                rawDataSubscriptionEmailRequestV2(subscriptionEmail, artefact, artefactSummary,  pdf,
+                                                  excel, locationName, referenceId);
             } catch (TooManyEmailsException ex) {
                 log.error(writeLog(ex.getMessage()));
             } catch (NotifyException ignored) {
