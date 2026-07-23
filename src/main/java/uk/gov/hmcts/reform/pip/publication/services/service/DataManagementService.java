@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.PAYLOAD_TOO_LARGE;
+import static org.springframework.http.HttpStatus.CONTENT_TOO_LARGE;
 
 @Slf4j
 @Service
@@ -110,7 +110,7 @@ public class DataManagementService {
                 .block();
         } catch (WebClientResponseException ex) {
             if (NOT_FOUND.equals(ex.getStatusCode())
-                || PAYLOAD_TOO_LARGE.equals(ex.getStatusCode())) {
+                || CONTENT_TOO_LARGE.equals(ex.getStatusCode())) {
                 return "";
             }
             throw new ServiceToServiceException(SERVICE, ex.getMessage());
