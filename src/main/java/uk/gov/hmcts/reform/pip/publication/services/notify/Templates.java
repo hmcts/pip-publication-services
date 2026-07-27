@@ -53,7 +53,7 @@ public enum Templates {
                                  EmailLimit.HIGH,
                                  new RawDataSubscriptionEmailGenerator()),
     MAGISTRATE_COURT_SUBSCRIPTION_EMAIL("950c4ae3-93fb-44d7-82d5-8d1484f8caec",
-                                        "Magistrates court subscription email for flat file",
+                                        "Magistrates court subscription email for JSON with PDF and Excel",
                                         EmailLimit.HIGH,
                                         new RawDataSubscriptionEmailGenerator()),
     MEDIA_NEW_ACCOUNT_SETUP("689c0183-0461-423e-a542-de513a93a5b7",
