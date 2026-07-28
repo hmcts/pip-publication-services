@@ -50,7 +50,7 @@ import static uk.gov.hmcts.reform.pip.model.publication.ArtefactType.LIST;
 import static uk.gov.hmcts.reform.pip.model.publication.Language.BI_LINGUAL;
 import static uk.gov.hmcts.reform.pip.model.publication.ListType.FAMILY_DAILY_CAUSE_LIST;
 import static uk.gov.hmcts.reform.pip.model.publication.Sensitivity.PUBLIC;
-import static uk.gov.hmcts.reform.pip.model.subscription.SearchType.CASE_ID;
+import static uk.gov.hmcts.reform.pip.model.subscription.SearchType.CASE_NUMBER;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -221,7 +221,7 @@ class NotifyTest extends IntegrationTestBase {
     private static final LocalDateTime CREATED_DATE = LocalDateTime.of(2022, 1, 19, 13, 45, 50);
     private static final String CREATED_DATE_STRING = "2022-01-19 13:45:50";
     private static final LocalDateTime LAST_SIGNED_IN = LocalDateTime.of(2023,1, 25, 14, 22, 43);
-    private static final SearchType SEARCH_TYPE = CASE_ID;
+    private static final SearchType SEARCH_TYPE = CASE_NUMBER;
     private static final String SEARCH_VALUE = "1234";
     private static final String LOCATION_ID = "123";
     private static final String LOCATION_NAME = "Location";
