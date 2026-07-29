@@ -90,6 +90,9 @@
     <cve>CVE-2026-22748</cve>
     <cve>CVE-2026-22746</cve>
 
+    <!-- Spring Cloud -->
+    <cve>CVE-2026-50338</cve>
+
     <!-- Apache Log4j -->
     <cve>CVE-2026-34478</cve>
     <cve>CVE-2026-34480</cve>
