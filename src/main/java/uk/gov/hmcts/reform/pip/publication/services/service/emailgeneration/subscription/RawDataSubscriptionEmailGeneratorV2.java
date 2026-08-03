@@ -28,6 +28,10 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL_V2;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EMAIL_V2;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.IS_MAGISTRATES_MEDIA_PROTOCOL;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.IS_NOT_MAGISTRATES_MEDIA_PROTOCOL;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.isMagistratesMediaProtocol;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.isNotMagistratesMediaProtocol;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 /**
@@ -77,6 +81,11 @@ public class RawDataSubscriptionEmailGeneratorV2 extends EmailGenerator {
             populateLocationPersonalisation(personalisation, emailData.getLocationName());
 
             personalisation.put("list_type", artefact.getListType().getFriendlyName());
+            personalisation.put(IS_MAGISTRATES_MEDIA_PROTOCOL, isMagistratesMediaProtocol(artefact.getListType()));
+            personalisation.put(
+                IS_NOT_MAGISTRATES_MEDIA_PROTOCOL,
+                isNotMagistratesMediaProtocol(artefact.getListType())
+            );
             personalisation.put("start_page_link", personalisationLinks.getStartPageLink());
             personalisation.put("subscription_page_link", personalisationLinks.getSubscriptionPageLink());
             personalisation.putAll(populateFilesPersonalisation(emailData));

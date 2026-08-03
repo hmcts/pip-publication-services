@@ -32,7 +32,6 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MAGISTRATE_COURT_SUBSCRIPTION_EMAIL;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 /**
@@ -65,18 +64,7 @@ public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
             && !personalisations.get("pdf_link_to_file").toString().isEmpty();
         boolean hasExcel = personalisations.containsKey("excel_link_to_file")
             && !personalisations.get("excel_link_to_file").toString().isEmpty();
-        List<String> magistrateLists = new ArrayList<>(List.of(
-            MAGISTRATES_PUBLIC_LIST.getFriendlyName(),
-            MAGISTRATES_STANDARD_LIST.getFriendlyName(),
-            MAGISTRATES_ADULT_COURT_LIST_DAILY.getFriendlyName(),
-            MAGISTRATES_ADULT_COURT_LIST_FUTURE.getFriendlyName(),
-            MAGISTRATES_PUBLIC_ADULT_COURT_LIST_DAILY.getFriendlyName(),
-            MAGISTRATES_PUBLIC_ADULT_COURT_LIST_FUTURE.getFriendlyName()
-        ));
 
-        if (magistrateLists.contains(personalisations.get("list_type").toString())) {
-            return MAGISTRATE_COURT_SUBSCRIPTION_EMAIL;
-        }
         if (hasPdf && hasExcel) {
             return MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
         } else if (hasPdf) {

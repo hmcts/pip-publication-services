@@ -37,6 +37,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.IS_MAGISTRATES_MEDIA_PROTOCOL;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.IS_NOT_MAGISTRATES_MEDIA_PROTOCOL;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -116,6 +118,14 @@ class FlatFileSubscriptionEmailGeneratorTest {
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("SJP Press List (Full list)");
 
+        softly.assertThat(personalisation.get(IS_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(false);
+
+        softly.assertThat(personalisation.get(IS_NOT_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(true);
+
         softly.assertThat(personalisation.get(LINK_TO_FILE))
             .as(PERSONALISATION_MESSAGE)
             .isNotNull();
@@ -133,6 +143,36 @@ class FlatFileSubscriptionEmailGeneratorTest {
             .isEqualTo("01 May 2024");
 
         assertUploadFileContent(softly, (JSONObject) personalisation.get(LINK_TO_FILE));
+        softly.assertAll();
+    }
+
+    @Test
+    void testFlatFileSubscriptionEmailWithMagistratesListAddsConditionFlag() {
+        SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
+        subscriptionEmail.setEmail(EMAIL);
+        subscriptionEmail.setSubscriptions(SUBSCRIPTIONS);
+
+        Artefact magistratesArtefact = new Artefact();
+        magistratesArtefact.setArtefactId(ARTEFACT_ID);
+        magistratesArtefact.setListType(ListType.MAGISTRATES_PUBLIC_LIST);
+        magistratesArtefact.setContentDate(LocalDateTime.of(2024, Month.MAY, 1, 0, 0));
+
+        FlatFileSubscriptionEmailData magistratesEmailData = new FlatFileSubscriptionEmailData(
+            subscriptionEmail, magistratesArtefact, LOCATION_NAME, FLAT_FILE, FILE_RETENTION_WEEKS, REFERENCE_ID
+        );
+
+        when(personalisationLinks.getStartPageLink()).thenReturn(START_PAGE_LINK_ADDRESS);
+        when(personalisationLinks.getSubscriptionPageLink()).thenReturn(SUBSCRIPTION_PAGE_LINK_ADDRESS);
+
+        EmailToSend result = emailGenerator.buildEmail(magistratesEmailData, personalisationLinks);
+
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(result.getPersonalisation().get(IS_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(true);
+        softly.assertThat(result.getPersonalisation().get(IS_NOT_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(false);
         softly.assertAll();
     }
 
