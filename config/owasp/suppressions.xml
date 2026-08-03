@@ -50,6 +50,13 @@
     <cve>CVE-2026-33871</cve>
     <cve>CVE-2026-33870</cve>
     <cve>CVE-2026-41417</cve>
+    <cve>CVE-2026-56746</cve>
+    <cve>CVE-2026-56819</cve>
+    <cve>CVE-2026-56817</cve>
+    <cve>CVE-2026-56816</cve>
+    <cve>CVE-2026-56745</cve>
+    <cve>CVE-2026-56820</cve>
+    <cve>CVE-2026-55851</cve>
   </suppress>
   <suppress>
     <!-- PostgreSQL JDBC Driver -->
