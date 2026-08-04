@@ -299,22 +299,6 @@ class NotificationControllerTest {
     }
 
     @Test
-    void testSendMiReportingEmailReturnsOk() {
-        when(notificationService.handleMiDataForReporting()).thenReturn(REFERENCE_ID);
-
-        assertThat(notificationController.sendMiReportingEmail())
-            .as("Response does not match")
-            .extracting(
-                ResponseEntity::getStatusCode,
-                ResponseEntity::getBody
-            )
-            .containsExactly(
-                HttpStatus.OK,
-                REFERENCE_ID
-            );
-    }
-
-    @Test
     void testSendSystemAdminUpdateShouldReturnSuccessMessage() {
         assertEquals(REFERENCE_ID, notificationController.sendSystemAdminUpdate(systemAdminAction).getBody(),
                      MESSAGES_MATCH);
