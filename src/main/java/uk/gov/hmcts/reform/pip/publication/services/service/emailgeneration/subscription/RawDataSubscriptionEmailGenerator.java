@@ -16,18 +16,11 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.Emai
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
-import static uk.gov.hmcts.reform.pip.model.publication.ListType.MAGISTRATES_PUBLIC_LIST;
-import static uk.gov.hmcts.reform.pip.model.publication.ListType.MAGISTRATES_STANDARD_LIST;
-import static uk.gov.hmcts.reform.pip.model.publication.ListType.MAGISTRATES_ADULT_COURT_LIST_DAILY;
-import static uk.gov.hmcts.reform.pip.model.publication.ListType.MAGISTRATES_ADULT_COURT_LIST_FUTURE;
-import static uk.gov.hmcts.reform.pip.model.publication.ListType.MAGISTRATES_PUBLIC_ADULT_COURT_LIST_FUTURE;
-import static uk.gov.hmcts.reform.pip.model.publication.ListType.MAGISTRATES_PUBLIC_ADULT_COURT_LIST_DAILY;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_EXCEL_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EMAIL;
