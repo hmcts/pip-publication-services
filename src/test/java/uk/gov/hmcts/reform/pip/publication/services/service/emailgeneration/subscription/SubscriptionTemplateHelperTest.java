@@ -32,7 +32,8 @@ class SubscriptionTemplateHelperTest {
 
     @Test
     void shouldReturnInverseResultForIsNotMagistratesMediaProtocol() {
-        assertThat(SubscriptionTemplateHelper.isNotMagistratesMediaProtocol(ListType.MAGISTRATES_PUBLIC_LIST)).isFalse();
+        assertThat(SubscriptionTemplateHelper
+                       .isNotMagistratesMediaProtocol(ListType.MAGISTRATES_PUBLIC_LIST)).isFalse();
         assertThat(SubscriptionTemplateHelper.isNotMagistratesMediaProtocol(ListType.SJP_PUBLIC_LIST)).isTrue();
         assertThat(SubscriptionTemplateHelper.isNotMagistratesMediaProtocol(null)).isTrue();
     }
