@@ -33,7 +33,7 @@ public enum Templates {
                                 "Existing media account welcome email",
                                 EmailLimit.STANDARD,
                                 new MediaWelcomeEmailGenerator()),
-    MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL("1fa5db55-5c75-4c50-a37a-5f3883e9f672",
+    MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL("3ec5ef89-4d0b-4142-aa54-3d3e68e201d4",
                                        "Media subscription email for flat file",
                                        EmailLimit.HIGH,
                                        new FlatFileSubscriptionEmailGenerator()),
