@@ -196,4 +196,8 @@
     <notes>spring cloud azure suppression</notes>
     <cve>CVE-2026-50338</cve>
   </suppress>
+  <suppress>
+    <notes>httpclient5</notes>
+    <cve>CVE-2026-64607</cve>
+  </suppress>
 </suppressions>
