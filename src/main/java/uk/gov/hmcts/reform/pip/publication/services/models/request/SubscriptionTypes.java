@@ -5,7 +5,6 @@ package uk.gov.hmcts.reform.pip.publication.services.models.request;
  */
 public enum SubscriptionTypes {
     CASE_NUMBER,
-    @Deprecated CASE_URN,
     CASE_NAME,
     LOCATION_ID;
 }
