@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.S3U
 import uk.gov.hmcts.reform.pip.publication.services.helpers.MultiPartHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
@@ -105,16 +104,6 @@ public class NotificationController {
     @PostMapping("/media/report")
     public ResponseEntity<String> sendMediaReportingEmail(@RequestBody List<MediaApplication> mediaApplicationList) {
         return ResponseEntity.ok(notificationService.handleMediaApplicationReportingRequest(mediaApplicationList));
-    }
-
-    @ApiResponse(responseCode = ACCEPTED_RESPONSE, description = "Subscription email successfully sent to email: "
-        + "{recipientEmail} with reference id: {reference id}")
-    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
-    @Operation(summary = "Bulk send email subscriptions to a list of users and associated config")
-    @PostMapping("/subscription")
-    @Deprecated
-    public ResponseEntity<String> sendSubscriptionEmail(@Valid @RequestBody BulkSubscriptionEmail body) {
-        return ResponseEntity.accepted().body(notificationService.bulkSendSubscriptionEmail(body));
     }
 
     @ApiResponse(responseCode = ACCEPTED_RESPONSE, description = "Subscription email successfully sent to email: "

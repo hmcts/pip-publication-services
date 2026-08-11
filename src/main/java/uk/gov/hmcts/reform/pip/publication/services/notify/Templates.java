@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.repo
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.reporting.UnidentifiedBlobEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.FlatFileSubscriptionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.LocationSubscriptionDeletionEmailGenerator;
-import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.RawDataSubscriptionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.RawDataSubscriptionEmailGeneratorV2;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.InactiveUserNotificationEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaAccountRejectionEmailGenerator;
@@ -36,26 +35,6 @@ public enum Templates {
                                        "Media subscription email for flat file",
                                        EmailLimit.HIGH,
                                        new FlatFileSubscriptionEmailGenerator()),
-    @Deprecated
-    MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL("4017c40f-0644-4b02-acd2-e00a1ece3b85",
-                                      "Media subscription email for JSON with PDF and Excel",
-                                      EmailLimit.HIGH,
-                                      new RawDataSubscriptionEmailGenerator()),
-    @Deprecated
-    MEDIA_SUBSCRIPTION_PDF_EMAIL("e551a0c1-91e7-4871-a540-1e7101b70f14",
-                                       "Media subscription email for JSON with PDF",
-                                       EmailLimit.HIGH,
-                                       new RawDataSubscriptionEmailGenerator()),
-    @Deprecated
-    MEDIA_SUBSCRIPTION_EXCEL_EMAIL("e03108e1-db29-40d3-90f2-bf8f6c233c35",
-                                 "Media subscription email for JSON with Excel",
-                                 EmailLimit.HIGH,
-                                 new RawDataSubscriptionEmailGenerator()),
-    @Deprecated
-    MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL("072fa7fd-ac23-4a99-be9a-70153374c66e",
-                                 "Media subscription email for JSON with no download link",
-                                 EmailLimit.HIGH,
-                                 new RawDataSubscriptionEmailGenerator()),
     MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2("cbbbe6fb-c7a1-4dd9-b606-e5bac1aaa990",
                                           "Media subscription email for JSON with PDF and Excel",
                                           EmailLimit.HIGH,

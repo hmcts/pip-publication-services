@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.M
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.SystemAdminUpdateEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.UnidentifiedBlobEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -67,6 +67,7 @@ class NotificationServiceTest {
     private static final Integer LOCATION_ID = 1;
     private static final String LOCATION_NAME = "Location Name";
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
+    private static final Artefact ARTEFACT = new Artefact();
     private static final String SUCCESS_REF_ID = "successRefId";
     private static final byte[] TEST_BYTE = "Test byte".getBytes();
     private static final Map<String, Object> PERSONALISATION_MAP = Map.of("email", EMAIL);
@@ -86,7 +87,7 @@ class NotificationServiceTest {
     private final Location location = new Location();
     private final Artefact artefact = new Artefact();
     private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-    private final BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
+    private final BulkSubscriptionEmailV2 bulkSubscriptionEmail = new BulkSubscriptionEmailV2();
 
     @Mock
     private SendEmailResponse sendEmailResponse;
@@ -108,8 +109,11 @@ class NotificationServiceTest {
 
     @BeforeEach
     void setup() {
+        ARTEFACT.setArtefactId(ARTEFACT_ID);
+        ARTEFACT.setLocationId(String.valueOf(LOCATION_ID));
+
         NO_MATCH_ARTEFACT_LIST.add(new NoMatchArtefact(UUID.randomUUID(), "TEST", "1234"));
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
+        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of("1234"));
         systemAdminActionEmailBody = new DeleteLocationAction();
         systemAdminActionEmailBody.setRequesterEmail(REQUESTER_EMAIL);
         systemAdminActionEmailBody.setEmailList(List.of(EMAIL));
@@ -122,7 +126,7 @@ class NotificationServiceTest {
         location.setName(LOCATION_NAME);
         artefact.setArtefactId(ARTEFACT_ID);
         artefact.setLocationId(LOCATION_ID.toString());
-        bulkSubscriptionEmail.setArtefactId(ARTEFACT_ID);
+        bulkSubscriptionEmail.setArtefact(ARTEFACT);
         bulkSubscriptionEmail.setSubscriptionEmails(List.of(subscriptionEmail));
 
         ReflectionTestUtils.setField(notificationService, "piTeamEmail", "test@justice.gov.uk");
@@ -186,11 +190,10 @@ class NotificationServiceTest {
 
     @Test
     void testBulkSendSubscriptionEmailV2WithRawData() {
-        artefact.setIsFlatFile(false);
-        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
+        ARTEFACT.setIsFlatFile(false);
         when(dataManagementService.getLocation(String.valueOf(LOCATION_ID))).thenReturn(location);
 
-        assertNotNull(notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail),
+        assertNotNull(notificationService.bulkSendSubscriptionEmailV2(bulkSubscriptionEmail),
                       REFERENCE_ID_MESSAGE);
 
         verify(subscriptionNotificationService).rawDataBulkSubscriptionEmailRequest(any(), any(), any(), any());
@@ -200,11 +203,10 @@ class NotificationServiceTest {
 
     @Test
     void testBulkSendSubscriptionEmailV2WithFlatFile() {
-        artefact.setIsFlatFile(true);
-        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
+        ARTEFACT.setIsFlatFile(true);
         when(dataManagementService.getLocation(String.valueOf(LOCATION_ID))).thenReturn(location);
 
-        assertNotNull(notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail),
+        assertNotNull(notificationService.bulkSendSubscriptionEmailV2(bulkSubscriptionEmail),
                       REFERENCE_ID_MESSAGE);
 
         verify(subscriptionNotificationService).flatFileBulkSubscriptionEmailRequest(any(), any(), any(), any());

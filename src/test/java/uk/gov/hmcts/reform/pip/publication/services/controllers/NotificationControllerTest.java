@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.pip.model.system.admin.DeleteLocationAction;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
@@ -83,8 +82,7 @@ class NotificationControllerTest {
     private WelcomeEmail validRequestBodyTrue;
     private List<MediaApplication> validMediaApplicationList;
     private SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-    private BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
-    private BulkSubscriptionEmailV2 bulkSubscriptionEmailV2 = new BulkSubscriptionEmailV2();
+    private BulkSubscriptionEmailV2 bulkSubscriptionEmail = new BulkSubscriptionEmailV2();
     private final List<NoMatchArtefact> noMatchArtefactList = new ArrayList<>();
     private DuplicatedMediaEmail createMediaSetupEmail;
     private LegacyThirdPartySubscription thirdPartySubscription = new LegacyThirdPartySubscription();
@@ -132,15 +130,13 @@ class NotificationControllerTest {
 
         Artefact artefact = new Artefact();
         artefact.setArtefactId(UUID.randomUUID());
-        bulkSubscriptionEmail.setArtefactId(artefact.getArtefactId());
-        bulkSubscriptionEmailV2.setArtefact(artefact);
+        bulkSubscriptionEmail.setArtefact(artefact);
 
         SubscriptionEmail subscriptionEmailForBulk = new SubscriptionEmail();
         subscriptionEmailForBulk.setEmail("a@b.com");
         subscriptionEmailForBulk.setSubscriptions(new HashMap<>());
 
         bulkSubscriptionEmail.setSubscriptionEmails(List.of(subscriptionEmailForBulk));
-        bulkSubscriptionEmailV2.setSubscriptionEmails(List.of(subscriptionEmailForBulk));
 
         createMediaSetupEmail = new DuplicatedMediaEmail();
         createMediaSetupEmail.setEmail("a@b.com");
@@ -174,8 +170,7 @@ class NotificationControllerTest {
         when(notificationService.sendSystemAdminUpdateEmailRequest(systemAdminAction)).thenReturn(REFERENCE_ID);
         when(notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletion))
             .thenReturn(REFERENCE_ID);
-        when(notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail)).thenReturn(REFERENCE_ID);
-        when(notificationService.bulkSendSubscriptionEmailV2(bulkSubscriptionEmailV2)).thenReturn(REFERENCE_ID);
+        when(notificationService.bulkSendSubscriptionEmailV2(bulkSubscriptionEmail)).thenReturn(REFERENCE_ID);
     }
 
     @Test
@@ -192,17 +187,8 @@ class NotificationControllerTest {
     }
 
     @Test
-    @Deprecated
-    void testBulkSendSubscriptionReturnsAcceptedResponse() {
-        ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmail(bulkSubscriptionEmail);
-
-        assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode(), STATUS_CODES_MATCH);
-        assertEquals(REFERENCE_ID, responseEntity.getBody(), "Response body should contain accepted message");
-    }
-
-    @Test
     void testBulkSendSubscriptionV2ReturnsAcceptedResponse() {
-        ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmail(bulkSubscriptionEmail);
+        ResponseEntity<String> responseEntity = notificationController.sendSubscriptionEmailV2(bulkSubscriptionEmail);
 
         assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode(), STATUS_CODES_MATCH);
         assertEquals(REFERENCE_ID, responseEntity.getBody(), "Response body should contain accepted message");
