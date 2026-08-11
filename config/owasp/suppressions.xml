@@ -154,6 +154,15 @@
     <cve>CVE-2026-44891</cve>
     <cve>CVE-2026-55831</cve>
     <cve>CVE-2026-55833</cve>
+    <cve>CVE-2026-59901</cve>
+    <cve>CVE-2026-56821</cve>
+    <cve>CVE-2026-56822</cve>
+    <cve>CVE-2026-59899</cve>
+    <cve>CVE-2026-59900</cve>
+    <cve>CVE-2026-59920</cve>
+    <cve>CVE-2026-59921</cve>
+    <cve>CVE-2026-59898</cve>
+    <cve>CVE-2026-59919</cve>
   </suppress>
   <suppress>
     <notes>tomcat suppression</notes>
@@ -169,6 +178,19 @@
     <cve>CVE-2026-55956</cve>
     <cve>CVE-2026-59083</cve>
     <cve>CVE-2026-59084</cve>
+  </suppress>
+  <suppress>
+    <notes>Tomcat 10.1.55</notes>
+    <cve>CVE-2026-66299</cve>
+  </suppress>
+  <suppress>
+    <notes>proton-j 0.34.1</notes>
+    <cve>CVE-2026-66257</cve>
+    <cve>CVE-2026-66273</cve>
+    <cve>CVE-2026-66274</cve>
+    <cve>CVE-2026-66275</cve>
+    <cve>CVE-2026-66276</cve>
+    <cve>CVE-2026-66277</cve>
   </suppress>
   <suppress>
     <notes>spring cloud azure suppression</notes>
