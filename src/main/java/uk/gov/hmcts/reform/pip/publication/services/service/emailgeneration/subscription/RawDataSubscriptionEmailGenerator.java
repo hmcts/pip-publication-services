@@ -39,7 +39,7 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
  */
 @Service
 @Slf4j
-public class RawDataSubscriptionEmailGeneratorV2 extends EmailGenerator {
+public class RawDataSubscriptionEmailGenerator extends EmailGenerator {
     private static final String CASE = "case";
     private static final String DISPLAY_CASE = "display_case";
     private static final String YES = "Yes";

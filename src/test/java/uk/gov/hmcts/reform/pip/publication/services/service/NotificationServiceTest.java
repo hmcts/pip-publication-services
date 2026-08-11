@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.M
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.SystemAdminUpdateEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.UnidentifiedBlobEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -87,7 +87,7 @@ class NotificationServiceTest {
     private final Location location = new Location();
     private final Artefact artefact = new Artefact();
     private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-    private final BulkSubscriptionEmailV2 bulkSubscriptionEmail = new BulkSubscriptionEmailV2();
+    private final BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
 
     @Mock
     private SendEmailResponse sendEmailResponse;

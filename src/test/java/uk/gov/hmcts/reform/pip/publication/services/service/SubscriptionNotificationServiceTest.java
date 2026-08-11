@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.Too
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.FlatFileSubscriptionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.RawDataSubscriptionEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.service.notify.SendEmailResponse;
@@ -65,7 +65,7 @@ class SubscriptionNotificationServiceTest {
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
     private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
 
-    private final BulkSubscriptionEmailV2 bulkSubscriptionEmail = new BulkSubscriptionEmailV2();
+    private final BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
 
     @Mock
     private SendEmailResponse sendEmailResponse;
@@ -189,7 +189,7 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
             .thenReturn(validEmailBodyForEmailClientFlatFile);
 
-        BulkSubscriptionEmailV2 bulkSubscriptionEmailWithMultiple = new BulkSubscriptionEmailV2();
+        BulkSubscriptionEmail bulkSubscriptionEmailWithMultiple = new BulkSubscriptionEmail();
         bulkSubscriptionEmailWithMultiple.setArtefact(artefact);
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 
@@ -284,7 +284,7 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
             .thenThrow(new NotifyException(TEST_EXCEPTION_MESSAGE));
 
-        BulkSubscriptionEmailV2 bulkSubscriptionEmailWithMultiple = new BulkSubscriptionEmailV2();
+        BulkSubscriptionEmail bulkSubscriptionEmailWithMultiple = new BulkSubscriptionEmail();
         bulkSubscriptionEmailWithMultiple.setArtefact(artefact);
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 
@@ -304,7 +304,7 @@ class SubscriptionNotificationServiceTest {
                                                 eq(MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL)))
             .thenThrow(new TooManyEmailsException(TEST_EXCEPTION_MESSAGE));
 
-        BulkSubscriptionEmailV2 bulkSubscriptionEmailWithMultiple = new BulkSubscriptionEmailV2();
+        BulkSubscriptionEmail bulkSubscriptionEmailWithMultiple = new BulkSubscriptionEmail();
         bulkSubscriptionEmailWithMultiple.setArtefact(artefact);
         bulkSubscriptionEmailWithMultiple.setSubscriptionEmails(List.of(subscriptionEmail, subscriptionEmail));
 

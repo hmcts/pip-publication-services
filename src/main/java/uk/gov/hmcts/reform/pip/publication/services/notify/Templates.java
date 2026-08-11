@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.repo
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.reporting.UnidentifiedBlobEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.FlatFileSubscriptionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.LocationSubscriptionDeletionEmailGenerator;
-import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.RawDataSubscriptionEmailGeneratorV2;
+import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.RawDataSubscriptionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.InactiveUserNotificationEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaAccountRejectionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaDuplicatedAccountEmailGenerator;
@@ -38,19 +38,19 @@ public enum Templates {
     MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2("cbbbe6fb-c7a1-4dd9-b606-e5bac1aaa990",
                                           "Media subscription email for JSON with PDF and Excel",
                                           EmailLimit.HIGH,
-                                          new RawDataSubscriptionEmailGeneratorV2()),
+                                          new RawDataSubscriptionEmailGenerator()),
     MEDIA_SUBSCRIPTION_PDF_EMAIL_V2("2355bdc0-9e5d-4cac-a6b0-761306e9f6c5",
                                     "Media subscription email for JSON with PDF",
                                     EmailLimit.HIGH,
-                                    new RawDataSubscriptionEmailGeneratorV2()),
+                                    new RawDataSubscriptionEmailGenerator()),
     MEDIA_SUBSCRIPTION_EXCEL_EMAIL_V2("d0e48435-93ee-418e-8c92-9aaf69070297",
                                       "Media subscription email for JSON with Excel",
                                       EmailLimit.HIGH,
-                                      new RawDataSubscriptionEmailGeneratorV2()),
+                                      new RawDataSubscriptionEmailGenerator()),
     MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL_V2("7e285fe0-f285-4bed-8cb1-c97ac6782d4a",
                                                  "Media subscription email for JSON with no download link",
                                                  EmailLimit.HIGH,
-                                                 new RawDataSubscriptionEmailGeneratorV2()),
+                                                 new RawDataSubscriptionEmailGenerator()),
     MEDIA_NEW_ACCOUNT_SETUP("689c0183-0461-423e-a542-de513a93a5b7",
                             "New media account welcome email",
                             EmailLimit.STANDARD,

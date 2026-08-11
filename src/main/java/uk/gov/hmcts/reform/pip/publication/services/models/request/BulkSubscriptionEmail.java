@@ -11,7 +11,7 @@ import java.util.List;
  * Bulk subscriptions class which contains the artefact and a list of subscription emails.
  */
 @Data
-public class BulkSubscriptionEmailV2 {
+public class BulkSubscriptionEmail {
     @NotNull
     Artefact artefact;
 

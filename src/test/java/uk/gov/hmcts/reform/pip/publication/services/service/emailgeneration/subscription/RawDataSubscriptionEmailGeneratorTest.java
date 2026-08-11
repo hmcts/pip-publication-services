@@ -47,7 +47,7 @@ import static uk.gov.hmcts.reform.pip.publication.services.service.emailgenerati
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-class RawDataSubscriptionEmailGeneratorV2Test {
+class RawDataSubscriptionEmailGeneratorTest {
     private static final String EMAIL = "test@testing.com";
     private static final UUID ARTEFACT_ID = UUID.randomUUID();
     private static final Map<SubscriptionTypes, List<String>> SUBSCRIPTIONS = Map.of(
@@ -100,7 +100,7 @@ class RawDataSubscriptionEmailGeneratorV2Test {
     private PersonalisationLinks personalisationLinks;
 
     @InjectMocks
-    private RawDataSubscriptionEmailGeneratorV2 emailGenerator;
+    private RawDataSubscriptionEmailGenerator emailGenerator;
 
     @BeforeEach
     void setup() {
@@ -498,7 +498,7 @@ class RawDataSubscriptionEmailGeneratorV2Test {
                                                      new byte[0], LOCATION_NAME, FILE_RETENTION_WEEKS, REFERENCE_ID);
 
         try (MockedStatic<NotificationClient> mockStatic = mockStatic(NotificationClient.class);
-             LogCaptor logCaptor = LogCaptor.forClass(RawDataSubscriptionEmailGeneratorV2.class)) {
+             LogCaptor logCaptor = LogCaptor.forClass(RawDataSubscriptionEmailGenerator.class)) {
 
             mockStatic.when(() -> NotificationClient.prepareUpload(eq(FILE_DATA), eq(false),
                                                                    any(RetentionPeriodDuration.class)))

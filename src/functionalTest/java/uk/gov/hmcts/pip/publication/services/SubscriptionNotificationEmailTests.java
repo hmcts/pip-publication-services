@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.pip.model.publication.ArtefactCaseInfo;
 import uk.gov.hmcts.reform.pip.model.publication.ArtefactType;
 import uk.gov.hmcts.reform.pip.model.publication.Language;
 import uk.gov.hmcts.reform.pip.model.publication.ListType;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.service.notify.Notification;
@@ -235,7 +235,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID)));
 
 
-        BulkSubscriptionEmailV2 requestBody = new BulkSubscriptionEmailV2();
+        BulkSubscriptionEmail requestBody = new BulkSubscriptionEmail();
         requestBody.setArtefact(jsonArtefact);
         requestBody.setSubscriptionEmails(List.of(subscriptionEmail));
 
@@ -272,7 +272,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID)));
 
 
-        BulkSubscriptionEmailV2 requestBody = new BulkSubscriptionEmailV2();
+        BulkSubscriptionEmail requestBody = new BulkSubscriptionEmail();
         requestBody.setArtefact(jsonArtefactWelsh);
         requestBody.setSubscriptionEmails(List.of(subscriptionEmail));
 
@@ -305,7 +305,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID)));
 
 
-        BulkSubscriptionEmailV2 requestBody = new BulkSubscriptionEmailV2();
+        BulkSubscriptionEmail requestBody = new BulkSubscriptionEmail();
         requestBody.setArtefact(flatFileArtefact);
         requestBody.setSubscriptionEmails(List.of(subscriptionEmail));
 
@@ -338,7 +338,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.CASE_NUMBER, List.of(TEST_CASE_NUMBER)));
 
 
-        BulkSubscriptionEmailV2 requestBody = new BulkSubscriptionEmailV2();
+        BulkSubscriptionEmail requestBody = new BulkSubscriptionEmail();
         requestBody.setArtefact(jsonArtefactWelsh);
         requestBody.setSubscriptionEmails(List.of(subscriptionEmail));
 
@@ -371,7 +371,7 @@ class SubscriptionNotificationEmailTests extends FunctionalTestBase {
         subscriptionEmail.setEmail(TEST_EMAIL);
         subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.CASE_NAME, List.of(TEST_CASE_NAME)));
 
-        BulkSubscriptionEmailV2 requestBody = new BulkSubscriptionEmailV2();
+        BulkSubscriptionEmail requestBody = new BulkSubscriptionEmail();
         requestBody.setArtefact(jsonArtefact);
         requestBody.setSubscriptionEmails(List.of(subscriptionEmail));
 

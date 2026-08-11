@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.publication.FileType;
 import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ServiceToServiceException;
-import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionTypes;
 import uk.gov.hmcts.reform.pip.publication.services.utils.IntegrationTestBase;
@@ -57,7 +57,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
         """;
 
     private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
-    private final BulkSubscriptionEmailV2 bulkSubscriptionEmailV2 = new BulkSubscriptionEmailV2();
+    private final BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
     private final Artefact artefact = new Artefact();
     private final Location location = new Location();
 
@@ -75,8 +75,8 @@ class NotifySubscriptionTest extends IntegrationTestBase {
         subscriptionEmail.setEmail(EMAIL);
         subscriptionEmail.setSubscriptions(Map.of(SubscriptionTypes.LOCATION_ID, List.of(LOCATION_ID)));
 
-        bulkSubscriptionEmailV2.setArtefact(artefact);
-        bulkSubscriptionEmailV2.setSubscriptionEmails(List.of(subscriptionEmail));
+        bulkSubscriptionEmail.setArtefact(artefact);
+        bulkSubscriptionEmail.setSubscriptionEmails(List.of(subscriptionEmail));
     }
 
     @Test
@@ -96,7 +96,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
         when(dataManagementService.getLocation(LOCATION_ID)).thenThrow(ServiceToServiceException.class);
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
-                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmailV2))
+                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadGateway());
     }
@@ -142,7 +142,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
         when(dataManagementService.getArtefactFlatFile(ARTEFACT_ID)).thenReturn(FILE);
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
-                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmailV2))
+                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isAccepted())
             .andExpect(content().string(IsNull.notNullValue()));
@@ -155,7 +155,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
         when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(PDF);
 
         mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
-                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmailV2))
+                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isAccepted())
             .andExpect(content().string(IsNull.notNullValue()));
@@ -173,7 +173,7 @@ class NotifySubscriptionTest extends IntegrationTestBase {
     @WithMockUser(username = "unauthorized_username", authorities = {"APPROLE_unknown.role"})
     void testUnauthorizedSendSubscriptionEmailV2() throws Exception {
         mockMvc.perform(post(BULK_SUBSCRIPTION_V2_URL)
-                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmailV2))
+                            .content(OBJECT_MAPPER.writeValueAsString(bulkSubscriptionEmail))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
     }
