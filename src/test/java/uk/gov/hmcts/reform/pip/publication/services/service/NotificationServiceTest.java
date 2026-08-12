@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.MediaApplicationReportingEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.MiDataReportingEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.SystemAdminUpdateEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.UnidentifiedBlobEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
@@ -43,9 +42,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -86,9 +85,6 @@ class NotificationServiceTest {
     private final Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
     private final Location location = new Location();
     private final Artefact artefact = new Artefact();
-    EmailToSend validEmailBodyForEmailClientFlatFile;
-    EmailToSend validEmailBodyForEmailClientRawData;
-
     private final SubscriptionEmail subscriptionEmail = new SubscriptionEmail();
     private final BulkSubscriptionEmail bulkSubscriptionEmail = new BulkSubscriptionEmail();
 
@@ -100,6 +96,9 @@ class NotificationServiceTest {
 
     @Mock
     private DataManagementService dataManagementService;
+
+    @Mock
+    private SubscriptionNotificationService subscriptionNotificationService;
 
     @Mock
     private EmailService emailService;
@@ -116,14 +115,6 @@ class NotificationServiceTest {
         systemAdminActionEmailBody.setEmailList(List.of(EMAIL));
         systemAdminActionEmailBody.setChangeType(ChangeType.DELETE_LOCATION);
         systemAdminActionEmailBody.setActionResult(ActionResult.ATTEMPTED);
-
-        validEmailBodyForEmailClientRawData = new EmailToSend(
-            EMAIL, MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL.getTemplate(), PERSONALISATION_MAP, SUCCESS_REF_ID
-        );
-
-        validEmailBodyForEmailClientFlatFile = new EmailToSend(
-            EMAIL, MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL.getTemplate(), PERSONALISATION_MAP, SUCCESS_REF_ID
-        );
 
         subscriptionEmail.setEmail(EMAIL);
         subscriptionEmail.setSubscriptions(subscriptions);
@@ -168,18 +159,6 @@ class NotificationServiceTest {
     }
 
     @Test
-    void testHandleMiDataReportingReturnsSuccess() {
-        when(emailService.handleEmailGeneration(any(MiDataReportingEmailData.class),
-                                                eq(Templates.MI_DATA_REPORTING_EMAIL)))
-            .thenReturn(validEmailBodyForEmailClient);
-        when(emailService.sendEmail(validEmailBodyForEmailClient)).thenReturn(sendEmailResponse);
-        when(sendEmailResponse.getReference()).thenReturn(Optional.of(SUCCESS_REF_ID));
-
-        assertEquals(SUCCESS_REF_ID, notificationService.handleMiDataForReporting(),
-                     "Handling MI data reporting notification should return successful reference ID");
-    }
-
-    @Test
     void testValidPayloadReturnsSuccessSystemAdminUpdateEmail() {
         when(emailService.handleBatchEmailGeneration(any(SystemAdminUpdateEmailData.class),
                                                      eq(Templates.SYSTEM_ADMIN_UPDATE_EMAIL)))
@@ -203,5 +182,33 @@ class NotificationServiceTest {
 
         assertNotNull(notificationService.sendDeleteLocationSubscriptionEmail(locationSubscriptionDeletionBody),
                       REFERENCE_ID_MESSAGE);
+    }
+
+    @Test
+    void testBulkSendSubscriptionEmailV2WithRawData() {
+        artefact.setIsFlatFile(false);
+        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(String.valueOf(LOCATION_ID))).thenReturn(location);
+
+        assertNotNull(notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail),
+                      REFERENCE_ID_MESSAGE);
+
+        verify(subscriptionNotificationService).rawDataBulkSubscriptionEmailRequest(any(), any(), any(), any());
+        verify(subscriptionNotificationService, never())
+            .flatFileBulkSubscriptionEmailRequest(any(), any(), any(), any());
+    }
+
+    @Test
+    void testBulkSendSubscriptionEmailV2WithFlatFile() {
+        artefact.setIsFlatFile(true);
+        when(dataManagementService.getArtefact(ARTEFACT_ID)).thenReturn(artefact);
+        when(dataManagementService.getLocation(String.valueOf(LOCATION_ID))).thenReturn(location);
+
+        assertNotNull(notificationService.bulkSendSubscriptionEmail(bulkSubscriptionEmail),
+                      REFERENCE_ID_MESSAGE);
+
+        verify(subscriptionNotificationService).flatFileBulkSubscriptionEmailRequest(any(), any(), any(), any());
+        verify(subscriptionNotificationService, never())
+            .rawDataBulkSubscriptionEmailRequest(any(), any(), any(), any());
     }
 }

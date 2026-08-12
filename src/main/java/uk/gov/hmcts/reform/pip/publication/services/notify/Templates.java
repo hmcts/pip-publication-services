@@ -6,12 +6,12 @@ import uk.gov.hmcts.reform.pip.publication.services.models.EmailLimit;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.BatchEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.EmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.reporting.MediaApplicationReportingEmailGenerator;
-import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.reporting.MiDataReportingEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.reporting.SystemAdminUpdateEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.reporting.UnidentifiedBlobEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.FlatFileSubscriptionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.LocationSubscriptionDeletionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.RawDataSubscriptionEmailGenerator;
+import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.RawDataSubscriptionEmailGeneratorV2;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.InactiveUserNotificationEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaAccountRejectionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaDuplicatedAccountEmailGenerator;
@@ -32,26 +32,46 @@ public enum Templates {
                                 "Existing media account welcome email",
                                 EmailLimit.STANDARD,
                                 new MediaWelcomeEmailGenerator()),
-    MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL("1fa5db55-5c75-4c50-a37a-5f3883e9f672",
+    MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL("3ec5ef89-4d0b-4142-aa54-3d3e68e201d4",
                                        "Media subscription email for flat file",
                                        EmailLimit.HIGH,
                                        new FlatFileSubscriptionEmailGenerator()),
+    @Deprecated
     MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL("4017c40f-0644-4b02-acd2-e00a1ece3b85",
                                       "Media subscription email for JSON with PDF and Excel",
                                       EmailLimit.HIGH,
                                       new RawDataSubscriptionEmailGenerator()),
+    @Deprecated
     MEDIA_SUBSCRIPTION_PDF_EMAIL("e551a0c1-91e7-4871-a540-1e7101b70f14",
                                        "Media subscription email for JSON with PDF",
                                        EmailLimit.HIGH,
                                        new RawDataSubscriptionEmailGenerator()),
+    @Deprecated
     MEDIA_SUBSCRIPTION_EXCEL_EMAIL("e03108e1-db29-40d3-90f2-bf8f6c233c35",
                                  "Media subscription email for JSON with Excel",
                                  EmailLimit.HIGH,
                                  new RawDataSubscriptionEmailGenerator()),
+    @Deprecated
     MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL("072fa7fd-ac23-4a99-be9a-70153374c66e",
                                  "Media subscription email for JSON with no download link",
                                  EmailLimit.HIGH,
                                  new RawDataSubscriptionEmailGenerator()),
+    MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2("cbbbe6fb-c7a1-4dd9-b606-e5bac1aaa990",
+                                          "Media subscription email for JSON with PDF and Excel",
+                                          EmailLimit.HIGH,
+                                          new RawDataSubscriptionEmailGeneratorV2()),
+    MEDIA_SUBSCRIPTION_PDF_EMAIL_V2("2355bdc0-9e5d-4cac-a6b0-761306e9f6c5",
+                                    "Media subscription email for JSON with PDF",
+                                    EmailLimit.HIGH,
+                                    new RawDataSubscriptionEmailGeneratorV2()),
+    MEDIA_SUBSCRIPTION_EXCEL_EMAIL_V2("d0e48435-93ee-418e-8c92-9aaf69070297",
+                                      "Media subscription email for JSON with Excel",
+                                      EmailLimit.HIGH,
+                                      new RawDataSubscriptionEmailGeneratorV2()),
+    MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL_V2("7e285fe0-f285-4bed-8cb1-c97ac6782d4a",
+                                                 "Media subscription email for JSON with no download link",
+                                                 EmailLimit.HIGH,
+                                                 new RawDataSubscriptionEmailGeneratorV2()),
     MEDIA_NEW_ACCOUNT_SETUP("689c0183-0461-423e-a542-de513a93a5b7",
                             "New media account welcome email",
                             EmailLimit.STANDARD,
@@ -76,10 +96,6 @@ public enum Templates {
                                "Media account rejection email",
                                EmailLimit.STANDARD,
                                new MediaAccountRejectionEmailGenerator()),
-    MI_DATA_REPORTING_EMAIL("f13eef24-0ae0-4970-9f56-f107308b78c5",
-                            "MI data reporting email",
-                            EmailLimit.STANDARD,
-                            new MiDataReportingEmailGenerator()),
     SYSTEM_ADMIN_UPDATE_EMAIL("b3c0a60f-34ee-4bfa-857d-7ccbd678cf0c",
                               "System admin notification email",
                               EmailLimit.HIGH,

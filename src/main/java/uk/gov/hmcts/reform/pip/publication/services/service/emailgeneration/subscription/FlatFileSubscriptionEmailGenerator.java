@@ -19,6 +19,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_FLAT_FILE_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.IS_MAGISTRATES_MEDIA_PROTOCOL;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.IS_NOT_MAGISTRATES_MEDIA_PROTOCOL;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.isMagistratesMediaProtocol;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.isNotMagistratesMediaProtocol;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 /**
@@ -41,6 +45,11 @@ public class FlatFileSubscriptionEmailGenerator extends EmailGenerator {
             populateLocationPersonalisation(personalisation, emailData.getLocationName());
 
             personalisation.put("list_type", artefact.getListType().getFriendlyName());
+            personalisation.put(IS_MAGISTRATES_MEDIA_PROTOCOL, isMagistratesMediaProtocol(artefact.getListType()));
+            personalisation.put(
+                IS_NOT_MAGISTRATES_MEDIA_PROTOCOL,
+                isNotMagistratesMediaProtocol(artefact.getListType())
+            );
             JSONObject uploadedFile = prepareUpload(emailData.getArtefactFlatFile(), false,
                                                     emailData.getFileRetentionWeeks());
 

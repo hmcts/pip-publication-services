@@ -8,23 +8,19 @@ import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.model.publication.Artefact;
 import uk.gov.hmcts.reform.pip.model.subscription.LocationSubscriptionDeletion;
 import uk.gov.hmcts.reform.pip.model.system.admin.SystemAdminAction;
-import uk.gov.hmcts.reform.pip.publication.services.errorhandling.exceptions.ExcelCreationException;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.MediaApplication;
 import uk.gov.hmcts.reform.pip.publication.services.models.NoMatchArtefact;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.MediaApplicationReportingEmailData;
-import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.MiDataReportingEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.SystemAdminUpdateEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.reporting.UnidentifiedBlobEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.subscription.LocationSubscriptionDeletionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscriptionEmailV2;
 import uk.gov.hmcts.reform.pip.publication.services.notify.Templates;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-
-import static uk.gov.hmcts.reform.pip.model.LogBuilder.writeLog;
 
 @Service
 @Slf4j
@@ -91,29 +87,6 @@ public class NotificationService {
     }
 
     /**
-     * Handles the incoming request for sending out email with MI data report.
-     *
-     * @return The ID that references the MI data reporting email.
-     */
-    public String handleMiDataForReporting() {
-        byte[] excel;
-        try {
-            excel = fileCreationService.generateMiReport();
-        } catch (IOException e) {
-            log.warn(writeLog("Error generating excel file attachment"));
-            throw new ExcelCreationException(e.getMessage());
-        }
-
-        EmailToSend email = emailService.handleEmailGeneration(
-            new MiDataReportingEmailData(piTeamEmail, excel, fileRetentionWeeks, envName),
-            Templates.MI_DATA_REPORTING_EMAIL
-        );
-        return emailService.sendEmail(email)
-            .getReference()
-            .orElse(null);
-    }
-
-    /**
      * This method handles the sending the email to all system admins for some actions on the application.
      *
      * @param body The body of the system admin update email.
@@ -135,6 +108,7 @@ public class NotificationService {
      * @param bulkSubscriptionEmail The list of subscriptions that need to be fulfilled.
      * @return The ID that references the subscription notification email.
      */
+    @Deprecated
     public String bulkSendSubscriptionEmail(BulkSubscriptionEmail bulkSubscriptionEmail) {
         Artefact artefact = dataManagementService.getArtefact(bulkSubscriptionEmail.getArtefactId());
         String locationName = dataManagementService.getLocation(artefact.getLocationId()).getName();
@@ -142,11 +116,34 @@ public class NotificationService {
 
         if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
             subscriptionNotificationService.flatFileBulkSubscriptionEmailRequest(
-                bulkSubscriptionEmail, artefact, locationName, referenceId
+                bulkSubscriptionEmail.getSubscriptionEmails(), artefact, locationName, referenceId
             );
         } else {
             subscriptionNotificationService.rawDataBulkSubscriptionEmailRequest(
-                bulkSubscriptionEmail, artefact, locationName, referenceId
+                bulkSubscriptionEmail.getSubscriptionEmails(), artefact, locationName, referenceId
+            );
+        }
+        return referenceId;
+    }
+
+    /**
+     * This method handles the bulk sending of subscription emails.
+     *
+     * @param bulkSubscriptionEmail The list of subscriptions that need to be fulfilled.
+     * @return The ID that references the subscription notification email.
+     */
+    public String bulkSendSubscriptionEmailV2(BulkSubscriptionEmailV2 bulkSubscriptionEmail) {
+        Artefact artefact = bulkSubscriptionEmail.getArtefact();
+        String locationName = dataManagementService.getLocation(artefact.getLocationId()).getName();
+        String referenceId = UUID.randomUUID().toString();
+
+        if (artefact.getIsFlatFile().equals(Boolean.TRUE)) {
+            subscriptionNotificationService.flatFileBulkSubscriptionEmailRequest(
+                bulkSubscriptionEmail.getSubscriptionEmails(), artefact, locationName, referenceId
+            );
+        } else {
+            subscriptionNotificationService.rawDataBulkSubscriptionEmailRequestV2(
+                bulkSubscriptionEmail.getSubscriptionEmails(), artefact, locationName, referenceId
             );
         }
         return referenceId;

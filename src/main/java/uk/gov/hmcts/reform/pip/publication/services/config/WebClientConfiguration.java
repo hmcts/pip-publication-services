@@ -67,16 +67,6 @@ public class WebClientConfiguration {
         return createOAuthWebClient(authorizedClientManager);
     }
 
-    /**
-     * A specific web client for MI requests to Data Management, due to requiring a larger response size.
-     */
-    @Bean
-    @Profile("!dev")
-    public WebClient miWebClient(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createOAuthWebClient(authorizedClientManager);
-    }
-
-
     @Bean
     public WebClient webClientThirdParty() {
         return WebClient.builder()
