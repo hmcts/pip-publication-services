@@ -72,4 +72,8 @@
     <cve>CVE-2026-66276</cve>
     <cve>CVE-2026-66277</cve>
   </suppress>
+  <suppress>
+    <notes>httpclient5</notes>
+    <cve>CVE-2026-64607</cve>
+  </suppress>
 </suppressions>
