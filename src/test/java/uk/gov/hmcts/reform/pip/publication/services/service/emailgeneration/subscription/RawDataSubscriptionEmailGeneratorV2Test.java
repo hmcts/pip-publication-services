@@ -42,6 +42,8 @@ import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDI
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_NO_DOWNLOAD_LINK_EMAIL_V2;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EMAIL_V2;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.IS_MAGISTRATES_MEDIA_PROTOCOL;
+import static uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.SubscriptionTemplateHelper.IS_NOT_MAGISTRATES_MEDIA_PROTOCOL;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -145,6 +147,14 @@ class RawDataSubscriptionEmailGeneratorV2Test {
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("SJP Public List (Full list)");
 
+        softly.assertThat(personalisation.get(IS_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(false);
+
+        softly.assertThat(personalisation.get(IS_NOT_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(true);
+
         softly.assertThat(personalisation.get(START_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo(START_PAGE_LINK_ADDRESS);
@@ -213,6 +223,14 @@ class RawDataSubscriptionEmailGeneratorV2Test {
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("Civil Daily Cause List");
 
+        softly.assertThat(personalisation.get(IS_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(false);
+
+        softly.assertThat(personalisation.get(IS_NOT_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(true);
+
         softly.assertThat(personalisation.get(START_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo(START_PAGE_LINK_ADDRESS);
@@ -278,6 +296,14 @@ class RawDataSubscriptionEmailGeneratorV2Test {
         softly.assertThat(personalisation.get(LIST_TYPE_PERSONALISATION))
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("SJP Public List (Full list)");
+
+        softly.assertThat(personalisation.get(IS_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(false);
+
+        softly.assertThat(personalisation.get(IS_NOT_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(true);
 
         softly.assertThat(personalisation.get(START_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
@@ -345,6 +371,14 @@ class RawDataSubscriptionEmailGeneratorV2Test {
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("SJP Public List (Full list)");
 
+        softly.assertThat(personalisation.get(IS_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(false);
+
+        softly.assertThat(personalisation.get(IS_NOT_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(true);
+
         softly.assertThat(personalisation.get(START_PAGE_LINK))
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo(START_PAGE_LINK_ADDRESS);
@@ -377,6 +411,25 @@ class RawDataSubscriptionEmailGeneratorV2Test {
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo("");
 
+        softly.assertAll();
+    }
+
+    @Test
+    void testRawDataSubscriptionEmailWithMagistratesListAddsConditionFlag() {
+        artefact.setLanguage(Language.ENGLISH);
+        artefact.setListType(ListType.MAGISTRATES_PUBLIC_LIST);
+        emailData = new RawDataSubscriptionEmailData(subscriptionEmail, artefact, ARTEFACT_SUMMARY, FILE_DATA,
+                                                     FILE_DATA, LOCATION_NAME, FILE_RETENTION_WEEKS, REFERENCE_ID);
+
+        EmailToSend result = emailGenerator.buildEmail(emailData, personalisationLinks);
+
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(result.getPersonalisation().get(IS_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(true);
+        softly.assertThat(result.getPersonalisation().get(IS_NOT_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(false);
         softly.assertAll();
     }
 
@@ -424,6 +477,14 @@ class RawDataSubscriptionEmailGeneratorV2Test {
         softly.assertThat(personalisation.get(CASE_PERSONALISATION))
             .as(PERSONALISATION_MESSAGE)
             .isEqualTo(List.of(CASE_NUMBER + " (" + CASE_NAME + ")", CASE_NAME2));
+
+        softly.assertThat(personalisation.get(IS_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(false);
+
+        softly.assertThat(personalisation.get(IS_NOT_MAGISTRATES_MEDIA_PROTOCOL))
+            .as(PERSONALISATION_MESSAGE)
+            .isEqualTo(true);
 
         softly.assertAll();
     }

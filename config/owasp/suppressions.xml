@@ -2,8 +2,7 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
   <suppress>
     <notes><![CDATA[file name: spring-cloud-azure-starter-active-directory-6.0.0.jar]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.azure\.spring/spring\-cloud\-azure\-starter\-active\-directory@.*$
-    </packageUrl>
+    <packageUrl regex="true">^pkg:maven/com\.azure\.spring/spring\-cloud\-azure\-starter\-active\-directory@.*$</packageUrl>
     <cve>CVE-2021-42306</cve>
   </suppress>
   <suppress>
@@ -51,6 +50,13 @@
     <cve>CVE-2026-33871</cve>
     <cve>CVE-2026-33870</cve>
     <cve>CVE-2026-41417</cve>
+    <cve>CVE-2026-56746</cve>
+    <cve>CVE-2026-56819</cve>
+    <cve>CVE-2026-56817</cve>
+    <cve>CVE-2026-56816</cve>
+    <cve>CVE-2026-56745</cve>
+    <cve>CVE-2026-56820</cve>
+    <cve>CVE-2026-55851</cve>
   </suppress>
   <suppress>
     <!-- PostgreSQL JDBC Driver -->
@@ -100,7 +106,6 @@
     <cve>CVE-2026-34481</cve>
     <cve>CVE-2026-54399</cve>
     <cve>CVE-2026-54428</cve>
-    <cve>CVE-2026-64607</cve>
   </suppress>
   <suppress>
     <notes>log4j suppression</notes>
@@ -149,17 +154,11 @@
     <cve>CVE-2026-44891</cve>
     <cve>CVE-2026-55831</cve>
     <cve>CVE-2026-55833</cve>
-    <cve>CVE-2026-56820</cve>
-    <cve>CVE-2026-55851</cve>
-    <cve>CVE-2026-56745</cve>
     <cve>CVE-2026-59901</cve>
-    <cve>CVE-2026-56817</cve>
-    <cve>CVE-2026-56819</cve>
     <cve>CVE-2026-56821</cve>
     <cve>CVE-2026-56822</cve>
     <cve>CVE-2026-59899</cve>
     <cve>CVE-2026-59900</cve>
-    <cve>CVE-2026-56746</cve>
     <cve>CVE-2026-59920</cve>
     <cve>CVE-2026-59921</cve>
     <cve>CVE-2026-59898</cve>
@@ -179,15 +178,26 @@
     <cve>CVE-2026-55956</cve>
     <cve>CVE-2026-59083</cve>
     <cve>CVE-2026-59084</cve>
+  </suppress>
+  <suppress>
+    <notes>Tomcat 10.1.55</notes>
     <cve>CVE-2026-66299</cve>
   </suppress>
   <suppress>
-    <notes>proton suppression</notes>
+    <notes>proton-j 0.34.1</notes>
     <cve>CVE-2026-66257</cve>
     <cve>CVE-2026-66273</cve>
     <cve>CVE-2026-66274</cve>
     <cve>CVE-2026-66275</cve>
     <cve>CVE-2026-66276</cve>
     <cve>CVE-2026-66277</cve>
+  </suppress>
+  <suppress>
+    <notes>spring cloud azure suppression</notes>
+    <cve>CVE-2026-50338</cve>
+  </suppress>
+  <suppress>
+    <notes>httpclient5</notes>
+    <cve>CVE-2026-64607</cve>
   </suppress>
 </suppressions>
