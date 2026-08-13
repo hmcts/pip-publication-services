@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subs
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.RawDataSubscriptionEmailGeneratorV2;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.InactiveUserNotificationEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaAccountRejectionEmailGenerator;
+import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaAccountDeletionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaDuplicatedAccountEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaUserVerificationEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaWelcomeEmailGenerator;
@@ -96,6 +97,10 @@ public enum Templates {
                                "Media account rejection email",
                                EmailLimit.STANDARD,
                                new MediaAccountRejectionEmailGenerator()),
+    MEDIA_USER_DELETION_EMAIL("b08a6094-edc4-4d76-beca-f8937b63e879",
+                               "Media account deletion email",
+                               EmailLimit.STANDARD,
+                               new MediaAccountDeletionEmailGenerator()),
     SYSTEM_ADMIN_UPDATE_EMAIL("b3c0a60f-34ee-4bfa-857d-7ccbd678cf0c",
                               "System admin notification email",
                               EmailLimit.HIGH,

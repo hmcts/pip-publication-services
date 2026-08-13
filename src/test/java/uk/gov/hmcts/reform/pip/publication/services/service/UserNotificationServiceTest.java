@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.pip.model.location.Location;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.InactiveUserNotificationEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaAccountRejectionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaAccountDeletionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaDuplicatedAccountEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaUserVerificationEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaWelcomeEmailData;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaDeletionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -37,14 +39,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.*;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class UserNotificationServiceTest {
 
     private static final String REJECTION_EMAIL_FIRST_LINE_JSON = "\"id\":\"123e4567-e89b-12d3-a456-426614174000\",";
+    private static final String DELETION_EMAIL_FIRST_LINE_JSON = "\"id\":\"123e4567-e89b-12d3-a456-426614174000\",";
     private static final String EMAIL = "test@email.com";
     private final Map<String, Object> personalisationMap = Map.ofEntries(
         entry("email", EMAIL),
@@ -267,6 +269,77 @@ class UserNotificationServiceTest {
         when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
 
         String result = userNotificationService.mediaUserRejectionEmailRequest(mediaRejectionEmail);
+        assertNull(result, NULL_MESSAGE);
+    }
+
+    @Test
+    void testMediaUserDeletionEmailRequestWithValidData() {
+        MediaDeletionEmail mediaDeletionEmail = new MediaDeletionEmail(
+            "Test Name",
+            EMAIL,
+            "11th April 2024"
+        );
+        EmailToSend expectedEmail = new EmailToSend(EMAIL, MEDIA_USER_DELETION_EMAIL.getTemplate(),
+                                                    new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"
+        );
+        String jsonResponse = "{"
+            + DELETION_EMAIL_FIRST_LINE_JSON
+            + "\"reference\":\"123e4567-e89b-12d3-a456-426614174000\","
+            + "\"content\":{"
+            + "\"body\":\"Email body\","
+            + "\"subject\":\"Email subject\","
+            + "\"from_email\":\"from@email.com\""
+            + "},"
+            + "\"template\":{"
+            + DELETION_EMAIL_FIRST_LINE_JSON
+            + "\"version\":1,"
+            + "\"uri\":\"https://example.com/template_uri\""
+            + "}"
+            + "}";
+        SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
+
+        when(emailService.handleEmailGeneration(any(MediaAccountDeletionEmailData.class),
+                                                eq(MEDIA_USER_DELETION_EMAIL)))
+            .thenReturn(expectedEmail);
+        when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
+
+        String result = userNotificationService.mediaUserDeletionEmailRequest(mediaDeletionEmail);
+
+        assertEquals("123e4567-e89b-12d3-a456-426614174000", result, "Reference ID should match the expected value");
+    }
+
+    @Test
+    void testMediaUserDeletionEmailRequestWithNullReference() {
+        MediaDeletionEmail mediaDeletionEmail = new MediaDeletionEmail(
+            "Test Name",
+            EMAIL,
+            "11th April 2024"
+        );
+        EmailToSend expectedEmail = new EmailToSend(EMAIL, MEDIA_USER_DELETION_EMAIL.getTemplate(),
+                                                    new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"
+        );
+        String jsonResponse =
+            "{"
+                + DELETION_EMAIL_FIRST_LINE_JSON
+                + "\"content\":{"
+                + "\"body\":\"Email body\","
+                + "\"subject\":\"Email subject\","
+                + "\"from_email\":\"from@email.com\""
+                + "},"
+                + "\"template\":{"
+                + DELETION_EMAIL_FIRST_LINE_JSON
+                + "\"version\":1,"
+                + "\"uri\":\"https://example.com/template_uri\""
+                + "}"
+                + "}";
+        SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
+
+        when(emailService.handleEmailGeneration(any(MediaAccountDeletionEmailData.class),
+                                                eq(MEDIA_USER_DELETION_EMAIL)))
+            .thenReturn(expectedEmail);
+        when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
+
+        String result = userNotificationService.mediaUserDeletionEmailRequest(mediaDeletionEmail);
         assertNull(result, NULL_MESSAGE);
     }
 
