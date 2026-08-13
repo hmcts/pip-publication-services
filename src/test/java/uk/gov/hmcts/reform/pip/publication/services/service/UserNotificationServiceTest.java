@@ -39,7 +39,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.*;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_DELETION_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_EMAIL;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
