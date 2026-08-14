@@ -188,7 +188,7 @@ public class NotificationController {
     @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
     @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
     @Operation(summary = "Send a media applicant a deletion email")
-    @PostMapping("/media/deleted")
+    @PostMapping("/media/inactive/deletion")
     public ResponseEntity<String> sendMediaUserDeletionEmail(@RequestBody MediaDeletionEmail body) {
         return ResponseEntity.ok(userNotificationService.mediaUserDeletionEmailRequest(body));
     }
