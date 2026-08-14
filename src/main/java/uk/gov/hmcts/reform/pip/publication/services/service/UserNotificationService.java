@@ -108,7 +108,8 @@ public class UserNotificationService {
      */
     public String mediaUserDeletionEmailRequest(MediaDeletionEmail body) {
         EmailToSend email = emailService.handleEmailGeneration(new MediaAccountDeletionEmailData(body),
-                                                               Templates.MEDIA_USER_DELETION_EMAIL);
+                                                               Templates.INACTIVE_MEDIA_USER_DELETION_EMAIL
+        );
         return emailService.sendEmail(email)
             .getReference()
             .orElse(null);

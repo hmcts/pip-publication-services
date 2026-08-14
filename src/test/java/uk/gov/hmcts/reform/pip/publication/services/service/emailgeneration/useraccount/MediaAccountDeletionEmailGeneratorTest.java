@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaDeletion
 import java.util.Map;
 
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_DELETION_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_MEDIA_USER_DELETION_EMAIL;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -58,7 +58,7 @@ class MediaAccountDeletionEmailGeneratorTest {
 
         softly.assertThat(result.getTemplate())
             .as(NOTIFY_TEMPLATE_MESSAGE)
-            .isEqualTo(MEDIA_USER_DELETION_EMAIL.getTemplate());
+            .isEqualTo(INACTIVE_MEDIA_USER_DELETION_EMAIL.getTemplate());
 
         softly.assertThat(result.getReferenceId())
             .as(REFERENCE_ID_MESSAGE)

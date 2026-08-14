@@ -40,7 +40,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_REJECTION_EMAIL;
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_DELETION_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_MEDIA_USER_DELETION_EMAIL;
 import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.OTP_EMAIL;
 
 @ActiveProfiles("test")
@@ -281,7 +281,7 @@ class UserNotificationServiceTest {
             EMAIL,
             "11th April 2024"
         );
-        EmailToSend expectedEmail = new EmailToSend(EMAIL, MEDIA_USER_DELETION_EMAIL.getTemplate(),
+        EmailToSend expectedEmail = new EmailToSend(EMAIL, INACTIVE_MEDIA_USER_DELETION_EMAIL.getTemplate(),
                                                     new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"
         );
         String jsonResponse = "{"
@@ -301,7 +301,7 @@ class UserNotificationServiceTest {
         SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
 
         when(emailService.handleEmailGeneration(any(MediaAccountDeletionEmailData.class),
-                                                eq(MEDIA_USER_DELETION_EMAIL)))
+                                                eq(INACTIVE_MEDIA_USER_DELETION_EMAIL)))
             .thenReturn(expectedEmail);
         when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
 
@@ -317,7 +317,7 @@ class UserNotificationServiceTest {
             EMAIL,
             "11th April 2024"
         );
-        EmailToSend expectedEmail = new EmailToSend(EMAIL, MEDIA_USER_DELETION_EMAIL.getTemplate(),
+        EmailToSend expectedEmail = new EmailToSend(EMAIL, INACTIVE_MEDIA_USER_DELETION_EMAIL.getTemplate(),
                                                     new HashMap<>(), "123e4567-e89b-12d3-a456-426614174000"
         );
         String jsonResponse =
@@ -337,7 +337,7 @@ class UserNotificationServiceTest {
         SendEmailResponse sendEmailResponse = new SendEmailResponse(jsonResponse);
 
         when(emailService.handleEmailGeneration(any(MediaAccountDeletionEmailData.class),
-                                                eq(MEDIA_USER_DELETION_EMAIL)))
+                                                eq(INACTIVE_MEDIA_USER_DELETION_EMAIL)))
             .thenReturn(expectedEmail);
         when(emailService.sendEmail(expectedEmail)).thenReturn(sendEmailResponse);
 

@@ -8,13 +8,13 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.Emai
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.MEDIA_USER_DELETION_EMAIL;
+import static uk.gov.hmcts.reform.pip.publication.services.notify.Templates.INACTIVE_MEDIA_USER_DELETION_EMAIL;
 
 public class MediaAccountDeletionEmailGenerator extends EmailGenerator {
     @Override
     public EmailToSend buildEmail(EmailData email, PersonalisationLinks personalisationLinks) {
         MediaAccountDeletionEmailData emailData = (MediaAccountDeletionEmailData) email;
-        return generateEmail(emailData, MEDIA_USER_DELETION_EMAIL.getTemplate(),
+        return generateEmail(emailData, INACTIVE_MEDIA_USER_DELETION_EMAIL.getTemplate(),
                              buildEmailPersonalisation(emailData, personalisationLinks));
     }
 
