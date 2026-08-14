@@ -59,7 +59,7 @@ class MultiPartHelperTest {
         assertThat(output).hasSize(2);
 
         HttpEntity<?> file1 = output.get("file1").get(0);
-        assertThat(file1.getHeaders()).isEmpty();
+        assertThat(file1.getHeaders().headerNames()).isEmpty();
         assertThat(((ByteArrayResource) file1.getBody()).getByteArray())
             .as("Incorrect byte array data")
             .isEqualTo(data1);
@@ -101,7 +101,7 @@ class MultiPartHelperTest {
 
         assertThat(output).hasSize(1);
         HttpEntity<?> result = output.get(FILE).get(0);
-        assertThat(result.getHeaders())
+        assertThat(result.getHeaders().headerNames())
             .as(INCORRECT_HEADER_MESSAGE)
             .isEmpty();
         assertThat(((ByteArrayResource) result.getBody()).getByteArray())
