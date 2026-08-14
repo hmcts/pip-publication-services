@@ -8,7 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -33,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(username = "admin", authorities = {"APPROLE_api.request.admin", "APPROLE_api.request.b2c"})
 @ActiveProfiles("integration-rate-limit")
 class NotifyRateLimitTest extends IntegrationTestBase {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String OTP_EMAIL_URL = "/notify/otp";
 
@@ -49,6 +48,9 @@ class NotifyRateLimitTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setup() throws IOException {
@@ -66,7 +68,7 @@ class NotifyRateLimitTest extends IntegrationTestBase {
     @Test
     void testRateLimitWithStandardCapacity() throws Exception {
         WelcomeEmail welcomeEmail = new WelcomeEmail(TEST_EMAIL, false, FULL_NAME);
-        String welcomeEmailContent = OBJECT_MAPPER.writeValueAsString(welcomeEmail);
+        String welcomeEmailContent = objectMapper.writeValueAsString(welcomeEmail);
 
         mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(welcomeEmailContent)
@@ -85,7 +87,7 @@ class NotifyRateLimitTest extends IntegrationTestBase {
     @Test
     void testRateLimitWithHighCapacity() throws Exception {
         OtpEmail otpEmail = new OtpEmail("12345", TEST_EMAIL2);
-        String otpEmailContent = OBJECT_MAPPER.writeValueAsString(otpEmail);
+        String otpEmailContent = objectMapper.writeValueAsString(otpEmail);
 
         mockMvc.perform(post(OTP_EMAIL_URL)
                             .content(otpEmailContent)
@@ -111,21 +113,21 @@ class NotifyRateLimitTest extends IntegrationTestBase {
     void testRateLimitUsingDifferentEmails() throws Exception {
         WelcomeEmail welcomeEmail = new WelcomeEmail(TEST_EMAIL3, false, FULL_NAME);
         mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(OBJECT_MAPPER.writeValueAsString(welcomeEmail))
+                            .content(objectMapper.writeValueAsString(welcomeEmail))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(IsNull.notNullValue()));
 
         welcomeEmail = new WelcomeEmail(TEST_EMAIL4, false, FULL_NAME);
         mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(OBJECT_MAPPER.writeValueAsString(welcomeEmail))
+                            .content(objectMapper.writeValueAsString(welcomeEmail))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(IsNull.notNullValue()));
 
         welcomeEmail = new WelcomeEmail(TEST_EMAIL5, false, FULL_NAME);
         mockMvc.perform(post(WELCOME_EMAIL_URL)
-                            .content(OBJECT_MAPPER.writeValueAsString(welcomeEmail))
+                            .content(objectMapper.writeValueAsString(welcomeEmail))
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(IsNull.notNullValue()));
@@ -134,7 +136,7 @@ class NotifyRateLimitTest extends IntegrationTestBase {
     @Test
     void testRateLimitUsingSameEmailButDifferentCapacity() throws Exception {
         WelcomeEmail welcomeEmail = new WelcomeEmail(TEST_EMAIL6, false, FULL_NAME);
-        String welcomeEmailContent = OBJECT_MAPPER.writeValueAsString(welcomeEmail);
+        String welcomeEmailContent = objectMapper.writeValueAsString(welcomeEmail);
 
         mockMvc.perform(post(WELCOME_EMAIL_URL)
                             .content(welcomeEmailContent)
@@ -143,7 +145,7 @@ class NotifyRateLimitTest extends IntegrationTestBase {
             .andExpect(content().string(IsNull.notNullValue()));
 
         OtpEmail otpEmail = new OtpEmail("12345", TEST_EMAIL6);
-        String otpEmailContent = OBJECT_MAPPER.writeValueAsString(otpEmail);
+        String otpEmailContent = objectMapper.writeValueAsString(otpEmail);
 
         mockMvc.perform(post(OTP_EMAIL_URL)
                             .content(otpEmailContent)
