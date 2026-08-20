@@ -186,7 +186,7 @@ class NotifyTest extends IntegrationTestBase {
     private static final String MEDIA_VERIFICATION_EMAIL_URL = "/notify/media/verification";
     private static final String MEDIA_REJECTION_EMAIL_URL = "/notify/media/reject";
     private static final String INACTIVE_USER_NOTIFICATION_EMAIL_URL = "/notify/user/sign-in";
-    private static final String MEDIA_DELETION_EMAIL_URL = "/notify/media/inactive/deletion";
+    private static final String MEDIA_DELETION_EMAIL_URL = "/notify/media/inactive";
     private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
     private static final String NOTIFY_LOCATION_SUBSCRIPTION_DELETE_URL = "/notify/location-subscription-delete";
     private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
