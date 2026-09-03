@@ -92,6 +92,11 @@
     <cve>CVE-2026-59283</cve>
     <cve>CVE-2026-59280</cve>
     <cve>CVE-2026-59270</cve>
+    <cve>CVE-2026-47891</cve>
+    <cve>CVE-2026-47890</cve>
+    <cve>CVE-2026-59276</cve>
+    <cve>CVE-2026-59282</cve>
+    <cve>CVE-2026-59281</cve>
 
     <!-- Spring Boot -->
     <cve>CVE-2026-40972</cve>
@@ -218,5 +223,9 @@
     <notes>httpclient5</notes>
     <cve>CVE-2026-64607</cve>
     <cve>CVE-2026-71290</cve>
+  </suppress>
+  <suppress>
+    <notes>reactor-netty</notes>
+    <cve>CVE-2026-47874</cve>
   </suppress>
 </suppressions>
