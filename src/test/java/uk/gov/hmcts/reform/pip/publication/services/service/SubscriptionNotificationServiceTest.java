@@ -211,7 +211,7 @@ class SubscriptionNotificationServiceTest {
         ArgumentCaptor<RawDataSubscriptionEmailData> argument =
             ArgumentCaptor.forClass(RawDataSubscriptionEmailData.class);
 
-        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, true)).thenReturn(FILE_CONTENT);
+        when(dataManagementService.getArtefactFile(ARTEFACT_ID, FileType.PDF, false)).thenReturn(FILE_CONTENT);
 
         when(emailService.handleEmailGeneration(argument.capture(),
                                                 eq(MEDIA_SUBSCRIPTION_PDF_EXCEL_EMAIL_V2)))
