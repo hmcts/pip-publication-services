@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscript
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaDeletionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.SubscriptionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -71,6 +72,7 @@ class NotificationControllerTest {
     private static final String STATUS = "APPROVED";
     private static final LocalDateTime DATE_TIME = LocalDateTime.now();
     private static final String LAST_SIGNED_IN_DATE = "11 July 2022";
+    private static final String LAST_REVERIFIED_DATE = "11 July 2024";
     private static final String IMAGE_NAME = "test-image.png";
     private static final String HTML_FILE = "test.html";
     private static final String FORM_FILE_FIELD_NAME = "file";
@@ -88,6 +90,7 @@ class NotificationControllerTest {
     private LegacyThirdPartySubscription thirdPartySubscription = new LegacyThirdPartySubscription();
     private MediaVerificationEmail mediaVerificationEmail;
     private MediaRejectionEmail mediaRejectionEmail;
+    private MediaDeletionEmail mediaDeletionEmail;
     private InactiveUserNotificationEmail inactiveUserNotificationEmail;
     private LegacyThirdPartySubscriptionArtefact thirdPartySubscriptionArtefact =
         new LegacyThirdPartySubscriptionArtefact();
@@ -122,6 +125,8 @@ class NotificationControllerTest {
                                                                  DATE_TIME, STATUS, DATE_TIME));
         mediaVerificationEmail = new MediaVerificationEmail(FULL_NAME, VALID_EMAIL);
         mediaRejectionEmail = new MediaRejectionEmail(FULL_NAME, VALID_EMAIL, new HashMap<>());
+        mediaDeletionEmail = new MediaDeletionEmail(FULL_NAME, VALID_EMAIL, LAST_REVERIFIED_DATE);
+
         inactiveUserNotificationEmail = new InactiveUserNotificationEmail(FULL_NAME, VALID_EMAIL,
                                                                           "PI_AAD", LAST_SIGNED_IN_DATE);
 
@@ -267,6 +272,13 @@ class NotificationControllerTest {
     void testSendMediaRejectionEmailReturnsOk() {
         assertEquals(HttpStatus.OK, notificationController
                          .sendMediaUserRejectionEmail(mediaRejectionEmail).getStatusCode(),
+                     STATUS_CODES_MATCH);
+    }
+
+    @Test
+    void testSendMediaDeletionEmailReturnsOk() {
+        assertEquals(HttpStatus.OK, notificationController
+                         .sendMediaUserDeletionEmail(mediaDeletionEmail).getStatusCode(),
                      STATUS_CODES_MATCH);
     }
 
