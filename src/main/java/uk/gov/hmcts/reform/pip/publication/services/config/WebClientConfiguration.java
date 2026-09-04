@@ -24,9 +24,9 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
+import javax.net.ssl.SSLException;
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
-import javax.net.ssl.SSLException;
 
 /**
  * Configures the Web Client that is used in requests to external services.
