@@ -10,19 +10,23 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.security.oauth2.client.web.ClientAttributes;
+import org.springframework.web.reactive.function.client.ClientRequest;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
+import javax.net.ssl.SSLException;
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
-import javax.net.ssl.SSLException;
 
 /**
  * Configures the Web Client that is used in requests to external services.
@@ -60,11 +64,7 @@ public class WebClientConfiguration {
     @Bean
     @Profile("!dev")
     public WebClient webClient(OAuth2AuthorizedClientManager authorizedClientManager) {
-        ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2Client =
-            new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
-        oauth2Client.setDefaultClientRegistrationId("dataManagementApi");
-        return WebClient.builder().exchangeStrategies(STRATEGIES)
-            .apply(oauth2Client.oauth2Configuration()).build();
+        return createOAuthWebClient(authorizedClientManager);
     }
 
     @Bean
@@ -103,6 +103,31 @@ public class WebClientConfiguration {
     public WebClient webClientInsecure() {
         return WebClient.builder()
             .exchangeStrategies(STRATEGIES)
+            .build();
+    }
+
+    // required to fix known issue: https://github.com/spring-projects/spring-security/issues/19324
+    private static WebClient createOAuthWebClient(OAuth2AuthorizedClientManager authorizedClientManager) {
+        ExchangeFilterFunction oauth2Client = (request, next) -> {
+            String registrationId = ClientAttributes.resolveClientRegistrationId(request.attributes());
+            if (registrationId == null) {
+                registrationId = "dataManagementApi";
+            }
+
+            OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+                .withClientRegistrationId(registrationId)
+                .principal(registrationId)
+                .build();
+            OAuth2AuthorizedClient authorizedClient = authorizedClientManager.authorize(authorizeRequest);
+            ClientRequest authorizedRequest = ClientRequest.from(request)
+                .headers(headers -> headers.setBearerAuth(authorizedClient.getAccessToken().getTokenValue()))
+                .build();
+            return next.exchange(authorizedRequest);
+        };
+
+        return WebClient.builder()
+            .exchangeStrategies(STRATEGIES)
+            .filter(oauth2Client)
             .build();
     }
 }
