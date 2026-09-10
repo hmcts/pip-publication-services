@@ -113,6 +113,9 @@
     <cve>CVE-2026-22751</cve>
     <cve>CVE-2026-22748</cve>
     <cve>CVE-2026-22746</cve>
+    <cve>CVE-2026-47841</cve>
+    <cve>CVE-2026-47842</cve>
+
 
     <!-- Spring Cloud -->
     <cve>CVE-2026-50338</cve>
