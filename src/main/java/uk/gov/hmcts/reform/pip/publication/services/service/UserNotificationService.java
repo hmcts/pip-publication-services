@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pip.publication.services.helpers.EmailHelper;
 import uk.gov.hmcts.reform.pip.publication.services.models.EmailToSend;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.InactiveUserNotificationEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaAccountRejectionEmailData;
+import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaAccountDeletionEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaDuplicatedAccountEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaUserVerificationEmailData;
 import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount.MediaWelcomeEmailData;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.emaildata.useraccount
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaDeletionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.OtpEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
@@ -93,6 +95,21 @@ public class UserNotificationService {
     public String mediaUserRejectionEmailRequest(MediaRejectionEmail body) {
         EmailToSend email = emailService.handleEmailGeneration(new MediaAccountRejectionEmailData(body),
                                                                Templates.MEDIA_USER_REJECTION_EMAIL);
+        return emailService.sendEmail(email)
+            .getReference()
+            .orElse(null);
+    }
+
+    /**
+     * This method handles the sending of the media user deletion email.
+     *
+     * @param body The body of the media deletion email.
+     * @return The ID that references the media user deletion email.
+     */
+    public String mediaUserDeletionEmailRequest(MediaDeletionEmail body) {
+        EmailToSend email = emailService.handleEmailGeneration(new MediaAccountDeletionEmailData(body),
+                                                               Templates.INACTIVE_MEDIA_USER_DELETION_EMAIL
+        );
         return emailService.sendEmail(email)
             .getReference()
             .orElse(null);
