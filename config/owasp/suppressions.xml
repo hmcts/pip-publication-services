@@ -84,7 +84,23 @@
     <cve>CVE-2026-41851</cve>
     <cve>CVE-2026-41850</cve>
     <cve>CVE-2026-41694</cve>
-    CVE-2026-47884, CVE-2026-47890, CVE-2026-47891, CVE-2026-47892, CVE-2026-59313, CVE-2026-59283, CVE-2026-47885, CVE-2026-47886, CVE-2026-47888, CVE-2026-47889, CVE-2026-47893, CVE-2026-59282, CVE-2026-47883, CVE-2026-47887, CVE-2026-59281, CVE-2026-59280, CVE-2026-59314
+    <cve>CVE-2026-47884</cve>
+    <cve>CVE-2026-47890</cve>
+    <cve>CVE-2026-47891</cve>
+    <cve>CVE-2026-47892</cve>
+    <cve>CVE-2026-59313</cve>
+    <cve>CVE-2026-59283</cve>
+    <cve>CVE-2026-47885</cve>
+    <cve>CVE-2026-47886</cve>
+    <cve>CVE-2026-47888</cve>
+    <cve>CVE-2026-47889</cve>
+    <cve>CVE-2026-47893</cve>
+    <cve>CVE-2026-59282</cve>
+    <cve>CVE-2026-47883</cve>
+    <cve>CVE-2026-47887</cve>
+    <cve>CVE-2026-59281</cve>
+    <cve>CVE-2026-59280</cve>
+    <cve>CVE-2026-59314</cve>
 
     <!-- Spring Boot -->
     <cve>CVE-2026-40972</cve>
