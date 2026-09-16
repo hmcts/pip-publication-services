@@ -4,10 +4,10 @@ plugins {
   id 'checkstyle'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.7'
-  id 'org.springframework.boot' version '3.5.15'
-  id 'org.owasp.dependencycheck' version '12.2.1'
-  id 'com.github.ben-manes.versions' version '0.54.0'
-  id 'org.sonarqube' version '7.3.1.8318'
+  id 'org.springframework.boot' version '3.5.16'
+  id 'org.owasp.dependencycheck' version '12.2.2'
+  id 'com.github.ben-manes.versions' version '0.62.0'
+  id 'org.sonarqube' version '7.5.0.8588'
   id 'io.freefair.lombok' version '9.5.0'
 }
 
@@ -90,7 +90,7 @@ tasks.register('smoke', Test) {
 }
 
 checkstyle {
-  toolVersion = '13.4.2'
+  toolVersion = '14.0.0'
 }
 
 jacocoTestReport {
@@ -131,7 +131,7 @@ repositories {
 }
 
 ext {
-  log4JVersion = '2.26.0'
+  log4JVersion = '2.26.1'
   reformLogging = '6.1.9'
 }
 
@@ -157,22 +157,22 @@ dependencies {
   }
   implementation 'com.opencsv:opencsv:5.12.0'
   implementation 'org.apache.poi:poi-ooxml:5.5.1'
-  implementation 'org.redisson:redisson:4.6.1'
+  implementation 'org.redisson:redisson:4.7.0'
   implementation 'com.giffing.bucket4j.spring.boot.starter:bucket4j-spring-boot-starter:0.13.0'
-  implementation 'software.amazon.awssdk:s3:2.46.13'
+  implementation 'software.amazon.awssdk:s3:2.54.17'
   implementation 'org.apache.commons:commons-lang3:3.20.0'
-  implementation 'com.azure:azure-security-keyvault-secrets:4.11.0'
+  implementation 'com.azure:azure-security-keyvault-secrets:4.11.2'
 
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
   testImplementation 'org.springframework.security:spring-security-test'
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
-  testImplementation 'com.squareup.okhttp3:mockwebserver:5.4.0'
-  testImplementation 'com.squareup.okhttp3:okhttp:5.4.0'
-  testImplementation 'com.squareup.okhttp3:okhttp-tls:5.4.0'
-  testImplementation 'org.apache.pdfbox:pdfbox:3.0.7'
+  testImplementation 'com.squareup.okhttp3:mockwebserver:5.5.0'
+  testImplementation 'com.squareup.okhttp3:okhttp:5.5.0'
+  testImplementation 'com.squareup.okhttp3:okhttp-tls:5.5.0'
+  testImplementation 'org.apache.pdfbox:pdfbox:3.0.8'
   testImplementation 'com.redis:testcontainers-redis:2.2.4'
   testImplementation 'org.testcontainers:junit-jupiter'
-  testImplementation 'io.github.hakky54:logcaptor:2.12.6'
+  testImplementation 'io.github.hakky54:logcaptor:2.12.7'
   testImplementation 'com.github.hmcts:fortify-client:1.4.10:all'
   functionalTestImplementation 'io.rest-assured:rest-assured'
 }
