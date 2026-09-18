@@ -64,7 +64,27 @@ public class WebClientConfiguration {
     @Bean
     @Profile("!dev")
     public WebClient webClient(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createOAuthWebClient(authorizedClientManager);
+        return WebClient.builder()
+            .exchangeStrategies(STRATEGIES)
+            .filter((request, next) -> next.exchange(withBearerToken(request, authorizedClientManager)))
+            .build();
+    }
+
+    private static ClientRequest withBearerToken(ClientRequest request,
+                                                 OAuth2AuthorizedClientManager authorizedClientManager) {
+        OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+            .withClientRegistrationId("dataManagementApi")
+            .principal("pip-publication-services")
+            .build();
+        OAuth2AuthorizedClient authorizedClient = authorizedClientManager.authorize(authorizeRequest);
+
+        if (authorizedClient == null) {
+            return request;
+        }
+
+        return ClientRequest.from(request)
+            .headers(headers -> headers.setBearerAuth(authorizedClient.getAccessToken().getTokenValue()))
+            .build();
     }
 
     @Bean
@@ -103,31 +123,6 @@ public class WebClientConfiguration {
     public WebClient webClientInsecure() {
         return WebClient.builder()
             .exchangeStrategies(STRATEGIES)
-            .build();
-    }
-
-    // required to fix known issue: https://github.com/spring-projects/spring-security/issues/19324
-    private static WebClient createOAuthWebClient(OAuth2AuthorizedClientManager authorizedClientManager) {
-        ExchangeFilterFunction oauth2Client = (request, next) -> {
-            String registrationId = ClientAttributes.resolveClientRegistrationId(request.attributes());
-            if (registrationId == null) {
-                registrationId = "dataManagementApi";
-            }
-
-            OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
-                .withClientRegistrationId(registrationId)
-                .principal(registrationId)
-                .build();
-            OAuth2AuthorizedClient authorizedClient = authorizedClientManager.authorize(authorizeRequest);
-            ClientRequest authorizedRequest = ClientRequest.from(request)
-                .headers(headers -> headers.setBearerAuth(authorizedClient.getAccessToken().getTokenValue()))
-                .build();
-            return next.exchange(authorizedRequest);
-        };
-
-        return WebClient.builder()
-            .exchangeStrategies(STRATEGIES)
-            .filter(oauth2Client)
             .build();
     }
 }
