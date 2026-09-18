@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.ClientAttributes;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -32,6 +33,8 @@ import java.util.Base64;
 @Configuration
 @Profile("!test")
 public class WebClientConfiguration {
+    private static final String DEFAULT_CLIENT_REGISTRATION_ID = "dataManagementApi";
+
     // Currently we allow a maximum 10MB of Excel file to be transferred from data-management (same as GOV.UK
     // Notify file size constraint).
     public static final ExchangeStrategies STRATEGIES =  ExchangeStrategies.builder()
@@ -69,9 +72,14 @@ public class WebClientConfiguration {
     }
 
     static ClientRequest withBearerToken(ClientRequest request,
-                                                 OAuth2AuthorizedClientManager authorizedClientManager) {
+                                         OAuth2AuthorizedClientManager authorizedClientManager) {
+        String clientRegistrationId = ClientAttributes.resolveClientRegistrationId(request.attributes());
+        if (clientRegistrationId == null) {
+            clientRegistrationId = DEFAULT_CLIENT_REGISTRATION_ID;
+        }
+
         OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
-            .withClientRegistrationId("dataManagementApi")
+            .withClientRegistrationId(clientRegistrationId)
             .principal("pip-publication-services")
             .build();
         OAuth2AuthorizedClient authorizedClient = authorizedClientManager.authorize(authorizeRequest);
