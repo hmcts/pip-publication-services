@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.configuration;
+package uk.gov.hmcts.reform.pip.publication.services.config;
 
 import com.azure.spring.cloud.autoconfigure.implementation.aad.security.AadResourceServerHttpSecurityConfigurer;
 import org.junit.jupiter.api.Test;
@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import uk.gov.hmcts.reform.pip.publication.services.config.SpringSecurityConfig;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;

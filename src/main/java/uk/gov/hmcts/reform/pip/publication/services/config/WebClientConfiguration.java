@@ -68,7 +68,7 @@ public class WebClientConfiguration {
             .build();
     }
 
-    private static ClientRequest withBearerToken(ClientRequest request,
+    static ClientRequest withBearerToken(ClientRequest request,
                                                  OAuth2AuthorizedClientManager authorizedClientManager) {
         OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
             .withClientRegistrationId("dataManagementApi")
