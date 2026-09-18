@@ -69,7 +69,7 @@ class WebClientCreationTest {
     void withBearerTokenReturnsOriginalRequestWhenAuthorizedClientIsAbsent() {
         ClientRequest request = ClientRequest.create(HttpMethod.GET, TEST_URI).build();
 
-        when(authorizedClientManager.authorize( any())).thenReturn(null);
+        when(authorizedClientManager.authorize(any())).thenReturn(null);
 
         ClientRequest returnedRequest = WebClientConfiguration.withBearerToken(request, authorizedClientManager);
 
