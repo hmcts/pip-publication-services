@@ -202,6 +202,11 @@
     <cve>CVE-2026-75596</cve>
     <cve>CVE-2026-75595</cve>
     <cve>CVE-2026-89044</cve>
+    <cve>CVE-2026-59903</cve>
+    <cve>CVE-2026-56818</cve>
+    <cve>CVE-2026-73507</cve>
+    <cve>CVE-2026-73508</cve>
+    <cve>CVE-2026-59902</cve>
   </suppress>
   <suppress>
     <notes>tomcat suppression</notes>
