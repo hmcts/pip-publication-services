@@ -101,6 +101,13 @@
     <cve>CVE-2026-59276</cve>
     <cve>CVE-2026-59282</cve>
     <cve>CVE-2026-59281</cve>
+    <cve>CVE-2026-47884</cve>
+    <cve>CVE-2026-47885</cve>
+    <cve>CVE-2026-47886</cve>
+    <cve>CVE-2026-47888</cve>
+    <cve>CVE-2026-47889</cve>
+    <cve>CVE-2026-47883</cve>
+    <cve>CVE-2026-47887</cve>
 
     <!-- Spring Boot -->
     <cve>CVE-2026-40972</cve>
@@ -183,6 +190,14 @@
     <cve>CVE-2026-59921</cve>
     <cve>CVE-2026-59898</cve>
     <cve>CVE-2026-59919</cve>
+    <cve>CVE-2026-75595</cve>
+    <cve>CVE-2026-75596</cve>
+    <cve>CVE-2026-59902</cve>
+    <cve>CVE-2026-59903</cve>
+    <cve>CVE-2026-73507</cve>
+    <cve>CVE-2026-73508</cve>
+    <cve>CVE-2026-89044</cve>
+    <cve>CVE-2026-56818</cve>
   </suppress>
   <suppress>
     <notes>tomcat suppression</notes>
