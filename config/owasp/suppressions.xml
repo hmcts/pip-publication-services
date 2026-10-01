@@ -246,6 +246,13 @@
     <cve>CVE-2026-68525</cve>
     <cve>CVE-2026-68569</cve>
     <cve>CVE-2026-66422</cve>
+    <cve>CVE-2026-59903</cve>
+    <cve>CVE-2026-56818</cve>
+    <cve>CVE-2026-73507</cve>
+    <cve>CVE-2026-73508</cve>
+    <cve>CVE-2026-41707</cve>
+    <cve>CVE-2026-59902</cve>
+    <cve>CVE-2026-69854</cve>
   </suppress>
   <suppress>
     <notes>proton-j 0.34.1</notes>
