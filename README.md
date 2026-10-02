@@ -46,7 +46,7 @@ All interactions with `pip-publication-services` are performed through the API (
 
 ## Features and Functionality
 
-- Generation of the following email contents using the emails templates stored in GOV.UK Notify:
+- Generation of the following email contents using the emails templates stored in GOV.UK Notify
   - Welcome emails relating to the creation of new and existing verified and admin user accounts, as well as duplicate media accounts.
   - Emails to inactive verified, admin and HMCTS IdAM users, requesting them to verify or sign in to their accounts.
   - Subscription related emails to verified users when new publications are uploaded to CaTH, or when a user’s subscriptions are being deleted as a result of routine maintenance of locations within CaTH.
