@@ -268,5 +268,7 @@
   <suppress>
     <notes>reactor-netty</notes>
     <cve>CVE-2026-47874</cve>
+    <cve>CVE-2026-41707</cve>
+    <cve>CVE-2026-69854</cve>
   </suppress>
 </suppressions>
