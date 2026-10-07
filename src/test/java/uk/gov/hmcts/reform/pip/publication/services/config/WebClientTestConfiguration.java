@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pip.publication.services.configuration;
+package uk.gov.hmcts.reform.pip.publication.services.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

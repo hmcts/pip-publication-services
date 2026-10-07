@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subs
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.RawDataSubscriptionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.subscription.RawDataSubscriptionEmailGeneratorV2;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.InactiveUserNotificationEmailGenerator;
-import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaAccountRejectionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaAccountDeletionEmailGenerator;
+import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaAccountRejectionEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaDuplicatedAccountEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaUserVerificationEmailGenerator;
 import uk.gov.hmcts.reform.pip.publication.services.service.emailgeneration.useraccount.MediaWelcomeEmailGenerator;
