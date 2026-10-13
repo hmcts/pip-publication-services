@@ -30,8 +30,8 @@ import javax.net.ssl.SSLException;
 @Configuration
 @Profile("!test")
 public class WebClientConfiguration {
-    // Currently we allow a maximum 10MB of Excel file to be transferred from data-management (same as GOV.UK
-    // Notify file size constraint).
+    // Set it to 20MB to allow SJP Pres List payload to be transferred from data-management for sending to
+    // third-party users
     public static final ExchangeStrategies STRATEGIES =  ExchangeStrategies.builder()
         .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
             .maxInMemorySize(20 * 1024 * 1024))
