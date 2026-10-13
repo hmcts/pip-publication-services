@@ -34,7 +34,7 @@ public class WebClientConfiguration {
     // Notify file size constraint).
     public static final ExchangeStrategies STRATEGIES =  ExchangeStrategies.builder()
         .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-            .maxInMemorySize(10 * 1024 * 1024))
+            .maxInMemorySize(20 * 1024 * 1024))
         .build();
 
     @Value("${third-party.certificate}")
