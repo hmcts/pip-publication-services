@@ -154,7 +154,7 @@ class NotifyTest extends IntegrationTestBase {
                 ]
             }
         }
-         """;
+        """;
 
     private static final String INVALID_MEDIA_REJECTION_EMAIL_BODY = """
         {
@@ -162,7 +162,7 @@ class NotifyTest extends IntegrationTestBase {
             "email": "test@justice.gov.uk",
             "reasons": "invalid"
         }
-         """;
+        """;
 
     private static final String VALID_INACTIVE_USER_NOTIFICATION_EMAIL_BODY = """
         {
@@ -172,12 +172,21 @@ class NotifyTest extends IntegrationTestBase {
         }
         """;
 
+    private static final String VALID_INACTIVE_USER_DELETION_EMAIL_BODY = """
+        {
+            "email": "test@test.com",
+            "fullName": "testName",
+            "reVerificationEmailDate": "01 May 2022"
+        }
+        """;
+
     private static final String WELCOME_EMAIL_URL = "/notify/welcome-email";
     private static final String MEDIA_REPORTING_EMAIL_URL = "/notify/media/report";
     private static final String UNIDENTIFIED_BLOB_EMAIL_URL = "/notify/unidentified-blob";
     private static final String MEDIA_VERIFICATION_EMAIL_URL = "/notify/media/verification";
     private static final String MEDIA_REJECTION_EMAIL_URL = "/notify/media/reject";
     private static final String INACTIVE_USER_NOTIFICATION_EMAIL_URL = "/notify/user/sign-in";
+    private static final String MEDIA_DELETION_EMAIL_URL = "/notify/media/inactive";
     private static final String NOTIFY_SYSTEM_ADMIN_URL = "/notify/sysadmin/update";
     private static final String NOTIFY_LOCATION_SUBSCRIPTION_DELETE_URL = "/notify/location-subscription-delete";
     private static final String DUPLICATE_MEDIA_EMAIL_URL = "/notify/duplicate/media";
@@ -390,6 +399,31 @@ class NotifyTest extends IntegrationTestBase {
                             .content(VALID_MEDIA_REJECTION_EMAIL_BODY)
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testSendMediaDeletionToInactiveUsers() throws Exception {
+        mockMvc.perform(post(MEDIA_DELETION_EMAIL_URL)
+                            .content(VALID_INACTIVE_USER_DELETION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = UNAUTHORIZED_USERNAME, authorities = {UNAUTHORIZED_ROLE})
+    void testUnauthorizedSendMediaDeletionToInactiveUsers() throws Exception {
+        mockMvc.perform(post(MEDIA_DELETION_EMAIL_URL)
+                            .content(VALID_INACTIVE_USER_DELETION_EMAIL_BODY)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testSendMediaDeletionToInactiveUsersBadRequest() throws Exception {
+        mockMvc.perform(post(MEDIA_DELETION_EMAIL_URL)
+                            .content(INVALID_CONTENT)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

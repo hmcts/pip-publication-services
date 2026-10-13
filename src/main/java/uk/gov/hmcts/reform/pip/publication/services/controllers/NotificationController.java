@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.pip.publication.services.models.request.BulkSubscript
 import uk.gov.hmcts.reform.pip.publication.services.models.request.DuplicatedMediaEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.InactiveUserNotificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaRejectionEmail;
+import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaDeletionEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.MediaVerificationEmail;
 import uk.gov.hmcts.reform.pip.publication.services.models.request.WelcomeEmail;
 import uk.gov.hmcts.reform.pip.publication.services.service.AwsS3Service;
@@ -180,6 +181,16 @@ public class NotificationController {
     @PostMapping("/media/reject")
     public ResponseEntity<String> sendMediaUserRejectionEmail(@RequestBody MediaRejectionEmail body) {
         return ResponseEntity.ok(userNotificationService.mediaUserRejectionEmailRequest(body));
+    }
+
+    @ApiResponse(responseCode = OK_RESPONSE, description = "Media user deletion email successfully "
+        + "sent with referenceId: {Id}")
+    @ApiResponse(responseCode = BAD_REQUEST, description = BAD_PAYLOAD_ERROR_MESSAGE)
+    @ApiResponse(responseCode = BAD_REQUEST, description = NOTIFY_EXCEPTION_ERROR_MESSAGE)
+    @Operation(summary = "Send a media applicant a deletion email")
+    @PostMapping("/media/inactive")
+    public ResponseEntity<String> sendMediaUserDeletionEmail(@RequestBody MediaDeletionEmail body) {
+        return ResponseEntity.ok(userNotificationService.mediaUserDeletionEmailRequest(body));
     }
 
     @ApiResponse(responseCode = OK_RESPONSE, description = "Inactive user sign-in notification email "
