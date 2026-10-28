@@ -33,6 +33,8 @@ import java.util.Base64;
 @Configuration
 @Profile("!test")
 public class WebClientConfiguration {
+    private static final String DEFAULT_CLIENT_REGISTRATION_ID = "dataManagementApi";
+
     // Set it to 20MB to allow SJP Pres List payload to be transferred from data-management for sending to
     // third-party users
     public static final ExchangeStrategies STRATEGIES =  ExchangeStrategies.builder()
