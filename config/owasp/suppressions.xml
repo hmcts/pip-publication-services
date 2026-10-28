@@ -50,7 +50,7 @@
   </suppress>
   <suppress>
     <notes>azure-security-keyvault-secrets</notes>
-    <cve>CVE-2023-85922</cve>
-    <cve>CVE-2024-85925</cve>
+    <cve>CVE-2026-85922</cve>
+    <cve>CVE-2026-85925</cve>
   </suppress>
 </suppressions>
