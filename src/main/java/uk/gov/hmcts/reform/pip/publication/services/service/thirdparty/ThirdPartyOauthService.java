@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.pip.publication.services.service.thirdparty;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
