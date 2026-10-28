@@ -33,13 +33,11 @@ import java.util.Base64;
 @Configuration
 @Profile("!test")
 public class WebClientConfiguration {
-    private static final String DEFAULT_CLIENT_REGISTRATION_ID = "dataManagementApi";
-
-    // Currently we allow a maximum 10MB of Excel file to be transferred from data-management (same as GOV.UK
-    // Notify file size constraint).
+    // Set it to 20MB to allow SJP Pres List payload to be transferred from data-management for sending to
+    // third-party users
     public static final ExchangeStrategies STRATEGIES =  ExchangeStrategies.builder()
         .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-            .maxInMemorySize(10 * 1024 * 1024))
+            .maxInMemorySize(20 * 1024 * 1024))
         .build();
 
     @Value("${third-party.certificate}")
