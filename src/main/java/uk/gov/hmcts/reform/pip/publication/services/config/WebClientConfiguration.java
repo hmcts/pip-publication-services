@@ -10,19 +10,22 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.security.oauth2.client.web.ClientAttributes;
+import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
+import javax.net.ssl.SSLException;
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
-import javax.net.ssl.SSLException;
 
 /**
  * Configures the Web Client that is used in requests to external services.
@@ -30,11 +33,13 @@ import javax.net.ssl.SSLException;
 @Configuration
 @Profile("!test")
 public class WebClientConfiguration {
-    // Currently we allow a maximum 10MB of Excel file to be transferred from data-management (same as GOV.UK
-    // Notify file size constraint).
+    private static final String DEFAULT_CLIENT_REGISTRATION_ID = "dataManagementApi";
+
+    // Set it to 20MB to allow SJP Pres List payload to be transferred from data-management for sending to
+    // third-party users
     public static final ExchangeStrategies STRATEGIES =  ExchangeStrategies.builder()
         .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-            .maxInMemorySize(10 * 1024 * 1024))
+            .maxInMemorySize(20 * 1024 * 1024))
         .build();
 
     @Value("${third-party.certificate}")
@@ -60,11 +65,32 @@ public class WebClientConfiguration {
     @Bean
     @Profile("!dev")
     public WebClient webClient(OAuth2AuthorizedClientManager authorizedClientManager) {
-        ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2Client =
-            new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
-        oauth2Client.setDefaultClientRegistrationId("dataManagementApi");
-        return WebClient.builder().exchangeStrategies(STRATEGIES)
-            .apply(oauth2Client.oauth2Configuration()).build();
+        return WebClient.builder()
+            .exchangeStrategies(STRATEGIES)
+            .filter((request, next) -> next.exchange(withBearerToken(request, authorizedClientManager)))
+            .build();
+    }
+
+    static ClientRequest withBearerToken(ClientRequest request,
+                                         OAuth2AuthorizedClientManager authorizedClientManager) {
+        String clientRegistrationId = ClientAttributes.resolveClientRegistrationId(request.attributes());
+        if (clientRegistrationId == null) {
+            clientRegistrationId = DEFAULT_CLIENT_REGISTRATION_ID;
+        }
+
+        OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+            .withClientRegistrationId(clientRegistrationId)
+            .principal("pip-publication-services")
+            .build();
+        OAuth2AuthorizedClient authorizedClient = authorizedClientManager.authorize(authorizeRequest);
+
+        if (authorizedClient == null) {
+            return request;
+        }
+
+        return ClientRequest.from(request)
+            .headers(headers -> headers.setBearerAuth(authorizedClient.getAccessToken().getTokenValue()))
+            .build();
     }
 
     @Bean
