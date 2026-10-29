@@ -46,7 +46,7 @@ All interactions with `pip-publication-services` are performed through the API (
 
 ## Features and Functionality
 
-- Generation of the following email contents using the emails templates stored in GOV.UK Notify:
+- Generation of the following email contents using the emails templates stored in GOV.UK Notify
   - Welcome emails relating to the creation of new and existing verified and admin user accounts, as well as duplicate media accounts.
   - Emails to inactive verified, admin and HMCTS IdAM users, requesting them to verify or sign in to their accounts.
   - Subscription related emails to verified users when new publications are uploaded to CaTH, or when a user’s subscriptions are being deleted as a result of routine maintenance of locations within CaTH.
@@ -54,7 +54,7 @@ All interactions with `pip-publication-services` are performed through the API (
   - CaTH service team emails containing reports of current data contents and statistics, and when a publication is being uploaded with an unindentified location.
   - Emails containing one-time password (OTP) used for user verification in Azure B2C password reset flow.
 - Handles forwarding of newly uploaded publications to third party publishers.
-- Rate limit the number of emails that can be sent to a user within a set interval
+- Rate limit the number of emails that can be sent to a user within a set interval.
 - Secure/Insecure Mode: Use of bearer tokens for authentication with the secure instance (if desired).
 - OpenAPI Spec/Swagger-UI: Documents and allows users or developers to access API resources within the browser.
 
