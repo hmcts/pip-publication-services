@@ -33,10 +33,6 @@
     <cve>CVE-2026-66277</cve>
   </suppress>
   <suppress>
-    <notes>log4j suppression</notes>
-    <cve>CVE-2026-49844</cve>
-  </suppress>
-  <suppress>
     <notes>azure sdk suppression</notes>
     <cve>CVE-2026-33117</cve>
   </suppress>
