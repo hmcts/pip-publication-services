@@ -254,8 +254,8 @@ class DataManagementServiceTest {
     }
 
     @Test
-    void testGetArtefactJsonThrowsExceptionWhenOver10Mb() {
-        byte[] byteArray = RandomUtils.secure().randomBytes(11_000_000);
+    void testGetArtefactJsonThrowsExceptionWhenOver20Mb() {
+        byte[] byteArray = RandomUtils.secure().randomBytes(21_000_000);
 
         mockDataManagementEndpoint.enqueue(new MockResponse()
                                                .setBody(new String(byteArray))
