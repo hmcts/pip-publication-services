@@ -20,14 +20,14 @@ class SubscriptionsConstraintValidatorTest {
     @Test
     void testValid() {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of("1234"));
+        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of("1234"));
         assertTrue(subscriptionsConstraintValidator.isValid(subscriptions, null), "Marked as invalid when valid");
     }
 
     @Test
     void testInvalid() {
         Map<SubscriptionTypes, List<String>> subscriptions = new ConcurrentHashMap<>();
-        subscriptions.put(SubscriptionTypes.CASE_URN, List.of());
+        subscriptions.put(SubscriptionTypes.CASE_NUMBER, List.of());
         assertFalse(subscriptionsConstraintValidator.isValid(subscriptions, null), "Marked as valid when invalid");
     }
 }
